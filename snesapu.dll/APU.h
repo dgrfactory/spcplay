@@ -22,8 +22,8 @@
 *                                                 Copyright (C) 2003-2016 degrade-factory          *
 ***************************************************************************************************/
 
-#ifndef	__INC_APU
-#define	__INC_APU
+#ifndef __INC_APU
+#define __INC_APU
 
 //**************************************************************************************************
 // Defines
@@ -31,34 +31,34 @@
 //The build options correspond to the equates at the top of APU.Inc
 
 //SPC700 build options bits 7-0 ----------------
-#define	SA_HALFC	0x02						//Half-carry enabled
-#define	SA_CNTBK	0x04						//Counter Break
-#define	SA_SPEED	0x08						//Speed hack
-#define	SA_IPLW		0x10						//IPL ROM region writeable
-#define	SA_DSPBK	0x20						//Break SPC700/Update DSP if 0F3h is read from
+#define SA_HALFC    0x02                        //Half-carry enabled
+#define SA_CNTBK    0x04                        //Counter Break
+#define SA_SPEED    0x08                        //Speed hack
+#define SA_IPLW     0x10                        //IPL ROM region writeable
+#define SA_DSPBK    0x20                        //Break SPC700/Update DSP if 0F3h is read from
 
 //DSP build options bits 15-8 ------------------
-#define	SA_VMETERM	0x100						//Volume metering on main output (for APR)
-#define	SA_VMETERC	0x200						//Volume metering on voices (for visualization)
-#define	SA_SNESINT	0x400						//Use pregenerated gaussian curve from SNES
-#define	SA_STEREO	0x800						//Stereo controls (seperation and EFBCT)
+#define SA_VMETERM  0x100                       //Volume metering on main output (for APR)
+#define SA_VMETERC  0x200                       //Volume metering on voices (for visualization)
+#define SA_SNESINT  0x400                       //Use pregenerated gaussian curve from SNES
+#define SA_STEREO   0x800                       //Stereo controls (seperation and EFBCT)
 
 //APU build options bits 23-16 -----------------
-#define	SA_DEBUG	0x10000						//Debugging ability
-#define	SA_DSPINTEG	0x20000						//DSP emulation is integrated with the SPC700
+#define SA_DEBUG    0x10000                     //Debugging ability
+#define SA_DSPINTEG 0x20000                     //DSP emulation is integrated with the SPC700
 
 // ----- degrade-factory code [2006/10/20] -----
-#define	APURAMSIZE	0x10000						//APU RAM Memory Size
-#define	SCR700SIZE	0x100000					//Script700 Program Area Size
-#define	SCR700MASK	SCR700SIZE - 1				//Script700 Program Area Mask
+#define APURAMSIZE  0x10000                     //APU RAM Memory Size
+#define SCR700SIZE  0x100000                    //Script700 Program Area Size
+#define SCR700MASK  SCR700SIZE - 1              //Script700 Program Area Mask
 // ----- degrade-factory code [END] -----
 
 // ----- degrade-factory code [2015/11/23] -----
 //SNESAPU callback effect
-#define	CBE_DSPREG	0x01						//Write DSP value event
-#define	CBE_S700FCH	0x02						//Write SPC700 fetch event
-#define	CBE_INCS700	0x40000000					//Include Script700 text file
-#define CBE_INCDATA	0x20000000					//Include Script700 binary file
+#define CBE_DSPREG  0x01                        //Write DSP value event
+#define CBE_S700FCH 0x02                        //Write SPC700 fetch event
+#define CBE_INCS700 0x40000000                  //Include Script700 text file
+#define CBE_INCDATA 0x20000000                  //Include Script700 binary file
 // ----- degrade-factory code [END] -----
 
 // ----- degrade-factory code [2016/05/09] -----
@@ -87,41 +87,41 @@ typedef u32 (__stdcall *CBFUNC)(u32 effect, u32 addr, u32 value, void *pData);
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Private Declarations
 
-#ifndef	SNESAPU_DLL
+#ifndef SNESAPU_DLL
 
-#ifdef	__cplusplus
-extern	"C"	u32	apuOpt;							//Build options
+#ifdef  __cplusplus
+extern  "C" u32 apuOpt;                         //Build options
 // ----- degrade-factory code [2006/10/20] -----
-extern	"C"	u8	scr700dsp[256];					//Script700 DSP Enable Flag (Channel)
-extern	"C"	u8	scr700mds[32];					//Script700 DSP Enable Flag (Master)
-extern	"C"	u8	scr700chg[256];					//Script700 DSP Note Change
-extern	"C"	u32	scr700det[256];					//Script700 DSP Rate Detune
-extern	"C"	u32	scr700vol[256];					//Script700 DSP Volume Change (Source)
-extern	"C"	u32	scr700mvl[32];					//Script700 DSP Volume Change (Master)
-extern	"C"	u32	scr700wrk[8];					//Script700 User Work Area
-extern	"C"	u32	scr700cmp[2];					//Script700 Cmp Param
-extern	"C"	u32	scr700cnt;						//Script700 Wait Count
-extern	"C"	u32	scr700ptr;						//Script700 Program Pointer
-extern	"C"	u32	scr700dat;						//Script700 Data Area Offset
-extern	"C"	u32	pAPURAM;						//Pointer to SNESAPU 64KB RAM
-extern	"C"	u32	pSCRRAM;						//Pointer to Script700 RAM
+extern  "C" u8  scr700dsp[256];                 //Script700 DSP Enable Flag (Channel)
+extern  "C" u8  scr700mds[32];                  //Script700 DSP Enable Flag (Master)
+extern  "C" u8  scr700chg[256];                 //Script700 DSP Note Change
+extern  "C" u32 scr700det[256];                 //Script700 DSP Rate Detune
+extern  "C" u32 scr700vol[256];                 //Script700 DSP Volume Change (Source)
+extern  "C" u32 scr700mvl[32];                  //Script700 DSP Volume Change (Master)
+extern  "C" u32 scr700wrk[8];                   //Script700 User Work Area
+extern  "C" u32 scr700cmp[2];                   //Script700 Cmp Param
+extern  "C" u32 scr700cnt;                      //Script700 Wait Count
+extern  "C" u32 scr700ptr;                      //Script700 Program Pointer
+extern  "C" u32 scr700dat;                      //Script700 Data Area Offset
+extern  "C" u32 pAPURAM;                        //Pointer to SNESAPU 64KB RAM
+extern  "C" u32 pSCRRAM;                        //Pointer to Script700 RAM
 // ----- degrade-factory code [END] -----
 #else
-extern	u32	apuOpt;
+extern  u32 apuOpt;
 // ----- degrade-factory code [2006/10/20] -----
-extern	u8	scr700dsp[256];
-extern	u8	scr700mds[32];
-extern	u8	scr700chg[256];
-extern	u32	scr700det[256];
-extern	u32	scr700vol[256];
-extern	u32	scr700mvl[32];
-extern	u32	scr700wrk[8];
-extern	u32	scr700cmp[2];
-extern	u32	scr700cnt;
-extern	u32	scr700ptr;
-extern	u32	scr700dat;
-extern	u32	pAPURAM;
-extern	u32	pSCRRAM;
+extern  u8  scr700dsp[256];
+extern  u8  scr700mds[32];
+extern  u8  scr700chg[256];
+extern  u32 scr700det[256];
+extern  u32 scr700vol[256];
+extern  u32 scr700mvl[32];
+extern  u32 scr700wrk[8];
+extern  u32 scr700cmp[2];
+extern  u32 scr700cnt;
+extern  u32 scr700ptr;
+extern  u32 scr700dat;
+extern  u32 pAPURAM;
+extern  u32 pSCRRAM;
 // ----- degrade-factory code [END] -----
 #endif
 
@@ -129,8 +129,8 @@ extern	u32	pSCRRAM;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // External Functions
 
-#ifdef	__cplusplus
-extern	"C" {
+#ifdef  __cplusplus
+extern  "C" {
 #endif
 
 // ----- degrade-factory code [2013/10/12] -----
@@ -407,9 +407,9 @@ u32 GetSNESAPUContext(void *pCtxOut);
 u32 SetSNESAPUContext(void *pCtxIn);
 // ----- degrade-factory code [END] -----
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	//SNESAPU_DLL
-#endif	//__INC_APU
+#endif  //SNESAPU_DLL
+#endif  //__INC_APU

@@ -21,10 +21,10 @@
 ;                                                   Copyright (C) 2003-2012 degrade-factory
 ;===================================================================================================
 
-%define	SNESAPU_INC
-%define	SHVC_SOUND_SUPPORT
+%define SNESAPU_INC
+%define SHVC_SOUND_SUPPORT
 
 ;===================================================================================================
 ;Equates
 
-DSP_ALIGN		EQU	128											;DSP Object Locate Alignment
+DSP_ALIGN       EQU 128                                         ;DSP Object Locate Alignment
