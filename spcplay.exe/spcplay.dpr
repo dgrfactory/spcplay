@@ -6650,7 +6650,7 @@ begin
                 StrData.dwData[0] := $54; // 'T'
                 UpdateNumWrite(X + 15, 1);
                 UpdateNumWrite(X + 16, IntToHex(StrData, DspVoice.CurrentEnvelope, 2));
-            end
+            end;
         end;
         INFO_CHANNEL_3: for I := 0 to 7 do begin
             // 各チャンネル情報を描画
@@ -7953,7 +7953,7 @@ begin
             1: ListSave(lpFile, bShift);
             2: WaveSave(lpFile, bShift, false);
             3: SPCSave(lpFile, bShift);
-        end
+        end;
     end;
     // バッファを解放
     FreeMem(lpFile, 1024);
@@ -8936,8 +8936,8 @@ begin
     cmSetupTime.SetMenuCheck(MENU_SETUP_TIME_DISABLE, not Option.bPlayTime);
     cmSetupTime.SetMenuCheck(MENU_SETUP_TIME_ID666, Option.bPlayTime and not Option.bPlayDefault);
     cmSetupTime.SetMenuCheck(MENU_SETUP_TIME_DEFAULT, Option.bPlayTime and Option.bPlayDefault);
-    cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_START, Status.bPlay);
-    cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_LIMIT, Status.bPlay);
+    cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_START, Status.bPlay and Option.bPlayTime);
+    cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_LIMIT, Status.bPlay and Option.bPlayTime);
     cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_RESET, Status.bOpen and Status.bTimeRepeat);
     for I := 0 to MENU_SETUP_ORDER_SIZE - 1 do cmSetupOrder.SetMenuCheck(MENU_SETUP_ORDER_BASE + I, Option.dwPlayOrder = longword(I));
     for I := 0 to MENU_SETUP_INFO_SIZE - 1 do cmSetupInfo.SetMenuCheck(MENU_SETUP_INFO_BASE + I, Option.dwInfo = longword(I));
@@ -9567,8 +9567,8 @@ end;
 
 procedure ResetTimeMark();
 begin
-    // SPC が開かれていない場合は終了
-    if not Status.bOpen then exit;
+    // SPC が開かれていない、または演奏時間が無効の場合は終了
+    if not Status.bOpen or not Option.bPlayTime then exit;
     // リピート開始位置、リピート終了位置を初期化
     Status.dwStartTime := 0;
     Status.dwLimitTime := Status.dwDefaultTimeout;
@@ -9581,25 +9581,31 @@ end;
 
 procedure ChangeSPCTime();
 var
+    bPlayTime: longbool;
     bPlayDefault: longbool;
 begin
     // 現在の設定値を記録
+    bPlayTime := Option.bPlayTime;
     bPlayDefault := Option.bPlayDefault;
     // フラグを設定
     Option.bPlayTime := wParam <> MENU_SETUP_TIME_DISABLE;
     if Option.bPlayTime then Option.bPlayDefault := wParam = MENU_SETUP_TIME_DEFAULT;
     // 演奏時間、フェードアウト時間を設定
     SetSPCTime();
+    // 設定が変更された場合は、リピート開始位置、リピート終了位置を初期化
+    if bPlayTime <> Option.bPlayTime or bPlayDefault <> Option.bPlayDefault then begin
+        Status.dwStartTime := 0;
+        Status.dwLimitTime := Status.dwDefaultTimeout;
+        if bPlayTime <> Option.bPlayTime then Option.dwPlayOrder := Status.dwPlayOrder;
+    end;
     // インジケータを再描画
     cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
-    // 開始位置、終了位置をリセット
-    if bPlayDefault <> Option.bPlayDefault then ResetTimeMark();
 end;
 
 procedure SetStartTimeMark();
 begin
-    // SPC が開かれていない、演奏停止中、またはタイムアウトが発生した場合は終了
-    if not Status.bOpen or not Status.bPlay or not longbool(Status.dwNextTimeout) then exit;
+    // SPC が開かれていない、演奏停止中、演奏時間が無効、またはタイムアウトが発生した場合は終了
+    if not Status.bOpen or not Status.bPlay or not Option.bPlayTime or not longbool(Status.dwNextTimeout) then exit;
     // 現在の場所をリピート開始位置に設定
     Status.dwStartTime := Wave.Apu[Wave.dwIndex].T64Count;
     if Status.dwLimitTime < Status.dwStartTime then Status.dwLimitTime := Status.dwStartTime;
@@ -9612,8 +9618,8 @@ end;
 
 procedure SetLimitTimeMark();
 begin
-    // SPC が開かれていない、演奏停止中、またはタイムアウトが発生した場合は終了
-    if not Status.bOpen or not Status.bPlay or not longbool(Status.dwNextTimeout) then exit;
+    // SPC が開かれていない、演奏停止中、演奏時間が無効、またはタイムアウトが発生した場合は終了
+    if not Status.bOpen or not Status.bPlay or not Option.bPlayTime or not longbool(Status.dwNextTimeout) then exit;
     // 現在の場所をリピート終了位置に設定
     Status.dwLimitTime := Wave.Apu[Wave.dwIndex].T64Count;
     if Status.dwStartTime > Status.dwLimitTime then Status.dwStartTime := Status.dwLimitTime;
