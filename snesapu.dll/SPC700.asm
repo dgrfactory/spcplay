@@ -22,7 +22,7 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2008 Alpha-II Productions
-;                                                   Copyright (C) 2003-2016 degrade-factory
+;                                                   Copyright (C) 2003-2019 degrade-factory
 ;===================================================================================================
 
 CPU		386
@@ -227,7 +227,8 @@ SECTION .bss ALIGN=64
 %endif
 ; ----- degrade-factory code [END] -----
 
-; ----- degrade-factory code [2015/07/11] -----
+; ----- degrade-factory code [2019/07/07] -----
+	t64DSP		resd	1														;Last cycles of DSP emulation
 	spcVarEP	resd	1														;Endpoint of SPC700.asm variable
 ; ----- degrade-factory code [END] -----
 
@@ -324,7 +325,7 @@ USES ECX,EDX,ESI,EDI
 	Rep		StoSD
 
 	;Reset Function Registers ----------------
-; ----- degrade-factory code [2015/02/28] -----
+; ----- degrade-factory code [2019/07/06] -----
 	Mov		EAX,[pAPURAM]
 	Mov		AX,0F0h
 	Mov		byte [EAX+0],0Ah													;Test gets set to 0Ah
@@ -356,6 +357,7 @@ USES ECX,EDX,ESI,EDI
 	Mov		dword [t64kHz],T64_CYC-1
 	Mov		[t64Cnt],ECX
 	Mov		[portMod],CL
+	Mov		dword [t64DSP],-1
 
 	;Reset Script700 works -------------------
 	Mov		[scr700stp],CL
@@ -1625,7 +1627,7 @@ SPCFetch:																		;(All opcode handlers return to this point)
 	;be subtracted from the total number to be emulated (clkTotal) and used to update the timers.
 
 SPCTimers:
-; ----- degrade-factory code [2015/02/28] -----
+; ----- degrade-factory code [2019/07/07] -----
 	Mov		EDX,[clkExec]														;EDX = Actual number of clock cycles emulated
 	Sub		EDX,[clkLeft]
 
@@ -1682,9 +1684,6 @@ SPCTimers:
 %endif
 %endif
 		.NoC2Inc:
-%if DSPINTEG
-		Call	CatchKOn														;Emulate the KON delay processing of DSP
-%endif
 	.NoT64Inc:
 	Sub		[t8kHz],EDX
 	JNS		short .NoT8Inc
@@ -1724,6 +1723,20 @@ SPCTimers:
 %endif
 		.NoC0Inc:
 	.NoT8Inc:
+
+%if DSPINTEG
+	Mov		EBX,[t64Cnt]
+	Cmp		[t64DSP],EBX														;Emulate DSP every 1Ts
+	JE		short .NoDSP
+		Mov		[t64DSP],EBX
+		Call	CatchUp
+
+	And		EBX,1																;Emulate the KON/KOFF processing of DSP every 2Ts
+	JNZ		short .NoDSP
+		Call	CatchKOn
+
+	.NoDSP:
+%endif
 
 	;After the timers are updated, subtract the number of cycles emulated from the total number
 	;passed in.  If we've emulated all clock cycles requested by the caller, then quit.  Otherwise
@@ -1868,6 +1881,9 @@ CntHack:
 
 		Add		[t64Cnt],EAX													;Add pulses to 64kHz counter
 		Sub		[t2Step],AL														;Subtract pulses from up counter 2
+; ----- degrade-factory code [2019/07/07] -----
+		Mov		dword [t64DSP],-1
+; ----- degrade-factory code [END] -----
 
 		Mov		EDX,EAX
 		Mov		ECX,EAX
@@ -2981,24 +2997,14 @@ Ret
 	Bxx		CF,1
 %endmacro
 
-;BEQ rel - Branch if Equal (JE/JZ)
-%macro OpcF0 0
-	Bxx		Z,1
-%endmacro
-
-;BMI rel - Branch if Minus (JS)
-%macro Opc30 0
-	Bxx		N,1
-%endmacro
-
 ;BNE rel - Branch if Not Equal (JNE/JNZ)
 %macro OpcD0 0
 	Bxx		Z,0
 %endmacro
 
-;BPL rel - Branch if Plus (JNS)
-%macro Opc10 0
-	Bxx		N,0
+;BEQ rel - Branch if Equal (JE/JZ)
+%macro OpcF0 0
+	Bxx		Z,1
 %endmacro
 
 ;BVC rel - Branch if Overflow Clear (JNO)
@@ -3009,6 +3015,16 @@ Ret
 ;BVS rel - Branch if Overflow Set (JO)
 %macro Opc70 0
 	Bxx		V,1
+%endmacro
+
+;BPL rel - Branch if Plus (JNS)
+%macro Opc10 0
+	Bxx		N,0
+%endmacro
+
+;BMI rel - Branch if Minus (JS)
+%macro Opc30 0
+	Bxx		N,1
 %endmacro
 
 

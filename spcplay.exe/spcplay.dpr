@@ -2325,7 +2325,7 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.17.8 (build 6657)';
+    SPCPLAY_VERSION = '2.17.8 (build 6666)';
     SNESAPU_VERSION = $21768;
     APPLINK_VERSION = $02170500;
 
