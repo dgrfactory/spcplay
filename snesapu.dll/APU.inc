@@ -19,7 +19,7 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 2003-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2015 degrade-factory
+;                                                   Copyright (C) 2003-2019 degrade-factory
 ;===================================================================================================
 
 %define APU_INC
@@ -27,7 +27,7 @@
 ;===================================================================================================
 ;Options
 
-; ----- degrade-factory code [2015/11/23] -----
+; ----- degrade-factory code [2019/07/07] -----
 CPU_CYC		EQU	24												;CPU clock divisor
 																;10 = 2.457MHz
 																;12 = 2.048MHz
@@ -42,8 +42,8 @@ SPEED		EQU	0												;Enable speed hacks for counter reads and SLEEP
 																;			If unused Script700, set the flag to "1" in order to run faster emulation.
 IPLW		EQU	1												;Enables the IPL Writable flag in register F1
 
-CNTBK		EQU	1												;Break SPC700/Update DSP if a counter increases
-DSPBK		EQU	1												;Break SPC700/Update DSP if register F3 is read
+CNTBK		EQU	0												;Break SPC700/Update DSP if a counter increases
+DSPBK		EQU	0												;Break SPC700/Update DSP if register F3 is read
 
 VMETERM		EQU	1												;Monitor main output level (for APR)
 VMETERV		EQU	1												;Monitor levels of each voice (for visualization)

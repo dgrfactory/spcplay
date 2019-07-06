@@ -19,7 +19,7 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2016 degrade-factory
+;                                                   Copyright (C) 2003-2019 degrade-factory
 ;===================================================================================================
 
 %define DSP_INC
@@ -70,7 +70,7 @@ MFLG_KOFF	EQU	04h												;Voice is in the process of keying off
 MFLG_OFF	EQU	08h												;Voice is currently inactive
 MFLG_END	EQU	10h												;End block was just played
 
-; ----- degrade-factory code [2016/08/20] -----
+; ----- degrade-factory code [2019/07/07] -----
 ;Script700 DSP flags
 S700_MUTE	EQU	01h												;Mute voice
 S700_CHANGE	EQU	02h												;Change sound source (note change)
@@ -84,9 +84,7 @@ S700_ECHO_L	EQU	02h												;Echo volume (left)
 S700_ECHO_R	EQU	03h												;Echo volume (right)
 
 ;DSP KON delay emulation time
-KON_DELAY	EQU	48												;Delay time from writing KON to output
-KON_CHKOFF	EQU	28												;Delay time from written checking KOFF
-KON_SAVEENV	EQU	KON_DELAY-4										;Delay time from writing save envelope to output
+KON_DELAY	EQU	20												;Delay time from writing KON to output
 ; ----- degrade-factory code [END] -----
 
 

@@ -25,13 +25,13 @@
 *                                                 Copyright (C) 2003-2016 degrade-factory          *
 ***************************************************************************************************/
 
-#ifndef	__INC_SPC700
-#define	__INC_SPC700
+#ifndef __INC_SPC700
+#define __INC_SPC700
 
 //**************************************************************************************************
 // Defines
 
-#define	APU_CLK		24576000					//Number of clock cycles in one second
+#define APU_CLK     24576000                    //Number of clock cycles in one second
 
 //SPC700 debugging options ---------------------
 
@@ -39,7 +39,7 @@
 //
 //Writes to the DSP data register (0F3h) will have no effect
 
-#define	SPC_NODSP	0x8
+#define SPC_NODSP   0x8
 
 //Trace execution:
 //
@@ -48,7 +48,7 @@
 //
 //This flag only works if SPC700.Asm is compiled with the SA_DEBUG option enabled (see APU.h).
 
-#define	SPC_TRACE	0x10
+#define SPC_TRACE   0x10
 
 //Return immediately from EmuSPC:
 //
@@ -58,7 +58,7 @@
 //This only returns from EmuSPC, not from EmuAPU.  If you need to terminate DSP emulation as well,
 // specify SPC_HALT in addition to SPC_RETURN.
 
-#define	SPC_RETURN	0x1
+#define SPC_RETURN  0x1
 
 //Halt APU:
 //
@@ -68,7 +68,7 @@
 // Subsequent calls to EmuDSP will generate silence.  This way emulation can be halted in the
 // middle of EmuAPU without affecting the size of the output buffer.
 
-#define	SPC_HALT	0x2
+#define SPC_HALT    0x2
 
 // ----- degrade-factory code [2016/08/20] -----
 //Pause DSP Emulation:
@@ -78,7 +78,7 @@
 //When debugging a program of SPC700 which influences a DSP, it's necessary to stop both of SPC700
 // and DSP.  Therefore it's appropriate to use this flag with SPC_HALT.
 
-#define	DSP_PAUSE	0x20
+#define DSP_PAUSE   0x20
 // ----- degrade-factory code [END] -----
 
 
@@ -87,14 +87,14 @@
 
 typedef struct SPCFlags
 {
-	u8		c:1;								//Carry
-	u8		z:1;								//Zero
-	u8		i:1;								//Interrupts Enabled (not used in the SNES)
-	u8		h:1;								//Half-Carry (auxiliary)
-	u8		b:1;								//Software Break
-	u8		p:1;								//Direct Page Selector
-	u8		v:1;								//Overflow
-	u8		n:1;								//Negative (sign)
+    u8      c:1;                                //Carry
+    u8      z:1;                                //Zero
+    u8      i:1;                                //Interrupts Enabled (not used in the SNES)
+    u8      h:1;                                //Half-Carry (auxiliary)
+    u8      b:1;                                //Software Break
+    u8      p:1;                                //Direct Page Selector
+    u8      v:1;                                //Overflow
+    u8      n:1;                                //Negative (sign)
 } SPCFlags;
 
 
@@ -126,21 +126,21 @@ typedef void SPCDebug(volatile u8 *pc, volatile u16 ya, volatile u8 x, volatile 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Private Declarations
 
-#ifndef	SNESAPU_DLL
+#ifndef SNESAPU_DLL
 
-#ifdef	__cplusplus
-extern	"C"	u8	extraRAM[64];					//RAM used for storage if ROM reading is enabled
-extern	"C"	u8	outPort[4];						//Four out ports
-extern	"C"	u32	t64Cnt;							//Counter increased every 64kHz
+#ifdef  __cplusplus
+extern  "C" u8  extraRAM[64];                   //RAM used for storage if ROM reading is enabled
+extern  "C" u8  outPort[4];                     //Four out ports
+extern  "C" u32 t64Cnt;                         //Counter increased every 64kHz
 // ----- degrade-factory code [2006/08/01] -----
-extern	"C"	u32 pSPCReg;						//Pointer to SPC700 Register Buffer
+extern  "C" u32 pSPCReg;                        //Pointer to SPC700 Register Buffer
 // ----- degrade-factory code [END] -----
 #else
-extern	u8	extraRAM[64];
-extern	u8	outPort[4];
-extern	u32	t64Cnt;
+extern  u8  extraRAM[64];
+extern  u8  outPort[4];
+extern  u32 t64Cnt;
 // ----- degrade-factory code [2006/08/01] -----
-extern	u32	pSPCReg;
+extern  u32 pSPCReg;
 // ----- degrade-factory code [END] -----
 #endif
 
@@ -148,8 +148,8 @@ extern	u32	pSPCReg;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // External Functions
 
-#ifdef	__cplusplus
-extern	"C" {
+#ifdef  __cplusplus
+extern  "C" {
 #endif
 
 // ----- degrade-factory code [2008/01/08] -----
@@ -295,9 +295,9 @@ s32 EmuSPC(s32 cyc);
 // ----- degrade-factory code [END] -----
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	//SNESAPU_DLL
-#endif	//__INC_SPC700
+#endif  //SNESAPU_DLL
+#endif  //__INC_SPC700
