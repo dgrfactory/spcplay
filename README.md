@@ -44,5 +44,5 @@ SNES SPC700 Player をコマンドラインで操作するアプリです。
 コンパイルに必要なソフト： dcc32 (Delphi6 UP2 RTL3)
 
 ```
-dcc32 spcplay.dpr
+dcc32 spccmd.dpr
 ```

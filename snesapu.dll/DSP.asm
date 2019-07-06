@@ -19,7 +19,7 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2016 degrade-factory
+;                                                   Copyright (C) 2003-2019 degrade-factory
 ;===================================================================================================
 
 CPU		386
@@ -265,7 +265,7 @@ SECTION .bss ALIGN=64
 ;Don't touch!  All arrays are carefully aligned on large boundaries to facillitate easier indexing
 ;and better cache utilization.
 
-; ----- degrade-factory code [2016/08/20] -----
+; ----- degrade-factory code [2019/07/07] -----
 	;DSP Core ---------------------------- [0]
 	mix			resb	1024													;<VoiceMix> Mixing settings for each voice
 	dsp			resb	128														;<DSPRAM> DSP registers
@@ -373,9 +373,9 @@ SECTION .bss ALIGN=64
 	dspNoiseF	resb	1														;DSP noise flags (force)
 	dspMute		resb	1														;DSP mute flags
 	disFlag		resb	1														;DSP disabled channel flags
-	konWk		resb	1														;KON flags
+	konRsv		resb	1														;Reserved KON flags
+	konRun		resb	1														;Running KON process flags
 	envFlag		resb	1														;DSP envelope flags
-				resb	1
 	konCnt		resd	1														;t64 count of set KON/KOFF
 
 	;BASS BOOST ----------------------- [4680]
@@ -940,7 +940,7 @@ USES ECX,EBX,EDI
 	Mov		[outDec],EAX
 ; ----- degrade-factory code [2016/08/20] -----
 	Mov		[dspPMod],EAX														;Clear dspPMod, dspNoise, dspNoiseF, dspMute
-	Mov		[disFlag],EAX														;Clear disFlag, konWk, envFlag
+	Mov		[disFlag],EAX														;Clear disFlag, konRsv, konRun, envFlag
 	Mov		dword [konCnt],-2
 ; ----- degrade-factory code [END] -----
 	Mov		dword [songLen],-1
@@ -1523,10 +1523,14 @@ USES ECX,EDI
 		;Turn off all voices ------------------
 		Mov		AL,[dsp+kon]													;Mark all playing voices as ended
 		Mov		[dsp+endx],AL
+
 		XOr		EAX,EAX
 		Mov		[dsp+kon],AL													;Reset key registers
 		Mov		[dsp+kof],AL
 		Mov		[voiceMix],AL
+; ----- degrade-factory code [2019/07/07] -----
+		Mov		[konRsv],AL
+; ----- degrade-factory code [END] -----
 
 		Mov		CL,8
 		Mov		EDI,mix
@@ -2425,12 +2429,14 @@ DSPInC:
 	Test	[EBX+mix+mFlg],AH													;Is the voice inactive?
 	JNZ		short DSPDone														;	Yes, Don't bother updating
 
-%if DSPINTEG
+; ----- degrade-factory code [2019/07/07] -----
+%if DSPBK && DSPINTEG
 	Test	CL,CL																;If write was from SPC700, emulate DSP before
 	JZ		short .NoOutput														; processing new register data
 		Call	CatchUp
 	.NoOutput:
 %endif
+; ----- degrade-factory code [END] -----
 
 	Jmp		EDX
 
@@ -2447,14 +2453,14 @@ ENDP
 ;End block decoded
 
 REndX:
-%if DSPINTEG
+; ----- degrade-factory code [2019/07/07] -----
+%if DSPBK && DSPINTEG
 	Test	CL,CL																;If write was from SPC700, emulate DSP before
 	JZ		short .NoOutput														; processing new register data
 		Call	CatchUp
 	.NoOutput:
 %endif
 
-; ----- degrade-factory code [2007/09/25] -----
 	XOr		EAX,EAX
 	Or		AL,[dsp+endx]
 	Mov		[dsp+endx],AH														;Reset the ENDX register
@@ -2466,55 +2472,17 @@ REndX:
 ;Key Off
 
 RKOff:
-%if DSPINTEG
+; ----- degrade-factory code [2019/07/07] -----
+%if DSPBK && DSPINTEG
 	Test	CL,CL																;If write was from SPC700, emulate DSP before
 	JZ		short .NoOutput														; processing new register data
 		Call	CatchUp
 	.NoOutput:
 %endif
 
-; ----- degrade-factory code [2016/08/20] -----
 	MovZX	EAX,AL
 	Mov		[dsp+kof],AL
-	Test	AL,AL
-	JZ		short .Done
-
-	Not		AL
-	And		[konWk],AL															;Cancel if is already keyed on
-	Not		AL
-
-	Mov		EDX,[31*4+rateTab]
-	Mov		EBX,mix
-	Mov		AH,1
-
-	.Next:
-		Test	AL,AH															;Has the current voice been flagged to be keyed off?
-		JZ		short .Skip														;	No, do nothing
-
-		Test	[voiceMix],AH													;Is voice currently playing?
-		JZ		short .Reset													;	No, do nothing
-
-		Test	byte [EBX+mFlg],MFLG_KOFF										;Is already voice in key off mode?
-		JNZ		short .Reset													;	Yes, do nothing
-			Mov		byte [EBX+eRIdx],31											;Place envelope in release mode
-			Mov		[EBX+eRate],EDX
-			Mov		[EBX+eCnt],EDX
-			Mov		dword [EBX+eAdj],A_KOFF
-			Mov		dword [EBX+eDest],D_MIN
-			Mov		byte [EBX+eMode],E_REL
-			Or		byte [EBX+mFlg],MFLG_KOFF									;Flag voice as keying off
-
-		.Reset:
-		Mov		byte [EBX+vRsv],0												;Reset ADSR/Gain changed flag
-		Mov		byte [EBX+mKOn],0												;Reset delay time
-
-		.Skip:
-		Sub		EBX,-80h
-
-	Add		AH,AH
-	JNZ		short .Next
-
-	.Done:
+;	Mov		[konRsv],AH
 	Ret
 ; ----- degrade-factory code [END] -----
 
@@ -2522,65 +2490,17 @@ RKOff:
 ;Key On
 
 RKOn:
-%if DSPINTEG
+; ----- degrade-factory code [2019/07/07] -----
+%if DSPBK && DSPINTEG
 	Test	CL,CL																;If write was from SPC700, emulate DSP before
 	JZ		short .NoOutput														; processing new register data
 		Call	CatchUp
 	.NoOutput:
 %endif
 
-; ----- degrade-factory code [2016/08/20] -----
 	MovZX	EAX,AL
 	Mov		[dsp+kon],AL
-	Test	AL,AL
-	JZ		short .Done
-
-	Mov		EBX,[outCnt]
-	Sub		EBX,[konCnt]
-	And		EBX,~1																;Was KON written in multiple times within 2Ts?
-	JZ		short .Done															;	Yes
-
-	Mov		EBX,[outCnt]
-	Mov		[konCnt],EBX
-
-	Mov		AH,AL
-	Not		AH
-	Or		AH,[konWk]
-	And		[dsp+endx],AH														;If KON has been started, clear ENDX flags
-	And		[voiceMix],AH														;Don't include voice in mixing process
-
-	Or		[konWk],AL
-
-	Push	ESI
-
-	Mov		EBX,mix
-	Mov		ESI,dsp
-	XOr		EDX,EDX
-	Mov		AH,1
-
-	.Next:
-		Test	AL,AH															;Has the current voice been flagged to be keyed on?
-		JZ		short .Skip														;	No, do nothing
-
-		Test	byte [EBX+mKOn],-1												;Is already voice in key on mode?
-		JNZ		short .Skip														;	Yes, do nothing
-			And		byte [EBX+mFlg],MFLG_USER									;Leave voice muted, noise
-			Mov		byte [EBX+mKOn],KON_DELAY									;Set delay time from writing KON to output
-			Mov		[EBX+eVal],EDX												;Reset envelope and wave height
-			Mov		[EBX+mOut],EDX
-			Mov		[ESI+envx],DL
-			Mov		[ESI+outx],DL
-
-		.Skip:
-		Add		ESI,10h
-		Sub		EBX,-80h
-
-	Add		AH,AH
-	JNZ		short .Next
-
-	Pop		ESI
-
-	.Done:
+	Mov		[konRsv],AL
 	Ret
 ; ----- degrade-factory code [END] -----
 
@@ -3598,54 +3518,111 @@ PROC CatchUp
 ENDP
 
 
-; ----- degrade-factory code [2016/08/20] -----
+; ----- degrade-factory code [2019/07/07] -----
 ;===================================================================================================
-;Emulate the KON delay processing of DSP
+;Emulate the KON/KOFF delay processing of DSP
 
 PROC CatchKOn
 
-	Mov		BL,[konWk]															;Has KON flags?
-	Test	BL,BL
-	JZ		.Done
+	Push	ECX
 
-	Push	EAX,ECX,EDX,ESI														;Start Key ON
-	Mov		CL,BL
+	;KOff process ----------------------
+	Mov		CL,[dsp+kof]
+	Test	CL,CL
+	JZ		short .DoneKOff
+
+	Push	EAX,EDX,ESI
+
+	Mov		CH,1
+	Mov		EBX,mix
+	Mov		ESI,dsp
+	Mov		EDX,[31*4+rateTab]
+	XOr		EAX,EAX
+
+	.NextKOff:
+		Test	CL,CH
+		JZ		short .SkipKOff
+
+		Test	[voiceMix],CH													;Is voice currently playing?
+		JZ		short .SkipKOff													;	No, do nothing
+
+		Test	byte [EBX+mFlg],MFLG_KOFF										;Is already voice in key off mode?
+		JNZ		short .SkipKOff													;	Yes, do nothing
+
+			Mov		byte [EBX+eRIdx],31											;Place envelope in release mode
+			Mov		[EBX+eRate],EDX
+			Mov		[EBX+eCnt],EDX
+			Mov		dword [EBX+eAdj],A_KOFF
+			Mov		dword [EBX+eDest],D_MIN
+			Mov		byte [EBX+eMode],E_REL
+			Or		byte [EBX+mFlg],MFLG_KOFF									;Flag voice as keying off
+			Mov		[EBX+vRsv],AL												;Reset ADSR/Gain changed flag
+			Mov		[EBX+mKOn],AL												;Reset delay time
+
+		.SkipKOff:
+		Add		ESI,10h
+		Sub		EBX,-80h
+
+	Add		CH,CH
+	JNZ		.NextKOff
+
+	Pop		ESI,EDX,EAX
+
+	.DoneKOff:
+
+	;KOn process -----------------------
+	Mov		CL,[konRsv]
+	Or		CL,[konRun]
+	JZ		.DoneKOn
+
+	Push	EAX,EDX,ESI
+
+	Mov		CL,[konRsv]
 	Mov		CH,1
 	Mov		EBX,mix
 	Mov		ESI,dsp
 
-	.Reset:
-		Test	CL,CH															;Has the current voice been flagged to be keyed on?
-		JZ		.Skip															;	No
+	.NextKOn:
+		Test	byte [EBX+mKOn],-1												;Is already voice in key on mode?
+		JNZ		short .CheckKOff												;	Yes
 
-		Cmp		byte [EBX+mKOn],KON_CHKOFF										;Did time for checking KOFF pass after KON had been written?
-		JNE		short .SkipOff													;	No
-			Mov		DL,[dsp+kof]												;Check KOFF
-			And		DL,CH
+			Test	CL,CH
+			JZ		.SkipKOn
 
-			Not		DL															;If KOFF is set, KON is cleared
-			And		[konWk],DL
-			Not		DL
+			XOr		EDX,EDX
+			And		byte [EBX+mFlg],MFLG_USER									;Leave voice muted, noise
+			Mov		byte [EBX+mKOn],KON_DELAY									;Set delay time from writing KON to output
+			Mov		[EBX+eVal],EDX												;Reset envelope and wave height
+			Mov		[EBX+mOut],EDX
+			Mov		[ESI+envx],DL
+			Mov		[ESI+outx],DL
+			Mov		[EBX+vRsv],DL												;Reset ADSR/Gain changed flag
 
-			Test	DL,DL														;If KON was cleared, skip KON routine
-			JNZ		.Skip
-		.SkipOff:
-
-		Cmp		byte [EBX+mKOn],KON_SAVEENV										;Did time for saved envelope pass after KON had been written?
-		JNE		short .SkipEnv													;	No
 			Mov		DX,[ESI+adsr]												;Save ADSR parameters
 			Mov		[EBX+vAdsr],DX
 			Mov		DL,[ESI+gain]												;Save Gain parameters
 			Mov		[EBX+vGain],DL
-			Mov		byte [EBX+vRsv],0											;Reset ADSR/Gain changed flag
-		.SkipEnv:
 
+			Or		[konRun],CH
+			Jmp		.SkipKOn
+
+		.CheckKOff:
+		Test	[dsp+kof],CH													;Is KOFF still written?
+		JZ		short .StartKON													;	Yes
+
+			XOr		EDX,EDX
+			Or		byte [EBX+mFlg],MFLG_KOFF									;Flag voice as keying off
+			Mov		[EBX+mKOn],DL												;Reset delay time
+
+			Not		CH
+			And		[konRun],CH													;Cancel KON
+			Not		CH
+
+			Jmp		.SkipKOn
+
+		.StartKON:
 		Dec		byte [EBX+mKOn]													;Did time for enabled voice pass after KON had been written?
-		JNZ		.Skip															;	No
-
-			Mov		AH,CH														;Clear KON flags
-			Not		AH
-			And		[konWk],AH
+		JNZ		.SkipKOn														;	No
 
 			And		byte [EBX+mFlg],MFLG_USER									;Leave voice muted, noise
 
@@ -3698,16 +3675,25 @@ PROC CatchKOn
 			Mov		[ESI+gain],DL
 			Or		[voiceMix],CH												;Mark voice as being on internally
 
-		.Skip:
+			Not		CH
+			And		[konRun],CH
+			And		[dsp+endx],CH												;Reset the ENDX register
+			Not		CH
+
+		.SkipKOn:
 		Add		ESI,10h
 		Sub		EBX,-80h
 
 	Add		CH,CH
-	JNZ		.Reset
+	JNZ		.NextKOn
 
-	Pop		ESI,EDX,ECX,EAX
+	Pop		ESI,EDX,EAX
 
-	.Done:
+	.DoneKOn:
+	XOr		ECX,ECX
+  	Mov		[konRsv],CL
+
+	Pop		ECX
 
 ENDP
 ; ----- degrade-factory code [END] -----

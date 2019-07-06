@@ -21,7 +21,7 @@
 //  Free Software Foundation, Inc.
 //  59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
-//  * GNU GPL v2.0 document is in GPL2.txt file.
+//  * GNU GPL v2.0 document is in LICENSE file.
 //
 //
 //  +++ このソース コードは GPL です +++
@@ -41,10 +41,10 @@
 //  宛先 : Free Software Foundation, Inc.
 //         59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
-//  ※ GNU 一般公衆利用許諾契約書バージョン 2 のドキュメントは、付属の GPL2.txt にあります。
+//  ※ GNU 一般公衆利用許諾契約書バージョン 2 のドキュメントは、付属の LICENSE にあります。
 //
 //
-//  Copyright (C) 2003-2016 degrade-factory. All rights reserved.
+//  Copyright (C) 2003-2019 degrade-factory. All rights reserved.
 //
 // =================================================================================================
 program spcplay;
@@ -2325,8 +2325,8 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.17.7 (build 5616)';
-    SNESAPU_VERSION = $21767;
+    SPCPLAY_VERSION = '2.17.8 (build 6666)';
+    SNESAPU_VERSION = $21768;
     APPLINK_VERSION = $02170500;
 
     CBE_DSPREG = $1;
@@ -2841,8 +2841,9 @@ const
     MENU_SETUP_OPTION_BASE = 500; // +10
     MENU_SETUP_OPTION_VALUE: array[0..MENU_SETUP_OPTION_SIZE - 1] of longword = (OPTION_ANALOG, OPTION_BASSBOOST, OPTION_OLDSMP, OPTION_REVERSE, OPTION_SURROUND, OPTION_NOSURROUND, OPTION_NOECHO, OPTION_NOPMOD, OPTION_NOPREAD, OPTION_NOFIR, OPTION_NOENV, OPTION_NONOISE, OPTION_ECHOMEMORY);
     MENU_SETUP_TIME = 60;
-    MENU_SETUP_TIME_ENABLE = 600;
-    MENU_SETUP_TIME_DEFAULT = 601;
+    MENU_SETUP_TIME_DISABLE = 600;
+    MENU_SETUP_TIME_ID666 = 601;
+    MENU_SETUP_TIME_DEFAULT = 602;
     MENU_SETUP_TIME_START = 605;
     MENU_SETUP_TIME_LIMIT = 606;
     MENU_SETUP_TIME_RESET = 607;
@@ -2987,8 +2988,9 @@ const
     STR_MENU_SETUP_SWITCH_CHANNEL: array[0..1] of pchar = ('チャンネル ', 'Channel ');
     STR_MENU_SETUP_OPTION: array[0..1] of pchar = ('拡張設定(&X)', 'E&xpansion');
     STR_MENU_SETUP_TIME: array[0..1] of pchar = ('演奏時間(&T)', 'Play &Time');
-    STR_MENU_SETUP_TIME_ENABLE: array[0..1] of pchar = ('有効(&E)', '&Enable');
-    STR_MENU_SETUP_TIME_DEFAULT: array[0..1] of pchar = ('常にデフォルト値を使用(&D)', 'Always Use &Default');
+    STR_MENU_SETUP_TIME_DISABLE: array[0..1] of pchar = ('無効(&D)', '&Disable');
+    STR_MENU_SETUP_TIME_ID666: array[0..1] of pchar = ('&ID666 設定値を使用', 'Enable by &ID666 Time');
+    STR_MENU_SETUP_TIME_DEFAULT: array[0..1] of pchar = ('デフォルト値を使用(&F)', 'Enable by De&fault Time');
     STR_MENU_SETUP_TIME_START: array[0..1] of pchar = ('開始位置を設定(&S)', 'Set &Start Mark');
     STR_MENU_SETUP_TIME_LIMIT: array[0..1] of pchar = ('終了位置を設定(&L)', 'Set &Limit Mark');
     STR_MENU_SETUP_TIME_RESET: array[0..1] of pchar = ('位置をリセット(&R)', '&Reset Mark');
@@ -3032,8 +3034,8 @@ const
         ('標準(&N)', '過去の &Sound Blaster 互換', '過去の &ZSNES, Snes9x 互換'),
         ('&Normal', 'OLD &Sound Blaster Card', 'OLD &ZSNES, Snes9x'));
     STR_MENU_SETUP_OPTION_SUB: array[0..1] of array[0..MENU_SETUP_OPTION_SIZE - 1] of pchar = (
-        ('ローパス フィルタ(&L)', '&BASS BOOST', '過去の &ADPCM 互換', '左右反転(&R)', '逆位相サラウンド強制(&S)', 'サラウンド無効(&U)', 'エコー無効(&E)', 'ピッチ モジュレーション無効(&P)', 'ピッチ ベンド無効(&I)', '&FIR フィルタ無効', 'エンベロープ無効(&V)', 'ノイズ無効(&N)', 'エコー作業メモリ書換(&M)'),
-        ('&Low-Pass Filter', '&BASS BOOST', 'OLD &ADPCM Emulation', '&Reverse Stereo', 'Opposite-Phase &Surround', 'Disable S&urround', 'Disable &Echo', 'Disable &Pitch Modulation', 'Disable P&itch Bend', 'Disable &FIR Filter', 'Disable En&velope', 'Disable &Noise', 'Rewrite Echo Work &Memory'));
+        ('ローパス フィルタ(&L)', '&BASS BOOST', '過去の &ADPCM 互換', '左右反転(&R)', '逆位相サラウンド強制(&S)', 'サラウンド無効(&U)', 'エコー無効(&E)', 'ピッチ モジュレーション無効(&P)', 'ピッチ ベンド無効(&I)', '&FIR フィルタ無効', 'エンベロープ無効(&V)', 'ノイズ指定無効(&N)', 'エコー作業メモリ書換(&M)'),
+        ('&Low-Pass Filter', '&BASS BOOST', 'OLD &ADPCM Emulation', '&Reverse Stereo', 'Opposite-Phase &Surround', 'Disable S&urround', 'Disable &Echo', 'Disable &Pitch Modulation', 'Disable P&itch Bend', 'Disable &FIR Filter', 'Disable En&velope', 'Disable &Noise Flags', 'Rewrite Echo Work &Memory'));
     STR_MENU_SETUP_ORDER_SUB: array[0..1] of array[0..MENU_SETUP_ORDER_SIZE - 1] of pchar = (
         ('演奏停止(&S)', '次へ(&N)', '前へ(&P)', 'ランダム(&M)', 'シャッフル(&H)', 'リピート(&R)'),
         ('&Stop', '&Next Item', '&Previous Item', 'Rando&m', 'S&huffle', '&Repeat'));
@@ -3157,6 +3159,7 @@ var
         dwMenuFlags: longword;                                  // 選択されたメニュー情報
         dwLastTime: longword;                                   // 最後の演奏時間
         bTimeRepeat: longbool;                                  // 区間リピートフラグ
+        dwPlayOrder: longword;                                  // 区間リピートする前の演奏順序
         dwStartTime: longword;                                  // リピート開始位置
         dwLastStartTime: longword;                              // 最後のリピート開始位置
         dwLimitTime: longword;                                  // リピート終了位置
@@ -4422,12 +4425,12 @@ end;
 {$IFDEF SPCDEBUG}
 procedure _SPCDebug(pc: longword; ya: word; x: byte; psw: byte; sp: longword; cnt: longword); cdecl;
 begin
-    
+
 end;
 
 procedure _DSPDebug(reg: pointer; val: byte); cdecl;
 begin
-    
+
 end;
 {$ENDIF}
 
@@ -5322,6 +5325,7 @@ begin
     if Status.dwLanguage > 1 then Status.dwLanguage := 0;
     if Option.dwVolumeColor > 3 then Option.dwVolumeColor := 0;
     if Option.dwScale >= 200 then Status.dwScale := 1;
+    Status.dwPlayOrder := Option.dwPlayOrder;
 {$IFNDEF TRY700A}{$IFNDEF TRY700W}
     // SPCPLAY.EXE の破損を確認
     if not longbool(result) then result := CheckImageHash(sEXEPath, 10);
@@ -5553,8 +5557,9 @@ begin
     // 演奏時間メニューを作成
     cmSetupTime := CMENU.Create();
     cmSetupTime.CreatePopupMenu();
-    cmSetupTime.AppendMenu(MENU_SETUP_TIME_ENABLE, STR_MENU_SETUP_TIME_ENABLE[Status.dwLanguage]);
-    cmSetupTime.AppendMenu(MENU_SETUP_TIME_DEFAULT, STR_MENU_SETUP_TIME_DEFAULT[Status.dwLanguage]);
+    cmSetupTime.AppendMenu(MENU_SETUP_TIME_DISABLE, STR_MENU_SETUP_TIME_DISABLE[Status.dwLanguage], true);
+    cmSetupTime.AppendMenu(MENU_SETUP_TIME_ID666, STR_MENU_SETUP_TIME_ID666[Status.dwLanguage], true);
+    cmSetupTime.AppendMenu(MENU_SETUP_TIME_DEFAULT, STR_MENU_SETUP_TIME_DEFAULT[Status.dwLanguage], true);
     cmSetupTime.AppendSeparator();
     cmSetupTime.AppendMenu(MENU_SETUP_TIME_START, STR_MENU_SETUP_TIME_START[Status.dwLanguage]);
     cmSetupTime.AppendMenu(MENU_SETUP_TIME_LIMIT, STR_MENU_SETUP_TIME_LIMIT[Status.dwLanguage]);
@@ -5777,6 +5782,8 @@ begin
     API_SystemParametersInfo(SPI_GETWORKAREA, NULL, @ScreenRect, NULL);
     // カレント パスを取得
     sChPath := Copy(string(Status.lpCurrentPath), 1, Status.lpCurrentSize);
+    // リピート開始位置、リピート終了位置が設定済みの場合は、本来の演奏順序に戻す
+    if Status.bTimeRepeat then Option.dwPlayOrder := Status.dwPlayOrder;
     // INI ファイルを作成
     AssignFile(fsFile, Concat(sChPath, INI_FILE));
     Rewrite(fsFile);
@@ -6643,7 +6650,7 @@ begin
                 StrData.dwData[0] := $54; // 'T'
                 UpdateNumWrite(X + 15, 1);
                 UpdateNumWrite(X + 16, IntToHex(StrData, DspVoice.CurrentEnvelope, 2));
-            end
+            end;
         end;
         INFO_CHANNEL_3: for I := 0 to 7 do begin
             // 各チャンネル情報を描画
@@ -7946,7 +7953,7 @@ begin
             1: ListSave(lpFile, bShift);
             2: WaveSave(lpFile, bShift, false);
             3: SPCSave(lpFile, bShift);
-        end
+        end;
     end;
     // バッファを解放
     FreeMem(lpFile, 1024);
@@ -8926,16 +8933,13 @@ begin
         cmSetupNoise.SetMenuCheck(MENU_SETUP_NOISE_BASE + I, longbool(Option.dwNoise and (1 shl I)));
     end;
     for I := 0 to MENU_SETUP_OPTION_SIZE - 1 do cmSetupOption.SetMenuCheck(MENU_SETUP_OPTION_BASE + I, longbool(Option.dwOption and MENU_SETUP_OPTION_VALUE[I]));
-    cmSetupTime.SetMenuCheck(MENU_SETUP_TIME_ENABLE, Option.bPlayTime);
+    cmSetupTime.SetMenuCheck(MENU_SETUP_TIME_DISABLE, not Option.bPlayTime);
+    cmSetupTime.SetMenuCheck(MENU_SETUP_TIME_ID666, Option.bPlayTime and not Option.bPlayDefault);
     cmSetupTime.SetMenuCheck(MENU_SETUP_TIME_DEFAULT, Option.bPlayTime and Option.bPlayDefault);
-    cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_DEFAULT, Option.bPlayTime);
-    cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_START, Status.bOpen and Status.bTimeRepeat);
-    cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_LIMIT, Status.bOpen and Status.bTimeRepeat);
+    cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_START, Status.bPlay and Option.bPlayTime);
+    cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_LIMIT, Status.bPlay and Option.bPlayTime);
     cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_RESET, Status.bOpen and Status.bTimeRepeat);
-    for I := 0 to MENU_SETUP_ORDER_SIZE - 1 do begin
-        cmSetupOrder.SetMenuCheck(MENU_SETUP_ORDER_BASE + I, Option.bPlayTime and (Option.dwPlayOrder = longword(I)));
-        cmSetupOrder.SetMenuEnable(MENU_SETUP_ORDER_BASE + I, Option.bPlayTime);
-    end;
+    for I := 0 to MENU_SETUP_ORDER_SIZE - 1 do cmSetupOrder.SetMenuCheck(MENU_SETUP_ORDER_BASE + I, Option.dwPlayOrder = longword(I));
     for I := 0 to MENU_SETUP_INFO_SIZE - 1 do cmSetupInfo.SetMenuCheck(MENU_SETUP_INFO_BASE + I, Option.dwInfo = longword(I));
     cmSetupInfo.SetMenuCheck(MENU_SETUP_INFO_RESET, Option.bVolumeReset);
     for I := 0 to MENU_SETUP_PRIORITY_SIZE - 1 do begin
@@ -9561,37 +9565,67 @@ begin
     API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_TIME, NULL);
 end;
 
+procedure ResetTimeMark();
+begin
+    // SPC が開かれていない、または演奏時間が無効の場合は終了
+    if not Status.bOpen or not Option.bPlayTime then exit;
+    // リピート開始位置、リピート終了位置を初期化
+    Status.dwStartTime := 0;
+    Status.dwLimitTime := Status.dwDefaultTimeout;
+    Option.dwPlayOrder := Status.dwPlayOrder;
+    // 区間リピートが無効の場合は終了
+    if not Status.bTimeRepeat then exit;
+    // インジケータを再描画
+    cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
+end;
+
+procedure ChangeSPCTime();
+var
+    bPlayTime: longbool;
+    bPlayDefault: longbool;
+begin
+    // 現在の設定値を記録
+    bPlayTime := Option.bPlayTime;
+    bPlayDefault := Option.bPlayDefault;
+    // フラグを設定
+    Option.bPlayTime := wParam <> MENU_SETUP_TIME_DISABLE;
+    if Option.bPlayTime then Option.bPlayDefault := wParam = MENU_SETUP_TIME_DEFAULT;
+    // 演奏時間、フェードアウト時間を設定
+    SetSPCTime();
+    // 設定が変更された場合は、リピート開始位置、リピート終了位置を初期化
+    if bPlayTime <> Option.bPlayTime or bPlayDefault <> Option.bPlayDefault then begin
+        Status.dwStartTime := 0;
+        Status.dwLimitTime := Status.dwDefaultTimeout;
+        if bPlayTime <> Option.bPlayTime then Option.dwPlayOrder := Status.dwPlayOrder;
+    end;
+    // インジケータを再描画
+    cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
+end;
+
 procedure SetStartTimeMark();
 begin
-    // SPC が開かれていない、区間リピートが無効、またはタイムアウトが発生した場合は終了
-    if not Status.bOpen or not Status.bTimeRepeat or not longbool(Status.dwNextTimeout) then exit;
+    // SPC が開かれていない、演奏停止中、演奏時間が無効、またはタイムアウトが発生した場合は終了
+    if not Status.bOpen or not Status.bPlay or not Option.bPlayTime or not longbool(Status.dwNextTimeout) then exit;
     // 現在の場所をリピート開始位置に設定
-    if Status.bPlay then Status.dwStartTime := Wave.Apu[Wave.dwIndex].T64Count else Status.dwStartTime := 0;
+    Status.dwStartTime := Wave.Apu[Wave.dwIndex].T64Count;
     if Status.dwLimitTime < Status.dwStartTime then Status.dwLimitTime := Status.dwStartTime;
+    // 強制的にリピートモードに設定
+    if not Status.bTimeRepeat then Status.dwPlayOrder := Option.dwPlayOrder;
+    if Option.dwPlayOrder <> PLAY_ORDER_STOP then Option.dwPlayOrder := PLAY_ORDER_REPEAT;
     // インジケータを再描画
     cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
 end;
 
 procedure SetLimitTimeMark();
 begin
-    // SPC が開かれていない、区間リピートが無効、またはタイムアウトが発生した場合は終了
-    if not Status.bOpen or not Status.bTimeRepeat or not longbool(Status.dwNextTimeout) then exit;
+    // SPC が開かれていない、演奏停止中、演奏時間が無効、またはタイムアウトが発生した場合は終了
+    if not Status.bOpen or not Status.bPlay or not Option.bPlayTime or not longbool(Status.dwNextTimeout) then exit;
     // 現在の場所をリピート終了位置に設定
-    if Status.bPlay then Status.dwLimitTime := Wave.Apu[Wave.dwIndex].T64Count else Status.dwLimitTime := Status.dwDefaultTimeout;
+    Status.dwLimitTime := Wave.Apu[Wave.dwIndex].T64Count;
     if Status.dwStartTime > Status.dwLimitTime then Status.dwStartTime := Status.dwLimitTime;
-    // インジケータを再描画
-    cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
-end;
-
-procedure ResetTimeMark();
-begin
-    // SPC が開かれていない場合は終了
-    if not Status.bOpen then exit;
-    // リピート開始位置、リピート終了位置を初期化
-    Status.dwStartTime := 0;
-    Status.dwLimitTime := Status.dwDefaultTimeout;
-    // 区間リピートが無効の場合は終了
-    if not Status.bTimeRepeat then exit;
+    // 強制的にリピートモードに設定
+    if not Status.bTimeRepeat then Status.dwPlayOrder := Option.dwPlayOrder;
+    if Option.dwPlayOrder <> PLAY_ORDER_STOP then Option.dwPlayOrder := PLAY_ORDER_REPEAT;
     // インジケータを再描画
     cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
 end;
@@ -9884,22 +9918,7 @@ begin
                     MENU_SETUP_NOISE_ALL_ENABLE: Option.dwNoise := $FF;
                     MENU_SETUP_NOISE_ALL_DISABLE: Option.dwNoise := $0;
                     MENU_SETUP_NOISE_ALL_XOR: Option.dwNoise := Option.dwNoise xor $FF;
-                    MENU_SETUP_TIME_ENABLE: begin
-                        // フラグを設定
-                        Option.bPlayTime := not Option.bPlayTime;
-                        // 演奏時間、フェードアウト時間を設定
-                        SetSPCTime();
-                        // インジケータを再描画
-                        cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
-                    end;
-                    MENU_SETUP_TIME_DEFAULT: begin
-                        // フラグを設定
-                        Option.bPlayDefault := not Option.bPlayDefault;
-                        // 演奏時間、フェードアウト時間を設定
-                        SetSPCTime();
-                        // 開始位置、終了位置をリセット
-                        ResetTimeMark();
-                    end;
+                    MENU_SETUP_TIME_DISABLE, MENU_SETUP_TIME_ID666, MENU_SETUP_TIME_DEFAULT: ChangeSPCTime();
                     MENU_SETUP_TIME_START: SetStartTimeMark();
                     MENU_SETUP_TIME_LIMIT: SetLimitTimeMark();
                     MENU_SETUP_TIME_RESET: ResetTimeMark();
@@ -9936,6 +9955,7 @@ begin
                         MENU_SETUP_ORDER_BASE: begin
                             // フラグを設定
                             Option.dwPlayOrder := wParam - MENU_SETUP_ORDER_BASE;
+                            Status.dwPlayOrder := Option.dwPlayOrder;
                             // インジケータを再描画
                             cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
                         end;

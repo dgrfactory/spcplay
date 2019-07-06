@@ -21,7 +21,7 @@
 //  Free Software Foundation, Inc.
 //  59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
-//  * GNU GPL v2.0 document is in GPL2.txt file.
+//  * GNU GPL v2.0 document is in LICENSE file.
 //
 //
 //  +++ このソース コードは GPL です +++
@@ -41,10 +41,10 @@
 //  宛先 : Free Software Foundation, Inc.
 //         59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
-//  ※ GNU 一般公衆利用許諾契約書バージョン 2 のドキュメントは、付属の GPL2.txt にあります。
+//  ※ GNU 一般公衆利用許諾契約書バージョン 2 のドキュメントは、付属の LICENSE にあります。
 //
 //
-//  Copyright (C) 2003-2016 SSDLabo, degrade-factory. All rights reserved.
+//  Copyright (C) 2003-2019 degrade-factory. All rights reserved.
 //
 // =================================================================================================
 program spccmd;
@@ -151,7 +151,7 @@ const
     CLASS_NAME: string = 'SSDLabo_SPCPLAY';
     SPC_FILE_HEADER = 'SNES-SPC700 Sound File Data ';
     SPC_FILE_HEADER_LEN = 28;
-    SPCCMD_VERSION = '1.4.1 (build 3008)';
+    SPCCMD_VERSION = '1.4.2 (build 4050)';
     APPLINK_VERSION = $02170500;
     HexTable: array[0..15] of char = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F');
     INI_FILE: string = 'spcplay.ini';
@@ -370,31 +370,31 @@ const
         // --- DSP LOADER ---
         $cd, $53,           // MOV X, #$53      ;
         $d8, $f6,           // MOV $f6, X       ;
-        
+
         $c4, $f2,           // MOV $f2, A       ; START:
         $64, $f4,           // CMP A, $f4       ; LOOP:
         $d0, $fc,           // BNE LOOP:        ;
-        
+
         $fa, $f5, $f3,      // MOV $f3, $f5     ;
         $c4, $f4,           // MOV $f4, A       ;
         $bc,                // INC A            ;
         $10, $f2,           // BPL START:       ;
-        
+
         // --- RAM LOADER ---
         $e8, $00,           // MOV A, #$0       ;
         $8d, $01,           // MOV Y, #$1       ;
         $da, $00,           // MOVW dp, YA      ; dp = $100
         $8d, $00,           // MOV Y, #$0       ;
-        
+
         $64, $f4,           // CMP A, $f4       ; LOOP:
         $d0, $fc,           // BNE LOOP:        ;
         $c4, $f6,           // MOV $f6, A       ;
-        
+
         $64, $f4,           // CMP A, $f4       ; LOOP:
         $f0, $fc,           // BEQ LOOP:        ;
         $f8, $f4,           // MOV X, $f4       ;
         $30, $1a,           // BMI EXIT:        ;
-        
+
         $48, $01,           // EOR A, #$1       ;
         $5d,                // MOV X, A         ;
         $e4, $f5,           // MOV A, $f5       ;
@@ -409,7 +409,7 @@ const
         $7d,                // MOV A, X         ;
         $c4, $f4,           // MOV $f4, A       ;
         $2f, $de,           // BRA LOOP:        ;
-        
+
         $2f, $00            // BRA $??          ; jump inside rom
     );
 
@@ -429,6 +429,7 @@ function  API_FreeLibrary(hModule: longword): longbool; stdcall; external 'kerne
 function  API_GetCommandLine(): pointer; stdcall; external 'kernel32.dll' name 'GetCommandLineA';
 function  API_GetFileAttributes(lpFileName: pointer): longword; stdcall; external 'kernel32.dll' name 'GetFileAttributesA';
 function  API_GetFileSize(hFile: longword; pFileSizeHigh: pointer): longword; stdcall; external 'kernel32.dll' name 'GetFileSize';
+function  API_GetModuleFileName(hModule: longword; lpFileName: pointer; nSize: longword): longword; stdcall; external 'kernel32.dll' name 'GetModuleFileNameA';
 function  API_GetProcAddress(hModule: longword; lpProcName: pointer): pointer; stdcall; external 'kernel32.dll' name 'GetProcAddress';
 function  API_LoadLibrary(lpLibFileName: pointer): longword; stdcall; external 'kernel32.dll' name 'LoadLibraryA';
 function  API_MapFileAndCheckSum(Filename: pointer; HeaderSum: pointer; CheckSum: pointer): longword; stdcall; external 'imagehlp.dll' name 'MapFileAndCheckSumA';
@@ -569,6 +570,27 @@ begin
 end;
 
 // ================================================================================
+// IsPathSeparator - ファイル パスの区切り文字を比較
+// ================================================================================
+function IsPathSeparator(const S: string; X: longword): longbool;
+begin
+    result := IsSingleByte(S, X, '\') or IsSingleByte(S, X, '/');
+end;
+
+// ================================================================================
+// GetPosSeparator - 最後が区切り文字の位置を取得
+// ================================================================================
+function GetPosSeparator(const S: string): longint;
+var
+    I: longword;
+    J: longword;
+begin
+    result := 0;
+    J := Length(S);
+    for I := 1 to J do if IsPathSeparator(S, I) then result := I;
+end;
+
+// ================================================================================
 // StrToInt - 文字列を数値に変換
 // ================================================================================
 function StrToInt(const S: string; Default: longint): longint; overload;
@@ -659,7 +681,7 @@ end;
 // ================================================================================
 // WinMain - ウィンドウ メイン関数
 // ================================================================================
-function _WinMain(): longword; stdcall;
+function _WinMain(hThisInstance: longword): longword; stdcall;
 var
     I: longint;
     J: longint;
@@ -669,6 +691,7 @@ var
     sBuffer: string;
     cBuffer: array of char;
     lpBuffer: pointer;
+    dwBuffer: longword;
     sEXEPath: string;
     sCmdLine: string;
     sChPath: string;
@@ -679,14 +702,16 @@ var
     dwVersion: longword;
     StrData: TSTRDATA;
 
-function CheckHacking(sPath: string; dwBase: longword): longword;
+function CheckImageHash(sPath: string; dwBase: longword): longword;
 var
     dwResult: longword;
     dwHeaderSum: longword;
     dwCheckSum: longword;
 begin
     // チェックサムを取得
-    dwResult := API_MapFileAndCheckSum(pchar(sPath), @dwHeaderSum, @dwCheckSum);
+    sData := Concat(sChPath, sPath);
+    writeln(sData);
+    dwResult := API_MapFileAndCheckSum(pchar(sData), @dwHeaderSum, @dwCheckSum);
     // ファイルのオープンに失敗した場合は終了
     result := dwBase + dwResult;
     if longbool(dwResult) then exit;
@@ -1224,10 +1249,10 @@ begin
         for X := 0 to count - 1 do SPCBuffer.Ram[(bootptr + X) and $FFFF] := bootcode[X];
         // 初期化待ち
         writeln(output, '');
-        writeln(output, '┏ ──────────────────────────────── ┓');
-        writeln(output, '┫(!) SPC 転送を開始します。                                        ┃');
-        writeln(output, '┫    転送中は SNES SPC700 Player を操作しないでください。          ┃');
-        writeln(output, '┗ ──────────────────────────────── ┛');
+        writeln(output, '+------------------------------------------------------------+');
+        writeln(output, '| (!) SPC 転送を開始します。                                 |');
+        writeln(output, '|     転送中は SNES SPC700 Player を操作しないでください。   |');
+        writeln(output, '+------------------------------------------------------------+');
         writeln(output, '');
         writeln(output, 'SPC700 のリセットを待機中...');
         ms := API_timeGetTime();
@@ -1843,6 +1868,17 @@ begin
     sCmdLine := GetParameter(I, J, false);
     dwParam1 := 0;
     dwParam2 := 0;
+    // バッファを確保
+    GetMem(lpBuffer, 1024);
+    // カレント パスを取得
+    API_GetModuleFileName(hThisInstance, lpBuffer, 1024);
+    dwBuffer := GetPosSeparator(string(lpBuffer));
+    if dwBuffer > 1024 then dwBuffer := 1024;
+    API_ZeroMemory(pointer(longword(lpBuffer) + dwBuffer), 1024 - dwBuffer);
+    dwBuffer := GetSize(lpBuffer, 1023);
+    sChPath := Copy(string(lpBuffer), 1, dwBuffer);
+    // バッファを解放
+    FreeMem(lpBuffer, 1024);
     // 設定を初期化
     dwLanguage := 0;
     // INI の存在をチェック
@@ -1862,9 +1898,11 @@ begin
     end;
     // 設定値をチェック
     if dwLanguage > 1 then dwLanguage := 0;
-    // 改ざんチェック
-    if not longbool(Pos('.', sEXEPath)) then sEXEPath := Concat(sEXEPath, '.exe');
-    result := CheckHacking(pchar(sEXEPath), 0);
+    // SPCCMD.EXE の破損を確認
+    dwBuffer := GetPosSeparator(sEXEPath);
+    if longbool(dwBuffer) then sEXEPath := Copy(sEXEPath, dwBuffer + 1, Length(sEXEPath));
+    if (Length(sEXEPath) < 5) or (sEXEPath[Length(sEXEPath) - 3] <> '.') then sEXEPath := Concat(sEXEPath, '.exe');
+    result := CheckImageHash(sEXEPath, 0);
     if longbool(result) then begin
         if result = 9 then writeln(output, Concat(STR_ERROR_009[dwLanguage], ' (code 009)'))
         else writeln(output, Concat(STR_ERROR_008[dwLanguage], ' (code 008)'));
@@ -2002,6 +2040,6 @@ end;
 
 begin
 {$WARNINGS OFF} // コンパイラ警告メッセージなし --- ここから
-    _WinMain();
+    ExitCode := longint(_WinMain(hInstance));
 {$WARNINGS ON}  // コンパイラ警告メッセージなし --- ここまで
 end.

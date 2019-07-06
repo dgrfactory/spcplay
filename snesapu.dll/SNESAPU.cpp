@@ -23,26 +23,26 @@
 ***************************************************************************************************/
 
 // ----- degrade-factory code [2008/01/13] -----
-#define	WIN32_LEAN_AND_MEAN										//Leave out unnecessary grunt in windows.h
-#include	"types.h"
-#include	"SPC700.h"
-#include	"DSP.h"
-#include	"APU.h"
-#pragma	comment(linker, "/opt:nowin98")
-#pragma	comment(linker, "/merge:.rdata=.text")
-#pragma	comment(linker, "/section:.text,erw")
-#pragma	comment(linker, "/ignore:4078")
-#pragma	comment(linker, "/nodefaultlib")
+#define WIN32_LEAN_AND_MEAN                                     //Leave out unnecessary grunt in windows.h
+#include    "types.h"
+#include    "SPC700.h"
+#include    "DSP.h"
+#include    "APU.h"
+#pragma comment(linker, "/opt:nowin98")
+#pragma comment(linker, "/merge:.rdata=.text")
+#pragma comment(linker, "/section:.text,erw")
+#pragma comment(linker, "/ignore:4078")
+#pragma comment(linker, "/nodefaultlib")
 
-#ifdef	__cplusplus
-extern	"C" {
+#ifdef  __cplusplus
+extern  "C" {
 #endif
 
 u32 _DllMainCRTStartup(u32 hinst, u32 fwdReason, u32 lpReserved) {
-	return InitAPU(fwdReason);
+    return InitAPU(fwdReason);
 }
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 // ----- degrade-factory code [END] -----
