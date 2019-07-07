@@ -1733,7 +1733,7 @@ SPCTimers:
 		Call	CatchUp
 
 	Mov		EBX,[t64DSP]
-	And		EBX,1																;Emulate the KON/KOFF processing of DSP every 2Ts
+	And		EBX,1																;Emulate the KON/KOFF processing every 2Ts
 	JNZ		short .NoDSP
 		Call	CatchKOn
 %endif
@@ -4923,6 +4923,7 @@ Ret
 	And		[ABSL],A
 	Not		A
 ; ----- degrade-factory code [2010/09/25] -----
+;	Test	A,DH																;Perhaps, bug of SPC700's opecode
 	Cmp		A,DH
 ; ----- degrade-factory code [END] -----
 	CleanUp	6,3,WA,NZ
@@ -4939,6 +4940,7 @@ Ret
 	Mov		DH,[ABSL]
 	Or		[ABSL],A
 ; ----- degrade-factory code [2010/09/25] -----
+;	Test	A,DH																;Perhaps, bug of SPC700's opecode
 	Cmp		A,DH
 ; ----- degrade-factory code [END] -----
 	CleanUp	6,3,WA,NZ

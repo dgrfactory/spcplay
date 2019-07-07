@@ -2968,9 +2968,9 @@ const
     STR_MENU_LIST: array[0..1] of pchar = ('プレイリスト(&P)', '&Playlist');
     STR_MENU_LOCALE = '日本語に戻す(&J)';
     STR_MENU_FILE_EXIT: array[0..1] of pchar = ('終了(&X)', 'E&xit');
-    STR_MENU_SETUP_DEVICE: array[0..1] of pchar = ('サウンド デバイス(&D)', 'Sound &Device');
-    STR_MENU_SETUP_CHANNEL: array[0..1] of pchar = ('チャンネル(&C)', '&Channel');
-    STR_MENU_SETUP_BIT: array[0..1] of pchar = ('ビット(&B)', '&Bit');
+    STR_MENU_SETUP_DEVICE: array[0..1] of pchar = ('サウンド デバイス(&D)', 'Sound &Devices');
+    STR_MENU_SETUP_CHANNEL: array[0..1] of pchar = ('チャンネル(&C)', '&Channels');
+    STR_MENU_SETUP_BIT: array[0..1] of pchar = ('ビット(&B)', '&Bits');
     STR_MENU_SETUP_RATE: array[0..1] of pchar = ('サンプリング レート(&R)', 'Sampling &Rate');
     STR_MENU_SETUP_INTER: array[0..1] of pchar = ('補間処理(&I)', '&Interpolation');
     STR_MENU_SETUP_PITCH: array[0..1] of pchar = ('ピッチ(&P)', '&Pitch');
@@ -2990,14 +2990,14 @@ const
     STR_MENU_SETUP_TIME: array[0..1] of pchar = ('演奏時間(&T)', 'Play &Time');
     STR_MENU_SETUP_TIME_DISABLE: array[0..1] of pchar = ('無効(&D)', '&Disable');
     STR_MENU_SETUP_TIME_ID666: array[0..1] of pchar = ('&ID666 設定値を使用', 'Enable &ID666 Time');
-    STR_MENU_SETUP_TIME_DEFAULT: array[0..1] of pchar = ('デフォルト値を使用(&F)', 'Enable De&fault Time');
+    STR_MENU_SETUP_TIME_DEFAULT: array[0..1] of pchar = ('デフォルト値を使用(&E)', '&Enable Default Time');
     STR_MENU_SETUP_TIME_START: array[0..1] of pchar = ('開始位置を設定(&S)', 'Set &Start Mark');
     STR_MENU_SETUP_TIME_LIMIT: array[0..1] of pchar = ('終了位置を設定(&L)', 'Set &Limit Mark');
     STR_MENU_SETUP_TIME_RESET: array[0..1] of pchar = ('位置をリセット(&R)', '&Reset Mark');
-    STR_MENU_SETUP_ORDER: array[0..1] of pchar = ('演奏順序(&Y)', 'Pla&y Order');
-    STR_MENU_SETUP_INFO: array[0..1] of pchar = ('情報表示(&A)', 'I&nformation');
+    STR_MENU_SETUP_ORDER: array[0..1] of pchar = ('演奏順序(&O)', 'Play &Order');
+    STR_MENU_SETUP_INFO: array[0..1] of pchar = ('情報表示(&A)', 'I&nformation Viewer');
     STR_MENU_SETUP_INFO_RESET: array[0..1] of pchar = ('無音チャンネル非表示(&H)', '&Hide Mute Channel');
-    STR_MENU_SETUP_PRIORITY: array[0..1] of pchar = ('処理優先度(&O)', 'CPU Pri&ority');
+    STR_MENU_SETUP_PRIORITY: array[0..1] of pchar = ('処理優先度(&U)', 'CP&U Priority');
     STR_MENU_SETUP_TOPMOST: array[0..1] of pchar = ('常に手前に表示(&W)', 'Al&ways on Top');
     STR_MENU_LIST_PLAY: array[0..1] of pchar = ('演奏開始(&P)', '&Play');
     STR_MENU_LIST_PLAY_SELECT: array[0..1] of pchar = ('選択項目(&S)', '&Selected Item');
@@ -3021,27 +3021,28 @@ const
         ('', '[Normal]', '[Mix]', '[Separate]', '[Reverse]', '[Slow]', '[Fast]', '[Down]', '[Up]'));
     STR_MENU_SETUP_CHANNEL_SUB: array[0..1] of array[0..MENU_SETUP_CHANNEL_SIZE - 1] of pchar = (
         ('&1 チャンネル  (モノラル)', '&2 チャンネル  (ステレオ)'),
-        ('&1 Channel  (Monaural)', '&2 Channel  (Stereo)'));
+        ('&1 Channel  (Monaural)', '&2 Channels  (Stereo)'));
     STR_MENU_SETUP_BIT_SUB: array[0..1] of array[0..MENU_SETUP_BIT_SIZE - 1] of pchar = (
-        ('&8 ビット', '&16 ビット', '&24 ビット', '&32 ビット  (int)', '&32 ビット  (float)'),
-        ('&8 Bit', '&16 Bit', '&24 Bit', '&32 Bit  (int)', '&32 Bit  (float)'));
-    STR_MENU_SETUP_RATE_SUB: array[0..MENU_SETUP_RATE_SIZE - 1] of pchar =
-        ('&8,000 Hz', '&10,000 Hz', '&11,025 Hz', '&12,000 Hz', '&16,000 Hz', '&20,000 Hz', '&22,050 Hz', '&24,000 Hz', '&32,000 Hz', '&40,000 Hz', '&44,100 Hz', '&48,000 Hz', '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz');
+        ('&8 ビット', Concat('&16 ビット', #9, '［標準］'), '&24 ビット', '&32 ビット  (int)', Concat('&32 ビット  (float)', #9, '［高音質］')),
+        ('&8 Bits', Concat('&16 Bits', #9, '[Normal]'), '&24 Bits', '&32 Bits  (int)', Concat('&32 Bits  (float)', #9, '[HQ]')));
+    STR_MENU_SETUP_RATE_SUB: array[0..1] of array[0..MENU_SETUP_RATE_SIZE - 1] of pchar = (
+        ('&8,000 Hz', '&10,000 Hz', '&11,025 Hz', '&12,000 Hz', '&16,000 Hz', '&20,000 Hz', '&22,050 Hz', '&24,000 Hz', Concat('&32,000 Hz', #9, '［推奨］'), '&40,000 Hz', '&44,100 Hz', '&48,000 Hz', '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz'),
+        ('&8,000 Hz', '&10,000 Hz', '&11,025 Hz', '&12,000 Hz', '&16,000 Hz', '&20,000 Hz', '&22,050 Hz', '&24,000 Hz', Concat('&32,000 Hz', #9, '[Recommend]'), '&40,000 Hz', '&44,100 Hz', '&48,000 Hz', '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz'));
     STR_MENU_SETUP_INTER_SUB: array[0..1] of array[0..MENU_SETUP_INTER_SIZE - 1] of pchar = (
-        ('無効(&D)', '線形補間(&L)', '三次スプライン補間(&C)', '実機ガウス分布補間(&G)', 'シンク関数補間(&S)', 'ガウス関数補間(&A)'),
-        ('&Disable', '&Liner', '&Cubic Spline', 'SNES &Gauss Table', '&Sinc Function', 'G&auss Function'));
+        ('無効(&D)', '線形補間(&L)', '三次スプライン補間(&C)', Concat('実機ガウス分布補間(&G)', #9, '［標準］'), Concat('シンク関数補間(&S)', #9, '［高音質］'), 'ガウス関数補間(&A)'),
+        ('&Disable', '&Liner', '&Cubic Spline', Concat('SNES &Gauss Table', #9, '[Normal]'), Concat('&Sinc Function', #9, '[HQ]'), 'G&auss Function'));
     STR_MENU_SETUP_PITCH_SUB: array[0..1] of array[0..MENU_SETUP_PITCH_SIZE - 1] of pchar = (
         ('標準(&N)', '過去の &Sound Blaster 互換', '過去の &ZSNES, Snes9x 互換'),
         ('&Normal', 'OLD &Sound Blaster Card', 'OLD &ZSNES, Snes9x'));
     STR_MENU_SETUP_OPTION_SUB: array[0..1] of array[0..MENU_SETUP_OPTION_SIZE - 1] of pchar = (
-        ('ローパス フィルタ(&L)', '&BASS BOOST', '過去の &ADPCM 互換', '左右反転(&R)', '逆位相サラウンド強制(&S)', 'サラウンド無効(&U)', 'エコー無効(&E)', 'ピッチ モジュレーション無効(&P)', 'ピッチ ベンド無効(&I)', '&FIR フィルタ無効', 'エンベロープ無効(&V)', 'ノイズ指定無効(&N)', 'エコー作業メモリ書換(&M)'),
-        ('&Low-Pass Filter', '&BASS BOOST', 'OLD &ADPCM Emulation', '&Reverse Stereo', 'Opposite-Phase &Surround', 'Disable S&urround', 'Disable &Echo', 'Disable &Pitch Modulation', 'Disable P&itch Bend', 'Disable &FIR Filter', 'Disable En&velope', 'Disable &Noise Flags', 'Rewrite Echo Work &Memory'));
+        ('実機ローパス フィルタ(&L)', '&BASS BOOST', '過去の &ADPCM 互換', '左右反転(&R)', '逆位相サラウンド強制(&S)', 'サラウンド無効(&U)', 'エコー無効(&E)', 'ピッチ モジュレーション無効(&P)', 'ピッチ ベンド無効(&I)', '&FIR フィルタ無効', 'エンベロープ無効(&V)', 'ノイズ指定無効(&N)', 'エコー作業メモリ書換(&M)'),
+        ('SNES &Low-Pass Filter', '&BASS BOOST', 'Old &ADPCM Emulation', '&Reverse Stereo', 'Opposite-Phase &Surround', 'Disable S&urround', 'Disable &Echo', 'Disable &Pitch Modulation', 'Disable P&itch Bend', 'Disable &FIR Filter', 'Disable En&velope', 'Disable &Noise Flags', 'Rewrite Echo Work &Memory'));
     STR_MENU_SETUP_ORDER_SUB: array[0..1] of array[0..MENU_SETUP_ORDER_SIZE - 1] of pchar = (
         ('演奏停止(&S)', '次へ(&N)', '前へ(&P)', 'ランダム(&M)', 'シャッフル(&H)', 'リピート(&R)'),
         ('&Stop', '&Next Item', '&Previous Item', 'Rando&m', 'S&huffle', '&Repeat'));
     STR_MENU_SETUP_INFO_SUB: array[0..1] of array[0..MENU_SETUP_INFO_SIZE - 1] of pchar = (
         ('グラフィック インジケータ(&G)', 'ミキサー情報(&M)', 'チャンネル情報 1 (&C)', 'チャンネル情報 2 (&A)', 'チャンネル情報 3 (&N)', 'チャンネル情報 4 (&E)', '&SPC 情報 1', 'S&PC 情報 2', 'Script&700 デバッグ'),
-        ('&Graphic Indicator', '&Mixer', '&Channel 1', 'Ch&annel 2', 'Cha&nnel 3', 'Chann&el 4', '&SPC 1', 'S&PC 2', 'Script&700 Debug'));
+        ('&Graphic Indicator', '&Mixer', '&Channel 1', 'Ch&annel 2', 'Cha&nnel 3', 'Chann&el 4', '&SPC Tags 1', 'S&PC Tags 2', 'Script&700 Debug'));
     STR_MENU_SETUP_PRIORITY_SUB: array[0..1] of array[0..MENU_SETUP_PRIORITY_SIZE - 1] of pchar = (
         ('リアルタイム(&R)', '高(&H)', '標準以上(&A)', '標準(&N)', '標準以下(&B)', '低(&L)'),
         ('&Realtime', '&High', '&Above Normal', '&Normal', '&Below Normal', '&Low'));
@@ -5518,7 +5519,7 @@ begin
     // ビット メニューを作成
     SetMenuTextAndTip(cmSetupBit, MENU_SETUP_BIT_SIZE, MENU_SETUP_BIT_BASE, STR_MENU_SETUP_BIT_SUB[Status.dwLanguage], true);
     // サンプリング レート メニューを作成
-    SetMenuTextAndTip(cmSetupRate, MENU_SETUP_RATE_SIZE, MENU_SETUP_RATE_BASE, STR_MENU_SETUP_RATE_SUB, true);
+    SetMenuTextAndTip(cmSetupRate, MENU_SETUP_RATE_SIZE, MENU_SETUP_RATE_BASE, STR_MENU_SETUP_RATE_SUB[Status.dwLanguage], true);
     // 補間処理メニューを作成
     SetMenuTextAndTip(cmSetupInter, MENU_SETUP_INTER_SIZE, MENU_SETUP_INTER_BASE, STR_MENU_SETUP_INTER_SUB[Status.dwLanguage], true);
     // ピッチ キー メニューを作成

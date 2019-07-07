@@ -3527,7 +3527,7 @@ PROC CatchKOn
 	Push	ECX
 
 	;KOff process ----------------------
-	Mov		CL,[dsp+kof]
+	MovZX	ECX,byte [dsp+kof]
 	Test	CL,CL
 	JZ		short .DoneKOff
 
@@ -3594,19 +3594,13 @@ PROC CatchKOn
 			Mov		[EBX+mOut],EDX
 			Mov		[ESI+envx],DL
 			Mov		[ESI+outx],DL
-			Mov		[EBX+vRsv],DL												;Reset ADSR/Gain changed flag
-
-			Mov		DX,[ESI+adsr]												;Save ADSR parameters
-			Mov		[EBX+vAdsr],DX
-			Mov		DL,[ESI+gain]												;Save Gain parameters
-			Mov		[EBX+vGain],DL
 
 			Or		[konRun],CH
 			Jmp		.SkipKOn
 
 		.CheckKOff:
 		Test	[dsp+kof],CH													;Is KOFF still written?
-		JZ		short .StartKON													;	Yes
+		JZ		short .CheckEnv													;	No
 			XOr		EDX,EDX
 			Or		byte [EBX+mFlg],MFLG_KOFF									;Flag voice as keying off
 			Mov		[EBX+mKOn],DL												;Reset delay time
@@ -3617,9 +3611,18 @@ PROC CatchKOn
 
 			Jmp		.SkipKOn
 
+		.CheckEnv:
+		Cmp		byte [EBX+mKOn],KON_SAVEENV										;Did time for saved envelope pass after KON had been written?
+		JNE		short .StartKON													;	No
+			Mov		DX,[ESI+adsr]												;Save ADSR parameters
+			Mov		[EBX+vAdsr],DX
+			MovZX	DX,byte [ESI+gain]											;Save Gain parameters
+			Mov		[EBX+vGain],DL
+			Mov		[EBX+vRsv],DH												;Reset ADSR/Gain changed flag
+
 		.StartKON:
 		Dec		byte [EBX+mKOn]													;Did time for enabled voice pass after KON had been written?
-		JNZ		.SkipKOn														;	No
+		JNZ		.SkipKOn														;	No, do nothing
 			And		byte [EBX+mFlg],MFLG_USER									;Leave voice muted, noise
 
 			;Set voice volume ------------------
@@ -3686,8 +3689,7 @@ PROC CatchKOn
 	Pop		ESI,EDX,EAX
 
 	.DoneKOn:
-	XOr		ECX,ECX
-	Mov		[konRsv],CL
+	Mov		[konRsv],CH															;CH = 0
 
 	Pop		ECX
 
