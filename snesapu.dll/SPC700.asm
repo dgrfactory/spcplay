@@ -1637,36 +1637,6 @@ SPCTimers:
 		Add		dword [t64kHz],T64_CYC											;Restore timer 2 clock
 		Inc		dword [t64Cnt]													;Increase 64kHz counter
 
-		Test	dword [scr700cnt],-1											;TimeCount = 0?
-		JZ		short .No700													;	Yes
-		Sub		dword [scr700cnt],32											;TimeCount -= 32, TimeCount > 0?
-		JG		short .No700													;	Yes
-
-		Mov		BL,[scr700stf]													;BL = Stack Flag
-		And		BL,04h															;BL = 0x04?
-		JZ		short .Run700													;	No
-
-		Add		dword [scr700cnt],32											;TimeCount += 32
-		Add		dword [scr700cmp],32											;CmpParam[0] += 32
-		Mov		BL,[outPortCp]													;BL = OutPort[0]
-%ifdef SHVC_SOUND_SUPPORT
-		Push	ESI,EDX
-		Mov		ESI,-1
-		Mov		DL,BL
-		Call	ReadPort
-		Mov		BL,DL
-		Pop		EDX,ESI
-%endif
-		Cmp		[flushPort],BL													;FlushPort[0] = BL?
-		JNE		short .No700													;	No
-
-		And		byte [scr700stf],~04h											;Stack Flag &= ~0x04
-		Sub		dword [scr700cnt],32											;TimeCount -= 32
-
-		.Run700:
-		Call	RunScript700													;Run Script700 emulation
-
-		.No700:
 		Mov		BL,[tControl]													;BL = Control register
 		ShL		BL,6															;Copy timer enable bit into CF
 		SbB		byte [t2Step],0													;Decrease timer step if timer is enabled
@@ -1724,19 +1694,51 @@ SPCTimers:
 		.NoC0Inc:
 	.NoT8Inc:
 
-%if DSPINTEG
 	Mov		EBX,[t64Cnt]
-	Cmp		[t64DSP],EBX														;Emulate DSP every 1Ts
+	Cmp		[t64DSP],EBX														;Interrupt Script700/DSP every 1Ts
 	JE		short .NoDSP
 		Mov		[t64DSP],EBX
+
+		Test	dword [scr700cnt],-1											;TimeCount = 0?
+		JZ		short .No700													;	Yes
+		Sub		dword [scr700cnt],32											;TimeCount -= 32, TimeCount > 0?
+		JG		short .No700													;	Yes
+
+		Mov		BL,[scr700stf]													;BL = Stack Flag
+		And		BL,04h															;BL = 0x04?
+		JZ		short .Run700													;	No
+
+		Add		dword [scr700cnt],32											;TimeCount += 32
+		Add		dword [scr700cmp],32											;CmpParam[0] += 32
+		Mov		BL,[outPortCp]													;BL = OutPort[0]
+%ifdef SHVC_SOUND_SUPPORT
+		Push	ESI,EDX
+		Mov		ESI,-1
+		Mov		DL,BL
+		Call	ReadPort
+		Mov		BL,DL
+		Pop		EDX,ESI
+%endif
+		Cmp		[flushPort],BL													;FlushPort[0] = BL?
+		JNE		short .No700													;	No
+
+		And		byte [scr700stf],~04h											;Stack Flag &= ~0x04
+		Sub		dword [scr700cnt],32											;TimeCount -= 32
+
+		.Run700:
+		Call	RunScript700													;Run Script700 emulation
+
+		.No700:
+%if DSPINTEG
 		Call	CatchUp
 
+	Mov		EBX,[t64DSP]
 	And		EBX,1																;Emulate the KON/KOFF processing of DSP every 2Ts
 	JNZ		short .NoDSP
 		Call	CatchKOn
+%endif
 
 	.NoDSP:
-%endif
 
 	;After the timers are updated, subtract the number of cycles emulated from the total number
 	;passed in.  If we've emulated all clock cycles requested by the caller, then quit.  Otherwise
@@ -3862,7 +3864,7 @@ Ret
 %macro OpcE4 0
 	Ldp
 	CheckDSP
- 	Mov		A,[DPI]
+	Mov		A,[DPI]
 	Test	A,A
 	CleanUp	3,2,RD,NZ
 %endmacro

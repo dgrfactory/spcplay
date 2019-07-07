@@ -1757,7 +1757,7 @@ PROC SetFade
 	FMulP	ST1,ST																;									|EDX/fadeLen*pi
 	FMul	dword [fp0_5]														;									|EDX/fadeLen*pi/2=x
 	FSin																		;									|sin(x)
- 	Mov		EDX,65536
+	Mov		EDX,65536
 	Mov		[ESP-4],EDX
 	FILd	dword [ESP-4]														;									|sin(x) 65536
 	FMul																		;									|sin(x)*65536
@@ -3548,7 +3548,6 @@ PROC CatchKOn
 
 		Test	byte [EBX+mFlg],MFLG_KOFF										;Is already voice in key off mode?
 		JNZ		short .SkipKOff													;	Yes, do nothing
-
 			Mov		byte [EBX+eRIdx],31											;Place envelope in release mode
 			Mov		[EBX+eRate],EDX
 			Mov		[EBX+eCnt],EDX
@@ -3585,7 +3584,6 @@ PROC CatchKOn
 	.NextKOn:
 		Test	byte [EBX+mKOn],-1												;Is already voice in key on mode?
 		JNZ		short .CheckKOff												;	Yes
-
 			Test	CL,CH
 			JZ		.SkipKOn
 
@@ -3609,7 +3607,6 @@ PROC CatchKOn
 		.CheckKOff:
 		Test	[dsp+kof],CH													;Is KOFF still written?
 		JZ		short .StartKON													;	Yes
-
 			XOr		EDX,EDX
 			Or		byte [EBX+mFlg],MFLG_KOFF									;Flag voice as keying off
 			Mov		[EBX+mKOn],DL												;Reset delay time
@@ -3623,7 +3620,6 @@ PROC CatchKOn
 		.StartKON:
 		Dec		byte [EBX+mKOn]													;Did time for enabled voice pass after KON had been written?
 		JNZ		.SkipKOn														;	No
-
 			And		byte [EBX+mFlg],MFLG_USER									;Leave voice muted, noise
 
 			;Set voice volume ------------------
@@ -3691,7 +3687,7 @@ PROC CatchKOn
 
 	.DoneKOn:
 	XOr		ECX,ECX
-  	Mov		[konRsv],CL
+	Mov		[konRsv],CL
 
 	Pop		ECX
 
@@ -3707,7 +3703,6 @@ PROC SetEmuDSP, pBufD, numD, rateD
 	Mov		EAX,[rateD]
 	Test	EAX,EAX
 	JZ		short .Final
-
 		Push	ECX,EDX
 		XOr		EDX,EDX
 		ShLD	EDX,EAX,16
@@ -3821,6 +3816,7 @@ USES ALL
 		FILd	dword [vMMaxR]
 		FMul	dword [fp64k]
 		FStP	dword [vMMaxR]
+
 	.InFloat:
 ; ----- degrade-factory code [END] -----
 
@@ -3890,6 +3886,7 @@ USES ALL
 		FLd		dword [vMMaxR]
 		FMul	dword [fpShR16]
 		FIStP	dword [vMMaxR]
+
 	.OutFloat:
 ; ----- degrade-factory code [END] -----
 

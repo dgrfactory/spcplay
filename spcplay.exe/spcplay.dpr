@@ -2325,8 +2325,8 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.17.8 (build 6666)';
-    SNESAPU_VERSION = $21768;
+    SPCPLAY_VERSION = '2.18.0 (build 6666)';
+    SNESAPU_VERSION = $21800;
     APPLINK_VERSION = $02170500;
 
     CBE_DSPREG = $1;
@@ -2989,8 +2989,8 @@ const
     STR_MENU_SETUP_OPTION: array[0..1] of pchar = ('拡張設定(&X)', 'E&xpansion');
     STR_MENU_SETUP_TIME: array[0..1] of pchar = ('演奏時間(&T)', 'Play &Time');
     STR_MENU_SETUP_TIME_DISABLE: array[0..1] of pchar = ('無効(&D)', '&Disable');
-    STR_MENU_SETUP_TIME_ID666: array[0..1] of pchar = ('&ID666 設定値を使用', 'Enable by &ID666 Time');
-    STR_MENU_SETUP_TIME_DEFAULT: array[0..1] of pchar = ('デフォルト値を使用(&F)', 'Enable by De&fault Time');
+    STR_MENU_SETUP_TIME_ID666: array[0..1] of pchar = ('&ID666 設定値を使用', 'Enable &ID666 Time');
+    STR_MENU_SETUP_TIME_DEFAULT: array[0..1] of pchar = ('デフォルト値を使用(&F)', 'Enable De&fault Time');
     STR_MENU_SETUP_TIME_START: array[0..1] of pchar = ('開始位置を設定(&S)', 'Set &Start Mark');
     STR_MENU_SETUP_TIME_LIMIT: array[0..1] of pchar = ('終了位置を設定(&L)', 'Set &Limit Mark');
     STR_MENU_SETUP_TIME_RESET: array[0..1] of pchar = ('位置をリセット(&R)', '&Reset Mark');
