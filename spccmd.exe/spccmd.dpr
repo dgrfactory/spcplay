@@ -151,7 +151,7 @@ const
     CLASS_NAME: string = 'SSDLabo_SPCPLAY';
     SPC_FILE_HEADER = 'SNES-SPC700 Sound File Data ';
     SPC_FILE_HEADER_LEN = 28;
-    SPCCMD_VERSION = '1.4.2 (build 4050)';
+    SPCCMD_VERSION = '1.5.0 (build 4062)';
     APPLINK_VERSION = $02170500;
     HexTable: array[0..15] of char = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F');
     INI_FILE: string = 'spcplay.ini';
