@@ -84,7 +84,8 @@ S700_ECHO_L	EQU	02h												;Echo volume (left)
 S700_ECHO_R	EQU	03h												;Echo volume (right)
 
 ;DSP KON delay emulation time
-KON_DELAY	EQU	20												;Delay time from writing KON to output
+KON_DELAY	EQU	19												;Delay time from writing KON to output (40Ts / 2 - 1)
+KON_SAVEENV	EQU	KON_DELAY										;Delay time from writing save envelope to output
 ; ----- degrade-factory code [END] -----
 
 
