@@ -49,7 +49,7 @@ SECTION .data ALIGN=32
 	apuOpt		DD	(CPU_CYC << 24) | (DEBUG << 16) | (DSPINTEG << 17) | (VMETERM << 8) | (VMETERV << 9) | (1 << 10) | (STEREO << 11) | (HALFC << 1) | (CNTBK << 2) | (SPEED << 3) | (IPLW << 4) | (DSPBK << 5)
 	apuDllVer	DD	21800h														;SNESAPU.DLL Current Version
 	apuCmpVer	DD	11000h														;SNESAPU.DLL Backwards Compatible Version
-	apuVerStr	DD	"2.18.0 (build 6666)"										;SNESAPU.DLL Current Version (32byte String)
+	apuVerStr	DD	"2.18.0 (build 6670)"										;SNESAPU.DLL Current Version (32byte String)
 				DD	8
 ; ----- degrade-factory code [END] -----
 

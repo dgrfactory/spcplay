@@ -2881,8 +2881,8 @@ RFlg:
 		Mov		EDX,65535
 		Div		dword [EBX*4+rateTab]
 		Mov		[nRate],EAX
-	.NoNoise:
 
+	.NoNoise:
 	XOr		EAX,EAX
 	Inc		EAX
 	Ret
@@ -3021,6 +3021,7 @@ ENDP
 		Add		EAX,7263														;Add C
 		CWDE																	;Modulus M (32768)
 		Mov		[nfSmp],EAX
+
 	%%NoNIncF:
 ; ----- degrade-factory code [END] -----
 %endmacro
@@ -4070,6 +4071,7 @@ ENDP
 		Test	[dspNoiseF],CH
 		SetNZ	AL
 		FILd	dword [nSmp+EAX*4]
+
 	%%NoNoise:
 
 	;Mixing ============================
@@ -5039,11 +5041,11 @@ ENDP
 	LEA		EBX,[EBX*2+EBX]
 	SAR		EBX,5
 	Neg		EAX
-	LEA		EAX,[EBX*2+EAX]														;s = -p2 + (((p2 * 3) >> 4) & ~1)
+	LEA		EAX,[EBX*2+EAX]														;s = (((p2 * 3) >> 4) & ~1) + -p2
 	Mov		EBX,EDX																;EBX = Next to last sample
 
 	;Add 115/64 of last sample ------------
-	LEA		EAX,[EDX*2+EAX]														;s += p1 * 2
+	LEA		EAX,[EDX*2+EAX]														;s += 2 * p1
 	LEA		EDX,[EBX*4+EBX]
 	LEA		EDX,[EBX*8+EDX]
 	Neg		EDX
@@ -5064,6 +5066,7 @@ ENDP
 		MovZX	EDX,DL															;If s >  65534 (0000FFFEh), s = FFFEh = -2
 		Dec		EDX
 		Add		EDX,EDX
+
 	%%OK:
 %endmacro
 ; ----- degrade-factory code [END] -----
