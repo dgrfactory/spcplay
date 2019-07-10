@@ -1757,7 +1757,7 @@ PROC SetFade
 	FMulP	ST1,ST																;									|EDX/fadeLen*pi
 	FMul	dword [fp0_5]														;									|EDX/fadeLen*pi/2=x
 	FSin																		;									|sin(x)
- 	Mov		EDX,65536
+	Mov		EDX,65536
 	Mov		[ESP-4],EDX
 	FILd	dword [ESP-4]														;									|sin(x) 65536
 	FMul																		;									|sin(x)*65536
@@ -2881,8 +2881,8 @@ RFlg:
 		Mov		EDX,65535
 		Div		dword [EBX*4+rateTab]
 		Mov		[nRate],EAX
-	.NoNoise:
 
+	.NoNoise:
 	XOr		EAX,EAX
 	Inc		EAX
 	Ret
@@ -3021,6 +3021,7 @@ ENDP
 		Add		EAX,7263														;Add C
 		CWDE																	;Modulus M (32768)
 		Mov		[nfSmp],EAX
+
 	%%NoNIncF:
 ; ----- degrade-factory code [END] -----
 %endmacro
@@ -3527,7 +3528,7 @@ PROC CatchKOn
 	Push	ECX
 
 	;KOff process ----------------------
-	Mov		CL,[dsp+kof]
+	MovZX	ECX,byte [dsp+kof]
 	Test	CL,CL
 	JZ		short .DoneKOff
 
@@ -3548,7 +3549,6 @@ PROC CatchKOn
 
 		Test	byte [EBX+mFlg],MFLG_KOFF										;Is already voice in key off mode?
 		JNZ		short .SkipKOff													;	Yes, do nothing
-
 			Mov		byte [EBX+eRIdx],31											;Place envelope in release mode
 			Mov		[EBX+eRate],EDX
 			Mov		[EBX+eCnt],EDX
@@ -3585,7 +3585,6 @@ PROC CatchKOn
 	.NextKOn:
 		Test	byte [EBX+mKOn],-1												;Is already voice in key on mode?
 		JNZ		short .CheckKOff												;	Yes
-
 			Test	CL,CH
 			JZ		.SkipKOn
 
@@ -3596,20 +3595,13 @@ PROC CatchKOn
 			Mov		[EBX+mOut],EDX
 			Mov		[ESI+envx],DL
 			Mov		[ESI+outx],DL
-			Mov		[EBX+vRsv],DL												;Reset ADSR/Gain changed flag
-
-			Mov		DX,[ESI+adsr]												;Save ADSR parameters
-			Mov		[EBX+vAdsr],DX
-			Mov		DL,[ESI+gain]												;Save Gain parameters
-			Mov		[EBX+vGain],DL
 
 			Or		[konRun],CH
 			Jmp		.SkipKOn
 
 		.CheckKOff:
 		Test	[dsp+kof],CH													;Is KOFF still written?
-		JZ		short .StartKON													;	Yes
-
+		JZ		short .CheckEnv													;	No
 			XOr		EDX,EDX
 			Or		byte [EBX+mFlg],MFLG_KOFF									;Flag voice as keying off
 			Mov		[EBX+mKOn],DL												;Reset delay time
@@ -3620,10 +3612,18 @@ PROC CatchKOn
 
 			Jmp		.SkipKOn
 
+		.CheckEnv:
+		Cmp		byte [EBX+mKOn],KON_SAVEENV										;Did time for saved envelope pass after KON had been written?
+		JNE		short .StartKON													;	No
+			Mov		DX,[ESI+adsr]												;Save ADSR parameters
+			Mov		[EBX+vAdsr],DX
+			MovZX	DX,byte [ESI+gain]											;Save Gain parameters
+			Mov		[EBX+vGain],DL
+			Mov		[EBX+vRsv],DH												;Reset ADSR/Gain changed flag
+
 		.StartKON:
 		Dec		byte [EBX+mKOn]													;Did time for enabled voice pass after KON had been written?
-		JNZ		.SkipKOn														;	No
-
+		JNZ		.SkipKOn														;	No, do nothing
 			And		byte [EBX+mFlg],MFLG_USER									;Leave voice muted, noise
 
 			;Set voice volume ------------------
@@ -3690,8 +3690,7 @@ PROC CatchKOn
 	Pop		ESI,EDX,EAX
 
 	.DoneKOn:
-	XOr		ECX,ECX
-  	Mov		[konRsv],CL
+	Mov		[konRsv],CH															;CH = 0
 
 	Pop		ECX
 
@@ -3707,7 +3706,6 @@ PROC SetEmuDSP, pBufD, numD, rateD
 	Mov		EAX,[rateD]
 	Test	EAX,EAX
 	JZ		short .Final
-
 		Push	ECX,EDX
 		XOr		EDX,EDX
 		ShLD	EDX,EAX,16
@@ -3821,6 +3819,7 @@ USES ALL
 		FILd	dword [vMMaxR]
 		FMul	dword [fp64k]
 		FStP	dword [vMMaxR]
+
 	.InFloat:
 ; ----- degrade-factory code [END] -----
 
@@ -3890,6 +3889,7 @@ USES ALL
 		FLd		dword [vMMaxR]
 		FMul	dword [fpShR16]
 		FIStP	dword [vMMaxR]
+
 	.OutFloat:
 ; ----- degrade-factory code [END] -----
 
@@ -4071,6 +4071,7 @@ ENDP
 		Test	[dspNoiseF],CH
 		SetNZ	AL
 		FILd	dword [nSmp+EAX*4]
+
 	%%NoNoise:
 
 	;Mixing ============================
@@ -5040,11 +5041,11 @@ ENDP
 	LEA		EBX,[EBX*2+EBX]
 	SAR		EBX,5
 	Neg		EAX
-	LEA		EAX,[EBX*2+EAX]														;s = -p2 + (((p2 * 3) >> 4) & ~1)
+	LEA		EAX,[EBX*2+EAX]														;s = (((p2 * 3) >> 4) & ~1) + -p2
 	Mov		EBX,EDX																;EBX = Next to last sample
 
 	;Add 115/64 of last sample ------------
-	LEA		EAX,[EDX*2+EAX]														;s += p1 * 2
+	LEA		EAX,[EDX*2+EAX]														;s += 2 * p1
 	LEA		EDX,[EBX*4+EBX]
 	LEA		EDX,[EBX*8+EDX]
 	Neg		EDX
@@ -5065,6 +5066,7 @@ ENDP
 		MovZX	EDX,DL															;If s >  65534 (0000FFFEh), s = FFFEh = -2
 		Dec		EDX
 		Add		EDX,EDX
+
 	%%OK:
 %endmacro
 ; ----- degrade-factory code [END] -----
