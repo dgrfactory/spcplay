@@ -15,7 +15,7 @@ Win32API を直接使用しているので、軽量・軽快に動作します�
 
 ```
 rc.exe /l 0x411 /fo spcplay.res /d "NDEBUG" spcplay.rc
-dcc32 spcplay.dpr
+dcc32.exe spcplay.dpr
 ```
 
 ## snesapu.dll
@@ -46,5 +46,5 @@ SNES SPC700 Player をコマンドラインで操作するアプリです。
 
 ```
 rc.exe /l 0x411 /fo spccmd.res /d "NDEBUG" spccmd.rc
-dcc32 spccmd.dpr
+dcc32.exe spccmd.dpr
 ```
