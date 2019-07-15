@@ -2422,6 +2422,8 @@ const
     DRAG_START_THRESHOLD = 5;
     DRAG_LIMIT_THRESHOLD = 2;
     WINDOW_MOVE_THRESHOLD = 10;
+    WINDOW_WIDTH = 520;
+    WINDOW_HEIGHT = 152;
 
     WM_APP_MESSAGE = $8000;                                 // 通知メッセージ
     WM_APP_COMMAND = $8001;                                 // ユーザ コマンド
@@ -5035,10 +5037,17 @@ end;
 
 function ScalableWindowBox(nLeft: longint; nTop: longint; nWidth: longint; nHeight: longint): TBOX;
 begin
-    Box.left := (nLeft * Status.dwScale) shr 1;
-    Box.top := (nTop * Status.dwScale) shr 1;
-    Box.width := (nWidth * Status.dwScale) shr 1;
-    Box.height := (nHeight * Status.dwScale) shr 1;
+    if Status.dwScale = 2 then begin
+        Box.left := nLeft;
+        Box.top := nTop;
+        Box.width := nWidth;
+        Box.height := nHeight;
+    end else begin
+        Box.left := (nLeft * Status.dwScale) shr 1;
+        Box.top := (nTop * Status.dwScale) shr 1;
+        Box.width := (nWidth * Status.dwScale) shr 1;
+        Box.height := (nHeight * Status.dwScale) shr 1;
+    end;
     result := Box;
 end;
 
@@ -6303,9 +6312,9 @@ procedure DeleteMarkWrite(dwI: longint; dwY: longint);
 begin
     // 位置マークを消去
     Rect.left := 137;
-    Rect.right := 283;
+    Rect.right := 283 + (Status.dwScale and 1);
     Rect.top := dwY;
-    Rect.bottom := dwY + 3;
+    Rect.bottom := dwY + (Status.dwScale and 1) + 3;
     DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
 end;
 
@@ -6428,9 +6437,9 @@ begin
         // タイム ゲージを消去
         if bRedrawInfo then begin
             Rect.left := 137;
-            Rect.right := 283;
+            Rect.right := 283 + (Status.dwScale and 1);
             Rect.top := 24;
-            Rect.bottom := 35;
+            Rect.bottom := 35 + (Status.dwScale and 1);
             DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
         end;
     end;
@@ -6790,7 +6799,8 @@ begin
     // ポインタの座標を取得
     API_DragQueryPoint(dwParam, @Point);
     // ドロップされた場所の検出
-    bAdd := Point.x >= (LIST_ADD_THRESHOLD * Status.dwScale) shr 1;
+    if Status.dwScale = 2 then bAdd := Point.x >= LIST_ADD_THRESHOLD
+    else bAdd := Point.x >= (LIST_ADD_THRESHOLD * Status.dwScale) shr 1;
     bList := false;
     // ドロップされたファイル数を取得
     dwCount := API_DragQueryFile(dwParam, $FFFFFFFF, NULLPOINTER, NULL);
@@ -7922,8 +7932,13 @@ begin
     // 初期化
     dwLeft := WindowRect.left;
     dwTop := WindowRect.top;
-    dwWidth := (520 * Status.dwScale) shr 1;
-    dwHeight := (152 * Status.dwScale) shr 1;
+    if Status.dwScale = 2 then begin
+        dwWidth := WINDOW_WIDTH;
+        dwHeight := WINDOW_HEIGHT;
+    end else begin
+        dwWidth := (WINDOW_WIDTH * Status.dwScale) shr 1;
+        dwHeight := (WINDOW_HEIGHT * Status.dwScale) shr 1;
+    end;
     // 新しいサイズを取得
     dwWidth := (WindowRect.right - WindowRect.left) - (ClientRect.right - ClientRect.left) + dwWidth;
     dwHeight := (WindowRect.bottom - WindowRect.top) - (ClientRect.bottom - ClientRect.top) + dwHeight;
@@ -9781,8 +9796,12 @@ begin
     // SPC が開かれていない、演奏時間が無効、またはタイムアウトが発生した場合は終了
     if not Status.bOpen or not Option.bPlayTime or not longbool(Status.dwNextTimeout) then exit;
     // クリック位置を取得
-    X := Round((longint(lParam and $FFFF) shl 1) / Status.dwScale);
-    Y := Round((longint(lParam shr 16) shl 1) / Status.dwScale);
+    X := lParam and $FFFF;
+    Y := lParam shr 16;
+    if Status.dwScale <> 2 then begin
+        X := Trunc(longint(X shl 1) / Status.dwScale);
+        Y := Trunc(longint(Y shl 1) / Status.dwScale);
+    end;
     // クリック位置が範囲外の場合は終了
     if (X < 140) or (X > 280) or (Y < 27) or (Y >= 32) then exit;
     // クリック位置の割合を取得
