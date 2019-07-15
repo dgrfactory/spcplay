@@ -2325,7 +2325,7 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.18.0 (build 6670)';
+    SPCPLAY_VERSION = '2.18.0 (build 6674)';
     SNESAPU_VERSION = $21800;
     APPLINK_VERSION = $02170500;
 
@@ -2361,7 +2361,7 @@ const
     BUFFER_DRAWINFO: string = 'DRAWINFO 0 : ';
     BUFFER_FADELENG: string = 'FADELENG 0 : ';
     BUFFER_FEEDBACK: string = 'FEEDBACK 1 : ';
-    BUFFER_FONTNAME: string = 'FONTNAME 2 : ';
+    BUFFER_FONTNAME: string = 'FONTNAME 3 : ';
     BUFFER_HIDELENG: string = 'HIDELENG 0 : ';
     BUFFER_INFO____: string = 'INFO     0 : ';
     BUFFER_INTER___: string = 'INTER    0 : ';
@@ -2399,7 +2399,7 @@ const
     BUFFER_WAITLENG: string = 'WAITLENG 0 : ';
     BUFFER_WAVBLANK: string = 'WAVBLANK 0 : ';
     BUFFER_WAVEFMT_: string = 'WAVEFMT  0 : ';
-    FONT_NAME = 'Microsoft Applocale';
+    FONT_NAME: array[0..1] of string = ('Microsoft Applocale', 'Lucida Console');
     LIST_FILE: string = 'spcplay.stk';
     LIST_FILE_HEADER_A: string = 'SSDLabo Spcplay ListFile v1.0';
     LIST_FILE_HEADER_A_LEN = 29;
@@ -2768,7 +2768,6 @@ const
     MENU_FILE = 1;
     MENU_SETUP = 2;
     MENU_LIST = 3;
-    MENU_LOCALE = 4;
     MENU_FILE_OPEN_SIZE = 2;
     MENU_FILE_OPEN_BASE = 100;
     MENU_FILE_OPEN = MENU_FILE_OPEN_BASE;
@@ -2938,8 +2937,6 @@ const
     INFO_WAVE_FINISH_2: array[0..1] of string = (
         'MB です。',
         'MB.');
-    WARN_LOCALE_JA = '言語設定を日本語に戻しますか？' + CRLF + 'Do you want to display in Japanese locale?';
-    INFO_LOCALE_JA = '言語設定を日本語に戻しました。' + CRLF + 'SNES SPC700 Player を再起動してください。';
     DIALOG_OPEN_FILTER: array[0..1] of string = (
         'SNES SPC700 サウンド (*.spc)' + NULLCHAR + '*.spc;*.sp0;*.sp1;*.sp2;*.sp3;*.sp4;*.sp5;*.sp6;*.sp7;*.sp8;*.sp9' + NULLCHAR +
         'プレイリスト (*.lst)' + NULLCHAR + '*.lst' + NULLCHAR +
@@ -2966,7 +2963,6 @@ const
     STR_MENU_FILE: array[0..1] of pchar = ('ファイル(&F)', '&File');
     STR_MENU_SETUP: array[0..1] of pchar = ('設定(&S)', '&Settings');
     STR_MENU_LIST: array[0..1] of pchar = ('プレイリスト(&P)', '&Playlist');
-    STR_MENU_LOCALE = '日本語に戻す(&J)';
     STR_MENU_FILE_EXIT: array[0..1] of pchar = ('終了(&X)', 'E&xit');
     STR_MENU_SETUP_DEVICE: array[0..1] of pchar = ('サウンド デバイス(&D)', 'Sound &Devices');
     STR_MENU_SETUP_CHANNEL: array[0..1] of pchar = ('チャンネル(&C)', '&Channels');
@@ -3169,7 +3165,7 @@ var
         dwSaveFilterIndex: longint;                             // ファイル タイプのインデックス (Save)
         DragPoint: TPOINT;                                      // ドラッグ開始位置
         bDropCancel: longbool;                                  // ドロップ禁止フラグ
-        dwScale: longword;                                      // 表示倍率
+        dwScale: longint;                                       // 表示倍率
         BreakPoint: array[0..65535] of byte;                    // ブレイク ポイント スイッチ
         dwNextTick: longword;                                   // 次の命令実行スイッチ
         DSPCheat: array[0..127] of word;                        // DSP チート
@@ -3216,7 +3212,7 @@ var
         dwPlayOrder: longword;                                  // 演奏順序
         dwPriority: longword;                                   // 基本優先度
         dwRate: longword;                                       // サンプリング レート
-        dwScale: longword;                                      // 表示倍率
+        dwScale: longint;                                       // 表示倍率
         dwSeekFast: longword;                                   // 高速シーク
         dwSeekInt: longword;                                    // シーク キャッシュ保存間隔
         dwSeekMax: longword;                                    // シーク可能時間
@@ -3853,9 +3849,11 @@ begin
                         VK_F1..VK_F9: begin // F1 ～ F9 キー
                             // チャンネル マスクを設定
                             if dwKeyCode = VK_F9 then begin
-                                if Status.bCtrlButton then Option.dwMute := $0 else Option.dwMute := Option.dwMute xor $FF;
+                                if Status.bCtrlButton then Option.dwMute := $0
+                                else Option.dwMute := Option.dwMute xor $FF;
                             end else begin
-                                if Status.bCtrlButton then Option.dwMute := (1 shl (dwKeyCode - VK_F1)) xor $FF else Option.dwMute := Option.dwMute xor (1 shl (dwKeyCode - VK_F1));
+                                if Status.bCtrlButton then Option.dwMute := (1 shl (dwKeyCode - VK_F1)) xor $FF
+                                else Option.dwMute := Option.dwMute xor (1 shl (dwKeyCode - VK_F1));
                             end;
                             // 設定をリセット
                             cfMain.SPCReset(false);
@@ -3869,9 +3867,12 @@ begin
                         end;
                         VK_INSERT: cfMain.ListAdd(0); // Insert キー
                         VK_DELETE: cfMain.ListDelete(); // Delete キー
-                        VK_LEFT: if Status.bShiftButton then cfMain.SetFunction(-1, FUNCTION_TYPE_SEEK) else cfMain.SetChangeInfo(false, -1); // ← キー
-                        VK_RIGHT: if Status.bShiftButton then cfMain.SetFunction(1, FUNCTION_TYPE_SEEK) else cfMain.SetChangeInfo(false, 1); // → キー
-                        VK_RETURN: if Status.bShiftButton then cfMain.SPCPlay(PLAY_TYPE_RANDOM) else cfMain.SPCPlay(PLAY_TYPE_LIST); // Enter キー
+                        VK_LEFT: if Status.bShiftButton then cfMain.SetFunction(-1, FUNCTION_TYPE_SEEK)
+                            else cfMain.SetChangeInfo(false, -1); // ← キー
+                        VK_RIGHT: if Status.bShiftButton then cfMain.SetFunction(1, FUNCTION_TYPE_SEEK)
+                            else cfMain.SetChangeInfo(false, 1); // → キー
+                        VK_RETURN: if Status.bShiftButton then cfMain.SPCPlay(PLAY_TYPE_RANDOM)
+                            else cfMain.SPCPlay(PLAY_TYPE_LIST); // Enter キー
                         VK_NUMPAD1, VK_NUMPAD3: cfMain.SetFunction(dwKeyCode - VK_NUMPAD2, FUNCTION_TYPE_SPEED); // テンキー 1, 3
                         VK_NUMPAD2: cfMain.ListNextPlay(PLAY_ORDER_NEXT, LIST_NEXT_PLAY_SELECT); // テンキー 2
                         VK_NUMPAD4, VK_NUMPAD6: cfMain.SetFunction(dwKeyCode - VK_NUMPAD5, FUNCTION_TYPE_SEEK); // テンキー 4, 6
@@ -3905,27 +3906,33 @@ begin
                 end;
                 WM_LBUTTONDOWN, WM_LBUTTONDBLCLK: begin // 左ボタン
                     if Msg.hWnd = cfMain.cwStaticMain.hWnd then begin
-                        if Status.bShiftButton then cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_START_TIME, Msg.lParam) else cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_SEEK, Msg.lParam);
+                        if Status.bShiftButton then cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_START_TIME, Msg.lParam)
+                        else cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_SEEK, Msg.lParam);
                     end else if Msg.hWnd = cfMain.cwPlayList.hWnd then begin
                         cfMain.DragFile(Msg.msg, Msg.wParam, Msg.lParam);
                     end;
                 end;
                 WM_RBUTTONDOWN, WM_RBUTTONDBLCLK: begin // 右ボタン
                     if Msg.hWnd = cfMain.cwStaticMain.hWnd then begin
-                        if Status.bShiftButton then cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_LIMIT_TIME, Msg.lParam) else cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_SEEK, Msg.lParam);
+                        if Status.bShiftButton then cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_LIMIT_TIME, Msg.lParam)
+                        else cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_SEEK, Msg.lParam);
                     end else if Msg.hWnd = cfMain.cwPlayList.hWnd then begin
                         cfMain.DragFile(Msg.msg, Msg.wParam, Msg.lParam);
                     end;
                     cfMain.SetChangeFunction(true);
                 end;
                 WM_RBUTTONUP: cfMain.SetChangeFunction(true); // 右ボタン
-                WM_XBUTTONDOWN, WM_XBUTTONDBLCLK: if Status.bShiftButton xor longbool(Msg.wParam and $40) then cfMain.SetChangeInfo(false, -1) else cfMain.SetChangeInfo(false, 1); // 拡張ボタン
+                WM_XBUTTONDOWN, WM_XBUTTONDBLCLK: if Status.bShiftButton xor longbool(Msg.wParam and $40) then cfMain.SetChangeInfo(false, -1)
+                    else cfMain.SetChangeInfo(false, 1); // 拡張ボタン
                 WM_MOUSEMOVE: if Msg.hWnd = cfMain.cwPlayList.hWnd then begin // マウス移動
                     cfMain.DragFile(Msg.msg, Msg.wParam, Msg.lParam);
                     Msg.msg := WM_LBUTTONUP; // 移動をキャンセル
                 end;
                 WM_MOUSEWHEEL: // ホイール：Ctrl キーが押されている場合は移動、 Ctrl キーが押されていない場合はスクロール
-                    if Status.bCtrlButton then if longbool(Msg.wParam and $80000000) then cfMain.ListDown() else cfMain.ListUp() else Msg.hWnd := cfMain.cwPlayList.hWnd;
+                    if Status.bCtrlButton then
+                        if longbool(Msg.wParam and $80000000) then cfMain.ListDown()
+                        else cfMain.ListUp()
+                    else Msg.hWnd := cfMain.cwPlayList.hWnd;
             end;
             // メッセージを転送する場合
             if bTransmitMsg then begin
@@ -4520,7 +4527,8 @@ end;
 // ================================================================================
 procedure CMENU.AppendMenu(dwID: longword; lpString: pointer; bRadio: longbool);
 begin
-    if bRadio then API_AppendMenu(hMenu, MF_STRING or MF_RADIOCHECK, dwID, lpString) else AppendMenu(dwID, lpString);
+    if bRadio then API_AppendMenu(hMenu, MF_STRING or MF_RADIOCHECK, dwID, lpString)
+    else AppendMenu(dwID, lpString);
 end;
 
 // ================================================================================
@@ -4576,7 +4584,8 @@ end;
 // ================================================================================
 procedure CMENU.InsertMenu(dwID: longword; dwPosition: longword; lpString: pointer; bRadio: longbool);
 begin
-    if bRadio then API_InsertMenu(hMenu, dwPosition, MF_BYCOMMAND or MF_STRING or MF_RADIOCHECK, dwID, lpString) else InsertMenu(dwID, dwPosition, lpString);
+    if bRadio then API_InsertMenu(hMenu, dwPosition, MF_BYCOMMAND or MF_STRING or MF_RADIOCHECK, dwID, lpString)
+    else InsertMenu(dwID, dwPosition, lpString);
 end;
 
 // ================================================================================
@@ -4612,7 +4621,8 @@ var
 begin
     dwFlags := API_GetMenuState(hMenu, dwId, MF_BYCOMMAND);
     if bCheck = longbool(dwFlags and MF_CHECKED) then exit;
-    if bCheck then dwFlags := API_CheckMenuItem(hMenu, dwID, MF_CHECKED) else dwFlags := API_CheckMenuItem(hMenu, dwID, MF_UNCHECKED);
+    if bCheck then dwFlags := API_CheckMenuItem(hMenu, dwID, MF_CHECKED)
+    else dwFlags := API_CheckMenuItem(hMenu, dwID, MF_UNCHECKED);
     if bCheck <> longbool(dwFlags and MF_CHECKED) then API_EnableMenuItem(hMenu, dwID, longword(API_EnableMenuItem(hMenu, dwID, MF_GRAYED)));
 end;
 
@@ -4625,7 +4635,8 @@ var
 begin
     dwFlags := API_GetMenuState(hMenu, dwId, MF_BYCOMMAND);
     if bEnable <> longbool(dwFlags and MF_GRAYED) then exit;
-    if bEnable then API_EnableMenuItem(hMenu, dwID, MF_ENABLED) else API_EnableMenuItem(hMenu, dwID, MF_GRAYED);
+    if bEnable then API_EnableMenuItem(hMenu, dwID, MF_ENABLED)
+    else API_EnableMenuItem(hMenu, dwID, MF_GRAYED);
 end;
 
 
@@ -4885,7 +4896,8 @@ begin
         // ファイルのロードに失敗した場合はループを再開
         if not longbool(dwReadSize) then continue;
         // ファイルを追加
-        if bAdd then cwFileList.SendMessage(LB_ADDSTRING, NULL, longword(lpFile)) else cwFileList.SendMessage(LB_INSERTSTRING, dwIndex + I, longword(lpFile));
+        if bAdd then cwFileList.SendMessage(LB_ADDSTRING, NULL, longword(lpFile))
+        else cwFileList.SendMessage(LB_INSERTSTRING, dwIndex + I, longword(lpFile));
         // ID666 フォーマット形式を取得
         GetID666Format(SPCHdr);
         // タイトルを取得
@@ -4958,6 +4970,7 @@ var
     sEXEPath: string;
     sCmdLine: string;
     sChPath: string;
+    sFontName: string;
     dwLeft: longint;
     dwTop: longint;
     hWndApp: longword;
@@ -5022,10 +5035,10 @@ end;
 
 function ScalableWindowBox(nLeft: longint; nTop: longint; nWidth: longint; nHeight: longint): TBOX;
 begin
-    Box.left := nLeft shl Status.dwScale;
-    Box.top := nTop shl Status.dwScale;
-    Box.width := nWidth shl Status.dwScale;
-    Box.height := nHeight shl Status.dwScale;
+    Box.left := (nLeft * Status.dwScale) shr 1;
+    Box.top := (nTop * Status.dwScale) shr 1;
+    Box.width := (nWidth * Status.dwScale) shr 1;
+    Box.height := (nHeight * Status.dwScale) shr 1;
     result := Box;
 end;
 
@@ -5203,7 +5216,7 @@ begin
     Status.DragPoint.x := -1;
     Status.DragPoint.y := -1;
     Status.bDropCancel := false;
-    Status.dwScale := 0;
+    Status.dwScale := 2;
     API_ZeroMemory(@Status.BreakPoint, 65536);
     Status.dwNextTick := 0;
     API_ZeroMemory(@Status.DSPCheat, 256);
@@ -5222,7 +5235,7 @@ begin
     Option.dwDrawInfo := 0;
     Option.dwFadeTime := 10000;
     Option.dwFeedback := FEEDBACK_000;
-    Option.sFontName := FONT_NAME;
+    Option.sFontName := '';
     Option.dwHideTime := 1000;
     Option.dwInfo := INFO_INDICATOR;
     Option.dwInter := INTER_GAUSS;
@@ -5325,7 +5338,8 @@ begin
     else Status.dwLanguage := 1;
     if Status.dwLanguage > 1 then Status.dwLanguage := 0;
     if Option.dwVolumeColor > 3 then Option.dwVolumeColor := 0;
-    if Option.dwScale >= 200 then Status.dwScale := 1;
+    if Option.dwScale >= 200 then Status.dwScale := 4
+    else if Option.dwScale >= 150 then Status.dwScale := 3;
     Status.dwPlayOrder := Option.dwPlayOrder;
 {$IFNDEF TRY700A}{$IFNDEF TRY700W}
     // SPCPLAY.EXE の破損を確認
@@ -5626,12 +5640,13 @@ begin
     cmMain.AppendMenu(MENU_FILE, STR_MENU_FILE[Status.dwLanguage], cmFile.hMenu);
     cmMain.AppendMenu(MENU_SETUP, STR_MENU_SETUP[Status.dwLanguage], cmSetup.hMenu);
     cmMain.AppendMenu(MENU_LIST, STR_MENU_LIST[Status.dwLanguage], cmList.hMenu);
-    if not longbool(Option.dwLanguage) and longbool(Status.dwLanguage) then cmMain.AppendMenu(MENU_LOCALE, pchar(STR_MENU_LOCALE));
     API_SetMenu(hWndApp, cmMain.hMenu);
     // フォントを作成
     cfMain := CFONT.Create();
     ScalableWindowBox(0, 0, 6, 12);
-    cfMain.CreateFont(pchar(Option.sFontName), Box.height, Box.width, false, false, false, false);
+    if Length(Option.sFontName) > 0 then sFontName := Option.sFontName
+    else sFontName := FONT_NAME[Status.dwLanguage];
+    cfMain.CreateFont(pchar(sFontName), Box.height, Box.width, false, false, false, false);
     // プレイリスト、ボタンを作成
     hFontApp := cfMain.hFont;
     lpString := pchar(ITEM_BUTTON);
@@ -5675,7 +5690,7 @@ begin
     cwPlayList := CWINDOW.Create();
     cwPlayList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''), ID_LIST_PLAY, LBS_DISABLENOSCROLL or LBS_NOTIFY or WS_TABSTOP or WS_VISIBLE or WS_VSCROLL, WS_EX_CLIENTEDGE or WS_EX_NOPARENTNOTIFY, ScalableWindowBox(300, 0, 215, 124));
     ScalableWindowBox(300, 0, 215, Option.dwListHeight);
-    if longbool(Status.dwScale) then Box.top := 4;
+    Box.top := (Status.dwScale - 2) shl 1;
     API_MoveWindow(cwPlayList.hWnd, Box.left, Box.top, Box.width, Box.height, false); // プレイリストが小さくなるバグ回避
     cwButtonListAdd := CWINDOW.Create();
     cwButtonListAdd.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_APPEND), ID_BUTTON_ADD, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(300, 127, 54, 21));
@@ -6176,24 +6191,26 @@ var
 
 function DrawInfoBitBlt(nXDest: longint; nYDest: longint; nWidthDest: longint; nHeightDest: longint; hdcSrc: longword; nXSrc: longint; nYSrc: longint): longbool;
 begin
-    if longbool(Status.dwScale) then begin
-        result := API_StretchBlt(Status.hDCStatic, nXDest shl Status.dwScale, nYDest shl Status.dwScale, nWidthDest shl Status.dwScale, nHeightDest shl Status.dwScale, hdcSrc, nXSrc, nYSrc, nWidthDest, nHeightDest, SRCCOPY);
-    end else begin
+    if Status.dwScale = 2 then begin
         result := API_BitBlt(Status.hDCStatic, nXDest, nYDest, nWidthDest, nHeightDest, hdcSrc, nXSrc, nYSrc, SRCCOPY);
+    end else begin
+        result := API_StretchBlt(Status.hDCStatic, (nXDest * Status.dwScale) shr 1, (nYDest * Status.dwScale) shr 1,
+            (nWidthDest * Status.dwScale) shr 1, (nHeightDest * Status.dwScale) shr 1 + (Status.dwScale and 1),
+            hdcSrc, nXSrc, nYSrc, nWidthDest, nHeightDest, SRCCOPY);
     end;
 end;
 
 function DrawInfoFillRect(lprc: pointer; hbr: longword): longint;
 begin
-    if longbool(Status.dwScale) then begin
-        API_MoveMemory(@CopiedRect, lprc, SizeOf(TRECT));
-        CopiedRect.left := CopiedRect.left shl Status.dwScale;
-        CopiedRect.top := CopiedRect.top shl Status.dwScale;
-        CopiedRect.right := CopiedRect.right shl Status.dwScale;
-        CopiedRect.bottom := CopiedRect.bottom shl Status.dwScale;
-        result := API_FillRect(Status.hDCStatic, @CopiedRect, hbr);
-    end else begin
+    if Status.dwScale = 2 then begin
         result := API_FillRect(Status.hDCStatic, lprc, hbr);
+    end else begin
+        API_MoveMemory(@CopiedRect, lprc, SizeOf(TRECT));
+        CopiedRect.left := (CopiedRect.left * Status.dwScale) shr 1;
+        CopiedRect.top := (CopiedRect.top * Status.dwScale) shr 1;
+        CopiedRect.right := (CopiedRect.right * Status.dwScale) shr 1;
+        CopiedRect.bottom := (CopiedRect.bottom * Status.dwScale) shr 1;
+        result := API_FillRect(Status.hDCStatic, @CopiedRect, hbr);
     end;
 end;
 
@@ -6203,7 +6220,8 @@ begin
     if bRedrawInfo then begin
         // バーを描画
         if cNowLevel > 0 then begin
-            DrawInfoBitBlt(dwLeft, COLOR_BAR_HEIGHT_X2 - longword(cNowLevel), dwWidth, longword(cNowLevel), Status.hDCVolumeBuffer, dwColor, COLOR_BAR_HEIGHT - longword(cNowLevel));
+            DrawInfoBitBlt(dwLeft, COLOR_BAR_HEIGHT_X2 - longword(cNowLevel), dwWidth, longword(cNowLevel),
+                Status.hDCVolumeBuffer, dwColor, COLOR_BAR_HEIGHT - longword(cNowLevel));
         end;
         // 空白部分を描画
         if cNowLevel < COLOR_BAR_HEIGHT then begin
@@ -6218,7 +6236,8 @@ begin
         if cLastLevel = cNowLevel then exit;
         // レベル値が前回より上がった場合はバーを描画
         if cLastLevel < cNowLevel then begin
-            DrawInfoBitBlt(dwLeft, COLOR_BAR_HEIGHT_X2 - longword(cNowLevel), dwWidth, longword(cNowLevel - cLastLevel), Status.hDCVolumeBuffer, dwColor, COLOR_BAR_HEIGHT - longword(cNowLevel));
+            DrawInfoBitBlt(dwLeft, COLOR_BAR_HEIGHT_X2 - longword(cNowLevel), dwWidth, longword(cNowLevel - cLastLevel),
+                Status.hDCVolumeBuffer, dwColor, COLOR_BAR_HEIGHT - longword(cNowLevel));
         // レベル値が前回より下がった場合は空白部分を描画
         end else begin
             Rect.left := dwLeft;
@@ -6438,7 +6457,8 @@ begin
                     Status.NowLevel.Channel[I].cChannelPitch := GetPitchLevel(DspVoice.Pitch);
                     Status.NowLevel.Channel[I].cChannelEnvelope := GetLevelAbs(DspVoice.CurrentEnvelope);
                     if Option.bVolumeReset then begin
-                        if not longbool(Voice.VolumeMaxLeft) and not longbool(Voice.VolumeMaxRight) then Wave.dwTimeout[I] := Min(Option.dwHideTime, Wave.dwTimeout[I] + Option.dwBufferTime) else Wave.dwTimeout[I] := 0;
+                        if not longbool(Voice.VolumeMaxLeft) and not longbool(Voice.VolumeMaxRight) then Wave.dwTimeout[I] := Min(Option.dwHideTime, Wave.dwTimeout[I] + Option.dwBufferTime)
+                        else Wave.dwTimeout[I] := 0;
                         V := Voice.MixFlag and $1;
                         if Wave.dwTimeout[I] = Option.dwHideTime then Inc(V);
                     end else begin
@@ -6539,7 +6559,9 @@ begin
             UpdateNumWrite(16, IntToHex(StrData, V, 4));
             V := DspReg.EchoWaveform shl 8;
             UpdateNumWrite(36, IntToHex(StrData, V, 4));
-            if longbool(T64Count) then if bytebool(DspReg.EchoDelay) then Inc(V, ((DspReg.EchoDelay and $F) shl 11) - 1) else Inc(V, 3);
+            if longbool(T64Count) then
+                if bytebool(DspReg.EchoDelay) then Inc(V, ((DspReg.EchoDelay and $F) shl 11) - 1)
+                else Inc(V, 3);
             UpdateNumWrite(41, IntToHex(StrData, V, 4));
             V := DspReg.Flags;
             Y := 4;
@@ -6768,7 +6790,7 @@ begin
     // ポインタの座標を取得
     API_DragQueryPoint(dwParam, @Point);
     // ドロップされた場所の検出
-    bAdd := (Point.x shr Status.dwScale) >= LIST_ADD_THRESHOLD;
+    bAdd := Point.x >= (LIST_ADD_THRESHOLD * Status.dwScale) shr 1;
     bList := false;
     // ドロップされたファイル数を取得
     dwCount := API_DragQueryFile(dwParam, $FFFFFFFF, NULLPOINTER, NULL);
@@ -6791,7 +6813,8 @@ begin
         // ファイルの種類を取得
         dwType := GetFileType(lpFile, dwCount = 1, dwCount = 1);
         case dwType of
-            FILE_TYPE_SPC: if (dwCount = 1) and not bAdd then SPCLoad(lpFile, true) else cwSortList.SendMessage(LB_ADDSTRING, NULL, longword(lpFile));
+            FILE_TYPE_SPC: if (dwCount = 1) and not bAdd then SPCLoad(lpFile, true)
+                else cwSortList.SendMessage(LB_ADDSTRING, NULL, longword(lpFile));
             FILE_TYPE_LIST_A, FILE_TYPE_LIST_B: if not bList then bList := ListLoad(lpFile, dwType, false);
             FILE_TYPE_FOLDER: begin
                 // タイトルを更新
@@ -6801,7 +6824,8 @@ begin
                 API_ZeroMemory(@cFilePath[0], 260);
                 API_MoveMemory(@cFilePath[0], lpFile, dwPathSize);
                 if not IsPathSeparator(string(cFilePath), dwPathSize) then begin
-                    if longbool(Pos('/', string(cFilePath))) then cFilePath[dwPathSize] := '/' else cFilePath[dwPathSize] := '\';
+                    if longbool(Pos('/', string(cFilePath))) then cFilePath[dwPathSize] := '/'
+                    else cFilePath[dwPathSize] := '\';
                     Inc(dwPathSize);
                 end;
                 cFilePath[dwPathSize] := '*';
@@ -7010,7 +7034,8 @@ begin
     end;
     if bAdd then dwSelect := dwCount else dwSelect := dwIndex;
     // ファイルを追加
-    if bAdd then cwFileList.SendMessage(LB_ADDSTRING, NULL, longword(Status.lpSPCFile)) else cwFileList.SendMessage(LB_INSERTSTRING, dwIndex, longword(Status.lpSPCFile));
+    if bAdd then cwFileList.SendMessage(LB_ADDSTRING, NULL, longword(Status.lpSPCFile))
+    else cwFileList.SendMessage(LB_INSERTSTRING, dwIndex, longword(Status.lpSPCFile));
     // タイトルを取得
     GetMem(lpTitle, 33);
     API_ZeroMemory(lpTitle, 33);
@@ -7376,7 +7401,8 @@ begin
                 end else begin
                     for X := 0 to dwCount - 1 do begin
                         J := cwPlayList.SendMessage(LB_GETITEMDATA, X, NULL) - L;
-                        if longbool(J) then cwPlayList.SendMessage(LB_SETITEMDATA, X, J) else dwIndex := X;
+                        if longbool(J) then cwPlayList.SendMessage(LB_SETITEMDATA, X, J)
+                        else dwIndex := X;
                     end;
                     J := K - L + 1;
                 end;
@@ -7677,7 +7703,8 @@ begin
     hMonitor := API_MonitorFromRect(@WindowRect, MONITOR_DEFAULTTOPRIMARY);
     // スクリーン サイズを取得
     MonitorInfo.cdSize := SizeOf(TMONITORINFO);
-    if API_GetMonitorInfo(hMonitor, @MonitorInfo) then ScreenRect := MonitorInfo.rcWork else API_SystemParametersInfo(SPI_GETWORKAREA, NULL, @ScreenRect, NULL);
+    if API_GetMonitorInfo(hMonitor, @MonitorInfo) then ScreenRect := MonitorInfo.rcWork
+    else API_SystemParametersInfo(SPI_GETWORKAREA, NULL, @ScreenRect, NULL);
     // 新しいウィンドウ位置を取得
     dwWidth := WindowRect.right - WindowRect.left;
     dwHeight := WindowRect.bottom - WindowRect.top;
@@ -7773,7 +7800,8 @@ begin
                 // ファイルの種類を取得
                 dwType := GetFileType(lpFile, dwCount = 1, dwCount = 1);
                 case dwType of
-                    FILE_TYPE_SPC: if dwCount = 1 then SPCLoad(lpFile, true) else cwSortList.SendMessage(LB_ADDSTRING, NULL, longword(lpFile));
+                    FILE_TYPE_SPC: if dwCount = 1 then SPCLoad(lpFile, true)
+                        else cwSortList.SendMessage(LB_ADDSTRING, NULL, longword(lpFile));
                     FILE_TYPE_LIST_A, FILE_TYPE_LIST_B: if not bList then bList := ListLoad(lpFile, dwType, false);
                     FILE_TYPE_SCRIPT700: if dwCount = 1 then ReloadScript700(lpFile);
                 end;
@@ -7844,7 +7872,8 @@ begin
     // バッファを解放
     FreeMem(lpBuffer, 1024);
     // 最初から演奏
-    if Status.bPlay then SPCStop(true) else SPCPlay(PLAY_TYPE_PLAY);
+    if Status.bPlay then SPCStop(true)
+    else SPCPlay(PLAY_TYPE_PLAY);
     // 成功
     result := true;
 end;
@@ -7893,8 +7922,8 @@ begin
     // 初期化
     dwLeft := WindowRect.left;
     dwTop := WindowRect.top;
-    dwWidth := 520 shl Status.dwScale;
-    dwHeight := 152 shl Status.dwScale;
+    dwWidth := (520 * Status.dwScale) shr 1;
+    dwHeight := (152 * Status.dwScale) shr 1;
     // 新しいサイズを取得
     dwWidth := (WindowRect.right - WindowRect.left) - (ClientRect.right - ClientRect.left) + dwWidth;
     dwHeight := (WindowRect.bottom - WindowRect.top) - (ClientRect.bottom - ClientRect.top) + dwHeight;
@@ -7983,7 +8012,8 @@ begin
     SPCCache.SPCOutPort.dwPort := Apu.SPCOutPort.dwPort;
     SPCBuf.Hdr.dwSongLen := Apu.T64Count^;
     // 次のキャッシュ時間を取得
-    if dwIndex = Option.dwSeekNum - 1 then Status.dwNextCache := 0 else Status.dwNextCache := Status.SPCCache[dwIndex + 1].Spc.Hdr.dwFadeLen;
+    if dwIndex = Option.dwSeekNum - 1 then Status.dwNextCache := 0
+    else Status.dwNextCache := Status.SPCCache[dwIndex + 1].Spc.Hdr.dwFadeLen;
 end;
 
 // ================================================================================
@@ -8169,7 +8199,10 @@ begin
     API_FillRect(Status.hDCVolumeBuffer, @Rect, ORG_COLOR_WINDOWTEXT);
     Color.dwColor := API_GetPixel(Status.hDCVolumeBuffer, 1, 0);
     K := 299 * Color.r + 587 * Color.g + 114 * Color.b;
-    if longbool(Option.dwVolumeColor) then L := (Option.dwVolumeColor - 1) * COLOR_BAR_NUM else if K >= COLOR_BRIGHT_FORE then L := COLOR_BAR_NUM shl 1 else if J >= COLOR_BRIGHT_BACK then L := COLOR_BAR_NUM else L := 0;
+    if longbool(Option.dwVolumeColor) then L := (Option.dwVolumeColor - 1) * COLOR_BAR_NUM
+    else if K >= COLOR_BRIGHT_FORE then L := COLOR_BAR_NUM shl 1
+    else if J >= COLOR_BRIGHT_BACK then L := COLOR_BAR_NUM
+    else L := 0;
     // インジケータ用のグラフィックを描画
     K := 0;
     Color.dwColor := K;
@@ -8433,7 +8466,8 @@ begin
     // 演奏速度を設定
     Apu.SetAPUSpeed(Option.dwSpeedBas + Round(Option.dwSpeedBas / SPEED_100 * Option.dwSpeedTun));
     // ピッチを設定
-    if Option.bPitchAsync then Apu.SetDSPPitch(Round(Option.dwSpeedBas / SPEED_100 * Option.dwPitch)) else Apu.SetDSPPitch(Option.dwPitch);
+    if Option.bPitchAsync then Apu.SetDSPPitch(Round(Option.dwSpeedBas / SPEED_100 * Option.dwPitch))
+    else Apu.SetDSPPitch(Option.dwPitch);
     // 左右拡散度を設定
     Apu.SetDSPStereo(Option.dwSeparate);
     // フィードバック反転度を設定
@@ -8691,7 +8725,8 @@ begin
     // シーク位置に最も近いキャッシュの場所を取得
     J := -1;
     for I := 0 to Option.dwSeekNum - 1 do if dwTime >= Status.SPCCache[I].Spc.Hdr.dwSongLen then J := I;
-    if not bCache or (J = -1) then T64Cache := 0 else T64Cache := Status.SPCCache[J].Spc.Hdr.dwSongLen;
+    if not bCache or (J = -1) then T64Cache := 0
+    else T64Cache := Status.SPCCache[J].Spc.Hdr.dwSongLen;
     // 大まかな位置までシーク
     if dwTime > T64Count then begin
         // 現在位置よりキャッシュ位置の方が近い場合はキャッシュを読み込む
@@ -8800,9 +8835,11 @@ begin
     if not Status.bOpen then exit;
     // 情報を作成
     sInfo := 'Title    : ';
-    if not bytebool(Spc.Hdr.Title[0]) then sInfo := Concat(sInfo, '(Unknown)') else sInfo := Concat(sInfo, string(Spc.Hdr.Title));
+    if not bytebool(Spc.Hdr.Title[0]) then sInfo := Concat(sInfo, '(Unknown)')
+    else sInfo := Concat(sInfo, string(Spc.Hdr.Title));
     sInfo := Concat(sInfo, CRLF, 'Game     : ');
-    if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Game[0]) then sInfo := Concat(sInfo, '(Unknown)') else sInfo := Concat(sInfo, string(Spc.Hdr.Game));
+    if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Game[0]) then sInfo := Concat(sInfo, '(Unknown)')
+    else sInfo := Concat(sInfo, string(Spc.Hdr.Game));
     sInfo := Concat(sInfo, CRLF, 'Time     :  :  :  .');
     case Option.dwInfo of
         INFO_MIXER, INFO_CHANNEL_1, INFO_CHANNEL_2, INFO_CHANNEL_3, INFO_CHANNEL_4, INFO_SCRIPT700: begin
@@ -8820,18 +8857,24 @@ begin
         end;
         INFO_SPC_1: begin
             sInfo := Concat(sInfo, CRLF, 'Artist   : ');
-            if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Artist[0]) then sInfo := Concat(sInfo, '(Unknown)') else sInfo := Concat(sInfo, string(Spc.Hdr.Artist));
+            if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Artist[0]) then sInfo := Concat(sInfo, '(Unknown)')
+            else sInfo := Concat(sInfo, string(Spc.Hdr.Artist));
             sInfo := Concat(sInfo, CRLF, 'Dumper   : ');
-            if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Dumper[0]) then sInfo := Concat(sInfo, '(Unknown)') else sInfo := Concat(sInfo, string(Spc.Hdr.Dumper));
+            if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Dumper[0]) then sInfo := Concat(sInfo, '(Unknown)')
+            else sInfo := Concat(sInfo, string(Spc.Hdr.Dumper));
             sInfo := Concat(sInfo, CRLF, 'Date     : ');
-            if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Date[0]) then sInfo := Concat(sInfo, '(Unknown)') else sInfo := Concat(sInfo, string(Spc.Hdr.Date));
+            if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Date[0]) then sInfo := Concat(sInfo, '(Unknown)')
+            else sInfo := Concat(sInfo, string(Spc.Hdr.Date));
             sInfo := Concat(sInfo, CRLF, 'Comment  : ');
-            if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Comment[0]) then sInfo := Concat(sInfo, '(Unknown)') else sInfo := Concat(sInfo, string(Spc.Hdr.Comment));
+            if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Comment[0]) then sInfo := Concat(sInfo, '(Unknown)')
+            else sInfo := Concat(sInfo, string(Spc.Hdr.Comment));
             sInfo := Concat(sInfo, CRLF, 'PlayTime : ');
-            if not bytebool(Spc.Hdr.TagFormat) or not longbool(Spc.Hdr.dwSongLen) then sInfo := Concat(sInfo, '(Unknown)') else begin
+            if not bytebool(Spc.Hdr.TagFormat) or not longbool(Spc.Hdr.dwSongLen) then sInfo := Concat(sInfo, '(Unknown)')
+            else begin
                 sBuffer := IntToStr(Spc.Hdr.dwSongLen);
                 sInfo := Concat(sInfo, sBuffer, ' sec', StringOfChar(' ', 10 - Length(sBuffer)));
-                if not longbool(Spc.Hdr.dwFadeLen) then sInfo := Concat(sInfo, '(No Fadeout)') else sInfo := Concat(sInfo, 'FadeTime : ', IntToStr(Spc.Hdr.dwFadeLen), ' ms');
+                if not longbool(Spc.Hdr.dwFadeLen) then sInfo := Concat(sInfo, '(No Fadeout)')
+                else sInfo := Concat(sInfo, 'FadeTime : ', IntToStr(Spc.Hdr.dwFadeLen), ' ms');
             end;
         end;
         INFO_SPC_2: begin
@@ -8847,7 +8890,8 @@ begin
                 ID666_TEXT: sInfo := Concat(sInfo, 'ID666 Text Format');
                 ID666_BINARY: sInfo := Concat(sInfo, 'ID666 Binary Format');
             end;
-            if not bytebool(Spc.Hdr.TagFormat) then sBuffer := '(Unknown)' else case Spc.Hdr.Emulator and $F of
+            if not bytebool(Spc.Hdr.TagFormat) then sBuffer := '(Unknown)'
+            else case Spc.Hdr.Emulator and $F of
                 $0: sBuffer := '(Unknown)';
                 $1: sBuffer := 'ZSNES';
                 $2: sBuffer := 'Snes9x';
@@ -8895,7 +8939,8 @@ begin
     cwButtonStop.SetWindowEnable(Status.bPlay);
     bUp := Status.bPlay and not Status.bPause;
     bDown := Status.bShiftButton;
-    if Status.bChangePlay <> bUp then if bUp then cwButtonPlay.SetCaption(pchar(STR_BUTTON_PAUSE)) else cwButtonPlay.SetCaption(pchar(STR_BUTTON_PLAY));
+    if Status.bChangePlay <> bUp then if bUp then cwButtonPlay.SetCaption(pchar(STR_BUTTON_PAUSE))
+    else cwButtonPlay.SetCaption(pchar(STR_BUTTON_PLAY));
     if Status.bChangeShift <> bDown then if bDown then begin
         cwButtonListAdd.SetCaption(pchar(STR_BUTTON_INSERT));
     end else begin
@@ -9019,7 +9064,8 @@ begin
             TITLE_INFO_SPEED: sInfo := Concat(sInfo, TITLE_INFO_SPEED_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
             TITLE_INFO_AMP: sInfo := Concat(sInfo, TITLE_INFO_AMP_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
             TITLE_INFO_SEEK: begin
-                if Status.dwInfo >= 0 then sPlus := TITLE_INFO_PLUS[Status.dwLanguage] else sPlus := TITLE_INFO_MINUS[Status.dwLanguage];
+                if Status.dwInfo >= 0 then sPlus := TITLE_INFO_PLUS[Status.dwLanguage]
+                else sPlus := TITLE_INFO_MINUS[Status.dwLanguage];
                 sInfo := Concat(sInfo, TITLE_INFO_SEEK_HEADER[Status.dwLanguage], sPlus, IntToStr(Abs(Status.dwInfo)), STR_MENU_SETUP_MSEC[Status.dwLanguage]);
             end;
         end;
@@ -9029,7 +9075,8 @@ begin
         // 最小化している場合
         if longbool(Status.dwTitle and TITLE_MINIMIZE) then begin
             // SPC のタイトルを追加
-            if not bytebool(Spc.Hdr.Title[0]) then sInfo := Concat(sInfo, TITLE_NAME_UNKNOWN) else sInfo := Concat(sInfo, string(Spc.Hdr.Title));
+            if not bytebool(Spc.Hdr.Title[0]) then sInfo := Concat(sInfo, TITLE_NAME_UNKNOWN)
+            else sInfo := Concat(sInfo, string(Spc.Hdr.Title));
             if bytebool(Spc.Hdr.TagFormat) and bytebool(Spc.Hdr.Game[0]) then sInfo := Concat(sInfo, TITLE_NAME_SEPARATOR[Status.dwLanguage], string(Spc.Hdr.Game));
             sInfo := Concat(sInfo, TITLE_NAME_HEADER[Status.dwLanguage], Copy(string(Status.lpSPCName), 1, GetSize(Status.lpSPCName, 1023)), TITLE_NAME_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage]);
         end else begin
@@ -9472,7 +9519,8 @@ begin
     // バッファを確保
     GetMem(lpData, dwSizeB);
     // 最初の無音を出力
-    if Option.dwBit = BIT_8 then API_FillMemory(lpData, dwSizeB, $80) else API_ZeroMemory(lpData, dwSizeB);
+    if Option.dwBit = BIT_8 then API_FillMemory(lpData, dwSizeB, $80)
+    else API_ZeroMemory(lpData, dwSizeB);
     if longbool(dwBlank) then for I := 0 to dwBlank - 1 do begin
         API_WriteFile(hFile, lpData, dwSizeB, @dwSizeT, NULLPOINTER);
         Inc(dwSizeP, dwSizeB);
@@ -9504,7 +9552,8 @@ begin
         end;
     end;
     // 最後の無音 (1000ms) を出力
-    if Option.dwBit = BIT_8 then API_FillMemory(lpData, dwSizeB, $80) else API_ZeroMemory(lpData, dwSizeB);
+    if Option.dwBit = BIT_8 then API_FillMemory(lpData, dwSizeB, $80)
+    else API_ZeroMemory(lpData, dwSizeB);
     for I := 0 to 9 do begin
         API_WriteFile(hFile, lpData, dwSizeB, @dwSizeT, NULLPOINTER);
         Inc(dwSizeL, dwSizeB);
@@ -9631,20 +9680,11 @@ begin
     cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
 end;
 
-procedure UpdateLocale();
-begin
-    // 確認メッセージを表示
-    if cwWindowMain.MessageBox(pchar(WARN_LOCALE_JA), pchar(DEFAULT_TITLE), MB_ICONQUESTION or MB_YESNO or MB_DEFBUTTON2) <> IDYES then exit;
-    // 言語設定を更新
-    Option.dwLanguage := LOCALE_JA;
-    // メッセージを表示
-    cwWindowMain.MessageBox(pchar(INFO_LOCALE_JA), pchar(DEFAULT_TITLE), MB_ICONINFORMATION or MB_OK);
-end;
-
 procedure ChangeStaticClick();
 begin
     // 情報表示切替
-    if Status.bShiftButton then SetChangeInfo(false, -1) else SetChangeInfo(false, 1);
+    if Status.bShiftButton then SetChangeInfo(false, -1)
+    else SetChangeInfo(false, 1);
 end;
 
 function LostFocusWindow(): longword;
@@ -9741,8 +9781,8 @@ begin
     // SPC が開かれていない、演奏時間が無効、またはタイムアウトが発生した場合は終了
     if not Status.bOpen or not Option.bPlayTime or not longbool(Status.dwNextTimeout) then exit;
     // クリック位置を取得
-    X := (lParam and $FFFF) shr Status.dwScale;
-    Y := (lParam shr 16) shr Status.dwScale;
+    X := Round((longint(lParam and $FFFF) shl 1) / Status.dwScale);
+    Y := Round((longint(lParam shr 16) shl 1) / Status.dwScale);
     // クリック位置が範囲外の場合は終了
     if (X < 140) or (X > 280) or (Y < 27) or (Y >= 32) then exit;
     // クリック位置の割合を取得
@@ -9758,13 +9798,15 @@ begin
         end;
         WM_APP_START_TIME: begin
             // リピート開始位置を設定
-            if X < Status.dwLimitTime then Status.dwStartTime := X else Status.dwStartTime := Status.dwLimitTime;
+            if X < Status.dwLimitTime then Status.dwStartTime := X
+            else Status.dwStartTime := Status.dwLimitTime;
             // インジケータを再描画
             cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
         end;
         WM_APP_LIMIT_TIME: begin
             // リピート終了位置を設定
-            if Y > Status.dwStartTime then Status.dwLimitTime := Y else Status.dwLimitTime := Status.dwStartTime;
+            if Y > Status.dwStartTime then Status.dwLimitTime := Y
+            else Status.dwLimitTime := Status.dwStartTime;
             // インジケータを再描画
             cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
         end;
@@ -9779,7 +9821,8 @@ begin
     // SPC が開かれていない、または演奏停止中の場合は終了
     if not Status.bOpen or not Status.bPlay then exit;
     // ウィンドウにフォーカスがない場合はカーソルを選択
-    if API_GetForegroundWindow() = cwWindowMain.hWnd then dwFlag := NULL else dwFlag := LIST_NEXT_PLAY_SELECT or LIST_NEXT_PLAY_CENTER;
+    if API_GetForegroundWindow() = cwWindowMain.hWnd then dwFlag := NULL
+    else dwFlag := LIST_NEXT_PLAY_SELECT or LIST_NEXT_PLAY_CENTER;
     // 次の曲を再生
     ListNextPlay(Option.dwPlayOrder, dwFlag);
 end;
@@ -9938,7 +9981,6 @@ begin
                     MENU_LIST_CLEAR: ListClear();
                     MENU_LIST_UP: ListUp();
                     MENU_LIST_DOWN: ListDown();
-                    MENU_LOCALE: UpdateLocale();
                     else case wParam div 10 * 10 of
                         MENU_SETUP_DEVICE_BASE..MENU_SETUP_DEVICE_BASE + 90: Option.dwDeviceID := wParam - MENU_SETUP_DEVICE_BASE - 1;
                         MENU_SETUP_CHANNEL_BASE: Option.dwChannel := MENU_SETUP_CHANNEL_VALUE[wParam - MENU_SETUP_CHANNEL_BASE];
@@ -10000,8 +10042,10 @@ begin
                         ID_BUTTON_ADD: ListAdd(0);
                         ID_BUTTON_REMOVE: ListDelete();
                         ID_BUTTON_CLEAR: ListClear();
-                        ID_BUTTON_UP: if Status.bShiftButton then ListNextPlay(PLAY_ORDER_PREVIOUS, LIST_NEXT_PLAY_SELECT) else ListUp();
-                        ID_BUTTON_DOWN: if Status.bShiftButton then ListNextPlay(PLAY_ORDER_NEXT, LIST_NEXT_PLAY_SELECT) else ListDown();
+                        ID_BUTTON_UP: if Status.bShiftButton then ListNextPlay(PLAY_ORDER_PREVIOUS, LIST_NEXT_PLAY_SELECT)
+                            else ListUp();
+                        ID_BUTTON_DOWN: if Status.bShiftButton then ListNextPlay(PLAY_ORDER_NEXT, LIST_NEXT_PLAY_SELECT)
+                            else ListDown();
                     end;
                 end;
                 ID_LISTBOX: case wParam shr 16 of // プレイリストの処理
@@ -10029,7 +10073,8 @@ begin
             if wParam = $FFFFFFFF then dwDef := 1;
             // フラグを設定
             Status.dwTitle := Status.dwTitle and not TITLE_ALWAYS_FLAG;
-            if longbool(cwWindowMain.GetWindowStyle() and WS_MINIMIZE) then Status.dwTitle := Status.dwTitle or TITLE_MINIMIZE else Status.dwTitle := Status.dwTitle or TITLE_NORMAL;
+            if longbool(cwWindowMain.GetWindowStyle() and WS_MINIMIZE) then Status.dwTitle := Status.dwTitle or TITLE_MINIMIZE
+            else Status.dwTitle := Status.dwTitle or TITLE_NORMAL;
             if longbool(cwWindowMain.GetWindowStyle() and WS_MAXIMIZE) then cwWindowMain.SetWindowShowStyle(SW_SHOWNORMAL);
             // 最小化された場合はインジケータをリセット
             if longbool(Status.dwTitle and TITLE_MINIMIZE) then ResetInfo(false);
