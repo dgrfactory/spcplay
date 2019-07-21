@@ -78,9 +78,9 @@ BITS	32
 	FIRBUF		EQU	2*2*64														;Stereo * Ring loop * 256kHz / 32kHz
 	ECHOBUF		EQU	2*((192000*240)/1000)										;Size of echo buffer (stereo * 192kHz * 240ms)
 ; ----- degrade-factory code [2008/04/18] -----
-	LOWBUF1		EQU	384															;Size of low-pass filter buffer (base 192kHz)
+	LOWBUF1		EQU	384															;Size of BASS-BOOST buffer (base 192kHz)
 	LOWBUF2		EQU	6144
-	LOWLEN1		EQU	LOWBUF1*2+LOWBUF2*2											;Total size of low-pass filter buffer (without lowSize, lowLv)
+	LOWLEN1		EQU	LOWBUF1*2+LOWBUF2*2											;Total size of BASS-BOOST buffer (without lowSize, lowLv)
 	LOWLEN2		EQU	10
 ; ----- degrade-factory code [END] -----
 
@@ -213,20 +213,17 @@ SECTION .data ALIGN=32
 	fp0_5		DD	0.5
 	fp1_5		DD	1.5
 
-	fp0_46		DD	0.46														;Low-pass filter
-	fp0_54		DD	0.54
-
-; ----- degrade-factory code [2012/02/18] -----
+; ----- degrade-factory code [2019/07/15] -----
 	fpA			DD	20534.298825777156115789949213172							;(sqrt(2 * pi) * 32768) / 4
 	fp32km1		DD	32767.0														;Cubic interporation
 	fpMaxLv		DD	8589934592.0												;(2 ^ 31) * 4
-	fpLowRt		DD	192000.0													;Low-pass filter base sampling rate
-	fpLowLv1	DD	0.005														;Low-pass filter level (base 192kHz)
+	fpLowRt		DD	192000.0													;BASS-BOOST base sampling rate
+	fpLowLv1	DD	0.005														;BASS-BOOST level (base 192kHz)
 	fpLowLv2	DD	0.0003125
-	fpLowBs1	DD	0.002														;Low-pass filter buffer size (base 192kHz) (=LOWBUF1/192000)
-	fpLowBs2	DD	0.032														;                                          (=LOWBUF2/192000)
-	fpAafCF1	DD	8038.12843898												;Anti-Alies 1st filter cut-off frequency
-	fpAafCF2	DD	16176.4214413												;Anti-Alies 2nd filter cut-off frequency
+	fpLowBs1	DD	0.002														;BASS-BOOST buffer size (base 192kHz) (=LOWBUF1/192000)
+	fpLowBs2	DD	0.032														;                                     (=LOWBUF2/192000)
+	fpAafCF1	DD	8038.1284389846												;Anti-Alies 1st filter cut-off frequency
+	fpAafCF2	DD	16176.421441299												;Anti-Alies 2nd filter cut-off frequency
 
 	Scale32	fp64k,16															;Various
 	Scale32	fp32k,15															;Sinc interpolation
@@ -379,19 +376,19 @@ SECTION .bss ALIGN=64
 	konCnt		resd	1														;t64 count of set KON/KOFF
 
 	;BASS BOOST ----------------------- [4680]
-	lowRstL1	resd	1														;Low-pass filter reset counter (Left)
+	lowRstL1	resd	1														;BASS-BOOST reset counter (Left)
 	lowRstL2	resd	1
-	lowRstR1	resd	1														;Low-pass filter reset counter (Right)
+	lowRstR1	resd	1														;BASS-BOOST reset counter (Right)
 	lowRstR2	resd	1
-	lowSumL1	resd	1														;Low-pass filter sum (Left)
+	lowSumL1	resd	1														;BASS-BOOST sum (Left)
 	lowSumL2	resd	1
-	lowSumR1	resd	1														;Low-pass filter sum (Right)
+	lowSumR1	resd	1														;BASS-BOOST sum (Right)
 	lowSumR2	resd	1
-	lowCnt1		resd	1														;Low-pass filter index counter
+	lowCnt1		resd	1														;BASS-BOOST index counter
 	lowCnt2		resd	1
-	lowSize1	resd	1														;Low-pass filter buffer size
+	lowSize1	resd	1														;BASS-BOOST buffer size
 	lowSize2	resd	1
-	lowLv1		resd	1														;Low-pass filter level
+	lowLv1		resd	1														;BASS-BOOST level
 	lowLv2		resd	1
 				resd	2
 
@@ -412,9 +409,9 @@ SECTION .bss ALIGN=64
 	mixBuf		resd	MIX_SIZE*4												;Temporary mixing buffer (linear buffer)
 	echoBuf		resd	ECHOBUF													;External echo memory, 240ms @ 192kHz (ring buffer)
 	firBuf		resd	FIRBUF													;Unaltered echo samples fed into FIR filter (ring buffer)
-	lowBufL1	resd	LOWBUF1													;Low-pass filter buffer (Left)
+	lowBufL1	resd	LOWBUF1													;BASS-BOOST buffer (Left)
 	lowBufL2	resd	LOWBUF2
-	lowBufR1	resd	LOWBUF1													;Low-pass filter buffer (Right)
+	lowBufR1	resd	LOWBUF1													;BASS-BOOST buffer (Right)
 	lowBufR2	resd	LOWBUF2
 ; ----- degrade-factory code [END] -----
 
@@ -523,6 +520,7 @@ USES ECX,EDX,EBX,ESI,EDI
 	Mov		EDI,brrTab
 	XOr		EBX,EBX																;EBX = Nybble to shift right by range
 	Mov		CL,28																;ECX = Max range (+16 for 32-bit numbers)
+
 	.Range:
 		.Nybble:
 			Mov		EAX,EBX														;EAX = Nybble >> Range
@@ -542,6 +540,7 @@ USES ECX,EDX,EBX,ESI,EDI
 
 	Mov		BL,3
 	XOr		ECX,ECX
+
 	.Invalid:
 		XOr		EAX,EAX															;Positive nybbles turn into 0 when range > 12
 		Mov		CL,8
@@ -811,7 +810,7 @@ ENDP
 
 
 ;===================================================================================================
-;Erase low-pass filter memory
+;Erase BASS-BOOST memory
 
 PROC ResetLow
 
@@ -871,6 +870,7 @@ USES ECX,EBX,EDI
 	Mov		AH,8
 	Mov		EBX,dsp
 	Mov		EDI,mix
+
 	.ClrMix:
 		Add		EBX,10h
 		Add		EDI,4
@@ -1127,7 +1127,7 @@ USES ALL
 	SetNZ	AL
 	Or		[fixVol+1],AL
 
-	Test	EDX,DSP_BASS														;If BASS BOOST is disable, clear low-pass filter buffer
+	Test	EDX,DSP_BASS														;If BASS BOOST is disable, clear BASS-BOOST buffer
 	SetZ	AL
 	Or		[fixVol+2],AL
 ; ----- degrade-factory code [END] -----
@@ -1146,7 +1146,6 @@ USES ALL
 		Mov		[pInter],EAX
 ; ----- degrade-factory code [END] -----
 	.NoMix:
-
 
 	;=========================================
 	;Calculate sample rate change
@@ -1237,7 +1236,7 @@ USES ALL
 		;Adjust echo delay --------------------
 		Call	REDl
 
-		;Low-pass filter buffer level ---------
+		;BASS-BOOST buffer level ---------
 		FLd		dword [fpLowRt]													;Level = (fpLowRt / dspRate) * fpLowLv
 		FIDiv	dword [dspRate]
 		FMul	dword [fpLowLv1]
@@ -1248,7 +1247,7 @@ USES ALL
 		FMul	dword [fpLowLv2]
 		FStP	dword [lowLv2]
 
-		;Low-pass filter buffer size ----------
+		;BASS-BOOST buffer size ----------
 		FILd	dword [dspRate]													;Size = dspRate * fpLowBs * 4
 		FMul	dword [fpLowBs1]
 		FIStP	dword [lowSize1]
@@ -1317,7 +1316,6 @@ USES ALL
 ; ----- degrade-factory code [END] -----
 	.SameRate:
 
-
 	;=========================================
 	;Set sample size
 
@@ -1326,7 +1324,6 @@ USES ALL
 	JE		short .SameBits
 		Mov		[dspSize],AL
 	.SameBits:
-
 
 	;=========================================
 	;Set number of channels
@@ -1337,7 +1334,6 @@ USES ALL
 	Or		[fixVol],CL
 	Mov		[dspChn],AL
 
-
 	;=========================================
 	;Update areas affected by the mix type
 
@@ -1347,7 +1343,6 @@ USES ALL
 		Mov		[dspMix],AL
 		Or		dword [fixVol],-1												;Force volumes to be recalculated
 	.SameMix:
-
 
 	;=========================================
 	;Erase sample buffers
@@ -1363,7 +1358,6 @@ USES ALL
 		Call	ResetLow
 	.NoEraseLow:
 ; ----- degrade-factory code [END] -----
-
 
 	;=========================================
 	;Fixup volume handlers
@@ -1554,6 +1548,7 @@ USES ECX,EDI
 			Mov		[EDI+envx],AL
 			Mov		[EDI+outx],AL
 			Add		EDI,10h
+
 		Dec		CL
 		JNZ		short .ResetDSP
 
@@ -1861,6 +1856,7 @@ USES ECX,EBX
 			FChS
 		.Right:
 		FSubRP	ST1,ST
+
 	.Center:
 	FMul	dword [volSepar]
 	FAddP	ST1,ST
@@ -2822,6 +2818,7 @@ RPMOn:
 	Push	ECX
 	Mov		EBX,mix
 	Mov		CL,8
+
 	.Next:
 		Mov		EAX,[EBX+mOrgP]
 		MovZX	EDX,byte [EBX+mSrc]												;EDX = Source
@@ -3596,18 +3593,17 @@ PROC CatchKOn
 			Mov		[ESI+envx],DL
 			Mov		[ESI+outx],DL
 
-			Or		[konRun],CH
+			Or		[konRun],CH													;Start KON working
 			Jmp		.SkipKOn
 
 		.CheckKOff:
 		Test	[dsp+kof],CH													;Is KOFF still written?
 		JZ		short .CheckEnv													;	No
-			XOr		EDX,EDX
 			Or		byte [EBX+mFlg],MFLG_KOFF									;Flag voice as keying off
-			Mov		[EBX+mKOn],DL												;Reset delay time
+			Mov		byte [EBX+mKOn],0											;Reset delay time
 
 			Not		CH
-			And		[konRun],CH													;Cancel KON
+			And		[konRun],CH													;Cancel KON working
 			Not		CH
 
 			Jmp		.SkipKOn
@@ -3676,8 +3672,8 @@ PROC CatchKOn
 			Or		[voiceMix],CH												;Mark voice as being on internally
 
 			Not		CH
-			And		[konRun],CH
 			And		[dsp+endx],CH												;Reset the ENDX register
+			And		[konRun],CH													;KON working was finished
 			Not		CH
 
 		.SkipKOn:
@@ -4120,6 +4116,7 @@ ENDP
 			FIMul	dword [scr700vol+ESI*4]
 			FMul	dword [fpShR16]
 		%%NoEchoL:
+
 %if VMETERV
 		FISt	dword [ESP]														;Store sample as an integer
 		FSt		dword [4+ESP]													;Store sample as an floating-point
@@ -4134,6 +4131,7 @@ ENDP
 			FIMul	dword [scr700vol+ESI*4]
 			FMul	dword [fpShR16]
 		%%NoEchoR:
+
 %if VMETERV
 		FISt	dword [8+ESP]
 		FSt		dword [12+ESP]
@@ -4150,6 +4148,7 @@ ENDP
 			FIMul	dword [scr700vol+ESI*4]
 			FMul	dword [fpShR16]
 		%%EchoL:
+
 %if VMETERV
 		FISt	dword [ESP]
 		FSt		dword [4+ESP]
@@ -4167,6 +4166,7 @@ ENDP
 			FIMul	dword [scr700vol+ESI*4]
 			FMul	dword [fpShR16]
 		%%EchoR:
+
 %if VMETERV
 		FISt	dword [8+ESP]
 		FSt		dword [12+ESP]
@@ -4178,6 +4178,7 @@ ENDP
 		FSt		dword [12+EDI]
 
 	%%NoVoiceEcho:
+
 %if VMETERV
 	;Save greatest sample output ----
 	Test	dword [dspOpts],DSP_FLOAT											;Is volume output floating-point?
@@ -4248,6 +4249,7 @@ ENDP
 		FIMul	dword [scr700mvl+S700_MVOL_L*4]
 		FMul	dword [fpShR16]
 	%%NoMainL:
+
 	FStP	dword [ESI]
 
 	FLd		dword [4+ESI]
@@ -4258,6 +4260,7 @@ ENDP
 		FIMul	dword [scr700mvl+S700_MVOL_R*4]
 		FMul	dword [fpShR16]
 	%%NoMainR:
+
 	FStP	dword [4+ESI]
 %endmacro
 
@@ -4298,6 +4301,7 @@ ENDP
 		FIMul	dword [scr700mvl+S700_ECHO_L*4]
 		FMul	dword [fpShR16]
 	%%NoEchoL:
+
 	FAdd	dword [ESI]															;									|FBR FBL FBR EchoL+ML
 	FStP	dword [ESI]															;									|FBR FBL FBR
 
@@ -4308,6 +4312,7 @@ ENDP
 		FIMul	dword [scr700mvl+S700_ECHO_R*4]
 		FMul	dword [fpShR16]
 	%%NoEchoR:
+
 	FAdd	dword [4+ESI]														;									|FBR FBL FBR+MR
 	FStP	dword [4+ESI]														;									|FBR FBL
 
@@ -4363,6 +4368,7 @@ ENDP
 		Mov		[echoCnt],EAX
 		Mov		EDX,[echoMem]
 	%%NextPtr:
+
 	Add		EBX,[dspRate]
 	JS		short %%LoopMem
 	Mov		[echoPtr],EDX
@@ -4391,6 +4397,7 @@ ENDP
 	JNZ		short %%CountL														;	No
 		Mov		ECX,[lowSize1]													;ECX = Size1
 	%%CountL:
+
 	Sub		ECX,4																;ECX -= 4
 	Mov		[lowCnt1],ECX														;Cnt1 = ECX
 
@@ -4398,6 +4405,7 @@ ENDP
 	JNZ		short %%CountR														;	No
 		Mov		EDX,[lowSize2]													;EDX = Size2
 	%%CountR:
+
 	Sub		EDX,4																;EDX -= 4
 	Mov		[lowCnt2],EDX														;Cnt2 = EDX
 
@@ -4441,6 +4449,7 @@ ENDP
 		JNZ		short %%RstL1													;	No
 			Mov		[lowSumL1],EAX												;SumL1 = EAX (0x00)
 			Inc		EAX															;EAX++ (0x01)
+
 	%%RstL1:
 	Mov		[lowRstL1],EAX														;RstL1 = EAX
 
@@ -4452,6 +4461,7 @@ ENDP
 		JNZ		short %%RstL2													;	No
 			Mov		[lowSumL2],EAX												;SumL2 = EAX (0x00)
 			Inc		EAX															;EAX++ (0x01)
+
 	%%RstL2:
 	Mov		[lowRstL2],EAX														;RstL2 = EAX
 
@@ -4463,6 +4473,7 @@ ENDP
 		JNZ		short %%RstR1													;	No
 			Mov		[lowSumR1],EAX												;SumR1 = EAX (0x00)
 			Inc		EAX															;EAX++ (0x01)
+
 	%%RstR1:
 	Mov		[lowRstR1],EAX														;RstR1 = EAX
 
@@ -4474,6 +4485,7 @@ ENDP
 		JNZ		short %%RstR2													;	No
 			Mov		[lowSumR2],EAX												;SumR2 = EAX (0x00)
 			Inc		EAX															;EAX++ (0x01)
+
 	%%RstR2:
 	Mov		[lowRstR2],EAX														;RstR2 = EAX
 %endmacro

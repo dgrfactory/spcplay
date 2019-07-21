@@ -31,11 +31,14 @@
 //The build options correspond to the equates at the top of APU.Inc
 
 //SPC700 build options bits 7-0 ----------------
-#define SA_HALFC    0x02                        //Half-carry enabled
-#define SA_CNTBK    0x04                        //Counter Break
-#define SA_SPEED    0x08                        //Speed hack
-#define SA_IPLW     0x10                        //IPL ROM region writeable
-#define SA_DSPBK    0x20                        //Break SPC700/Update DSP if 0F3h is read from
+#define SA_HALFC    0x02                        //Enable half-carry flag emulation for decimal adjusts
+#define SA_CNTBK    0x04                        //Break SPC700/Update DSP if a counter increases
+#define SA_SPEED    0x08                        //Enable speed hacks for counter reads and SLEEP
+#define SA_IPLW     0x10                        //Enables the IPL Writable flag in register F1
+#define SA_DSPBK    0x20                        //Break SPC700/Update DSP if register F3 is read
+// ----- degrade-factory code [2019/07/15] -----
+#define SA_INTBK    0x40                        //Break SPC700/Update DSP if emulated 1Ts with SPC700
+// ----- degrade-factory code [END] -----
 
 //DSP build options bits 15-8 ------------------
 #define SA_VMETERM  0x100                       //Volume metering on main output (for APR)

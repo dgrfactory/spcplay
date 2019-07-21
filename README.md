@@ -11,10 +11,11 @@ SNES SPC700 Player と改良版 SNESAPU.DLL 一式のソースコードです。
 スーパーファミコンの音楽ファイル (SPC) をパソコン上で再生するための SPC 専用プレイヤーです。  
 Win32API を直接使用しているので、軽量・軽快に動作します。
 
-コンパイルに必要なソフト： dcc32 (Delphi6 UP2 RTL3)
+コンパイルに必要なソフト： dcc32 (Delphi6 UP2 RTL3 で動作確認済)
 
 ```
-dcc32 spcplay.dpr
+rc.exe /l 0x411 /fo spcplay.res /d "NDEBUG" spcplay.rc
+dcc32.exe spcplay.dpr
 ```
 
 ## snesapu.dll
@@ -28,7 +29,7 @@ dcc32 spcplay.dpr
 nasm.exe -D WIN32 -D STDCALL -O2 -w-macro-params -f win32 -o .\Release\SPC700.obj SPC700.asm
 nasm.exe -D WIN32 -D STDCALL -O2 -w-macro-params -f win32 -o .\Release\DSP.obj DSP.asm
 nasm.exe -D WIN32 -D STDCALL -O2 -w-macro-params -f win32 -o .\Release\APU.obj APU.asm
-rc.exe /l 0x411 /fo"Release/version.res" /d "NDEBUG" version.rc
+rc.exe /l 0x411 /fo Release\version.res /d "NDEBUG" version.rc
 cl.exe @option\snesapu-cl.txt
 link.exe @option\snesapu-link.txt
 ```
@@ -41,8 +42,9 @@ link.exe @option\snesapu-link.txt
 SNES SPC700 Player をコマンドラインで操作するアプリです。  
 コマンドによる再生・停止操作、SPC700 や DSP のデバッグ、G.I.M.I.C 等の転送プログラムのシミュレーション等が行えます。
 
-コンパイルに必要なソフト： dcc32 (Delphi6 UP2 RTL3)
+コンパイルに必要なソフト： dcc32 (Delphi6 UP2 RTL3 で動作確認済)
 
 ```
-dcc32 spccmd.dpr
+rc.exe /l 0x411 /fo spccmd.res /d "NDEBUG" spccmd.rc
+dcc32.exe spccmd.dpr
 ```

@@ -255,6 +255,7 @@ SECTION .text ALIGN=16
 		ShR		PS,1
 		SetC	[EBX]
 		LEA		EBX,[4+EBX]
+
 	Dec		DH
 	JNZ		%%Next
 %endmacro
@@ -266,6 +267,7 @@ SECTION .text ALIGN=16
 	%%Next:
 		Mov		DH,[EBX]
 		LEA		EBX,[4+EBX]
+
 	ShR		EDX,1
 	JNC		%%Next
 %endmacro
@@ -611,7 +613,9 @@ ENDP
 ; ----- degrade-factory code [2011/02/11] -----
 %ifdef SHVC_SOUND_SUPPORT
 PROC ReadPort
+
 	Push	EAX
+
 	Mov		EAX,[cbRdPort]
 	Mov		EAX,[EAX]
 	Test	EAX,EAX
@@ -625,11 +629,14 @@ PROC ReadPort
 
 	.NoCallback:
 	Pop		EAX
+
 ENDP
 
 
 PROC WritePort
+
 	Push	EAX
+
 	Mov		EAX,[cbWrPort]
 	Mov		EAX,[EAX]
 	Test	EAX,EAX
@@ -640,6 +647,7 @@ PROC WritePort
 
 	.NoCallback:
 	Pop		EAX
+
 ENDP
 %endif
 ; ----- degrade-factory code [END] -----
@@ -1729,7 +1737,7 @@ SPCTimers:
 		Call	RunScript700													;Run Script700 emulation
 
 		.No700:
-%if DSPINTEG
+%if INTBK && DSPINTEG
 		Call	CatchUp
 
 	Mov		EBX,[t64DSP]
@@ -1907,6 +1915,7 @@ CntHack:
 		.NoHack:
 		Pop		EDX,ECX,EAX
 		Ret
+
 	.Reset:
 	Mov		byte [EBX],0
 	Ret
