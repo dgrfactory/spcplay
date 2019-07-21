@@ -3552,6 +3552,11 @@ ENDP
 			Mov		[ESI+outx],DL
 
 			Or		[konRun],CH													;Start KON working
+
+			Not		CH
+			And		[dsp+endx],CH												;Clear ENDX register if started KON
+			Not		CH
+
 			Jmp		%%Skip
 
 		%%CheckKOff:
@@ -3630,7 +3635,6 @@ ENDP
 			Or		[voiceMix],CH												;Mark voice as being on internally
 
 			Not		CH
-			And		[dsp+endx],CH												;Reset the ENDX register
 			And		[konRun],CH													;KON working was finished
 			Not		CH
 
