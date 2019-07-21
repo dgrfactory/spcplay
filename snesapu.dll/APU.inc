@@ -27,7 +27,7 @@
 ;===================================================================================================
 ;Options
 
-; ----- degrade-factory code [2019/07/07] -----
+; ----- degrade-factory code [2019/07/15] -----
 CPU_CYC		EQU	24												;CPU clock divisor
 																;10 = 2.457MHz
 																;12 = 2.048MHz
@@ -44,6 +44,9 @@ IPLW		EQU	1												;Enables the IPL Writable flag in register F1
 
 CNTBK		EQU	0												;Break SPC700/Update DSP if a counter increases
 DSPBK		EQU	0												;Break SPC700/Update DSP if register F3 is read
+INTBK		EQU	1												;Break SPC700/Update DSP if emulated 1Ts with SPC700
+																;	Notes:	If all of CNTBK, DSPBK and INTBK are set to 0, sound will be not output.
+																;			If you want the behavior closest to the SNES, set only INTBK to "1".
 
 VMETERM		EQU	1												;Monitor main output level (for APR)
 VMETERV		EQU	1												;Monitor levels of each voice (for visualization)
