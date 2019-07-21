@@ -425,6 +425,3 @@ PUBLIC DSPIn, NULL												;Used internally by SPC700.Asm
 PUBLIC EmuDSP, pBuf:ptr, len:dword
 PUBLIC SetEmuDSP, pBuf:ptr, len:dword, rate:dword				;Used internally by APU.Asm
 PUBLIC CatchUp													;Used internally by SPC700.Asm
-; ----- degrade-factory code [2006/10/17] -----
-PUBLIC CatchKOn													;Used internally by SPC700.Asm
-; ----- degrade-factory code [END] -----

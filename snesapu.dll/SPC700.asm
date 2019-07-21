@@ -1738,12 +1738,7 @@ SPCTimers:
 
 		.No700:
 %if INTBK && DSPINTEG
-		Call	CatchUp															;Emulate DSP before KON/KOFF processing
-
-	Mov		EBX,[t64DSP]
-	And		EBX,1																;Emulate the KON/KOFF processing every 2Ts
-	JNZ		short .NoDSP
-		Call	CatchKOn
+		Call	CatchUp															;Emulate DSP
 %endif
 
 	.NoDSP:
