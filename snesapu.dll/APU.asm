@@ -517,6 +517,7 @@ USES ECX,EDX,EBX,EDI
 	;Emulate APU -----------------------------
 	XOr		EBX,EBX																;Number of samples generated
 	Mov		EDI,[pBuf]
+
 	.Next:
 		Mov		EAX,[cycLeft]
 		Test	EAX,EAX
@@ -525,7 +526,7 @@ USES ECX,EDX,EBX,EDI
 		;SPC700 -------------------------------
 		Mov		EDX,EAX
 		Call	EmuSPC,EAX
-		Mov	[cycLeft],EAX
+		Mov		[cycLeft],EAX
 
 		;DSP ----------------------------------
 		Sub		EDX,EAX															;Calculate number of samples to create
@@ -546,8 +547,8 @@ USES ECX,EDX,EBX,EDI
 
 		Call	EmuDSP,EDI,EAX													;pBuf = EmuDSP(pBuf,samples)
 		Mov		EDI,EAX
-
 		Jmp		short .Next
+
 	.Done:
 
 	;Make sure enough samples were created to fill buffer

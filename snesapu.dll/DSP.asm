@@ -4708,7 +4708,6 @@ PROC RunDSP
 	JNZ		.Mute																;	Yes
 ; ----- degrade-factory code [END] -----
 
-
 	;=========================================
 	; Apply main volumes and mix in echo
 
@@ -4748,7 +4747,6 @@ PROC RunDSP
 	Test	byte [disFlag],40h													;Is DSP emulation disabled? (disFlag = [6])
 	JNZ		.Mute																;	Yes
 ; ----- degrade-factory code [END] -----
-
 
 	;=========================================
 	; Store output
