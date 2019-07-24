@@ -3478,6 +3478,9 @@ ENDP
 ; ----- degrade-factory code [2019/07/21] -----
 ;===================================================================================================
 ;Emulate the KON/KOFF delay processing of DSP
+;
+;Destroys:
+;   EAX,ECX,EDX
 
 %macro CatchKOff 0
 	;KOff process ----------------------
@@ -3485,7 +3488,7 @@ ENDP
 	Test	CL,CL
 	JZ		short %%Done
 
-	Push	EAX,ESI
+	Push	ESI
 
 	Mov		CH,1
 	Mov		EBX,mix
@@ -3519,7 +3522,7 @@ ENDP
 	Add		CH,CH
 	JNZ		%%Next
 
-	Pop		ESI,EAX
+	Pop		ESI
 
 	%%Done:
 %endmacro
@@ -3530,7 +3533,7 @@ ENDP
 	Or		CL,[konRun]
 	JZ		%%Done
 
-	Push	EAX,ESI
+	Push	ESI
 
 	Mov		CL,[konRsv]
 	Mov		CH,1
@@ -3645,7 +3648,7 @@ ENDP
 	Add		CH,CH
 	JNZ		%%Next
 
-	Pop		ESI,EAX
+	Pop		ESI
 
 	%%Done:
 	Mov		[konRsv],CH															;CH = 0
@@ -3668,7 +3671,6 @@ PROC CatchUp
 	Add		[outCnt],EAX
 
 	Push	EDX
-
 	Mul		dword [outRate]
 	Add		EAX,[outDec]
 	AdC		EDX,0
@@ -3691,9 +3693,7 @@ PROC CatchUp
 	Push	ECX																;Run KON/KOFF processing after emulate DSP
 	CatchKOff
 	CatchKOn
-	Pop		ECX
-
-	Pop		EDX
+	Pop		ECX,EDX
 ; ----- degrade-factory code [END] -----
 
 	.Done:
