@@ -3475,61 +3475,20 @@ ENDP
 %endmacro
 
 
-;===================================================================================================
-;Emulate DSP
-
-PROC CatchUp
-
-	Push	EAX
-
-	Mov		EAX,[t64Cnt]
-	ShR		EAX,1
-	Sub		EAX,[outCnt]
-	JZ		short .Done
-
-	Add		[outCnt],EAX
-
-	Push	EDX
-	Mul		dword [outRate]
-	Add		EAX,[outDec]
-	AdC		EDX,0
-	Mov		[outDec],AX
-	ShRD	EAX,EDX,16
-	Pop		EDX
-
-	Sub		[outLeft],EAX
-	JNC		short .Okay
-		Add		EAX,[outLeft]
-		Mov		dword [outLeft],0
-
-	.Okay:
-; ----- degrade-factory code [2016/08/20] -----
-	Test	EAX,EAX
-	JZ		short .Done
-		Call	EmuDSP,[pOutBuf],EAX
-		Mov		[pOutBuf],EAX
-; ----- degrade-factory code [END] -----
-
-	.Done:
-	Pop		EAX
-
-ENDP
-
-
-; ----- degrade-factory code [2019/07/07] -----
+; ----- degrade-factory code [2019/07/21] -----
 ;===================================================================================================
 ;Emulate the KON/KOFF delay processing of DSP
+;
+;Destroys:
+;   EAX,ECX,EDX
 
-PROC CatchKOn
-
-	Push	ECX
-
+%macro CatchKOff 0
 	;KOff process ----------------------
-	MovZX	ECX,byte [dsp+kof]
+	MovZX	ECX,byte [dsp+kof]													;Set CH = 0 for use with CatchKOn
 	Test	CL,CL
-	JZ		short .DoneKOff
+	JZ		short %%Done
 
-	Push	EAX,EDX,ESI
+	Push	ESI
 
 	Mov		CH,1
 	Mov		EBX,mix
@@ -3537,15 +3496,15 @@ PROC CatchKOn
 	Mov		EDX,[31*4+rateTab]
 	XOr		EAX,EAX
 
-	.NextKOff:
+	%%Next:
 		Test	CL,CH
-		JZ		short .SkipKOff
+		JZ		short %%Skip
 
 		Test	[voiceMix],CH													;Is voice currently playing?
-		JZ		short .SkipKOff													;	No, do nothing
+		JZ		short %%Skip													;	No, do nothing
 
 		Test	byte [EBX+mFlg],MFLG_KOFF										;Is already voice in key off mode?
-		JNZ		short .SkipKOff													;	Yes, do nothing
+		JNZ		short %%Skip													;	Yes, do nothing
 			Mov		byte [EBX+eRIdx],31											;Place envelope in release mode
 			Mov		[EBX+eRate],EDX
 			Mov		[EBX+eCnt],EDX
@@ -3556,34 +3515,36 @@ PROC CatchKOn
 			Mov		[EBX+vRsv],AL												;Reset ADSR/Gain changed flag
 			Mov		[EBX+mKOn],AL												;Reset delay time
 
-		.SkipKOff:
+		%%Skip:
 		Add		ESI,10h
 		Sub		EBX,-80h
 
 	Add		CH,CH
-	JNZ		.NextKOff
+	JNZ		%%Next
 
-	Pop		ESI,EDX,EAX
+	Pop		ESI
 
-	.DoneKOff:
+	%%Done:
+%endmacro
 
+%macro CatchKOn 0
 	;KOn process -----------------------
 	Mov		CL,[konRsv]
 	Or		CL,[konRun]
-	JZ		.DoneKOn
+	JZ		%%Done
 
-	Push	EAX,EDX,ESI
+	Push	ESI
 
 	Mov		CL,[konRsv]
 	Mov		CH,1
 	Mov		EBX,mix
 	Mov		ESI,dsp
 
-	.NextKOn:
+	%%Next:
 		Test	byte [EBX+mKOn],-1												;Is already voice in key on mode?
-		JNZ		short .CheckKOff												;	Yes
+		JNZ		short %%CheckKOff												;	Yes
 			Test	CL,CH
-			JZ		.SkipKOn
+			JZ		%%Skip
 
 			XOr		EDX,EDX
 			And		byte [EBX+mFlg],MFLG_USER									;Leave voice muted, noise
@@ -3594,11 +3555,16 @@ PROC CatchKOn
 			Mov		[ESI+outx],DL
 
 			Or		[konRun],CH													;Start KON working
-			Jmp		.SkipKOn
 
-		.CheckKOff:
+			Not		CH
+			And		[dsp+endx],CH												;Clear ENDX register if started KON
+			Not		CH
+
+			Jmp		%%Skip
+
+		%%CheckKOff:
 		Test	[dsp+kof],CH													;Is KOFF still written?
-		JZ		short .CheckEnv													;	No
+		JZ		short %%CheckEnv												;	No
 			Or		byte [EBX+mFlg],MFLG_KOFF									;Flag voice as keying off
 			Mov		byte [EBX+mKOn],0											;Reset delay time
 
@@ -3606,20 +3572,20 @@ PROC CatchKOn
 			And		[konRun],CH													;Cancel KON working
 			Not		CH
 
-			Jmp		.SkipKOn
+			Jmp		%%Skip
 
-		.CheckEnv:
+		%%CheckEnv:
 		Cmp		byte [EBX+mKOn],KON_SAVEENV										;Did time for saved envelope pass after KON had been written?
-		JNE		short .StartKON													;	No
+		JNE		short %%StartKON												;	No
 			Mov		DX,[ESI+adsr]												;Save ADSR parameters
 			Mov		[EBX+vAdsr],DX
 			MovZX	DX,byte [ESI+gain]											;Save Gain parameters
 			Mov		[EBX+vGain],DL
 			Mov		[EBX+vRsv],DH												;Reset ADSR/Gain changed flag
 
-		.StartKON:
+		%%StartKON:
 		Dec		byte [EBX+mKOn]													;Did time for enabled voice pass after KON had been written?
-		JNZ		.SkipKOn														;	No, do nothing
+		JNZ		%%Skip															;	No, do nothing
 			And		byte [EBX+mFlg],MFLG_USER									;Leave voice muted, noise
 
 			;Set voice volume ------------------
@@ -3672,26 +3638,68 @@ PROC CatchKOn
 			Or		[voiceMix],CH												;Mark voice as being on internally
 
 			Not		CH
-			And		[dsp+endx],CH												;Reset the ENDX register
 			And		[konRun],CH													;KON working was finished
 			Not		CH
 
-		.SkipKOn:
+		%%Skip:
 		Add		ESI,10h
 		Sub		EBX,-80h
 
 	Add		CH,CH
-	JNZ		.NextKOn
+	JNZ		%%Next
 
-	Pop		ESI,EDX,EAX
+	Pop		ESI
 
-	.DoneKOn:
+	%%Done:
 	Mov		[konRsv],CH															;CH = 0
+%endmacro
+; ----- degrade-factory code [END] -----
 
-	Pop		ECX
+
+;===================================================================================================
+;Emulate DSP
+
+PROC CatchUp
+
+	Push	EAX
+
+	Mov		EAX,[t64Cnt]
+	ShR		EAX,1
+	Sub		EAX,[outCnt]
+	JZ		.Done
+
+	Add		[outCnt],EAX
+
+	Push	EDX
+	Mul		dword [outRate]
+	Add		EAX,[outDec]
+	AdC		EDX,0
+	Mov		[outDec],AX
+	ShRD	EAX,EDX,16
+
+	Sub		[outLeft],EAX
+	JNC		short .Okay
+		Add		EAX,[outLeft]
+		Mov		dword [outLeft],0
+
+	.Okay:
+; ----- degrade-factory code [2019/07/21] -----
+	Test	EAX,EAX
+	JZ		short .Skip
+		Call	EmuDSP,[pOutBuf],EAX
+		Mov		[pOutBuf],EAX
+
+	.Skip:
+	Push	ECX																;Run KON/KOFF processing after emulate DSP
+	CatchKOff
+	CatchKOn
+	Pop		ECX,EDX
+; ----- degrade-factory code [END] -----
+
+	.Done:
+	Pop		EAX
 
 ENDP
-; ----- degrade-factory code [END] -----
 
 
 ;===================================================================================================
@@ -4708,7 +4716,6 @@ PROC RunDSP
 	JNZ		.Mute																;	Yes
 ; ----- degrade-factory code [END] -----
 
-
 	;=========================================
 	; Apply main volumes and mix in echo
 
@@ -4748,7 +4755,6 @@ PROC RunDSP
 	Test	byte [disFlag],40h													;Is DSP emulation disabled? (disFlag = [6])
 	JNZ		.Mute																;	Yes
 ; ----- degrade-factory code [END] -----
-
 
 	;=========================================
 	; Store output

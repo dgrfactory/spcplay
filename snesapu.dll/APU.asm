@@ -50,7 +50,7 @@ SECTION .data ALIGN=32
 					| (HALFC << 1) | (CNTBK << 2) | (SPEED << 3) | (IPLW << 4) | (DSPBK << 5) | (INTBK << 6)
 	apuDllVer	DD	21800h														;SNESAPU.DLL Current Version
 	apuCmpVer	DD	11000h														;SNESAPU.DLL Backwards Compatible Version
-	apuVerStr	DD	"2.18.0 (build 6674)"										;SNESAPU.DLL Current Version (32byte String)
+	apuVerStr	DD	"2.18.0 (build 6680)"										;SNESAPU.DLL Current Version (32byte String)
 				DD	8
 ; ----- degrade-factory code [END] -----
 
@@ -517,6 +517,7 @@ USES ECX,EDX,EBX,EDI
 	;Emulate APU -----------------------------
 	XOr		EBX,EBX																;Number of samples generated
 	Mov		EDI,[pBuf]
+
 	.Next:
 		Mov		EAX,[cycLeft]
 		Test	EAX,EAX
@@ -525,7 +526,7 @@ USES ECX,EDX,EBX,EDI
 		;SPC700 -------------------------------
 		Mov		EDX,EAX
 		Call	EmuSPC,EAX
-		Mov	[cycLeft],EAX
+		Mov		[cycLeft],EAX
 
 		;DSP ----------------------------------
 		Sub		EDX,EAX															;Calculate number of samples to create
@@ -546,8 +547,8 @@ USES ECX,EDX,EBX,EDI
 
 		Call	EmuDSP,EDI,EAX													;pBuf = EmuDSP(pBuf,samples)
 		Mov		EDI,EAX
-
 		Jmp		short .Next
+
 	.Done:
 
 	;Make sure enough samples were created to fill buffer
