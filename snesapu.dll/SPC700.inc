@@ -50,7 +50,7 @@ FCH_PAUSE	EQU	03h
 ; ----- degrade-factory code [END] -----
 
 ; ----- degrade-factory code [2010/04/03] -----
-%ifdef	SHVC_SOUND_SUPPORT
+%ifdef SHVC_SOUND_SUPPORT
 ;Extend function pointer address ------------
 EXT_WRPORT	EQU	10014h											;Callback function to write port
 EXT_RDPORT	EQU	10018h											;Callback function to read port

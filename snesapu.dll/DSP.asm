@@ -2359,7 +2359,7 @@ ENDP
 
 PROC DSPIn
 
-%if	DEBUG
+%if DEBUG
 	Mov		EDX,[pTrace]
 	Test	EDX,EDX
 	JZ		short .NoDbg
@@ -2442,6 +2442,191 @@ DSPDone:
 ENDP
 
 
+; ----- degrade-factory code [2019/08/04] -----
+;===================================================================================================
+;Emulate the KON/KOFF delay processing of DSP
+;
+;Destroys:
+;   EAX,EBX,ECX,EDX
+
+%macro CatchKOff 0
+	;KOff process ----------------------
+	MovZX	ECX,byte [dsp+kof]													;Set CH = 0 for use with CatchKOn
+	Test	CL,CL
+	JZ		short %%Done
+
+	Push	ESI
+
+	Mov		CH,1
+	Mov		EBX,mix
+	Mov		ESI,dsp
+	Mov		EDX,[31*4+rateTab]
+	XOr		EAX,EAX
+
+	%%Next:
+		Test	CL,CH
+		JZ		short %%Skip
+
+		Test	[voiceMix],CH													;Is voice currently playing?
+		JZ		short %%Skip													;	No, do nothing
+
+		Test	byte [EBX+mFlg],MFLG_KOFF										;Is already voice in key off mode?
+		JNZ		short %%Skip													;	Yes, do nothing
+			Mov		byte [EBX+eRIdx],31											;Place envelope in release mode
+			Mov		[EBX+eRate],EDX
+			Mov		[EBX+eCnt],EDX
+			Mov		dword [EBX+eAdj],A_KOFF
+			Mov		dword [EBX+eDest],D_MIN
+			Mov		byte [EBX+eMode],E_REL
+			Or		byte [EBX+mFlg],MFLG_KOFF									;Flag voice as keying off
+			Mov		[EBX+vRsv],AL												;Reset ADSR/Gain changed flag
+			Mov		[EBX+mKOn],AL												;Reset delay time
+
+		%%Skip:
+		Add		ESI,10h
+		Sub		EBX,-80h
+
+	Add		CH,CH
+	JNZ		%%Next
+
+	Pop		ESI
+
+	%%Done:
+%endmacro
+
+%macro CatchKOn 0
+	;KOn process -----------------------
+	Mov		CL,[konRsv]
+	Or		CL,[konRun]
+	JZ		%%Done
+
+	Push	ESI
+
+	Mov		CL,[konRsv]
+	Mov		CH,1
+	Mov		EBX,mix
+	Mov		ESI,dsp
+
+	%%Next:
+		Test	byte [EBX+mKOn],-1												;Is already voice in key on mode?
+		JNZ		short %%CheckKOff												;	Yes
+			Test	CL,CH
+			JZ		%%Skip
+
+			XOr		EDX,EDX
+			And		byte [EBX+mFlg],MFLG_USER									;Leave voice muted, noise
+			Mov		byte [EBX+mKOn],KON_DELAY									;Set delay time from writing KON to output
+			Mov		[EBX+eVal],EDX												;Reset envelope and wave height
+			Mov		[EBX+mOut],EDX
+			Mov		[ESI+envx],DL
+			Mov		[ESI+outx],DL
+
+			Or		[konRun],CH													;Start KON working
+
+			Not		CH
+			And		[dsp+endx],CH												;Clear ENDX register if started KON
+			Not		CH
+
+			Jmp		%%Skip
+
+		%%CheckKOff:
+%if DSPBK
+		Cmp		byte [EBX+mKOn],KON_CHKKOFF										;Did time for checked KOFF after KON had been written?
+		JNE		short %%CheckEnv												;	No
+%endif
+		Test	[dsp+kof],CH													;Is KOFF still written?
+		JZ		short %%CheckEnv												;	No
+			Or		byte [EBX+mFlg],MFLG_KOFF									;Flag voice as keying off
+			Mov		byte [EBX+mKOn],0											;Reset delay time
+
+			Not		CH
+			And		[konRun],CH													;Cancel KON working
+			Not		CH
+
+			Jmp		%%Skip
+
+		%%CheckEnv:
+		Cmp		byte [EBX+mKOn],KON_SAVEENV										;Did time for saved envelope pass after KON had been written?
+		JNE		short %%StartKON												;	No
+			Mov		DX,[ESI+adsr]												;Save ADSR parameters
+			Mov		[EBX+vAdsr],DX
+			MovZX	DX,byte [ESI+gain]											;Save Gain parameters
+			Mov		[EBX+vGain],DL
+			Mov		[EBX+vRsv],DH												;Reset ADSR/Gain changed flag
+
+		%%StartKON:
+		Dec		byte [EBX+mKOn]													;Did time for enabled voice pass after KON had been written?
+		JNZ		%%Skip															;	No, do nothing
+			And		byte [EBX+mFlg],MFLG_USER									;Leave voice muted, noise
+
+			;Set voice volume ------------------
+%if STEREO
+			Sub		EBX,mix
+			Call	RVolL
+			Add		EBX,mix
+			Mov		EAX,[EBX+mTgtL]
+			Mov		[EBX+mChnL],EAX
+			Mov		EAX,[EBX+mTgtR]
+			Mov		[EBX+mChnR],EAX
+%else
+			Sub		EBX,mix
+			Mov		AL,[ESI+volL]
+			Call	RVolL
+			Mov		AL,[ESI+volR]
+			Call	RVolR
+			Add		EBX,mix
+%endif
+
+			;Set pitch -------------------------
+			MovZX	EAX,word [ESI+pitch]
+			And		AH,3Fh
+			Mov		[EBX+mOrgP],EAX
+			MovZX	EDX,byte [ESI+srcn]											;EDX = Source
+			Mov		[EBX+mSrc],DL												;Save source number
+			Add		EAX,[scr700det+EDX*4]										;EAX += Detune[EDX]
+
+			Mul		dword [pitchAdj]
+			ShRD	EAX,EDX,16
+			AdC		EAX,0
+			Mov		[EBX+mRate],EAX
+			Mov		word [EBX+mDec],0
+
+			;Key ON ----------------------------
+			Mov		AX,[ESI+adsr]												;Save now ADSR/Gain parameters
+			Mov		DL,[ESI+gain]
+			Push	EAX,EDX
+			Mov		AX,[EBX+vAdsr]												;Restore ADSR/Gain parameters
+			Mov		[ESI+adsr],AX
+			Mov		DL,[EBX+vGain]
+			Mov		[ESI+gain],DL
+
+			Call	StartSrc													;Start waveform decompression
+			Call	StartEnv													;Start envelope
+
+			Pop		EDX,EAX														;Restore ADSR/Gain parameters
+			Mov		[ESI+adsr],AX
+			Mov		[ESI+gain],DL
+			Or		[voiceMix],CH												;Mark voice as being on internally
+
+			Not		CH
+			And		[konRun],CH													;KON working was finished
+			Not		CH
+
+		%%Skip:
+		Add		ESI,10h
+		Sub		EBX,-80h
+
+	Add		CH,CH
+	JNZ		%%Next
+
+	Pop		ESI
+
+	%%Done:
+	Mov		[konRsv],CH															;CH = 0
+%endmacro
+; ----- degrade-factory code [END] -----
+
+
 ;===================================================================================================
 ;DSP Register Handlers
 
@@ -2461,8 +2646,8 @@ REndX:
 	Or		AL,[dsp+endx]
 	Mov		[dsp+endx],AH														;Reset the ENDX register
 	SetNZ	AL
-	Ret
 ; ----- degrade-factory code [END] -----
+	Ret
 
 ;============================================
 ;Key Off
@@ -2478,9 +2663,16 @@ RKOff:
 
 	MovZX	EAX,AL
 	Mov		[dsp+kof],AL
-;	Mov		[konRsv],AH
-	Ret
 ; ----- degrade-factory code [END] -----
+
+; ----- degrade-factory code [2019/08/04] -----
+%if DSPBK && DSPINTEG
+	Push	EAX,EBX,ECX,EDX
+	CatchKOff
+	Pop		EDX,ECX,EBX,EAX
+%endif
+; ----- degrade-factory code [END] -----
+	Ret
 
 ;============================================
 ;Key On
@@ -2497,8 +2689,17 @@ RKOn:
 	MovZX	EAX,AL
 	Mov		[dsp+kon],AL
 	Mov		[konRsv],AL
-	Ret
 ; ----- degrade-factory code [END] -----
+
+; ----- degrade-factory code [2019/08/04] -----
+%if DSPBK && DSPINTEG
+	Push	EAX,EBX,ECX,EDX
+	Mov		CH,AH																;Set CH = 0 for use with CatchKOn
+	CatchKOn
+	Pop		EDX,ECX,EBX,EAX
+%endif
+; ----- degrade-factory code [END] -----
+	Ret
 
 ;============================================
 ;Voice volume
@@ -3475,187 +3676,6 @@ ENDP
 %endmacro
 
 
-; ----- degrade-factory code [2019/07/21] -----
-;===================================================================================================
-;Emulate the KON/KOFF delay processing of DSP
-;
-;Destroys:
-;   EAX,ECX,EDX
-
-%macro CatchKOff 0
-	;KOff process ----------------------
-	MovZX	ECX,byte [dsp+kof]													;Set CH = 0 for use with CatchKOn
-	Test	CL,CL
-	JZ		short %%Done
-
-	Push	ESI
-
-	Mov		CH,1
-	Mov		EBX,mix
-	Mov		ESI,dsp
-	Mov		EDX,[31*4+rateTab]
-	XOr		EAX,EAX
-
-	%%Next:
-		Test	CL,CH
-		JZ		short %%Skip
-
-		Test	[voiceMix],CH													;Is voice currently playing?
-		JZ		short %%Skip													;	No, do nothing
-
-		Test	byte [EBX+mFlg],MFLG_KOFF										;Is already voice in key off mode?
-		JNZ		short %%Skip													;	Yes, do nothing
-			Mov		byte [EBX+eRIdx],31											;Place envelope in release mode
-			Mov		[EBX+eRate],EDX
-			Mov		[EBX+eCnt],EDX
-			Mov		dword [EBX+eAdj],A_KOFF
-			Mov		dword [EBX+eDest],D_MIN
-			Mov		byte [EBX+eMode],E_REL
-			Or		byte [EBX+mFlg],MFLG_KOFF									;Flag voice as keying off
-			Mov		[EBX+vRsv],AL												;Reset ADSR/Gain changed flag
-			Mov		[EBX+mKOn],AL												;Reset delay time
-
-		%%Skip:
-		Add		ESI,10h
-		Sub		EBX,-80h
-
-	Add		CH,CH
-	JNZ		%%Next
-
-	Pop		ESI
-
-	%%Done:
-%endmacro
-
-%macro CatchKOn 0
-	;KOn process -----------------------
-	Mov		CL,[konRsv]
-	Or		CL,[konRun]
-	JZ		%%Done
-
-	Push	ESI
-
-	Mov		CL,[konRsv]
-	Mov		CH,1
-	Mov		EBX,mix
-	Mov		ESI,dsp
-
-	%%Next:
-		Test	byte [EBX+mKOn],-1												;Is already voice in key on mode?
-		JNZ		short %%CheckKOff												;	Yes
-			Test	CL,CH
-			JZ		%%Skip
-
-			XOr		EDX,EDX
-			And		byte [EBX+mFlg],MFLG_USER									;Leave voice muted, noise
-			Mov		byte [EBX+mKOn],KON_DELAY									;Set delay time from writing KON to output
-			Mov		[EBX+eVal],EDX												;Reset envelope and wave height
-			Mov		[EBX+mOut],EDX
-			Mov		[ESI+envx],DL
-			Mov		[ESI+outx],DL
-
-			Or		[konRun],CH													;Start KON working
-
-			Not		CH
-			And		[dsp+endx],CH												;Clear ENDX register if started KON
-			Not		CH
-
-			Jmp		%%Skip
-
-		%%CheckKOff:
-		Test	[dsp+kof],CH													;Is KOFF still written?
-		JZ		short %%CheckEnv												;	No
-			Or		byte [EBX+mFlg],MFLG_KOFF									;Flag voice as keying off
-			Mov		byte [EBX+mKOn],0											;Reset delay time
-
-			Not		CH
-			And		[konRun],CH													;Cancel KON working
-			Not		CH
-
-			Jmp		%%Skip
-
-		%%CheckEnv:
-		Cmp		byte [EBX+mKOn],KON_SAVEENV										;Did time for saved envelope pass after KON had been written?
-		JNE		short %%StartKON												;	No
-			Mov		DX,[ESI+adsr]												;Save ADSR parameters
-			Mov		[EBX+vAdsr],DX
-			MovZX	DX,byte [ESI+gain]											;Save Gain parameters
-			Mov		[EBX+vGain],DL
-			Mov		[EBX+vRsv],DH												;Reset ADSR/Gain changed flag
-
-		%%StartKON:
-		Dec		byte [EBX+mKOn]													;Did time for enabled voice pass after KON had been written?
-		JNZ		%%Skip															;	No, do nothing
-			And		byte [EBX+mFlg],MFLG_USER									;Leave voice muted, noise
-
-			;Set voice volume ------------------
-%if STEREO
-			Sub		EBX,mix
-			Call	RVolL
-			Add		EBX,mix
-			Mov		EAX,[EBX+mTgtL]
-			Mov		[EBX+mChnL],EAX
-			Mov		EAX,[EBX+mTgtR]
-			Mov		[EBX+mChnR],EAX
-%else
-			Sub		EBX,mix
-			Mov		AL,[ESI+volL]
-			Call	RVolL
-			Mov		AL,[ESI+volR]
-			Call	RVolR
-			Add		EBX,mix
-%endif
-
-			;Set pitch -------------------------
-			MovZX	EAX,word [ESI+pitch]
-			And		AH,3Fh
-			Mov		[EBX+mOrgP],EAX
-			MovZX	EDX,byte [ESI+srcn]											;EDX = Source
-			Mov		[EBX+mSrc],DL												;Save source number
-			Add		EAX,[scr700det+EDX*4]										;EAX += Detune[EDX]
-
-			Mul		dword [pitchAdj]
-			ShRD	EAX,EDX,16
-			AdC		EAX,0
-			Mov		[EBX+mRate],EAX
-			Mov		word [EBX+mDec],0
-
-			;Key ON ----------------------------
-			Mov		AX,[ESI+adsr]												;Save now ADSR/Gain parameters
-			Mov		DL,[ESI+gain]
-			Push	EAX,EDX
-			Mov		AX,[EBX+vAdsr]												;Restore ADSR/Gain parameters
-			Mov		[ESI+adsr],AX
-			Mov		DL,[EBX+vGain]
-			Mov		[ESI+gain],DL
-
-			Call	StartSrc													;Start waveform decompression
-			Call	StartEnv													;Start envelope
-
-			Pop		EDX,EAX														;Restore ADSR/Gain parameters
-			Mov		[ESI+adsr],AX
-			Mov		[ESI+gain],DL
-			Or		[voiceMix],CH												;Mark voice as being on internally
-
-			Not		CH
-			And		[konRun],CH													;KON working was finished
-			Not		CH
-
-		%%Skip:
-		Add		ESI,10h
-		Sub		EBX,-80h
-
-	Add		CH,CH
-	JNZ		%%Next
-
-	Pop		ESI
-
-	%%Done:
-	Mov		[konRsv],CH															;CH = 0
-%endmacro
-; ----- degrade-factory code [END] -----
-
-
 ;===================================================================================================
 ;Emulate DSP
 
@@ -3683,17 +3703,24 @@ PROC CatchUp
 		Mov		dword [outLeft],0
 
 	.Okay:
-; ----- degrade-factory code [2019/07/21] -----
+; ----- degrade-factory code [2019/08/04] -----
 	Test	EAX,EAX
 	JZ		short .Skip
 		Call	EmuDSP,[pOutBuf],EAX
 		Mov		[pOutBuf],EAX
 
 	.Skip:
-	Push	ECX																;Run KON/KOFF processing after emulate DSP
+%if INTBK
+	Push	ECX																	;Run KON/KOFF processing after emulate DSP
 	CatchKOff
 	CatchKOn
 	Pop		ECX,EDX
+%else
+	Push	EBX,ECX																;Run KON processing after emulate DSP
+	XOr		CH,CH																;Set CH = 0 for use with CatchKOn
+	CatchKOn
+	Pop		ECX,EBX,EDX
+%endif
 ; ----- degrade-factory code [END] -----
 
 	.Done:
