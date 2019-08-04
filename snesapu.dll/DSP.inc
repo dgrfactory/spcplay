@@ -70,7 +70,7 @@ MFLG_KOFF	EQU	04h												;Voice is in the process of keying off
 MFLG_OFF	EQU	08h												;Voice is currently inactive
 MFLG_END	EQU	10h												;End block was just played
 
-; ----- degrade-factory code [2019/07/07] -----
+; ----- degrade-factory code [2019/08/04] -----
 ;Script700 DSP flags
 S700_MUTE	EQU	01h												;Mute voice
 S700_CHANGE	EQU	02h												;Change sound source (note change)
@@ -85,6 +85,7 @@ S700_ECHO_R	EQU	03h												;Echo volume (right)
 
 ;DSP KON delay emulation time
 KON_DELAY	EQU	19												;Delay time from writing KON to output (40Ts / 2 - 1)
+KON_CHKKOFF	EQU	1												;Delay time from checking KOFF, if DSPBK is 1
 KON_SAVEENV	EQU	KON_DELAY										;Delay time from writing save envelope to output
 ; ----- degrade-factory code [END] -----
 
