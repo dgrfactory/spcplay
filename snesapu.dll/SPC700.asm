@@ -2226,7 +2226,7 @@ Ret
 ;         bit-0 Data written was 16-bit
 %macro WrPost 1
 
-%if	%1 & 80h
+%if %1 & 80h
 	Cmp		BX,ipl																;Was memory in the IPL ROM region modified?
 	JAE		short %%WROM														;	Yes
 %endif
@@ -2246,7 +2246,7 @@ Ret
 		MovZX	EBX,CL
 		Mov		EBX,[fncOfs+EBX*4]
 ; ----- degrade-factory code [END] -----
-%if	%1 & 1
+%if %1 & 1
 ; ----- degrade-factory code [2007/10/07] -----
 		Push	EBX																;Save low function register handler
 		Inc		CL																;Jump to next function register
@@ -2257,7 +2257,7 @@ Ret
 %endif
 		Jmp		EBX
 
-%if	%1 & 80h
+%if %1 & 80h
 	%%WROM:
 %if IPLW
 		Test	byte [tControl],80h												;Is ROM reading enabled?
