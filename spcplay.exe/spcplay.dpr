@@ -2968,7 +2968,7 @@ const
     STR_MENU_FILE_EXIT: array[0..1] of pchar = ('終了(&X)', 'E&xit');
     STR_MENU_SETUP_DEVICE: array[0..1] of pchar = ('サウンド デバイス(&D)', 'Sound &Devices');
     STR_MENU_SETUP_CHANNEL: array[0..1] of pchar = ('チャンネル(&C)', '&Channels');
-    STR_MENU_SETUP_BIT: array[0..1] of pchar = ('ビット(&B)', '&Bits');
+    STR_MENU_SETUP_BIT: array[0..1] of pchar = ('ビット(&B)', '&Bit');
     STR_MENU_SETUP_RATE: array[0..1] of pchar = ('サンプリング レート(&R)', 'Sampling &Rate');
     STR_MENU_SETUP_INTER: array[0..1] of pchar = ('補間処理(&I)', '&Interpolation');
     STR_MENU_SETUP_PITCH: array[0..1] of pchar = ('ピッチ(&P)', '&Pitch');
@@ -3022,7 +3022,7 @@ const
         ('&1 Channel  (Monaural)', '&2 Channels  (Stereo)'));
     STR_MENU_SETUP_BIT_SUB: array[0..1] of array[0..MENU_SETUP_BIT_SIZE - 1] of pchar = (
         ('&8 ビット', Concat('&16 ビット', #9, '［標準］'), '&24 ビット', '&32 ビット  (int)', Concat('&32 ビット  (float)', #9, '［高音質］')),
-        ('&8 Bits', Concat('&16 Bits', #9, '[Normal]'), '&24 Bits', '&32 Bits  (int)', Concat('&32 Bits  (float)', #9, '[HQ]')));
+        ('&8-Bit', Concat('&16-Bit', #9, '[Normal]'), '&24-Bit', '&32-Bit  (int)', Concat('&32-Bit  (float)', #9, '[HQ]')));
     STR_MENU_SETUP_RATE_SUB: array[0..1] of array[0..MENU_SETUP_RATE_SIZE - 1] of pchar = (
         ('&8,000 Hz', '&10,000 Hz', '&11,025 Hz', '&12,000 Hz', '&16,000 Hz', '&20,000 Hz', '&22,050 Hz', '&24,000 Hz', Concat('&32,000 Hz', #9, '［推奨］'), '&40,000 Hz', '&44,100 Hz', '&48,000 Hz', '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz'),
         ('&8,000 Hz', '&10,000 Hz', '&11,025 Hz', '&12,000 Hz', '&16,000 Hz', '&20,000 Hz', '&22,050 Hz', '&24,000 Hz', Concat('&32,000 Hz', #9, '[Recommend]'), '&40,000 Hz', '&44,100 Hz', '&48,000 Hz', '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz'));
