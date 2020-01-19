@@ -3085,10 +3085,10 @@ const
     TITLE_MAIN_HEADER: array[0..1] of string = (' - ', ' - ');
     TITLE_INFO_HEADER: array[0..1] of string = ('《 ', '< ');
     TITLE_INFO_FOOTER: array[0..1] of string = (' 》', ' >');
-    TITLE_INFO_SEPARATE_HEADER: array[0..1] of string = ('左右拡散度 ', 'Separate = ');
-    TITLE_INFO_FEEDBACK_HEADER: array[0..1] of string = ('フィードバック反転度 ', 'Echo Feedback = ');
-    TITLE_INFO_SPEED_HEADER: array[0..1] of string = ('演奏速度 ', 'Speed = ');
-    TITLE_INFO_AMP_HEADER: array[0..1] of string = ('音量 ', 'Volume = ');
+    TITLE_INFO_SEPARATE_HEADER: array[0..1] of string = ('左右拡散度 ', 'Separate ');
+    TITLE_INFO_FEEDBACK_HEADER: array[0..1] of string = ('フィードバック反転度 ', 'Echo Feedback ');
+    TITLE_INFO_SPEED_HEADER: array[0..1] of string = ('演奏速度 ', 'Speed ');
+    TITLE_INFO_AMP_HEADER: array[0..1] of string = ('音量 ', 'Volume ');
     TITLE_INFO_SEEK_HEADER: array[0..1] of string = ('シーク ', 'Seek ');
     TITLE_INFO_PLUS: array[0..1] of string = ('＋', '+');
     TITLE_INFO_MINUS: array[0..1] of string = ('－', '-');
@@ -9090,16 +9090,16 @@ begin
     if longbool(dwInfo) then begin
         sInfo := Concat(sInfo, TITLE_INFO_HEADER[Status.dwLanguage]);
         case dwInfo of
-            TITLE_INFO_SEPARATE: sInfo := Concat(sInfo, TITLE_INFO_SEPARATE_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
-            TITLE_INFO_FEEDBACK: sInfo := Concat(sInfo, TITLE_INFO_FEEDBACK_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
-            TITLE_INFO_SPEED: sInfo := Concat(sInfo, TITLE_INFO_SPEED_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
-            TITLE_INFO_AMP: sInfo := Concat(sInfo, TITLE_INFO_AMP_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
+            TITLE_INFO_SEPARATE: sInfo := Concat(sInfo, TITLE_INFO_SEPARATE_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ', STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
+            TITLE_INFO_FEEDBACK: sInfo := Concat(sInfo, TITLE_INFO_FEEDBACK_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ', STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
+            TITLE_INFO_SPEED: sInfo := Concat(sInfo, TITLE_INFO_SPEED_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ', STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
+            TITLE_INFO_AMP: sInfo := Concat(sInfo, TITLE_INFO_AMP_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ', STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
             TITLE_INFO_SEEK: begin
                 sInfo := Concat(sInfo, TITLE_INFO_SEEK_HEADER[Status.dwLanguage]);
                 if Status.dwInfo >= 0 then sInfo := Concat(sInfo, TITLE_INFO_PLUS[Status.dwLanguage])
                 else sInfo := Concat(sInfo, TITLE_INFO_MINUS[Status.dwLanguage]);
                 if longbool(Abs(Status.dwInfo) mod 1000) then sInfo := Concat(sInfo, IntToStr(Abs(Status.dwInfo)), STR_MENU_SETUP_MSEC[Status.dwLanguage])
-                else sInfo := Concat(sInfo, IntToStr(longword(Trunc(Abs(Status.dwInfo) / 1000))), STR_MENU_SETUP_SEC1[Status.dwLanguage]);
+                else sInfo := Concat(sInfo, IntToStr(longword(Trunc(Abs(Status.dwInfo) / 1000))), ' ', STR_MENU_SETUP_SEC1[Status.dwLanguage]);
             end;
         end;
         sInfo := Concat(sInfo, TITLE_INFO_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage]);
