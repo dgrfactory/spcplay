@@ -38,7 +38,7 @@ link.exe @option\snesapu-link.txt
 
 for 3rd-party players:
 ```
-cp -r thirdparty/* ./
+copy /y thirdparty\* .
   : (nasm, rc, cl)
 link.exe @option\snesapu-3rd-link.txt
 ```
