@@ -19,7 +19,7 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2019 degrade-factory
+;                                                   Copyright (C) 2003-2020 degrade-factory
 ;===================================================================================================
 
 CPU		386
@@ -892,9 +892,6 @@ USES ECX,EBX,EDI
 	Mov		[volMainR],EAX
 	Mov		[volEchoL],EAX
 	Mov		[volEchoR],EAX
-; ----- degrade-factory code [2009/03/08] -----
-	Call	ResetVol
-; ----- degrade-factory code [END] -----
 
 	;Erase noise settings --------------------
 	Mov		[nRate],EAX
@@ -917,9 +914,10 @@ USES ECX,EBX,EDI
 	Mov		[echoFBCT],EAX
 	Mov		[4+echoFBCT],EAX
 
-; ----- degrade-factory code [2009/03/08] -----
+; ----- degrade-factory code [2020/01/05] -----
+	Call	ResetVol
 	Call	ResetEcho
-	Call	ResetLow
+	Call	ResetLow															;EAX is 0, after call ResetLow
 ; ----- degrade-factory code [END] -----
 
 	Mov		EDI,firTaps															;Reset filter coefficients
@@ -1498,8 +1496,9 @@ USES ALL
 	Sub		CL,10h
 	JNC		short .NextTap
 
-; ----- degrade-factory code [2009/03/08] -----
+; ----- degrade-factory code [2020/01/05] -----
 	Call	ResetVol
+	Call	ResetKON
 ; ----- degrade-factory code [END] -----
 
 ENDP
@@ -1684,6 +1683,10 @@ USES ECX,EDX,EBX
 	Mov		EBX,evolR
 	Mov		AL,[dsp+evolR]
 	Call	InitReg
+
+; ----- degrade-factory code [2020/01/05] -----
+	;Call	ResetVol															;Don't call ResetVol to smooth fade-out
+; ----- degrade-factory code [END] -----
 
 ENDP
 
@@ -2042,7 +2045,7 @@ USES ESI
 	JZ		ChgGain																;	No, It's in gain mode
 
 ChgAtt:
-; ----- degrade-factory code [2012/06/09] -----
+; ----- degrade-factory code [2019/08/20] -----
 		Cmp		dword [EBX+eVal],D_MAX											;Did envelope reach destination value?
 		JGE		short .ChgDec													;	Yes, change decay mode
 
@@ -2051,7 +2054,7 @@ ChgAtt:
 
 		Mov		AL,byte [ESI+adsr]
 		And		AL,0Fh
-		ShL		AL,1															;Adjust AL to index rateTab
+		Add		AL,AL															;Adjust AL to index rateTab
 		Inc		AL
 		Cmp		AL,1Fh															;Is there an attack?
 		JE		short .NoAtt													;	Yes
@@ -2701,6 +2704,15 @@ RKOn:
 ; ----- degrade-factory code [END] -----
 	Ret
 
+; ----- degrade-factory code [2020/01/05] -----
+ResetKON:
+%if INTBK && DSPINTEG
+	XOr		CH,CH																;Set CH = 0 for use with CatchKOn
+	CatchKOn
+%endif
+	Ret
+; ----- degrade-factory code [END] -----
+
 ;============================================
 ;Voice volume
 
@@ -3195,9 +3207,9 @@ ENDP
 	Mov		EAX,[nRate]
 	Add		[nAcc],EAX
 	JNC		short %%NoNInc
-; ----- degrade-factory code [2016/04/17] -----
+; ----- degrade-factory code [2019/08/20] -----
 		Mov		EAX,[nSeed]
-		ShL		EAX,1
+		Add		EAX,EAX
 		JNS		short %%NoiseOK
 			XOr		EAX,40001h
 
