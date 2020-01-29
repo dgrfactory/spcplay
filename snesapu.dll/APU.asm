@@ -19,7 +19,7 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 2003-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2019 degrade-factory
+;                                                   Copyright (C) 2003-2020 degrade-factory
 ;===================================================================================================
 
 CPU		386
@@ -48,9 +48,9 @@ SECTION .data ALIGN=32
 ; ----- degrade-factory code [2019/07/15] -----
 	apuOpt		DD	(CPU_CYC << 24) | (DEBUG << 16) | (DSPINTEG << 17) | (VMETERM << 8) | (VMETERV << 9) | (1 << 10) | (STEREO << 11) \
 					| (HALFC << 1) | (CNTBK << 2) | (SPEED << 3) | (IPLW << 4) | (DSPBK << 5) | (INTBK << 6)
-	apuDllVer	DD	21800h														;SNESAPU.DLL Current Version
+	apuDllVer	DD	21861h														;SNESAPU.DLL Current Version
 	apuCmpVer	DD	11000h														;SNESAPU.DLL Backwards Compatible Version
-	apuVerStr	DD	"2.18.0 (build 6694)"										;SNESAPU.DLL Current Version (32byte String)
+	apuVerStr	DD	"2.18.1 (build 6862)"										;SNESAPU.DLL Current Version (32byte String)
 				DD	8
 ; ----- degrade-factory code [END] -----
 

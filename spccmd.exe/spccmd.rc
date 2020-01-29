@@ -13,7 +13,7 @@ BEGIN
         BEGIN
             VALUE "FileDescription", "SNES SPC700 Player external command tool\0"
             VALUE "FileVersion", "1.5.1 (build 4212)\0"
-            VALUE "LegalCopyright", "Copyright (C) 2008-2019 degrade-factory.\0"
+            VALUE "LegalCopyright", "Copyright (C) 2008-2020 degrade-factory.\0"
             VALUE "LegalTrademarks", "SNES is a registered trademark of Nintendo.\0"
             VALUE "ProductVersion", "1.5.1\0"
             VALUE "URL", "http://dgrfactory.jp/\0"
