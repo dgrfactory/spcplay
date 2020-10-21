@@ -22,7 +22,7 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2008 Alpha-II Productions
-;                                                   Copyright (C) 2003-2019 degrade-factory
+;                                                   Copyright (C) 2003-2020 degrade-factory
 ;===================================================================================================
 
 CPU		386
@@ -1457,14 +1457,19 @@ PROC EmuSPC, cyc
 	Mov		EBP,SPCFetch
 %endif
 
-; ----- degrade-factory code [2016/08/20] -----
-	Mov		EDX,[clkTotal]
-	Mov		[tmpTotal],EDX
-	Mov		EDX,[clkExec]
-	Mov		[tmpExec],EDX
-	Mov		EDX,[clkLeft]
-	Mov		[tmpLeft],EDX
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [2020/10/21] -----
+	Mov		EDX,[apuCbFunc]
+	Test	EDX,EDX
+	JZ		short .NoCallback
+		Mov		EDX,[clkTotal]
+		Mov		[tmpTotal],EDX
+		Mov		EDX,[clkExec]
+		Mov		[tmpExec],EDX
+		Mov		EDX,[clkLeft]
+		Mov		[tmpLeft],EDX
+
+	.NoCallback:
+; ----- degrade-factory code [END] #19 -----
 
 	;Setup clock cycle execution -------------
 	;clkLeft contains the number of clock cycles to emulate until timer 2 increases or it's time to quit
@@ -1518,10 +1523,10 @@ ENDP
 ;In the debug build, before the fetcher handles the next opcode a user defined function is called.
 
 SPCTrace:
-; ----- degrade-factory code [2008/01/11] -----
+; ----- degrade-factory code [2020/10/20] -----
 	Cmp		dword [clkLeft],0													;Have we executed all clock cycles?
-	JL		SPCTimers															;	Yes, Update timers
-; ----- degrade-factory code [END] -----
+	JLE		SPCTimers															;	Yes, Update timers
+; ----- degrade-factory code [END] #18 -----
 
 SPCBreak:
 	;Call SPCTrace ---------------------------
@@ -1575,12 +1580,12 @@ SPCBreak:
 	;to jump directly to the handler without needing to use a jump table.
 
 SPCFetch:																		;(All opcode handlers return to this point)
-; ----- degrade-factory code [2008/01/11] -----
+; ----- degrade-factory code [2020/10/20] -----
 	Cmp		dword [clkLeft],0													;Have we executed all clock cycles?
-	JL		SPCTimers															;	Yes, Update timers
-; ----- degrade-factory code [END] -----
+	JLE		SPCTimers															;	Yes, Update timers
+; ----- degrade-factory code [END] #18 -----
 
-; ----- degrade-factory code [2016/08/20] -----
+; ----- degrade-factory code [2020/10/21] -----
 	Test	dword [apuCbMask],CBE_S700FCH
 	JZ		short .NoCallback
 
@@ -1594,9 +1599,9 @@ SPCFetch:																		;(All opcode handlers return to this point)
 		Pop		ECX,EAX
 
 		Test	DL,FCH_HALT														;Exit emulation?
-		JZ		short .NextCallback1											;	No
+		JZ		short .NextCallback												;	No
 
-		And		DL,FCH_PAUSE & 02h												;Update disable envelope flags
+		And		DL,FCH_NOP														;Update disable envelope flags
 		Mov		DH,[envFlag]
 		And		DH,~FCH_PAUSE
 		Or		DH,DL
@@ -1611,7 +1616,7 @@ SPCFetch:																		;(All opcode handlers return to this point)
 
 		Jmp		SPCExit
 
-	.NextCallback1:
+	.NextCallback:
 		And		byte [envFlag],~FCH_PAUSE
 
 		Test	DL,FCH_NOP														;Skip opecode?
@@ -1621,7 +1626,7 @@ SPCFetch:																		;(All opcode handlers return to this point)
 		Jmp		EDX
 
 	.NoCallback:
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #19 -----
 
 ; ----- degrade-factory code [2007/10/07] -----
 	MovZX	EDX,byte [ESI]														;Get next opcode
@@ -3052,12 +3057,14 @@ Ret
 ;       1   0
 ;Brk
 %macro Opc0F 0
-	Mov		byte [PSW+B],1
-	Mov		byte [PSW+I],0
 	PushW	PC
 	CmpPSW
 	PushB	PS
 	Mov		PC,[0FFDEh+RAM]
+; ----- degrade-factory code [2020/10/20] -----
+	Mov		byte [PSW+B],1
+	Mov		byte [PSW+I],0
+; ----- degrade-factory code [END] #20 -----
 	CleanUp	8,1
 %endmacro
 
