@@ -2326,8 +2326,8 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.18.1 (build 6862)';
-    SNESAPU_VERSION = $21861;
+    SPCPLAY_VERSION = '2.18.2 (build 7138)';
+    SNESAPU_VERSION = $21862;
     APPLINK_VERSION = $02170500;
 
     CBE_DSPREG = $1;
@@ -5423,8 +5423,8 @@ begin
 {$ENDIF}
             if longbool(I) then result := 2;
             Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_INCS700 or CBE_INCDATA);
-            Apu.SNESAPUInfo(@I, NULLPOINTER, NULLPOINTER);
 {$IFNDEF TRANSMITSPC}
+            Apu.SNESAPUInfo(@I, NULLPOINTER, NULLPOINTER);
             if I <> SNESAPU_VERSION then result := 3;
 {$ENDIF}
         end else result := 1;
@@ -5787,7 +5787,7 @@ begin
     Status.dwTitle := Status.dwTitle or TITLE_NORMAL;
     cwWindowMain.SendMessage(WM_SIZE, $FFFFFFFF, NULL);
 {$IFDEF SPCDEBUG}
-    Apu.SetSPCDbg(@_SPCDebug, $10);
+    Apu.SetSPCDbg(@_SPCDebug, $11);
     Apu.SetDSPDbg(@_DSPDebug);
 {$ENDIF}
 end;
