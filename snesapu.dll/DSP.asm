@@ -2384,19 +2384,26 @@ PROC DSPIn
 	.NoDbg:
 %endif
 
-; ----- degrade-factory code [2015/12/12] -----
+; ----- degrade-factory code [2020/10/24] -----
 	Test	dword [apuCbMask],CBE_DSPREG
 	JZ		short .NoCallback
 
 	Mov		EDX,[apuCbFunc]
 	Test	EDX,EDX
 	JZ		short .NoCallback
-		Push	ECX																;STDCALL is destroy EAX,ECX,EDX
+	Test	BL,80h																;Writes to 80-FFh have no effect (reads are mirrored
+	JNZ		short .NoCallback													; from lower mem)
+		Push	ECX,EBX,EAX														;STDCALL is destroy EAX,ECX,EDX
+		MovZX	EBX,BL
+		MovZX	EAX,AL
 		Call	EDX,dword CBE_DSPREG,EBX,EAX,dword 0
-		Pop		ECX
+		Mov		BL,AL															;Copy overwrote value
+		Pop		EAX
+		Mov		AL,BL
+		Pop		EBX,ECX
 
 	.NoCallback:
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #21 -----
 
 	Mov		CL,1																;CL = Emulate DSP to catch up to current state
 
