@@ -212,10 +212,6 @@ SECTION .bss ALIGN=64
 	regSP		resd	1
 	regX		resd	1
 
-	tmpTotal	resd	1														;clkTotal which was set before EmuAPU was called
-	tmpExec		resd	1														;clkExec which was set before EmuAPU was called
-	tmpLeft		resd	1														;clkLeft which was set before EmuAPU was called
-
 %ifdef SHVC_SOUND_SUPPORT
 	cbWrPort	resd	1														;Callback function to write port
 	cbRdPort	resd	1														;Callback function to read port
@@ -1181,7 +1177,7 @@ PROC RunScript700
 	JZ		short .700NCALERROR													;	Yes
 	Mov		EAX,ECX																;EAX = ECX
 	Mov		ECX,EDX																;ECX = EDX
-	Cdq																			;(EAX < 0) EDX = 0xFFFFFFFF / (EAX >= 0) EDX = 0x00
+	CDQ																			;(EAX < 0) EDX = 0xFFFFFFFF / (EAX >= 0) EDX = 0x00
 	IDiv	ECX																	;EAX = EDX:EAX / ECX
 	Mov		EDX,EAX																;EDX = EAX
 	Ret
@@ -1201,7 +1197,7 @@ PROC RunScript700
 	JZ		short .700NCALERROR													;	Yes
 	Mov		EAX,ECX																;EAX = ECX
 	Mov		ECX,EDX																;ECX = EDX
-	Cdq																			;(EAX < 0) EDX = 0xFFFFFFFF / (EAX >= 0) EDX = 0x00
+	CDQ																			;(EAX < 0) EDX = 0xFFFFFFFF / (EAX >= 0) EDX = 0x00
 	IDiv	ECX																	;EAX = EDX:EAX / ECX
 	Ret
 
@@ -1457,28 +1453,13 @@ PROC EmuSPC, cyc
 	Mov		EBP,SPCFetch
 %endif
 
-; ----- degrade-factory code [2020/10/21] -----
-	Mov		EDX,[apuCbFunc]
-	Test	EDX,EDX
-	JZ		short .NoCallback
-		Mov		EDX,[clkTotal]
-		Mov		[tmpTotal],EDX
-		Mov		EDX,[clkExec]
-		Mov		[tmpExec],EDX
-		Mov		EDX,[clkLeft]
-		Mov		[tmpLeft],EDX
-
-	.NoCallback:
-; ----- degrade-factory code [END] #19 -----
-
 	;Setup clock cycle execution -------------
 	;clkLeft contains the number of clock cycles to emulate until timer 2 increases or it's time to quit
-
 	XOr		EDX,EDX
 	Mov		[clkTotal],EAX
 
-	Sub		EAX,[t64kHz]														;If cyc > t64kHz, clkExec = t64kHz
-	SetA	DL																	;else clkExec = cyc
+	Sub		EAX,[t64kHz]														;If clkTotal > t64kHz, clkExec = t64kHz
+	SetA	DL																	;else clkExec = clkTotal
 	Dec		EDX
 	And		EAX,EDX
 	Add		EAX,[t64kHz]
@@ -1585,7 +1566,7 @@ SPCFetch:																		;(All opcode handlers return to this point)
 	JLE		SPCTimers															;	Yes, Update timers
 ; ----- degrade-factory code [END] #18 -----
 
-; ----- degrade-factory code [2020/10/21] -----
+; ----- degrade-factory code [2020/10/26] -----
 	Test	dword [apuCbMask],CBE_S700FCH
 	JZ		short .NoCallback
 
@@ -1601,20 +1582,16 @@ SPCFetch:																		;(All opcode handlers return to this point)
 		Test	DL,FCH_HALT														;Exit emulation?
 		JZ		short .NextCallback												;	No
 
-		And		DL,FCH_NOP														;Update disable envelope flags
-		Mov		DH,[envFlag]
+		And		DL,~FCH_HALT
+		Mov		DH,[envFlag]													;Update disable envelope flags
 		And		DH,~FCH_PAUSE
 		Or		DH,DL
 		Mov		[envFlag],DH
 
-		Mov		EDX,[tmpTotal]
+		Mov		EDX,[clkExec]													;Substitute clkTotal to processed clocks,
+		Sub		EDX,[clkLeft]													;to terminate EmuSPC at next SPCTimers
 		Mov		[clkTotal],EDX
-		Mov		EDX,[tmpExec]
-		Mov		[clkExec],EDX
-		Mov		EDX,[tmpLeft]
-		Mov		[clkLeft],EDX
-
-		Jmp		SPCExit
+		Jmp		SPCTimers
 
 	.NextCallback:
 		And		byte [envFlag],~FCH_PAUSE
@@ -1640,7 +1617,7 @@ SPCFetch:																		;(All opcode handlers return to this point)
 	;be subtracted from the total number to be emulated (clkTotal) and used to update the timers.
 
 SPCTimers:
-; ----- degrade-factory code [2019/07/07] -----
+; ----- degrade-factory code [2020/10/24] -----
 	Mov		EDX,[clkExec]														;EDX = Actual number of clock cycles emulated
 	Sub		EDX,[clkLeft]
 
@@ -1755,17 +1732,20 @@ SPCTimers:
 	Sub		[clkTotal],EDX														;Have we executed all clock cycles?
 	JLE		SPCExit																;	Yes, Quit
 
-	Mov		BX,AX																;Calculate number of cycles to emulate
-	Mov		EAX,[t64kHz]														;clkExec = (t64kHz < clkTotal) ? t64kHz : clkTotal
-	Sub		EAX,[clkTotal]
+	Mov		BX,AX																;Save SPC.A, SPC.Y
+
+	Mov		EAX,[t64kHz]														;If clkTotal > t64kHz, clkExec = t64kHz
+	Sub		EAX,[clkTotal]														;else clkExec = clkTotal
 	CDQ
 	And		EAX,EDX
 	Add		EAX,[clkTotal]
+
+	Mov		[clkExec],EAX														;Save the number we want to execute this lap
 	Mov		[clkLeft],EAX
-	Mov		[clkExec],EAX
+
 	Mov		AX,BX																;Restore SPC.A, SPC.Y
 	Jmp		EBP																	;Return to fetcher
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #19 -----
 
 
 ;===================================================================================================

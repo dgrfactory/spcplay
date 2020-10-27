@@ -54,7 +54,8 @@ program spcplay;
 //{$DEFINE TRY700W}                                         // Try700 (Wide) DEBUG          : OFF (注釈を外すと ON)
 //{$DEFINE TRANSMITSPC}                                     // TransmitSPC DEBUG            : OFF (注釈を外すと ON)
 //{$DEFINE CONTEXT}                                         // SNESAPU Context DEBUG        : OFF (注釈を外すと ON)
-//{$DEFINE SPCDEBUG}                                        // SNESAPU SPCDbug DEBUG        : OFF (注釈を外すと ON)
+//{$DEFINE SPCDEBUG}                                        // SNESAPU SPCDbg DEBUG         : OFF (注釈を外すと ON)
+//{$DEFINE SPCCYCLE}                                        // SNESAPU Cycles DEBUG         : OFF (注釈を外すと ON)
 //{$DEFINE DEBUGLOG}                                        // デバッグ ログ出力            : OFF (注釈を外すと ON)
 //{$DEFINE UACDROP}                                         // UAC を超えたドロップ操作     : OFF (注釈を外すと ON)
 //{$DEFINE ITASKBARLIST3}                                   // ITaskbarList3 対応           : OFF (注釈を外すと ON)
@@ -2326,7 +2327,7 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.18.2 (build 7138)';
+    SPCPLAY_VERSION = '2.18.2 (build 7143)';
     SNESAPU_VERSION = $21862;
     APPLINK_VERSION = $02170500;
 
@@ -5787,7 +5788,7 @@ begin
     Status.dwTitle := Status.dwTitle or TITLE_NORMAL;
     cwWindowMain.SendMessage(WM_SIZE, $FFFFFFFF, NULL);
 {$IFDEF SPCDEBUG}
-    Apu.SetSPCDbg(@_SPCDebug, $11);
+    Apu.SetSPCDbg(@_SPCDebug, $11);  // SPC_TRACE | SPC_RETURN
     Apu.SetDSPDbg(@_DSPDebug);
 {$ENDIF}
 end;
@@ -9299,7 +9300,15 @@ begin
             Voice.VolumeMaxRight := 0;
         end;
         // 新しいバッファを取得
+{$IFNDEF SPCCYCLE}
         if Status.bWaveWrite then Apu.EmuAPU(Wave.lpData[dwIndex], Wave.dwEmuSize, 1);
+{$ELSE}
+        if Status.Script700.Data.dwWork[0] = 0 then begin
+          Apu.EmuAPU(Wave.lpData[dwIndex], 768, 0);
+        end;
+        Inc(Status.Script700.Data.dwWork[0]);
+        API_ZeroMemory(Wave.lpData[dwIndex], Wave.dwBufSize);
+{$ENDIF}
         // バッファをデバイスに転送
         API_waveOutWrite(Wave.dwHandle, @Wave.Header[dwIndex], SizeOf(TWAVEHDR));
         // APU データをコピー
