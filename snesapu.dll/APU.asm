@@ -45,12 +45,12 @@ SECTION .data ALIGN=256
 SECTION .data ALIGN=32
 %endif
 
-; ----- degrade-factory code [2019/07/15] -----
+; ----- degrade-factory code [2020/10/26] -----
 	apuOpt		DD	(CPU_CYC << 24) | (DEBUG << 16) | (DSPINTEG << 17) | (VMETERM << 8) | (VMETERV << 9) | (1 << 10) | (STEREO << 11) \
 					| (HALFC << 1) | (CNTBK << 2) | (SPEED << 3) | (IPLW << 4) | (DSPBK << 5) | (INTBK << 6)
-	apuDllVer	DD	21861h														;SNESAPU.DLL Current Version
+	apuDllVer	DD	21862h														;SNESAPU.DLL Current Version
 	apuCmpVer	DD	11000h														;SNESAPU.DLL Backwards Compatible Version
-	apuVerStr	DD	"2.18.1 (build 6862)"										;SNESAPU.DLL Current Version (32byte String)
+	apuVerStr	DD	"2.18.2 (build 7143)"										;SNESAPU.DLL Current Version (32byte String)
 				DD	8
 ; ----- degrade-factory code [END] -----
 
@@ -489,14 +489,23 @@ USES ECX,EDX,EBX,EDI
 		JLE		short .NoCycles
 
 		Push	EAX
-		Mul		dword [smpREmu]													;samples = (smpREmu * len) / APU_CLK
+; ----- degrade-factory code [2020/10/20] -----
+		Mov		EDX,EAX
+		Mul		dword [smpREmu]													;samples = ((smpREmu * len) + smpDec) / APU_CLK
+		Add		EAX,[smpDec]
+		AdC		EDX,0
 		Div		ECX
+		Mov		[smpDec],EDX
+; ----- degrade-factory code [END] #17 -----
 		Call	SetEmuDSP,[pBuf],EAX,[smpREmu]
 		Pop		EAX
 
 	.Samples:
 
 	;Emulate APU -----------------------------
+	;For more accurate emulation, instead of waiting for cycles after doing all the processing,
+	;running opcode should be processed internally every cycle.
+	;However, this requires complex logic and sophisticated analysis.
 	Call	EmuSPC,EAX
 
 	.NoCycles:
