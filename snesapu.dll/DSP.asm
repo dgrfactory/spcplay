@@ -19,7 +19,7 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2020 degrade-factory
+;                                                   Copyright (C) 2003-2021 degrade-factory
 ;===================================================================================================
 
 CPU		386
@@ -1714,8 +1714,12 @@ USES EDX
 		RetN	EDX
 
 	.SetFade:
+; ----- degrade-factory code [2020/12/28] -----
+		Push	EDX
 		Call	SetFade															;If song is in fade mode, set fade volume
-		Mov		EAX,EDX
+		Pop		EAX
+;		Mov		EAX,EDX
+; ----- degrade-factory code [END] -----
 
 ENDP
 
@@ -1727,33 +1731,21 @@ ENDP
 
 PROC SetFade
 
-	Mov		EDX,[t64Cnt]														;EDX = T64Cnt - songLen;
-	Sub		EDX,[songLen]
+; ----- degrade-factory code [2020/12/28] -----
+	Mov		EAX,[t64Cnt]														;EAX = T64Cnt - songLen;
+	Sub		EAX,[songLen]														;If T64Cnt <= songLen, do nothing
 	JBE		.Done
 
-	XOr		EAX,EAX																;If EDX > fadeLen, EDX = fadeLen;
-	Cmp		EDX,[fadeLen]
-	SetA	AL
-	Dec		EAX
-	And		EDX,EAX
-	Not		EAX
-	And		EAX,[fadeLen]
-	Or		EDX,EAX
+	XOr		EDX,EDX																;If EAX >= fadeLen, call SetDSPVol(0)
+	Cmp		EAX,[fadeLen]
+	JAE		.SetVol
 
-; ----- degrade-factory code [2014/10/05] -----
-;	XOr		EAX,EAX																;EDX = 65536 - ((EDX << 16) / fadeLen);
-;	ShRD	EAX,EDX,16
-;	ShR		EDX,16
-;	Div		dword [fadeLen]
-;	Mov		EDX,65536
-;	Sub		EDX,EAX
-
-	Mov		[ESP-4],EDX															;EDX = 65536 - 65536 * sin(EDX / fadeLen * pi / 2)
-	FILd	dword [ESP-4]														;									|EDX
-	FIDiv	dword [fadeLen]														;									|EDX/fadeLen
-	FLdPi																		;									|EDX/fadeLen pi
-	FMulP	ST1,ST																;									|EDX/fadeLen*pi
-	FMul	dword [fp0_5]														;									|EDX/fadeLen*pi/2=x
+	Mov		[ESP-4],EAX															;EDX = 65536 - 65536 * sin(EAX / fadeLen * pi / 2)
+	FILd	dword [ESP-4]														;									|EAX
+	FIDiv	dword [fadeLen]														;									|EAX/fadeLen
+	FLdPi																		;									|EAX/fadeLen pi
+	FMulP	ST1,ST																;									|EAX/fadeLen*pi
+	FMul	dword [fp0_5]														;									|EAX/fadeLen*pi/2=x
 	FSin																		;									|sin(x)
 	Mov		EDX,65536
 	Mov		[ESP-4],EDX
@@ -1764,6 +1756,7 @@ PROC SetFade
 	Sub		EDX,EAX																;EDX = 65536 - EAX
 ; ----- degrade-factory code [END] -----
 
+	.SetVol:
 	Call	SetDSPVol,EDX														;SetDSPVol(EDX);
 
 	.Done:
@@ -3636,21 +3629,21 @@ ENDP
 	Sub		byte [firCur],4
 	Mov		EBX,[firCur]
 	LEA		EBX,[EBX*2+firBuf]
-
+																				;									|FBR FBL
 	FSt		dword [EBX]
-	FStP	dword [FIRBUF*2+EBX]
+	FStP	dword [FIRBUF*2+EBX]												;									|FBR
 	FSt		dword [4+EBX]
-	FStP	dword [FIRBUF*2+4+EBX]
+	FStP	dword [FIRBUF*2+4+EBX]												;									|(empty)
 
-	FLdZ
-	FLdZ
+	FLdZ																		;									|0
+	FLdZ																		;									|0 0
 	Mov		EDX,firTaps+56
 	Mov		dword [firDec],0
 	Mov		CL,8
 
 	%%Tap:
-		FILd	dword [firDec]
-		FMul	dword [fpShR16]
+		FILd	dword [firDec]													;									|0 0 firDec
+		FMul	dword [fpShR16]													;									|0 0 firDec>>16=FD
 
 ; ----- degrade-factory code [2006/02/23] -----
 		Mov		EAX,[8+EBX]
@@ -3660,12 +3653,12 @@ ENDP
 		%%FIRZL:
 ; ----- degrade-factory code [END] -----
 
-		FLd		dword [8+EBX]
-		FSub	dword [EBX]
-		FMul	ST1
-		FAdd	dword [EBX]
-		FMul	dword [EDX]
-		FAddP	ST2,ST
+		FLd		dword [8+EBX]													;									|0 0 FD S1
+		FSub	dword [EBX]														;									|0 0 FD S1-S2
+		FMul	ST1																;									|0 0 FD (S1-S2)*FD
+		FAdd	dword [EBX]														;									|0 0 FD (S1-S2)*FD+S2
+		FMul	dword [EDX]														;									|0 0 FD ((S1-S2)*FD+S2)*FT
+		FAddP	ST2,ST															;									|0 ((S1-S2)*FD+S2)*FT FD
 
 ; ----- degrade-factory code [2006/02/23] -----
 		Mov		EAX,[12+EBX]
@@ -3675,12 +3668,50 @@ ENDP
 		%%FIRZR:
 ; ----- degrade-factory code [END] -----
 
-		FLd		dword [12+EBX]
-		FSub	dword [4+EBX]
-		FMulP	ST1,ST
-		FAdd	dword [4+EBX]
-		FMul	dword [EDX]
-		FAddP	ST2,ST
+		FLd		dword [12+EBX]													;									|0 FBL FD S1
+		FSub	dword [4+EBX]													;									|0 FBL FD S1-S2
+		FMulP	ST1,ST															;									|0 FBL (S1-S2)*FD
+		FAdd	dword [4+EBX]													;									|0 FBL (S1-S2)*FD+S2
+		FMul	dword [EDX]														;									|0 FBL ((S1-S2)*FD+S2)*FT
+		FAddP	ST2,ST															;									|FBR FBL
+
+; ----- degrade-factory code [2021/02/09] -----
+		FLd		ST																;Clamp left							|FBR FBL FBL
+		FISt	dword [ESP-4]
+		Mov		EAX,[ESP-4]
+		Add		EAX,65536
+		SAR		EAX,17
+		JZ		short %%ClampL
+			SetS	AL
+			MovZX	EAX,AL
+			Dec		EAX
+			XOr		EAX,-65536
+			Mov		[ESP-4],EAX
+			FSubP	ST1,ST														;									|FBR 0
+			FILd	dword [ESP-4]												;									|FBR 0 FBL
+			FAdd	ST1,ST														;									|FBR FBL FBL
+
+		%%ClampL:
+		FStP	ST																;									|FBR FBL
+
+		FLd		ST1																;Clamp right						|FBR FBL FBR
+		FISt	dword [ESP-4]
+		Mov		EAX,[ESP-4]
+		Add		EAX,65536
+		SAR		EAX,17
+		JZ		short %%ClampR
+			SetS	AL
+			MovZX	EAX,AL
+			Dec		EAX
+			XOr		EAX,-65536
+			Mov		[ESP-4],EAX
+			FSubP	ST2,ST														;									|0 FBL
+			FILd	dword [ESP-4]												;									|0 FBL FBR
+			FAdd	ST2,ST														;									|FBR FBL FBR
+
+		%%ClampR:
+		FStP	ST																;									|FBR FBL
+; ----- degrade-factory code [END] #23 -----
 
 		Mov		EAX,[firDec]
 		Add		EAX,[firRate]
@@ -3691,7 +3722,7 @@ ENDP
 		Sub		EDX,8
 
 	Dec		CL
-	JNZ		short %%Tap
+	JNZ		%%Tap
 %endmacro
 
 
@@ -3981,129 +4012,69 @@ USES ALL
 ENDP
 
 
-; ----- degrade-factory code [2008/02/10] -----
-%macro CalRamp1 0
-	Mov		EAX,[ECX-8]
-	Cmp		EAX,[ECX]
-	JZ		short %%NoRamp
-		SetG	DL
-		Test	EAX,[ECX]
-		SetS	DH
-		XOr		DL,DH
-		JZ		short %%Sub
-			FLd		dword [ECX]
-			FAdd	dword [volRamp1]
-			FStP	dword [ECX]
-			Cmp		EAX,[ECX]
-			SetL	DL
-			XOr		DL,DH
-			JZ		short %%NoRamp
-
-			Mov		[ECX],EAX
-			Jmp		short %%NoRamp
-
-		%%Sub:
-			FLd		dword [ECX]
-			FSub	dword [volRamp1]
-			FStP	dword [ECX]
-			Cmp		EAX,[ECX]
-			SetG	DL
-			XOr		DL,DH
-			JZ		short %%NoRamp
-
-			Mov		[ECX],EAX
-
-	%%NoRamp:
-%endmacro
-
-%macro CalRamp2 0
-	Mov		AL,[voiceMix]
-	Test	AL,AL
-	JZ		short %%Force
-
+; ----- degrade-factory code [2020/12/28] -----
+%macro CalRamp1 0-1
 	Mov		EAX,[ECX]
-	Test	EAX,EAX
-	JZ		short %%Force
+	Cmp		EAX,[ECX-8]
+	JE		short %%OK
 
-	Mov		EAX,[ECX-8]
-	Cmp		EAX,[ECX]
-	JZ		short %%NoRamp
-		SetG	DL
-		Test	EAX,[ECX]
-		SetS	DH
-		XOr		DL,DH
-		JZ		short %%Sub
-			FLd		dword [ECX]
-			FAdd	dword [volRamp2]
-			FStP	dword [ECX]
-			Cmp		EAX,[ECX]
-			SetL	DL
-			XOr		DL,DH
-			JZ		short %%NoRamp
+	FLd		dword [ECX]															;Current							|Current
+	FCom	dword [ECX-8]														;Target								|Current
+	FNSTSW	AX
+	Test	AH,1																;Is C0 = 0 (Current > Target)?,
+	JZ		short %%Sub															;	Yes, subtraction
+		%if %0																	;Current += volRamp
+			FAdd	dword [%1]
+		%else
+			FAdd	dword [volRamp1]
+		%endif
 
-			Mov		[ECX],EAX
-			Jmp		short %%NoRamp
+		FCom	dword [ECX-8]													;Target								|Current
+		FNSTSW	AX
+		FStP	dword [ECX]														;Update current						|(empty)
+		Test	AH,1															;Is C0 = 0 (Current > Target)?,
+		JNZ		short %%OK														;	No, re-change with next tick
+		Jmp		short %%Force
 
-		%%Sub:
-			FLd		dword [ECX]
-			FSub	dword [volRamp2]
-			FStP	dword [ECX]
-			Cmp		EAX,[ECX]
-			SetG	DL
-			XOr		DL,DH
-			JZ		short %%NoRamp
+	%%Sub:
+		%if %0																	;Current -= volRamp
+			FSub	dword [%1]
+		%else
+			FSub	dword [volRamp1]
+		%endif
 
-			Mov		[ECX],EAX
-			Jmp		short %%NoRamp
+		FCom	dword [ECX-8]													;Target								|Current
+		FNSTSW	AX
+		FStP	dword [ECX]														;Update current						|(empty)
+		Test	AH,1															;Is C0 = 0 (Current > Target)?,
+		JZ		short %%OK														;	Yes, re-change with next tick
 
 	%%Force:
-	Mov		EAX,[ECX-8]
-	Mov		[ECX],EAX
+		Mov		EAX,[ECX-8]
+		Mov		[ECX],EAX
 
-	%%NoRamp:
+	%%OK:
 %endmacro
 
-%macro CalRamp3 0
+%macro CalRamp2 0-1
 	Mov		AL,[voiceMix]
 	Test	AL,AL
 	JZ		short %%Force
 
-	Mov		EAX,[ECX-8]
-	Cmp		EAX,[ECX]
-	JZ		short %%NoRamp
-		SetG	DL
-		Test	EAX,[ECX]
-		SetS	DH
-		XOr		DL,DH
-		JZ		short %%Sub
-			FLd		dword [ECX]
-			FAdd	dword [volRamp2]
-			FStP	dword [ECX]
-			Cmp		EAX,[ECX]
-			SetL	DL
-			XOr		DL,DH
-			JZ		short %%NoRamp
+	%if %0
+		Mov		EAX,[ECX]
+		Test	EAX,EAX
+		JZ		short %%Force
+	%endif
 
-			Mov		[ECX],EAX
-			Jmp		short %%NoRamp
-
-		%%Sub:
-			FLd		dword [ECX]
-			FSub	dword [volRamp2]
-			FStP	dword [ECX]
-			Cmp		EAX,[ECX]
-			SetG	DL
-			XOr		DL,DH
-			JZ		short %%NoRamp
-
-			Mov		[ECX],EAX
-			Jmp		short %%NoRamp
+		CalRamp1 volRamp2
+		Jmp		short %%OK
 
 	%%Force:
-	Mov		EAX,[ECX-8]
-	Mov		[ECX],EAX
+		Mov		EAX,[ECX-8]
+		Mov		[ECX],EAX
 
-	%%NoRamp:
+	%%OK:
 %endmacro
 ; ----- degrade-factory code [END] -----
 
@@ -4291,9 +4262,9 @@ ENDP
 %macro MixMaster 0
 	;Multiply samples by main volume ------
 	Mov		ECX,nowMainL
-	CalRamp2
+	CalRamp2 1
 	Mov		ECX,nowMainR
-	CalRamp2
+	CalRamp2 1
 
 	FLd		dword [ESI]
 	FMul	dword [nowMainL]
@@ -4344,9 +4315,9 @@ ENDP
 
 	;Add echo to main output -----------
 	Mov		ECX,nowEchoL
-	CalRamp3
+	CalRamp2
 	Mov		ECX,nowEchoR
-	CalRamp3
+	CalRamp2
 
 	FMul	dword [nowEchoL]													;									|FBR FBL FBR FBL*EchoL
 	Mov		AH,[scr700mds+S700_ECHO_L]
