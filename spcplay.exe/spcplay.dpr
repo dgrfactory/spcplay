@@ -2327,7 +2327,7 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.18.4 (build 7333)';
+    SPCPLAY_VERSION = '2.18.4 (build 7350)';
     SNESAPU_VERSION = $21864;
     APPLINK_VERSION = $02170500;
 
@@ -2714,6 +2714,10 @@ const
     FEEDBACK_090 = SEPARATE_090;                            // 90 ％
 
     SPEED_100 = 65536;                                      // 100 ％
+    SPEED_001 = SPEED_100 *  100 div 10000;                 // 1 ％
+    SPEED_005 = SPEED_100 *  500 div 10000;                 // 5 ％
+    SPEED_010 = SPEED_100 * 1000 div 10000;                 // 10 ％
+    SPEED_020 = SPEED_100 * 2000 div 10000;                 // 20 ％
     SPEED_025 = SPEED_100 * 2500 div 10000;                 // 25 ％
     SPEED_033 = SPEED_100 * 3333 div 10000;                 // 33 ％
     SPEED_040 = SPEED_100 * 4000 div 10000;                 // 40 ％
@@ -2730,8 +2734,15 @@ const
     SPEED_250 = SPEED_100 *  250 div   100;                 // 250 ％
     SPEED_300 = SPEED_100 *  300 div   100;                 // 300 ％
     SPEED_400 = SPEED_100 *  400 div   100;                 // 400 ％
+    SPEED_500 = SPEED_100 *  500 div   100;                 // 500 ％
+    SPEED_600 = SPEED_100 *  600 div   100;                 // 600 ％
+    SPEED_700 = SPEED_100 *  700 div   100;                 // 700 ％
+    SPEED_800 = SPEED_100 *  800 div   100;                 // 800 ％
 
     AMP_100 = 65536;                                        // 100 ％
+    AMP_005 = AMP_100 *  500 div 10000;                     // 5 ％
+    AMP_010 = AMP_100 * 1000 div 10000;                     // 10 ％
+    AMP_020 = AMP_100 * 2000 div 10000;                     // 20 ％
     AMP_025 = AMP_100 * 2500 div 10000;                     // 25 ％
     AMP_033 = AMP_100 * 3333 div 10000;                     // 33 ％
     AMP_040 = AMP_100 * 4000 div 10000;                     // 40 ％
@@ -2796,35 +2807,49 @@ const
     MENU_SETUP_RATE = 22;
     MENU_SETUP_RATE_SIZE = 16;
     MENU_SETUP_RATE_BASE = 220; // +10
-    MENU_SETUP_RATE_VALUE: array[0..MENU_SETUP_RATE_SIZE - 1] of longword = (8000, 10000, 11025, 12000, 16000, 20000, 22050, 24000, 32000, 40000, 44100, 48000, 64000, 80000, 88200, 96000);
+    MENU_SETUP_RATE_VALUE: array[0..MENU_SETUP_RATE_SIZE - 1] of longword =
+        (8000, 10000, 11025, 12000, 16000, 20000, 22050, 24000, 32000, 40000, 44100, 48000, 64000, 80000, 88200, 96000);
     MENU_SETUP_INTER = 30;
     MENU_SETUP_INTER_SIZE = 6;
     MENU_SETUP_INTER_BASE = 300;
-    MENU_SETUP_INTER_VALUE: array[0..MENU_SETUP_INTER_SIZE - 1] of longword = (INTER_NONE, INTER_LINEAR, INTER_CUBIC, INTER_GAUSS, INTER_SINC, INTER_GAUSS4);
+    MENU_SETUP_INTER_VALUE: array[0..MENU_SETUP_INTER_SIZE - 1] of longword =
+        (INTER_NONE, INTER_LINEAR, INTER_CUBIC, INTER_GAUSS, INTER_SINC, INTER_GAUSS4);
     MENU_SETUP_PITCH = 31;
     MENU_SETUP_PITCH_SIZE = 3;
     MENU_SETUP_PITCH_BASE = 310; // +20
     MENU_SETUP_PITCH_KEY = 338;
     MENU_SETUP_PITCH_KEY_SIZE = 6;
     MENU_SETUP_PITCH_KEY_BASE = MENU_SETUP_PITCH_BASE + MENU_SETUP_PITCH_SIZE;
-    MENU_SETUP_PITCH_VALUE: array[0..MENU_SETUP_PITCH_SIZE + MENU_SETUP_PITCH_KEY_SIZE + MENU_SETUP_PITCH_KEY_SIZE] of longword = (PITCH_NORMAL, PITCH_OLDSBC, PITCH_OLDSNES, 45255, 42715, 40317, 38055, 35919, 33903, PITCH_NORMAL, 30204, 28509, 26909, 25398, 23973, 22627);
+    MENU_SETUP_PITCH_VALUE: array[0..MENU_SETUP_PITCH_SIZE + MENU_SETUP_PITCH_KEY_SIZE + MENU_SETUP_PITCH_KEY_SIZE] of longword =
+        (PITCH_NORMAL, PITCH_OLDSBC, PITCH_OLDSNES, 45255, 42715, 40317, 38055, 35919, 33903, PITCH_NORMAL, 30204, 28509, 26909, 25398, 23973, 22627);
     MENU_SETUP_PITCH_ASYNC = 339;
     MENU_SETUP_SEPARATE = 34;
     MENU_SETUP_SEPARATE_SIZE = 15;
     MENU_SETUP_SEPARATE_BASE = 340; // +10
-    MENU_SETUP_SEPARATE_VALUE: array[0..MENU_SETUP_SEPARATE_SIZE - 1] of longword = (SEPARATE_000, SEPARATE_010, SEPARATE_020, SEPARATE_025, SEPARATE_030, SEPARATE_033, SEPARATE_040, SEPARATE_050, SEPARATE_060, SEPARATE_067, SEPARATE_070, SEPARATE_075, SEPARATE_080, SEPARATE_090, SEPARATE_100);
+    MENU_SETUP_SEPARATE_VALUE: array[0..MENU_SETUP_SEPARATE_SIZE - 1] of longword =
+        (SEPARATE_000, SEPARATE_010, SEPARATE_020, SEPARATE_025, SEPARATE_030, SEPARATE_033, SEPARATE_040, SEPARATE_050,
+         SEPARATE_060, SEPARATE_067, SEPARATE_070, SEPARATE_075, SEPARATE_080, SEPARATE_090, SEPARATE_100);
     MENU_SETUP_FEEDBACK = 36;
     MENU_SETUP_FEEDBACK_SIZE = 15;
     MENU_SETUP_FEEDBACK_BASE = 360; // +10
-    MENU_SETUP_FEEDBACK_VALUE: array[0..MENU_SETUP_FEEDBACK_SIZE - 1] of longword = (FEEDBACK_000, FEEDBACK_010, FEEDBACK_020, FEEDBACK_025, FEEDBACK_030, FEEDBACK_033, FEEDBACK_040, FEEDBACK_050, FEEDBACK_060, FEEDBACK_067, FEEDBACK_070, FEEDBACK_075, FEEDBACK_080, FEEDBACK_090, FEEDBACK_100);
+    MENU_SETUP_FEEDBACK_VALUE: array[0..MENU_SETUP_FEEDBACK_SIZE - 1] of longword =
+        (FEEDBACK_000, FEEDBACK_010, FEEDBACK_020, FEEDBACK_025, FEEDBACK_030, FEEDBACK_033, FEEDBACK_040, FEEDBACK_050,
+         FEEDBACK_060, FEEDBACK_067, FEEDBACK_070, FEEDBACK_075, FEEDBACK_080, FEEDBACK_090, FEEDBACK_100);
     MENU_SETUP_SPEED = 38;
-    MENU_SETUP_SPEED_SIZE = 17;
-    MENU_SETUP_SPEED_BASE = 380; // +10
-    MENU_SETUP_SPEED_VALUE: array[0..MENU_SETUP_SPEED_SIZE - 1] of longword = (SPEED_025, SPEED_033, SPEED_040, SPEED_050, SPEED_067, SPEED_075, SPEED_080, SPEED_090, SPEED_100, SPEED_110, SPEED_125, SPEED_133, SPEED_150, SPEED_200, SPEED_250, SPEED_300, SPEED_400);
-    MENU_SETUP_AMP = 40;
-    MENU_SETUP_AMP_SIZE = 17;
-    MENU_SETUP_AMP_BASE = 400; // +10
-    MENU_SETUP_AMP_VALUE: array[0..MENU_SETUP_AMP_SIZE - 1] of longword = (AMP_025, AMP_033, AMP_040, AMP_050, AMP_067, AMP_075, AMP_080, AMP_090, AMP_100, AMP_110, AMP_125, AMP_133, AMP_150, AMP_200, AMP_250, AMP_300, AMP_400);
+    MENU_SETUP_SPEED_SIZE = 27;
+    MENU_SETUP_SPEED_BASE = 380; // +20
+    MENU_SETUP_SPEED_VALUE: array[0..MENU_SETUP_SPEED_SIZE - 1] of longword =
+        (SPEED_001, SPEED_005, SPEED_010, SPEED_020, $FFFFFFFF,
+         SPEED_025, SPEED_033, SPEED_040, SPEED_050, SPEED_067, SPEED_075, SPEED_080, SPEED_090, SPEED_100,
+         SPEED_110, SPEED_125, SPEED_133, SPEED_150, SPEED_200, SPEED_250, SPEED_300, SPEED_400,
+         $FFFFFFFF, SPEED_500, SPEED_600, SPEED_700, SPEED_800);
+    MENU_SETUP_AMP = 42;
+    MENU_SETUP_AMP_SIZE = 21;
+    MENU_SETUP_AMP_BASE = 410; // +10
+    MENU_SETUP_AMP_VALUE: array[0..MENU_SETUP_AMP_SIZE - 1] of longword =
+        (AMP_005, AMP_010, AMP_020, $FFFFFFFF,
+         AMP_025, AMP_033, AMP_040, AMP_050, AMP_067, AMP_075, AMP_080, AMP_090, AMP_100,
+         AMP_110, AMP_125, AMP_133, AMP_150, AMP_200, AMP_250, AMP_300, AMP_400);
     MENU_SETUP_MUTE = 46;
     MENU_SETUP_MUTE_ALL_BASE = 470;
     MENU_SETUP_MUTE_ALL_ENABLE = MENU_SETUP_MUTE_ALL_BASE;
@@ -2842,7 +2867,9 @@ const
     MENU_SETUP_OPTION = 50;
     MENU_SETUP_OPTION_SIZE = 13;
     MENU_SETUP_OPTION_BASE = 500; // +10
-    MENU_SETUP_OPTION_VALUE: array[0..MENU_SETUP_OPTION_SIZE - 1] of longword = (OPTION_ANALOG, OPTION_BASSBOOST, OPTION_OLDSMP, OPTION_REVERSE, OPTION_SURROUND, OPTION_NOSURROUND, OPTION_NOECHO, OPTION_NOPMOD, OPTION_NOPREAD, OPTION_NOFIR, OPTION_NOENV, OPTION_NONOISE, OPTION_ECHOMEMORY);
+    MENU_SETUP_OPTION_VALUE: array[0..MENU_SETUP_OPTION_SIZE - 1] of longword =
+        (OPTION_ANALOG, OPTION_BASSBOOST, OPTION_OLDSMP, OPTION_REVERSE, OPTION_SURROUND, OPTION_NOSURROUND, OPTION_NOECHO,
+         OPTION_NOPMOD, OPTION_NOPREAD, OPTION_NOFIR, OPTION_NOENV, OPTION_NONOISE, OPTION_ECHOMEMORY);
     MENU_SETUP_TIME = 60;
     MENU_SETUP_TIME_DISABLE = 600;
     MENU_SETUP_TIME_ID666 = 601;
@@ -2864,14 +2891,17 @@ const
     MENU_SETUP_PRIORITY = 64;
     MENU_SETUP_PRIORITY_SIZE = 6;
     MENU_SETUP_PRIORITY_BASE = 640;
-    MENU_SETUP_PRIORITY_VALUE: array[0..MENU_SETUP_PRIORITY_SIZE - 1] of longword = (REALTIME_PRIORITY_CLASS, HIGH_PRIORITY_CLASS, ABOVE_NORMAL_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS, BELOW_NORMAL_PRIORITY_CLASS, IDLE_PRIORITY_CLASS);
+    MENU_SETUP_PRIORITY_VALUE: array[0..MENU_SETUP_PRIORITY_SIZE - 1] of longword =
+        (REALTIME_PRIORITY_CLASS, HIGH_PRIORITY_CLASS, ABOVE_NORMAL_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS, BELOW_NORMAL_PRIORITY_CLASS,
+         IDLE_PRIORITY_CLASS);
     MENU_SETUP_TOPMOST = 650;
     MENU_LIST_PLAY = 700;
     MENU_LIST_PLAY_SELECT = 701;
     MENU_LIST_PLAY_SIZE = 6;
     MENU_LIST_PLAY_BASE = 702;
     MENU_LIST_PLAY_MAX = MENU_LIST_PLAY_BASE + MENU_LIST_PLAY_SIZE - 1;
-    MENU_LIST_PLAY_VALUE: array[0..MENU_LIST_PLAY_SIZE - 1] of longword = (PLAY_ORDER_NEXT, PLAY_ORDER_PREVIOUS, PLAY_ORDER_RANDOM, PLAY_ORDER_SHUFFLE, PLAY_ORDER_FIRST, PLAY_ORDER_LAST);
+    MENU_LIST_PLAY_VALUE: array[0..MENU_LIST_PLAY_SIZE - 1] of longword =
+        (PLAY_ORDER_NEXT, PLAY_ORDER_PREVIOUS, PLAY_ORDER_RANDOM, PLAY_ORDER_SHUFFLE, PLAY_ORDER_FIRST, PLAY_ORDER_LAST);
     MENU_LIST_EDIT_SIZE = 4;
     MENU_LIST_EDIT_BASE = 710;
     MENU_LIST_ADD = MENU_LIST_EDIT_BASE;
@@ -2897,7 +2927,9 @@ const
     ID_BUTTON_RESTART = ID_BASE * ID_BUTTON + 3;
     ID_BUTTON_STOP = ID_BASE * ID_BUTTON + 4;
     ID_BUTTON_TRACK_BASE = ID_BASE * ID_BUTTON + 10;
-    ID_BUTTON_TRACK: array[0..7] of longword = (ID_BUTTON_TRACK_BASE + 0, ID_BUTTON_TRACK_BASE + 1, ID_BUTTON_TRACK_BASE + 2, ID_BUTTON_TRACK_BASE + 3, ID_BUTTON_TRACK_BASE + 4, ID_BUTTON_TRACK_BASE + 5, ID_BUTTON_TRACK_BASE + 6, ID_BUTTON_TRACK_BASE + 7);
+    ID_BUTTON_TRACK: array[0..7] of longword =
+        (ID_BUTTON_TRACK_BASE + 0, ID_BUTTON_TRACK_BASE + 1, ID_BUTTON_TRACK_BASE + 2, ID_BUTTON_TRACK_BASE + 3, ID_BUTTON_TRACK_BASE + 4,
+         ID_BUTTON_TRACK_BASE + 5, ID_BUTTON_TRACK_BASE + 6, ID_BUTTON_TRACK_BASE + 7);
     ID_BUTTON_SLOW = ID_BASE * ID_BUTTON + 20;
     ID_BUTTON_FAST = ID_BASE * ID_BUTTON + 21;
     ID_BUTTON_AMPD = ID_BASE * ID_BUTTON + 22;
@@ -2916,15 +2948,25 @@ const
     ID_STATIC_MAIN = ID_BASE * ID_STATIC + 0;
     ID_STATIC_FILE = ID_BASE * ID_STATIC + 1;
 
-    STR_MENU_SETUP_SEPARATE_PER_INDEX: array[0..MENU_SETUP_SEPARATE_SIZE - 1] of longword = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
-    STR_MENU_SETUP_SEPARATE_TIP_INDEX: array[0..MENU_SETUP_SEPARATE_SIZE - 1] of longword = (2, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, 3);
-    STR_MENU_SETUP_FEEDBACK_PER_INDEX: array[0..MENU_SETUP_FEEDBACK_SIZE - 1] of longword = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
-    STR_MENU_SETUP_FEEDBACK_TIP_INDEX: array[0..MENU_SETUP_FEEDBACK_SIZE - 1] of longword = (1, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL, NULL, NULL, NULL, NULL, NULL, 4);
-    STR_MENU_SETUP_SPEED_PER_INDEX:    array[0..MENU_SETUP_SPEED_SIZE - 1]    of longword = (3, 5, 6, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22);
-    STR_MENU_SETUP_SPEED_TIP_INDEX:    array[0..MENU_SETUP_SPEED_SIZE - 1]    of longword = (5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 6);
-    STR_MENU_SETUP_AMP_PER_INDEX:      array[0..MENU_SETUP_AMP_SIZE - 1]      of longword = (3, 5, 6, 7, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22);
-    STR_MENU_SETUP_AMP_TIP_INDEX:      array[0..MENU_SETUP_AMP_SIZE - 1]      of longword = (7, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 8);
-    STR_MENU_SETUP_PER_INTEGER: array[0..22] of longword = (0, 10, 20, 25, 30, 33, 40, 50, 60, 67, 70, 75, 80, 90, 100, 110, 125, 133, 150, 200, 250, 300, 400);
+    STR_MENU_SETUP_SEPARATE_PER_INDEX: array[0..MENU_SETUP_SEPARATE_SIZE - 1] of longword =
+        (1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17);
+    STR_MENU_SETUP_SEPARATE_TIP_INDEX: array[0..MENU_SETUP_SEPARATE_SIZE - 1] of longword =
+        (2, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, 3);
+    STR_MENU_SETUP_FEEDBACK_PER_INDEX: array[0..MENU_SETUP_FEEDBACK_SIZE - 1] of longword =
+        (1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17);
+    STR_MENU_SETUP_FEEDBACK_TIP_INDEX: array[0..MENU_SETUP_FEEDBACK_SIZE - 1] of longword =
+        (1, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL, NULL, NULL, NULL, NULL, NULL, 4);
+    STR_MENU_SETUP_SPEED_PER_INDEX:    array[0..MENU_SETUP_SPEED_SIZE - 1]    of longword =
+        (2, 3, 4, 5, NULL, 6, 8, 9, 10, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, NULL, 26, 27, 28, 29);
+    STR_MENU_SETUP_SPEED_TIP_INDEX:    array[0..MENU_SETUP_SPEED_SIZE - 1]    of longword =
+        (9, NULL, NULL, NULL, NULL, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1,
+         NULL, NULL, NULL, NULL, NULL, NULL, NULL, 6, NULL, NULL, NULL, NULL, 10);
+    STR_MENU_SETUP_AMP_PER_INDEX:      array[0..MENU_SETUP_AMP_SIZE - 1]      of longword =
+        (3, 4, 5, NULL, 6, 8, 9, 10, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25);
+    STR_MENU_SETUP_AMP_TIP_INDEX:      array[0..MENU_SETUP_AMP_SIZE - 1]      of longword =
+        (11, NULL, NULL, NULL, 7, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 8);
+    STR_MENU_SETUP_PER_INTEGER: array[0..29] of longword =
+        (0, 0, 1, 5, 10, 20, 25, 30, 33, 40, 50, 60, 67, 70, 75, 80, 90, 100, 110, 125, 133, 150, 200, 250, 300, 400, 500, 600, 700, 800);
 
     ERROR_SNESAPU: array[0..1] of string = ('SNESAPU.DLL の初期化に失敗しました。', 'Initializing SNESAPU.DLL is failed.');
     ERROR_CHECKSUM: array[0..1] of string = ('アプリケーションの起動に失敗しました。', 'Initializing application is failed.');
@@ -3021,9 +3063,9 @@ const
     STR_MENU_LIST_MOVE_SUB: array[0..1] of array[0..MENU_LIST_MOVE_SIZE - 1] of pchar = (
         ('上へ(&U)', '下へ(&D)'),
         ('Move &Up', 'Move &Down'));
-    STR_MENU_SETUP_TIP: array[0..1] of array[0..8] of pchar = (
-        ('', '［標準］', '［混合］', '［拡散］', '［反転］', '［遅］', '［速］', '［小］', '［大］'),
-        ('', '[Normal]', '[Mix]', '[Separate]', '[Reverse]', '[Slow]', '[Fast]', '[Down]', '[Up]'));
+    STR_MENU_SETUP_TIP: array[0..1] of array[0..11] of pchar = (
+        ('', '［標準］', '［混合］', '［拡散］', '［反転］', '［遅］', '［速］', '［小］', '［大］', '［極遅］', '［極速］', '［極小］'),
+        ('', '[Normal]', '[Mix]', '[Separate]', '[Reverse]', '[Slow]', '[Fast]', '[Low]', '[High]', '[Very Slow]', '[Very Fast]', '[Very Low]'));
     STR_MENU_SETUP_CHANNEL_SUB: array[0..1] of array[0..MENU_SETUP_CHANNEL_SIZE - 1] of pchar = (
         ('&1 チャンネル  (モノラル)', '&2 チャンネル  (ステレオ)'),
         ('&1 Channel  (Monaural)', '&2 Channels  (Stereo)'));
@@ -3031,23 +3073,33 @@ const
         ('&8 ビット', Concat('&16 ビット', #9, '［標準］'), '&24 ビット', '&32 ビット  (int)', Concat('&32 ビット  (float)', #9, '［高音質］')),
         ('&8-Bit', Concat('&16-Bit', #9, '[Normal]'), '&24-Bit', '&32-Bit  (int)', Concat('&32-Bit  (float)', #9, '[HQ]')));
     STR_MENU_SETUP_RATE_SUB: array[0..1] of array[0..MENU_SETUP_RATE_SIZE - 1] of pchar = (
-        ('&8,000 Hz', '&10,000 Hz', '&11,025 Hz', '&12,000 Hz', '&16,000 Hz', '&20,000 Hz', '&22,050 Hz', '&24,000 Hz', Concat('&32,000 Hz', #9, '［推奨］'), '&40,000 Hz', '&44,100 Hz', '&48,000 Hz', '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz'),
-        ('&8,000 Hz', '&10,000 Hz', '&11,025 Hz', '&12,000 Hz', '&16,000 Hz', '&20,000 Hz', '&22,050 Hz', '&24,000 Hz', Concat('&32,000 Hz', #9, '[Recommend]'), '&40,000 Hz', '&44,100 Hz', '&48,000 Hz', '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz'));
+        ('&8,000 Hz', '&10,000 Hz', '&11,025 Hz', '&12,000 Hz', '&16,000 Hz', '&20,000 Hz', '&22,050 Hz', '&24,000 Hz',
+         Concat('&32,000 Hz', #9, '［推奨］'), '&40,000 Hz', '&44,100 Hz', '&48,000 Hz', '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz'),
+        ('&8,000 Hz', '&10,000 Hz', '&11,025 Hz', '&12,000 Hz', '&16,000 Hz', '&20,000 Hz', '&22,050 Hz', '&24,000 Hz',
+         Concat('&32,000 Hz', #9, '[Recommend]'), '&40,000 Hz', '&44,100 Hz', '&48,000 Hz', '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz'));
     STR_MENU_SETUP_INTER_SUB: array[0..1] of array[0..MENU_SETUP_INTER_SIZE - 1] of pchar = (
-        ('無効(&D)', '線形補間(&L)', '三次スプライン補間(&C)', Concat('実機ガウス分布補間(&G)', #9, '［標準］'), Concat('シンク関数補間(&S)', #9, '［高音質］'), 'ガウス関数補間(&A)'),
-        ('&Disable', '&Liner', '&Cubic Spline', Concat('SNES &Gauss Table', #9, '[Normal]'), Concat('&Sinc Function', #9, '[HQ]'), 'G&auss Function'));
+        ('無効(&D)', '線形補間(&L)', '三次スプライン補間(&C)', Concat('実機ガウス分布補間(&G)', #9, '［標準］'),
+         Concat('シンク関数補間(&S)', #9, '［高音質］'), 'ガウス関数補間(&A)'),
+        ('&Disable', '&Liner', '&Cubic Spline', Concat('SNES &Gauss Table', #9, '[Normal]'),
+         Concat('&Sinc Function', #9, '[HQ]'), 'G&auss Function'));
     STR_MENU_SETUP_PITCH_SUB: array[0..1] of array[0..MENU_SETUP_PITCH_SIZE - 1] of pchar = (
         ('標準(&N)', '過去の &Sound Blaster 互換', '過去の &ZSNES, Snes9x 互換'),
         ('&Normal', 'OLD &Sound Blaster Card', 'OLD &ZSNES, Snes9x'));
     STR_MENU_SETUP_OPTION_SUB: array[0..1] of array[0..MENU_SETUP_OPTION_SIZE - 1] of pchar = (
-        ('実機ローパス フィルタ(&L)', '&BASS BOOST', '過去の &ADPCM を使用', '左右反転(&R)', '逆位相サラウンド強制(&S)', 'サラウンド無効(&U)', 'エコー無効(&E)', 'ピッチ モジュレーション無効(&P)', 'ピッチ ベンド無効(&I)', '&FIR フィルタ無効', 'エンベロープ無効(&V)', 'ノイズ指定無効(&N)', 'エコー作業メモリ書換(&M)'),
-        ('SNES &Low-Pass Filter', '&BASS BOOST', 'Old &ADPCM Emulation', '&Reverse Stereo', 'Opposite-Phase &Surround', 'Disable S&urround', 'Disable &Echo', 'Disable &Pitch Modulation', 'Disable P&itch Bend', 'Disable &FIR Filter', 'Disable En&velope', 'Disable &Noise Flags', 'Rewrite Echo Work &Memory'));
+        ('実機ローパス フィルタ(&L)', '&BASS BOOST', '過去の &ADPCM を使用', '左右反転(&R)', '逆位相サラウンド強制(&S)',
+         'サラウンド無効(&U)', 'エコー無効(&E)', 'ピッチ モジュレーション無効(&P)', 'ピッチ ベンド無効(&I)', '&FIR フィルタ無効', 'エンベロープ無効(&V)',
+         'ノイズ指定無効(&N)', 'エコー作業メモリ書換(&M)'),
+        ('SNES &Low-Pass Filter', '&BASS BOOST', 'Old &ADPCM Emulation', '&Reverse Stereo', 'Opposite-Phase &Surround',
+         'Disable S&urround', 'Disable &Echo', 'Disable &Pitch Modulation', 'Disable P&itch Bend', 'Disable &FIR Filter', 'Disable En&velope',
+         'Disable &Noise Flags', 'Rewrite Echo Work &Memory'));
     STR_MENU_SETUP_ORDER_SUB: array[0..1] of array[0..MENU_SETUP_ORDER_SIZE - 1] of pchar = (
         ('演奏停止(&S)', '次へ(&N)', '前へ(&P)', 'ランダム(&M)', 'シャッフル(&H)', 'リピート(&R)'),
         ('&Stop', '&Next Item', '&Previous Item', 'Rando&m', 'S&huffle', '&Repeat'));
     STR_MENU_SETUP_INFO_SUB: array[0..1] of array[0..MENU_SETUP_INFO_SIZE - 1] of pchar = (
-        ('グラフィック インジケータ(&G)', 'ミキサー情報(&M)', 'チャンネル情報 1 (&C)', 'チャンネル情報 2 (&A)', 'チャンネル情報 3 (&N)', 'チャンネル情報 4 (&E)', '&SPC 情報 1', 'S&PC 情報 2', 'Script&700 デバッグ'),
-        ('&Graphic Indicator', '&Mixer', '&Channel 1', 'Ch&annel 2', 'Cha&nnel 3', 'Chann&el 4', '&SPC Tags 1', 'S&PC Tags 2', 'Script&700 Debug'));
+        ('グラフィック インジケータ(&G)', 'ミキサー情報(&M)', 'チャンネル情報 1 (&C)', 'チャンネル情報 2 (&A)', 'チャンネル情報 3 (&N)',
+         'チャンネル情報 4 (&E)', '&SPC 情報 1', 'S&PC 情報 2', 'Script&700 デバッグ'),
+        ('&Graphic Indicator', '&Mixer', '&Channel 1', 'Ch&annel 2', 'Cha&nnel 3',
+         'Chann&el 4', '&SPC Tags 1', 'S&PC Tags 2', 'Script&700 Debug'));
     STR_MENU_SETUP_SEEK_SUB: array[0..1] of array[0..MENU_SETUP_SEEK_SIZE - 1] of pchar = (
         ('&1 秒', '&2 秒', '&3 秒', '&4 秒', '&5 秒'),
         ('&1 s', '&2 s', '&3 s', '&4 s', '&5 s'));
@@ -5102,9 +5154,13 @@ begin
     cmMenu.CreatePopupMenu();
     // メニュー テキストを設定
     for I := 0 to nSize - 1 do begin
-        sBuffer := Concat('&', IntToStr(STR_MENU_SETUP_PER_INTEGER[PerIndex[I]]), ' ', STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
-        if longbool(TipIndex[I]) then sBuffer := Concat(sBuffer, #9, STR_MENU_SETUP_TIP[Status.dwLanguage][TipIndex[I]]);
-        cmMenu.AppendMenu(dwBase + I, pchar(sBuffer), true);
+        if longbool(PerIndex[I]) then begin
+            sBuffer := Concat('&', IntToStr(STR_MENU_SETUP_PER_INTEGER[PerIndex[I]]), ' ', STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
+            if longbool(TipIndex[I]) then sBuffer := Concat(sBuffer, #9, STR_MENU_SETUP_TIP[Status.dwLanguage][TipIndex[I]]);
+            cmMenu.AppendMenu(dwBase + I, pchar(sBuffer), true);
+        end else begin
+            cmMenu.AppendSeparator();
+        end;
     end;
 end;
 
@@ -8104,13 +8160,13 @@ var
     J: longword;
     T64Count: longword;
 
-function UpdateFunction(dwNow: longword; dwSize: longword; dwValus: array of longword; dwIdxs: array of longword; dwDef1: longword; dwDef2: longint): longword;
+function UpdateFunction(dwNow: longword; dwSize: longword; dwValues: array of longword; dwIdxs: array of longword; dwDef1: longword; dwIdx: longint; dwDef2: longword; dwDef3: longword): longword;
 var
     dwI: longint;
 begin
     // 現在の設定値を取得
     J := $FF;
-    for dwI := 0 to dwSize - 1 do if dwNow = dwValus[dwI] then J := dwI;
+    for dwI := 0 to dwSize - 1 do if dwNow = dwValues[dwI] then J := dwI;
     // 新しい設定値を取得
     I := (not dwFlag shr 1) and (dwSize - 1);
     if J = I then begin
@@ -8119,14 +8175,15 @@ begin
     end else if J = $FF then begin
         // 未定義の設定値の場合
         result := dwDef1;
-        Status.dwInfo := dwDef2;
+        Status.dwInfo := dwIdx;
     end else begin
         // 次の設定値を設定
         Inc(J, dwFlag);
-        result := dwValus[J];
+        if dwValues[J] = $FFFFFFFF then Inc(J, dwFlag);
+        result := dwValues[J];
         Status.dwInfo := STR_MENU_SETUP_PER_INTEGER[dwIdxs[J]];
         // 設定が中央の場合はオプションの設定をロック
-        if not longbool(dwType and FUNCTION_TYPE_NO_TIMER) and (J = dwSize div 2) then begin
+        if not longbool(dwType and FUNCTION_TYPE_NO_TIMER) and ((result = dwDef1) or (result = dwDef2) or (result = dwDef3)) then begin
             Status.bOptionLock := true;
             API_SetTimer(cwWindowMain.hWnd, TIMER_ID_OPTION_LOCK, TIMER_INTERVAL_OPTION_LOCK, NULLPOINTER);
         end;
@@ -8140,7 +8197,7 @@ begin
     case dwType and $FFFF of
         FUNCTION_TYPE_SEPARATE: begin // 左右拡散度
             // 左右拡散度を設定
-            I := UpdateFunction(Option.dwSeparate, MENU_SETUP_SEPARATE_SIZE, MENU_SETUP_SEPARATE_VALUE, STR_MENU_SETUP_SEPARATE_PER_INDEX, SEPARATE_050, 50);
+            I := UpdateFunction(Option.dwSeparate, MENU_SETUP_SEPARATE_SIZE, MENU_SETUP_SEPARATE_VALUE, STR_MENU_SETUP_SEPARATE_PER_INDEX, SEPARATE_050, 50, SEPARATE_000, SEPARATE_100);
             if I = $FFFFFFFF then exit;
             Option.dwSeparate := I;
             // タイトルを更新
@@ -8150,7 +8207,7 @@ begin
         end;
         FUNCTION_TYPE_FEEDBACK: begin // フィードバック反転度
             // フィードバック反転度を設定
-            I := UpdateFunction(Option.dwFeedback, MENU_SETUP_FEEDBACK_SIZE, MENU_SETUP_FEEDBACK_VALUE, STR_MENU_SETUP_FEEDBACK_PER_INDEX, FEEDBACK_000, 0);
+            I := UpdateFunction(Option.dwFeedback, MENU_SETUP_FEEDBACK_SIZE, MENU_SETUP_FEEDBACK_VALUE, STR_MENU_SETUP_FEEDBACK_PER_INDEX, FEEDBACK_000, 0, FEEDBACK_050, FEEDBACK_100);
             if I = $FFFFFFFF then exit;
             Option.dwFeedback := I;
             // タイトルを更新
@@ -8160,7 +8217,7 @@ begin
         end;
         FUNCTION_TYPE_SPEED: begin // 演奏速度
             // 演奏速度を設定
-            I := UpdateFunction(Option.dwSpeedBas, MENU_SETUP_SPEED_SIZE, MENU_SETUP_SPEED_VALUE, STR_MENU_SETUP_SPEED_PER_INDEX, SPEED_100, 100);
+            I := UpdateFunction(Option.dwSpeedBas, MENU_SETUP_SPEED_SIZE, MENU_SETUP_SPEED_VALUE, STR_MENU_SETUP_SPEED_PER_INDEX, SPEED_100, 100, SPEED_025, SPEED_400);
             if I = $FFFFFFFF then exit;
             Option.dwSpeedBas := I;
             // タイトルを更新
@@ -8170,7 +8227,7 @@ begin
         end;
         FUNCTION_TYPE_AMP: begin // 音量
             // 音量を設定
-            I := UpdateFunction(Option.dwAmp, MENU_SETUP_AMP_SIZE, MENU_SETUP_AMP_VALUE, STR_MENU_SETUP_AMP_PER_INDEX, AMP_100, 100);
+            I := UpdateFunction(Option.dwAmp, MENU_SETUP_AMP_SIZE, MENU_SETUP_AMP_VALUE, STR_MENU_SETUP_AMP_PER_INDEX, AMP_100, 100, AMP_025, AMP_400);
             if I = $FFFFFFFF then exit;
             Option.dwAmp := I;
             // タイトルを更新
@@ -9028,10 +9085,10 @@ begin
     cmSetup.SetMenuCheck(MENU_SETUP_TOPMOST, Option.bTopMost);
     // ボタンを更新
     for I := 0 to 7 do cwCheckTrack[I].SendMessage(BM_SETCHECK, 1 - (Option.dwMute and (1 shl I)) shr I, NULL);
-    cwButtonVolM.SetWindowEnable(Option.dwAmp > AMP_025);
+    cwButtonVolM.SetWindowEnable(Option.dwAmp > AMP_005);
     cwButtonVolP.SetWindowEnable(Option.dwAmp < AMP_400);
-    cwButtonSlow.SetWindowEnable(Option.dwSpeedBas > SPEED_025);
-    cwButtonFast.SetWindowEnable(Option.dwSpeedBas < SPEED_400);
+    cwButtonSlow.SetWindowEnable(Option.dwSpeedBas > SPEED_001);
+    cwButtonFast.SetWindowEnable(Option.dwSpeedBas < SPEED_800);
     cwButtonBack.SetWindowEnable(bUp);
     cwButtonNext.SetWindowEnable(bUp);
     // プレイリスト メニューを更新
@@ -10036,8 +10093,8 @@ begin
                         MENU_SETUP_PITCH_BASE..MENU_SETUP_PITCH_BASE + 20: Option.dwPitch := MENU_SETUP_PITCH_VALUE[wParam - MENU_SETUP_PITCH_BASE];
                         MENU_SETUP_SEPARATE_BASE..MENU_SETUP_SEPARATE_BASE + 10: Option.dwSeparate := MENU_SETUP_SEPARATE_VALUE[wParam - MENU_SETUP_SEPARATE_BASE];
                         MENU_SETUP_FEEDBACK_BASE..MENU_SETUP_FEEDBACK_BASE + 10: Option.dwFeedback := MENU_SETUP_FEEDBACK_VALUE[wParam - MENU_SETUP_FEEDBACK_BASE];
-                        MENU_SETUP_SPEED_BASE..MENU_SETUP_SPEED_BASE + 10: Option.dwSpeedBas := MENU_SETUP_SPEED_VALUE[wParam - MENU_SETUP_SPEED_BASE];
-                        MENU_SETUP_AMP_BASE..MENU_SETUP_AMP_BASE + 10: Option.dwAmp := MENU_SETUP_AMP_VALUE[wParam - MENU_SETUP_AMP_BASE];
+                        MENU_SETUP_SPEED_BASE..MENU_SETUP_SPEED_BASE + 20: Option.dwSpeedBas := MENU_SETUP_SPEED_VALUE[wParam - MENU_SETUP_SPEED_BASE];
+                        MENU_SETUP_AMP_BASE..MENU_SETUP_AMP_BASE + 20: Option.dwAmp := MENU_SETUP_AMP_VALUE[wParam - MENU_SETUP_AMP_BASE];
                         MENU_SETUP_MUTE_BASE: Option.dwMute := Option.dwMute xor (1 shl (wParam - MENU_SETUP_MUTE_BASE));
                         MENU_SETUP_NOISE_BASE: Option.dwNoise := Option.dwNoise xor (1 shl (wParam - MENU_SETUP_NOISE_BASE));
                         MENU_SETUP_OPTION_BASE..MENU_SETUP_OPTION_BASE + 10: Option.dwOption := Option.dwOption xor MENU_SETUP_OPTION_VALUE[wParam - MENU_SETUP_OPTION_BASE];
