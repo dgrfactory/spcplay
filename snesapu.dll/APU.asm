@@ -45,12 +45,12 @@ SECTION .data ALIGN=256
 SECTION .data ALIGN=32
 %endif
 
-; ----- degrade-factory code [2021/05/04] -----
+; ----- degrade-factory code [2021/05/21] -----
 	apuOpt		DD	(CPU_CYC << 24) | (DEBUG << 16) | (DSPINTEG << 17) | (VMETERM << 8) | (VMETERV << 9) | (1 << 10) | (STEREO << 11) \
 					| (HALFC << 1) | (CNTBK << 2) | (SPEED << 3) | (IPLW << 4) | (DSPBK << 5) | (INTBK << 6)
 	apuDllVer	DD	21864h														;SNESAPU.DLL Current Version
 	apuCmpVer	DD	11000h														;SNESAPU.DLL Backwards Compatible Version
-	apuVerStr	DD	"2.18.4 (build 7333)"										;SNESAPU.DLL Current Version (32byte String)
+	apuVerStr	DD	"2.18.4 (build 7350)"										;SNESAPU.DLL Current Version (32byte String)
 				DD	8
 ; ----- degrade-factory code [END] -----
 
@@ -429,11 +429,11 @@ ENDP
 PROC SetAPUSmpClk, speed
 USES EDX
 
-; ----- degrade-factory code [2004/08/16] -----
+; ----- degrade-factory code [2021/05/21] -----
 	Mov		EAX,[speed]
-	Cmp		EAX,4096															;If speed < 4096, speed = 4096
+	Cmp		EAX,64																;If speed < 64, speed = 64
 	JAE		short .OKL
-		Mov		EAX,4096
+		Mov		EAX,64
 	.OKL:
 ; ----- degrade-factory code [END] -----
 
