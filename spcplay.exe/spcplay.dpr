@@ -2327,7 +2327,7 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.18.4 (build 7350)';
+    SPCPLAY_VERSION = '2.18.4 (build 7362)';
     SNESAPU_VERSION = $21864;
     APPLINK_VERSION = $02170500;
 
@@ -2742,6 +2742,7 @@ const
     AMP_100 = 65536;                                        // 100 ％
     AMP_005 = AMP_100 *  500 div 10000;                     // 5 ％
     AMP_010 = AMP_100 * 1000 div 10000;                     // 10 ％
+    AMP_015 = AMP_100 * 1500 div 10000;                     // 15 ％
     AMP_020 = AMP_100 * 2000 div 10000;                     // 20 ％
     AMP_025 = AMP_100 * 2500 div 10000;                     // 25 ％
     AMP_033 = AMP_100 * 3333 div 10000;                     // 33 ％
@@ -2844,10 +2845,10 @@ const
          SPEED_110, SPEED_125, SPEED_133, SPEED_150, SPEED_200, SPEED_250, SPEED_300, SPEED_400,
          $FFFFFFFF, SPEED_500, SPEED_600, SPEED_700, SPEED_800);
     MENU_SETUP_AMP = 42;
-    MENU_SETUP_AMP_SIZE = 21;
+    MENU_SETUP_AMP_SIZE = 22;
     MENU_SETUP_AMP_BASE = 410; // +10
     MENU_SETUP_AMP_VALUE: array[0..MENU_SETUP_AMP_SIZE - 1] of longword =
-        (AMP_005, AMP_010, AMP_020, $FFFFFFFF,
+        (AMP_005, AMP_010, AMP_015, AMP_020, $FFFFFFFF,
          AMP_025, AMP_033, AMP_040, AMP_050, AMP_067, AMP_075, AMP_080, AMP_090, AMP_100,
          AMP_110, AMP_125, AMP_133, AMP_150, AMP_200, AMP_250, AMP_300, AMP_400);
     MENU_SETUP_MUTE = 46;
@@ -2949,24 +2950,24 @@ const
     ID_STATIC_FILE = ID_BASE * ID_STATIC + 1;
 
     STR_MENU_SETUP_SEPARATE_PER_INDEX: array[0..MENU_SETUP_SEPARATE_SIZE - 1] of longword =
-        (1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17);
+        (1, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18);
     STR_MENU_SETUP_SEPARATE_TIP_INDEX: array[0..MENU_SETUP_SEPARATE_SIZE - 1] of longword =
         (2, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, 3);
     STR_MENU_SETUP_FEEDBACK_PER_INDEX: array[0..MENU_SETUP_FEEDBACK_SIZE - 1] of longword =
-        (1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17);
+        (1, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18);
     STR_MENU_SETUP_FEEDBACK_TIP_INDEX: array[0..MENU_SETUP_FEEDBACK_SIZE - 1] of longword =
         (1, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL, NULL, NULL, NULL, NULL, NULL, 4);
     STR_MENU_SETUP_SPEED_PER_INDEX:    array[0..MENU_SETUP_SPEED_SIZE - 1]    of longword =
-        (2, 3, 4, 5, NULL, 6, 8, 9, 10, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, NULL, 26, 27, 28, 29);
+        (2, 3, 4, 6, NULL, 7, 9, 10, 11, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, NULL, 27, 28, 29, 30);
     STR_MENU_SETUP_SPEED_TIP_INDEX:    array[0..MENU_SETUP_SPEED_SIZE - 1]    of longword =
         (9, NULL, NULL, NULL, NULL, 5, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1,
          NULL, NULL, NULL, NULL, NULL, NULL, NULL, 6, NULL, NULL, NULL, NULL, 10);
     STR_MENU_SETUP_AMP_PER_INDEX:      array[0..MENU_SETUP_AMP_SIZE - 1]      of longword =
-        (3, 4, 5, NULL, 6, 8, 9, 10, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25);
+        (3, 4, 5, 6, NULL, 7, 9, 10, 11, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26);
     STR_MENU_SETUP_AMP_TIP_INDEX:      array[0..MENU_SETUP_AMP_SIZE - 1]      of longword =
-        (11, NULL, NULL, NULL, 7, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 8);
-    STR_MENU_SETUP_PER_INTEGER: array[0..29] of longword =
-        (0, 0, 1, 5, 10, 20, 25, 30, 33, 40, 50, 60, 67, 70, 75, 80, 90, 100, 110, 125, 133, 150, 200, 250, 300, 400, 500, 600, 700, 800);
+        (11, NULL, NULL, NULL, NULL, 7, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 8);
+    STR_MENU_SETUP_PER_INTEGER: array[0..30] of longword =
+        (0, 0, 1, 5, 10, 15, 20, 25, 30, 33, 40, 50, 60, 67, 70, 75, 80, 90, 100, 110, 125, 133, 150, 200, 250, 300, 400, 500, 600, 700, 800);
 
     ERROR_SNESAPU: array[0..1] of string = ('SNESAPU.DLL の初期化に失敗しました。', 'Initializing SNESAPU.DLL is failed.');
     ERROR_CHECKSUM: array[0..1] of string = ('アプリケーションの起動に失敗しました。', 'Initializing application is failed.');
