@@ -2448,7 +2448,7 @@ DSPDone:
 ENDP
 
 
-; ----- degrade-factory code [2021/05/04] -----
+; ----- degrade-factory code [2021/06/04] -----
 ;===================================================================================================
 ;Emulate the KON/KOFF delay processing of DSP
 ;
@@ -2539,7 +2539,7 @@ ENDP
 		%%CheckKOff:
 %if DSPBK || INTBK
 		Cmp		byte [EBX+mKOn],KON_CHKKOFF										;Did time for checked KOFF after KON had been written?
-		JNE		short %%CheckEnv												;	No
+		JA		short %%CheckEnv												;	No
 %endif
 		Test	[dsp+kof],CH													;Is KOFF still written?
 		JZ		short %%CheckEnv												;	No
@@ -2631,7 +2631,7 @@ ENDP
 	%%Done:
 	Mov		[konRsv],CH															;CH = 0
 %endmacro
-; ----- degrade-factory code [END] #25 -----
+; ----- degrade-factory code [END] #25 #29 -----
 
 
 ;===================================================================================================
