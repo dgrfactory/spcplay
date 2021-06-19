@@ -323,17 +323,16 @@ USES ECX,EDX,ESI,EDI
 	Rep		StoSD
 
 	;Reset Function Registers ----------------
-; ----- degrade-factory code [2019/07/06] -----
+; ----- degrade-factory code [2021/06/15] -----
 	Mov		EAX,[pAPURAM]
 	Mov		AX,0F0h
 	Mov		byte [EAX+0],0Ah													;Test gets set to 0Ah
 	And		byte [EAX+1],07h													;Timer status is preserved, other bits are reset
-	Or		byte [EAX+1],80h
+	Or		byte [EAX+1],80h													;Enable ROM reading
 	Mov		dword [EAX+4],0														;Reset in-ports
 	Mov		word [EAX+8],-1														;See above comment on erasing RAM
 	Mov		dword [EAX+0Ah],0													;Timers set to 00h
 	Mov		word [EAX+0Eh],0													;Counters set to 00h
-	Mov		byte [EAX-0Fh],80h													;Enable ROM reading
 
 	;Copy IPL ROM into extra RAM -------------
 %if IPLW
@@ -370,7 +369,7 @@ USES ECX,EDX,ESI,EDI
 	Rep		StoSD
 	Mov		dword [scr700cnt],32
 	Mov		dword [scr700stf],03h
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #31 -----
 
 	Call	FixSPC,0FFC0h,0,0,0,0,0
 
@@ -2061,14 +2060,6 @@ Ret
 ;Load pointers
 ;   Load DPI or ABSL (aliases for EBX) with the value needed by the instruction.
 ;
-; ----- degrade-factory code [2021/05/22] -----
-%macro LRAM 0
-	Mov		EBX,[pAPURAM]
-	Mov		CL,[EBX]
-	Mov		[EBX+APURAMSIZE],CL
-%endmacro
-; ----- degrade-factory code [END] #27 -----
-
 ;dp - Load DPI with the 8-bit immediate value
 %macro Ldp 0
 	Mov		EBX,dword [PSW+P-1]													;EBX-> Direct Page 0 or 1
@@ -2105,6 +2096,18 @@ Ret
 	Add		BL,Y
 %endmacro
 
+; ----- degrade-factory code [2021/05/22] -----
+;abs+?
+;   Because an overflow occurs when a 16bit value is obtained from address $FFFF,
+;   and an unexpected value is obtained, copy value of address $0000 to $10000
+;   it so that the correct 16bit value can be obtained.
+%macro LRAM 0
+	Mov		EBX,[pAPURAM]
+	Mov		CL,[EBX]
+	Mov		[EBX+APURAMSIZE],CL
+%endmacro
+; ----- degrade-factory code [END] #27 -----
+
 ;abs - Load ABSL with the 16-bit immediate value
 %macro Labs 0
 ; ----- degrade-factory code [2021/05/22] -----
@@ -2131,16 +2134,32 @@ Ret
 	Add		BX,[OP1]
 %endmacro
 
+; ----- degrade-factory code [2021/06/15] -----
+;[dp+?] - (dp+?+1)(dp+?)
+;   Do not obtain 16bit values beyond the address of direct page.
+%macro Ladp 0
+;	Mov		BX,[DPI]
+	Mov		CL,[DPI]
+	Inc		BL
+	Mov		BH,[DPI]
+	Mov		BL,CL
+%endmacro
+; ----- degrade-factory code [END] #30 -----
+
 ;[dp+X] - Load ABSL with the 16-bit value at [dp+X]
 %macro LadpX 0
 	LdpX
-	Mov		BX,[DPI]
+; ----- degrade-factory code [2021/06/15] -----
+	Ladp
+; ----- degrade-factory code [END] #30 -----
 %endmacro
 
 ;[dp]+Y - Load ABSL with the 16-bit value at [dp] + Y
 %macro LadpY 0
 	Ldp
-	Mov		BX,[DPI]
+; ----- degrade-factory code [2021/06/15] -----
+	Ladp
+; ----- degrade-factory code [END] #30 -----
 	Add		BL,Y
 	AdC		BH,0
 %endmacro
