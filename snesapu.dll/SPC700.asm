@@ -4560,7 +4560,7 @@ Ret
 ;===================================================================================================
 ;RETI - Return From Interrupt
 ; N V P B H I Z C
-; ? ? ? ? ? 1 ? ?
+; ? ? ? ? ? ? ? ?
 ;RetI
 %macro Opc7F 0
 	PopB	PS
@@ -4844,11 +4844,10 @@ Ret
 ;===================================================================================================
 ;SETP - Set Direct Page Flag
 ; N V P B H I Z C
-;     1     0
+;     1
 ;SetP
 %macro Opc40 0
 	Mov		byte [PSW+P],1
-	Mov		byte [PSW+I],0
 	CleanUp	2,1
 %endmacro
 
