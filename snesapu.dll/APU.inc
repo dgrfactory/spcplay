@@ -28,69 +28,69 @@
 ;Options
 
 ; ----- degrade-factory code [2019/07/15] -----
-CPU_CYC		EQU	24												;CPU clock divisor
-																;10 = 2.457MHz
-																;12 = 2.048MHz
-																;24 = 1.024MHz
+CPU_CYC     EQU 24                                              ;CPU clock divisor
+                                                                ;10 = 2.457MHz
+                                                                ;12 = 2.048MHz
+                                                                ;24 = 1.024MHz
 
-DEBUG		EQU	1												;Enable debugging ability
-DSPINTEG	EQU	1												;Integrate DSP emulation with SPC700
+DEBUG       EQU 1                                               ;Enable debugging ability
+DSPINTEG    EQU 1                                               ;Integrate DSP emulation with SPC700
 
-HALFC		EQU	1												;Enable half-carry flag emulation for decimal adjusts
-SPEED		EQU	0												;Enable speed hacks for counter reads and SLEEP
-																;	Notes:	If speed hacks enabled, will stop Script700 when sleeping SPC700.
-																;			If unused Script700, set the flag to "1" in order to run faster emulation.
-IPLW		EQU	1												;Enables the IPL Writable flag in register F1
+HALFC       EQU 1                                               ;Enable half-carry flag emulation for decimal adjusts
+SPEED       EQU 0                                               ;Enable speed hacks for counter reads and SLEEP
+                                                                ;   Notes:  If speed hacks enabled, will stop Script700 when sleeping SPC700.
+                                                                ;           If unused Script700, set the flag to "1" in order to run faster emulation.
+IPLW        EQU 1                                               ;Enables the IPL Writable flag in register F1
 
-CNTBK		EQU	0												;Break SPC700/Update DSP if a counter increases
-DSPBK		EQU	0												;Break SPC700/Update DSP if register F3 is read
-INTBK		EQU	1												;Break SPC700/Update DSP if emulated 1Ts with SPC700
-																;	Notes:	If all of CNTBK, DSPBK and INTBK are set to 0, sound will be not output.
-																;			If you want the behavior closest to the SNES, set only INTBK to "1".
+CNTBK       EQU 0                                               ;Break SPC700/Update DSP if a counter increases
+DSPBK       EQU 0                                               ;Break SPC700/Update DSP if register F3 is read
+INTBK       EQU 1                                               ;Break SPC700/Update DSP if emulated 1Ts with SPC700
+                                                                ;   Notes:  If all of CNTBK, DSPBK and INTBK are set to 0, sound will be not output.
+                                                                ;           If you want the behavior closest to the SNES, set only INTBK to "1".
 
-VMETERM		EQU	1												;Monitor main output level (for APR)
-VMETERV		EQU	1												;Monitor levels of each voice (for visualization)
+VMETERM     EQU 1                                               ;Monitor main output level (for APR)
+VMETERV     EQU 1                                               ;Monitor levels of each voice (for visualization)
 
-STEREO		EQU	1												;Enable stereo controls (separation and EFBCT)
+STEREO      EQU 1                                               ;Enable stereo controls (separation and EFBCT)
 
-APURAMSIZE	EQU	10000h											;APU RAM Memory Size
-SCR700SIZE	EQU	100000h											;Script700 Program Area Size
-SCR700MASK	EQU SCR700SIZE - 1									;Script700 Program Area Mask
+APURAMSIZE  EQU 10000h                                          ;APU RAM Memory Size
+SCR700SIZE  EQU 100000h                                         ;Script700 Program Area Size
+SCR700MASK  EQU SCR700SIZE - 1                                  ;Script700 Program Area Mask
 ; ----- degrade-factory code [END] -----
 
 ; ----- degrade-factory code [2015/11/23] -----
 ;SNESAPU callback effect
-CBE_DSPREG	EQU	01h												;Write DSP value event
-CBE_S700FCH	EQU	02h												;Write SPC700 fetch event
-CBE_INCS700	EQU	40000000h										;Include Script700 text file
-CBE_INCDATA	EQU	20000000h										;Include Script700 binary file
+CBE_DSPREG  EQU 01h                                             ;Write DSP value event
+CBE_S700FCH EQU 02h                                             ;Write SPC700 fetch event
+CBE_INCS700 EQU 40000000h                                       ;Include Script700 text file
+CBE_INCDATA EQU 20000000h                                       ;Include Script700 binary file
 ; ----- degrade-factory code [END] -----
 
 
 ;===================================================================================================
 ;Public Variables
 
-PUBLIC	apuOpt													;Build options
+PUBLIC  apuOpt                                                  ;Build options
 ; ----- degrade-factory code [2013/10/06] -----
-PUBLIC	scr700lbl												;Script700 Label Pointer
-PUBLIC	scr700stk												;Script700 Stack Area
-PUBLIC	scr700dsp												;Script700 DSP Enable Flag (Channel)
-PUBLIC	scr700mds												;Script700 DSP Enable Flag (Master)
-PUBLIC	scr700chg												;Script700 DSP Note Change
-PUBLIC	scr700det												;Script700 DSP Rate Detune
-PUBLIC	scr700vol												;Script700 DSP Volume Change (Source)
-PUBLIC	scr700mvl												;Script700 DSP Volume Change (Master)
-PUBLIC	scr700wrk												;Script700 User Work Area
-PUBLIC	scr700cmp												;Script700 Cmp Param
-PUBLIC	scr700cnt												;Script700 Wait Time Count
-PUBLIC	scr700ptr												;Script700 Program Pointer
-PUBLIC	scr700stf												;Script700 Stack Flag
-PUBLIC	scr700dat												;Script700 Data Area Offset
-PUBLIC	scr700stp												;Script700 Stack Pointer
-PUBLIC	pAPURAM													;Pointer to SNESAPU 64KB RAM
-PUBLIC	pSCRRAM													;Pointer to Script700 RAM
-PUBLIC	apuCbMask												;SNESAPU callback mask
-PUBLIC	apuCbFunc												;SNESAPU callback function
+PUBLIC  scr700lbl                                               ;Script700 Label Pointer
+PUBLIC  scr700stk                                               ;Script700 Stack Area
+PUBLIC  scr700dsp                                               ;Script700 DSP Enable Flag (Channel)
+PUBLIC  scr700mds                                               ;Script700 DSP Enable Flag (Master)
+PUBLIC  scr700chg                                               ;Script700 DSP Note Change
+PUBLIC  scr700det                                               ;Script700 DSP Rate Detune
+PUBLIC  scr700vol                                               ;Script700 DSP Volume Change (Source)
+PUBLIC  scr700mvl                                               ;Script700 DSP Volume Change (Master)
+PUBLIC  scr700wrk                                               ;Script700 User Work Area
+PUBLIC  scr700cmp                                               ;Script700 Cmp Param
+PUBLIC  scr700cnt                                               ;Script700 Wait Time Count
+PUBLIC  scr700ptr                                               ;Script700 Program Pointer
+PUBLIC  scr700stf                                               ;Script700 Stack Flag
+PUBLIC  scr700dat                                               ;Script700 Data Area Offset
+PUBLIC  scr700stp                                               ;Script700 Stack Pointer
+PUBLIC  pAPURAM                                                 ;Pointer to SNESAPU 64KB RAM
+PUBLIC  pSCRRAM                                                 ;Pointer to Script700 RAM
+PUBLIC  apuCbMask                                               ;SNESAPU callback mask
+PUBLIC  apuCbFunc                                               ;SNESAPU callback function
 ; ----- degrade-factory code [END] -----
 
 
