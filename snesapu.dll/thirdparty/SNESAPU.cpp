@@ -1097,7 +1097,7 @@ int LocalTransmitSPC(int type) {
             apu_write(3, 0x00);
         }
         apu_write(0, port0);
-        if (type != TRANSMIT_TYPE_GIMIC && !apu_waitInport(0, port0, 500)) return 10; // timeout 10
+        if (type != TRANSMIT_TYPE_GIMIC && !apu_waitInport(0, port0, 500)) return 11; // timeout 11
         if (++port0 >= 256) port0 = 0;
     }
 
@@ -1107,8 +1107,8 @@ int LocalTransmitSPC(int type) {
     }
 
     // finalize IPL
-    if (!apu_endTransfer(0x0006)) return 11; // timeout 11
-    if (!apu_waitInport(0, 0x00, 500)) return 12; // timeout 12
+    if (!apu_endTransfer(0x0006)) return 12; // timeout 12
+    if (!apu_waitInport(0, 0x00, 500)) return 13; // timeout 13
     j = 0x01;
 
     // for GIMIC
