@@ -793,11 +793,11 @@ type
         procedure CreateMenu();
         procedure CreatePopupMenu();
         procedure DeleteMenu();
-        procedure InsertMenu(dwID: longword; dwPosition: longword; lpString: pointer); overload;
-        procedure InsertMenu(dwID: longword; dwPosition: longword; lpString: pointer; bRadio: longbool); overload;
-        procedure InsertMenu(dwID: longword; dwPosition: longword; lpString: pointer; hSubMenuID: longword); overload;
-        procedure InsertSeparator(dwPosition: longword);
-        procedure RemoveItem(dwPosition: longword);
+        procedure InsertMenu(dwID: longword; dwAfterId: longword; lpString: pointer); overload;
+        procedure InsertMenu(dwID: longword; dwAfterId: longword; lpString: pointer; bRadio: longbool); overload;
+        procedure InsertMenu(dwID: longword; dwAfterId: longword; lpString: pointer; hSubMenuID: longword); overload;
+        procedure InsertSeparator(dwId: longword);
+        procedure RemoveItem(dwId: longword);
         procedure SetMenuCheck(dwID: longword; bCheck: longbool);
         procedure SetMenuEnable(dwID: longword; bEnable: longbool);
     end;
@@ -924,18 +924,19 @@ type
         procedure SPCSeek(dwTime: longword; bCache: longbool);
         procedure SPCStop(bRestart: longbool);
         procedure SPCTime(bCal: longbool; bDefault: longbool; bSet: longbool);
+        procedure UpdateDevice(dwDeviceID: longint; dwFlag: longword);
         procedure UpdateInfo(bRedraw: longbool);
         procedure UpdateMenu();
         procedure UpdateTitle(dwFlag: longword);
         procedure UpdateWindow();
-        procedure WaveClose();
+        procedure WaveClose(bForce: longbool);
         procedure WaveFormat(dwIndex: longword);
         procedure WaveInit();
         function  WaveOpen(): longword;
         function  WavePause(): longbool;
         procedure WaveProc(dwFlag: longword);
         procedure WaveQuit();
-        procedure WaveReset();
+        procedure WaveReset(bForce: longbool);
         function  WaveResume(): longbool;
         function  WaveSave(lpFile: pointer; bShift: longbool; bQuiet: longbool): longbool;
         procedure WaveStart();
@@ -2327,8 +2328,8 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.18.4 (build 7379)';
-    SNESAPU_VERSION = $21864;
+    SPCPLAY_VERSION = '2.18.5 (build 7451)';
+    SNESAPU_VERSION = $21865;
     APPLINK_VERSION = $02170500;
 
     CBE_DSPREG = $1;
@@ -2360,6 +2361,7 @@ const
     BUFFER_BUFTIME_: string = 'BUFTIME  2 : ';
     BUFFER_CHANNEL_: string = 'CHANNEL  0 : ';
     BUFFER_DEVICE__: string = 'DEVICE   0 : ';
+    BUFFER_DEVNAME_: string = 'DEVNAME  0 : ';
     BUFFER_DRAWINFO: string = 'DRAWINFO 0 : ';
     BUFFER_FADELENG: string = 'FADELENG 0 : ';
     BUFFER_FEEDBACK: string = 'FEEDBACK 1 : ';
@@ -2444,6 +2446,7 @@ const
     WM_APP_UPDATE_INFO = $00080000;                         // 情報更新           ($0008???X, X:Redraw)
     WM_APP_UPDATE_MENU = $00090000;                         // メニュー更新       ($0009????)
     WM_APP_WAVE_OUTPUT = $000A0000;                         // WAVE 書き込み      ($000A??YX, X:Shift, Y:Quiet, lParam:hWnd)
+    WM_APP_TRY_RESUME = $000B0000;                          // 演奏再開試行       ($000B????)
 
     WM_APP_WAVE_PROC = $10000000;                           // WAVE 割り込み      ($1000????)
     WM_APP_SPC_PLAY = $10010000;                            // SPC 演奏開始       ($1001????)
@@ -2564,6 +2567,11 @@ const
     WAVE_THREAD_RUNNING = $1;                               // 実行状態
     WAVE_THREAD_DEVICE_OPENED = $2;                         // デバイスのオープン完了
     WAVE_THREAD_DEVICE_CLOSED = $4;                         // デバイスのクローズ完了
+
+    WAVE_DEVICE_SET_ONLY = $0;                              // デバイス ID 選択のみ
+    WAVE_DEVICE_UPDATE_LIST = $1;                           // デバイス一覧を更新
+    WAVE_DEVICE_UPDATE_SELECT = $2;                         // 選択デバイスを更新
+    WAVE_DEVICE_INITIALIZE = $3;                            // 初期化
 
     WAVE_FORMAT_TYPE_SIZE = 2;
     WAVE_FORMAT_TYPE_ARRAY: array[0..WAVE_FORMAT_TYPE_SIZE - 1] of longword = (WAVE_FORMAT_DIRECT, NULL);
@@ -3199,6 +3207,7 @@ var
         lpSavePath: pointer;                                    // ファイル保存フォルダバッファ
         dwFocusHandle: longword;                                // フォーカスハンドル
         dwDeviceNum: longword;                                  // デバイス数
+        sDeviceName: array of string;                           // デバイス名
         dwAPUPlayTime: longword;                                // 再生時間
         dwAPUFadeTime: longword;                                // フェードアウト時間
         dwDefaultTimeout: longword;                             // 次の曲に移る時間
@@ -3257,6 +3266,7 @@ var
         dwBufferTime: longword;                                 // バッファ時間
         dwChannel: longword;                                    // チャンネル
         dwDeviceID: longint;                                    // デバイス ID
+        sDeviceName: string;                                    // デバイス名
         dwDrawInfo: longword;                                   // 情報描画フラグ
         dwFadeTime: longword;                                   // デフォルトフェードアウト時間
         dwFeedback: longword;                                   // フィードバック反転度
@@ -4641,42 +4651,42 @@ end;
 // ================================================================================
 // InsertMenu - メニュー項目追加
 // ================================================================================
-procedure CMENU.InsertMenu(dwID: longword; dwPosition: longword; lpString: pointer);
+procedure CMENU.InsertMenu(dwID: longword; dwAfterId: longword; lpString: pointer);
 begin
-    API_InsertMenu(hMenu, dwPosition, MF_BYCOMMAND or MF_STRING, dwID, lpString);
+    API_InsertMenu(hMenu, dwAfterId, MF_BYCOMMAND or MF_STRING, dwID, lpString);
 end;
 
 // ================================================================================
 // InsertMenu - メニュー項目追加
 // ================================================================================
-procedure CMENU.InsertMenu(dwID: longword; dwPosition: longword; lpString: pointer; bRadio: longbool);
+procedure CMENU.InsertMenu(dwID: longword; dwAfterId: longword; lpString: pointer; bRadio: longbool);
 begin
-    if bRadio then API_InsertMenu(hMenu, dwPosition, MF_BYCOMMAND or MF_STRING or MF_RADIOCHECK, dwID, lpString)
-    else InsertMenu(dwID, dwPosition, lpString);
+    if bRadio then API_InsertMenu(hMenu, dwAfterId, MF_BYCOMMAND or MF_STRING or MF_RADIOCHECK, dwID, lpString)
+    else InsertMenu(dwID, dwAfterId, lpString);
 end;
 
 // ================================================================================
 // InsertMenu - メニュー項目追加
 // ================================================================================
-procedure CMENU.InsertMenu(dwID: longword; dwPosition: longword; lpString: pointer; hSubMenuID: longword);
+procedure CMENU.InsertMenu(dwID: longword; dwAfterId: longword; lpString: pointer; hSubMenuID: longword);
 begin
-    API_InsertMenu(hMenu, dwPosition, MF_BYCOMMAND or MF_STRING or MF_POPUP, hSubMenuID, lpString);
+    API_InsertMenu(hMenu, dwAfterId, MF_BYCOMMAND or MF_STRING or MF_POPUP, hSubMenuID, lpString);
 end;
 
 // ================================================================================
 // InsertSeparator - メニューセパレータ追加
 // ================================================================================
-procedure CMENU.InsertSeparator(dwPosition: longword);
+procedure CMENU.InsertSeparator(dwId: longword);
 begin
-    API_InsertMenu(hMenu, dwPosition, MF_BYCOMMAND or MF_SEPARATOR, NULL, NULLPOINTER);
+    API_InsertMenu(hMenu, dwId, MF_BYCOMMAND or MF_SEPARATOR, NULL, NULLPOINTER);
 end;
 
 // ================================================================================
 // RemoveMenu - メニュー項目削除
 // ================================================================================
-procedure CMENU.RemoveItem(dwPosition: longword);
+procedure CMENU.RemoveItem(dwId: longword);
 begin
-    API_DeleteMenu(hMenu, dwPosition, MF_BYCOMMAND);
+    API_DeleteMenu(hMenu, dwId, MF_BYCOMMAND);
 end;
 
 // ================================================================================
@@ -5043,7 +5053,6 @@ var
     hWndApp: longword;
     hFontApp: longword;
     Box: TBOX;
-    WaveOutCaps: TWAVEOUTCAPS;
     API_RtlGetVersion: function(lpVersionInfo: pointer): longbool; stdcall;
 {$IFDEF UACDROP}
     API_ChangeWindowMessageFilter: function(msg: longword; dwFlag: longword): longword; stdcall;
@@ -5310,6 +5319,7 @@ begin
     Option.dwBufferTime := 23;
     Option.dwChannel := CHANNEL_STEREO;
     Option.dwDeviceID := -1;
+    Option.sDeviceName := '';
     Option.dwDrawInfo := 0;
     Option.dwFadeTime := 10000;
     Option.dwFeedback := FEEDBACK_000;
@@ -5366,6 +5376,7 @@ begin
             if sBuffer = BUFFER_BUFTIME_ then Option.dwBufferTime := GetINIValue(Option.dwBufferTime);
             if sBuffer = BUFFER_CHANNEL_ then Option.dwChannel := GetINIValue(Option.dwChannel);
             if sBuffer = BUFFER_DEVICE__ then Option.dwDeviceID := GetINIValue(Option.dwDeviceID);
+            if sBuffer = BUFFER_DEVNAME_ then Option.sDeviceName := Copy(sData, BUFFER_START, Length(sData) - BUFFER_LENGTH);
             if sBuffer = BUFFER_DRAWINFO then Option.dwDrawInfo := GetINIValue(Option.dwDrawInfo);
             if sBuffer = BUFFER_FADELENG then Option.dwFadeTime := GetINIValue(Option.dwFadeTime);
             if sBuffer = BUFFER_FEEDBACK then Option.dwFeedback := GetINIValue(Option.dwFeedback);
@@ -5600,12 +5611,8 @@ begin
     // デバイスメニューを作成
     cmSetupDevice := CMENU.Create();
     cmSetupDevice.CreatePopupMenu();
-    Status.dwDeviceNum := API_waveOutGetNumDevs();
-    if Status.dwDeviceNum > 9 then Status.dwDeviceNum := 9;
-    for I := -1 to Status.dwDeviceNum - 1 do begin
-        API_waveOutGetDevCaps(I, @WaveOutCaps, SizeOf(TWAVEOUTCAPS));
-        cmSetupDevice.AppendMenu(MENU_SETUP_DEVICE_BASE + I + 1, pchar(Concat('&', char($31 + I), '   ', string(WaveOutCaps.szPname))), true);
-    end;
+    Status.dwDeviceNum := 0;
+    UpdateDevice(Option.dwDeviceID, WAVE_DEVICE_INITIALIZE);
     // チャンネルメニューを作成
     SetMenuTextAndTip(cmSetupChannel, MENU_SETUP_CHANNEL_SIZE, MENU_SETUP_CHANNEL_BASE, STR_MENU_SETUP_CHANNEL_SUB[Status.dwLanguage], true);
     // ビットメニューを作成
@@ -5823,7 +5830,7 @@ begin
     // フォーカスを設定
     SetTabFocus(hWndApp, true);
     // スレッドの準備が完了するまで待機
-    while not longbool(Status.dwThreadStatus) do API_Sleep(1);
+    while not longbool(Status.dwThreadStatus) do API_Sleep(16);
     // コマンドラインを処理
     if longbool(Length(sCmdLine)) then begin
         // バッファを確保
@@ -5913,6 +5920,7 @@ begin
     Writeln(fsFile, Concat(BUFFER_BIT_____, IntToStr(Option.dwBit)));
     Writeln(fsFile, Concat(BUFFER_CHANNEL_, IntToStr(Option.dwChannel)));
     Writeln(fsFile, Concat(BUFFER_DEVICE__, IntToStr(Option.dwDeviceID)));
+    Writeln(fsFile, Concat(BUFFER_DEVNAME_, Option.sDeviceName));
     Writeln(fsFile, Concat(BUFFER_FEEDBACK, IntToStr(Option.dwFeedback)));
     Writeln(fsFile, Concat(BUFFER_INFO____, IntToStr(Option.dwInfo)));
     Writeln(fsFile, Concat(BUFFER_INTER___, IntToStr(Option.dwInter)));
@@ -5938,7 +5946,7 @@ begin
     // プレイリストファイルを作成
     ListSave(pchar(Concat(sChPath, LIST_FILE)), true);
     // スレッドが完全に終了するまで待機
-    while longbool(Status.dwThreadStatus) do API_Sleep(1);
+    while longbool(Status.dwThreadStatus) do API_Sleep(16);
     // スレッドを解放
     API_CloseHandle(Status.dwThreadHandle);
     // SNESAPU.DLL を解放
@@ -8860,15 +8868,17 @@ begin
     if Status.bSPCRestart then begin
 {$IFNDEF TRANSMITSPC}
         // 演奏を停止
-        WaveReset();
+        WaveReset(false);
 {$ENDIF}
         // 再演奏
         SPCPlay(PLAY_TYPE_PLAY);
     end else begin
 {$IFNDEF TRANSMITSPC}
         // 演奏を停止
-        WaveClose();
+        WaveClose(false);
 {$ENDIF}
+        // デバイスを更新
+        UpdateDevice(Option.dwDeviceID, WAVE_DEVICE_UPDATE_LIST);
         // メニューを更新
         UpdateMenu();
         // インジケータをリセット
@@ -8911,6 +8921,43 @@ begin
         // 演奏中の場合は演奏時間、フェードアウト時間を設定
         if bSet and Status.bPlay then Apu.SetAPULength($FFFFFFFF, 0);
     end;
+end;
+
+// ================================================================================
+// UpdateDevice - デバイス更新
+// ================================================================================
+procedure CWINDOWMAIN.UpdateDevice(dwDeviceID: longint; dwFlag: longword);
+var
+    I: longint;
+    sBuffer: string;
+    WaveOutCaps: TWAVEOUTCAPS;
+begin
+    // デバイス一覧を更新する場合
+    if longbool(dwFlag and WAVE_DEVICE_UPDATE_LIST) then begin
+        // デバイスメニューを削除
+        for I := -1 to Status.dwDeviceNum - 1 do cmSetupDevice.RemoveItem(MENU_SETUP_DEVICE_BASE + I + 1);
+        // デバイス一覧を取得
+        Status.dwDeviceNum := API_waveOutGetNumDevs();
+        if Status.dwDeviceNum > 32 then Status.dwDeviceNum := 32;
+        SetLength(Status.sDeviceName, Status.dwDeviceNum + 1);
+        // デバイスを仮選択
+        if dwDeviceID >= longint(Status.dwDeviceNum) then dwDeviceID := -1;
+        Option.dwDeviceID := dwDeviceID;
+        // デバイスメニューを作成
+        for I := -1 to Status.dwDeviceNum - 1 do begin
+            // デバイス名を取得
+            API_waveOutGetDevCaps(I, @WaveOutCaps, SizeOf(TWAVEOUTCAPS));
+            sBuffer := string(WaveOutCaps.szPname);
+            cmSetupDevice.AppendMenu(MENU_SETUP_DEVICE_BASE + I + 1, pchar(Concat('&', char($31 + I), '   ', sBuffer)), true);
+            Status.sDeviceName[I + 1] := sBuffer;
+            // 前回終了時に選択していたデバイス名と一致するデバイスを優先する
+            if Option.sDeviceName = sBuffer then dwDeviceID := I;
+        end;
+    end;
+    // デバイスを再選択
+    if dwDeviceID >= longint(Status.dwDeviceNum) then dwDeviceID := -1;
+    Option.dwDeviceID := dwDeviceID;
+    if longbool(dwFlag and WAVE_DEVICE_UPDATE_SELECT) then Option.sDeviceName := Status.sDeviceName[dwDeviceID + 1];
 end;
 
 // ================================================================================
@@ -9193,18 +9240,18 @@ end;
 // ================================================================================
 // WaveClose - デバイスを閉じる
 // ================================================================================
-procedure CWINDOWMAIN.WaveClose();
+procedure CWINDOWMAIN.WaveClose(bForce: longbool);
 var
     I: longint;
 begin
     // デバイスをリセット
-    WaveReset();
+    WaveReset(bForce);
     // サウンドバッファを解放
     for I := 0 to Option.dwBufferNum - 1 do API_waveOutUnprepareHeader(Wave.dwHandle, @Wave.Header[I], SizeOf(TWAVEHDR));
     // デバイスをクローズ
-    API_waveOutClose(Wave.dwHandle);
+    if longbool(API_waveOutClose(Wave.dwHandle)) then API_Sleep(50)
     // デバイスが完全にクローズされるまで待機
-    while not longbool(Status.dwThreadStatus and WAVE_THREAD_DEVICE_CLOSED) do API_Sleep(1);
+    else while not longbool(Status.dwThreadStatus and WAVE_THREAD_DEVICE_CLOSED) do API_Sleep(16);
     Status.dwThreadStatus := Status.dwThreadStatus xor WAVE_THREAD_DEVICE_CLOSED;
     // ハンドルを初期化
     Wave.dwHandle := 0;
@@ -9290,7 +9337,7 @@ begin
     // デバイスのオープンに失敗した場合は終了
     if not Status.bPlay then exit;
     // デバイスが完全にオープンされるまで待機
-    while not longbool(Status.dwThreadStatus and WAVE_THREAD_DEVICE_OPENED) do API_Sleep(1);
+    while not longbool(Status.dwThreadStatus and WAVE_THREAD_DEVICE_OPENED) do API_Sleep(16);
     Status.dwThreadStatus := Status.dwThreadStatus xor WAVE_THREAD_DEVICE_OPENED;
     // サウンドバッファを準備
     for I := 0 to Option.dwBufferNum - 1 do begin
@@ -9368,7 +9415,16 @@ begin
         API_ZeroMemory(Wave.lpData[dwIndex], Wave.dwBufSize);
 {$ENDIF}
         // バッファをデバイスに転送
-        API_waveOutWrite(Wave.dwHandle, @Wave.Header[dwIndex], SizeOf(TWAVEHDR));
+        if longbool(API_waveOutWrite(Wave.dwHandle, @Wave.Header[dwIndex], SizeOf(TWAVEHDR))) then begin
+            // すでに再試行済みの場合は終了
+            if Status.bPause then exit;
+            // フラグを設定
+            Status.bPause := true;
+            // デッドロックを防止するため、ウィンドウメッセージを送信
+            cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_TRY_RESUME, NULL);
+            // 終了
+            exit;
+        end;
         // APU データをコピー
         ApuData := @Wave.Apu[dwIndex];
         ApuData.SPCApuPort.dwPort := Apu.Ram.dwPort;
@@ -9453,7 +9509,7 @@ var
 begin
 {$IFNDEF TRANSMITSPC}
     // 演奏中の場合はデバイスをクローズ
-    if Status.bPlay then WaveClose();
+    if Status.bPlay then WaveClose(false);
 {$ENDIF}
     // バッファを解放
     for I := 0 to Option.dwBufferNum - 1 do FreeMem(Wave.lpData[I], Wave.dwBufSize);
@@ -9462,9 +9518,10 @@ end;
 // ================================================================================
 // WaveReset - デバイスリセット (排他自動)
 // ================================================================================
-procedure CWINDOWMAIN.WaveReset();
+procedure CWINDOWMAIN.WaveReset(bForce: longbool);
 var
     I: longint;
+    dwResult: longword;
 begin
     // Script700 を強制終了
     Status.Script700.Data.dwStackFlag := Status.Script700.Data.dwStackFlag or $80000000;
@@ -9475,14 +9532,15 @@ begin
     Status.dwWaveMessage := WAVE_MESSAGE_MAX_COUNT;
     Status.bPlay := false;
     Status.bPause := false;
-    // デバイスアイドルまでのカウントを設定
+    // アイドルまでのカウントを設定
     Status.dwThreadIdle := Option.dwBufferNum;
     // デバイスをリセット
-    API_waveOutReset(Wave.dwHandle);
+    dwResult := API_waveOutReset(Wave.dwHandle);
     // クリティカルセクションを終了
     API_LeaveCriticalSection(@CriticalSectionThread);
     // デバイスがアイドル状態になるまで待機
-    while longbool(Status.dwThreadIdle) do API_Sleep(1);
+    if bForce or longbool(dwResult) then API_Sleep(50)
+    else while longbool(Status.dwThreadIdle) do API_Sleep(16);
     // インジケータをクリア
     for I := 0 to Option.dwBufferNum - 1 do API_ZeroMemory(@Wave.Apu[I], SizeOf(TAPUDATA));
 end;
@@ -9852,6 +9910,8 @@ begin
     Option.dwPriority := API_GetPriorityClass(API_GetCurrentProcess());
     // 常時手前を取得
     Option.bTopMost := longbool(cwWindowMain.GetWindowStyleEx() and WS_EX_TOPMOST);
+    // デバイスを更新
+    UpdateDevice(Option.dwDeviceID, WAVE_DEVICE_UPDATE_LIST);
     // メニューを更新
     UpdateMenu();
 end;
@@ -10086,7 +10146,7 @@ begin
                     MENU_LIST_UP: ListUp();
                     MENU_LIST_DOWN: ListDown();
                     else case wParam div 10 * 10 of
-                        MENU_SETUP_DEVICE_BASE..MENU_SETUP_DEVICE_BASE + 90: Option.dwDeviceID := wParam - MENU_SETUP_DEVICE_BASE - 1;
+                        MENU_SETUP_DEVICE_BASE..MENU_SETUP_DEVICE_BASE + 90: UpdateDevice(wParam - MENU_SETUP_DEVICE_BASE - 1, WAVE_DEVICE_UPDATE_SELECT);
                         MENU_SETUP_CHANNEL_BASE: Option.dwChannel := MENU_SETUP_CHANNEL_VALUE[wParam - MENU_SETUP_CHANNEL_BASE];
                         MENU_SETUP_BIT_BASE: Option.dwBit := MENU_SETUP_BIT_VALUE[wParam - MENU_SETUP_BIT_BASE];
                         MENU_SETUP_RATE_BASE..MENU_SETUP_RATE_BASE + 10: Option.dwRate := MENU_SETUP_RATE_VALUE[wParam - MENU_SETUP_RATE_BASE];
@@ -10293,6 +10353,30 @@ begin
                 WM_APP_UPDATE_INFO: UpdateInfo(longbool(wParam and $1)); // 情報を更新
                 WM_APP_UPDATE_MENU: UpdateMenu(); // メニューを更新
                 WM_APP_WAVE_OUTPUT: result := longword(WaveOutput(longbool(wParam and $1), longbool(wParam and $2))); // WAVE 書き込み
+                WM_APP_TRY_RESUME: begin // 演奏再開試行
+                    // デバイスをクローズ
+                    WaveClose(true);
+                    // デバイスを更新
+                    UpdateDevice(Option.dwDeviceID, WAVE_DEVICE_UPDATE_LIST);
+                    // デバイスをオープン
+                    if longbool(WaveOpen()) then begin
+                        // メニューを更新
+                        UpdateMenu();
+                        // インジケータをリセット
+                        ResetInfo(true);
+                    end else begin
+                        // フラグを設定
+                        Status.bSPCRestart := false;
+                        Status.bSPCRefresh := false;
+                        Status.bWaveWrite := true;
+                        // メニューを更新
+                        UpdateMenu();
+                        // インジケータをリセット
+                        ResetInfo(true);
+                        // スレッドに演奏開始を通知
+                        API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_PLAY, NULL);
+                    end;
+                end;
             end;
         end;
         WM_TIMER: case wParam of // タイマー
