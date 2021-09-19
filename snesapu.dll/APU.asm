@@ -45,12 +45,12 @@ SECTION .data ALIGN=256
 SECTION .data ALIGN=32
 %endif
 
-; ----- degrade-factory code [2021/08/08] -----
+; ----- degrade-factory code [2021/09/18] -----
     apuOpt      DD  (CPU_CYC << 24) | (DEBUG << 16) | (DSPINTEG << 17) | (VMETERM << 8) | (VMETERV << 9) | (1 << 10) | (STEREO << 11) \
                     | (HALFC << 1) | (CNTBK << 2) | (SPEED << 3) | (IPLW << 4) | (DSPBK << 5) | (INTBK << 6)
     apuDllVer   DD  21865h                                                      ;SNESAPU.DLL Current Version
     apuCmpVer   DD  11000h                                                      ;SNESAPU.DLL Backwards Compatible Version
-    apuVerStr   DD  "2.18.5 (build 7428)"                                       ;SNESAPU.DLL Current Version (32byte String)
+    apuVerStr   DD  "2.18.5 (build 7470)"                                       ;SNESAPU.DLL Current Version (32byte String)
                 DD  8
 ; ----- degrade-factory code [END] -----
 
@@ -67,31 +67,40 @@ SECTION .bss ALIGN=64
 ;Don't touch!  All arrays are carefully aligned on large boundaries to facillitate easier indexing
 ;and better cache utilization.
 
-; ----- degrade-factory code [2013/10/06] -----
-    apuRAMBuf   resb    APURAMSIZE*2+16                                         ;SNESAPU 64KB APU RAM Buffer
-    scrRAMBuf   resb    SCR700SIZE+16                                           ;Script700 RAM Buffer
+; ----- degrade-factory code [2021/09/18] -----
+    apuRAMBuf   resb    APURAMSIZE*2+16                                         ;SNESAPU 64KB APU RAM buffer
+    scrRAMBuf   resb    SCR700SIZE+8                                            ;Script700 RAM buffer
 
-    scr700lbl   resd    1024                                                    ;Script700 Label Work Area
-    scr700dsp   resb    256                                                     ;Script700 DSP Enable Flag (Source)
-    scr700mds   resb    32                                                      ;Script700 DSP Enable Flag (Master)
-    scr700det   resd    256                                                     ;Script700 DSP Rate Detune
-    scr700chg   resb    256                                                     ;Script700 DSP Note Change
-    scr700vol   resd    256                                                     ;Script700 DSP Volume Change (Source)
-    scr700mvl   resd    32                                                      ;Script700 DSP Volume Change (Master)
+    scr700lbl   resd    1024                                                    ;Script700 Label work area
+    scr700dsp   resb    256                                                     ;Script700 DSP enable flags (Source)
+    scr700mds   resb    32                                                      ;Script700 DSP enable flags (Master)
+    scr700det   resd    256                                                     ;Script700 DSP rate detune
+    scr700chg   resb    256                                                     ;Script700 DSP note change
+    scr700vol   resd    256                                                     ;Script700 DSP volume change (Source)
+    scr700mvl   resd    32                                                      ;Script700 DSP volume change (Master)
 
-    scr700wrk   resd    8                                                       ;Script700 User Work Area
-    scr700cmp   resd    2                                                       ;Script700 Cmp Param
-    scr700cnt   resd    1                                                       ;Script700 Wait Count
-    scr700ptr   resd    1                                                       ;Script700 Program Pointer
-    scr700stf   resd    1                                                       ;Script700 Stack Flag
+    scr700wrk   resd    8                                                       ;Script700 User work area
+    scr700cmp   resd    2                                                       ;Script700 Compare parameters
+    scr700cnt   resd    1                                                       ;Script700 Waiting count
+    scr700ptr   resd    1                                                       ;Script700 Program pointer
+    scr700stf   resb    1                                                       ;Script700 Status flags
+                                                                                ;   [0] - Enable writing return address in stack
+                                                                                ;   [1] - Enable always writing ports
+                                                                                ;   [2] - Waiting output port 0 without SHVC-SOUND
+                                                                                ;   [3] - Waiting output port 0 with SHVC-SOUND
+                                                                                ;   [5] - Call RunScript700 before fetch
+                                                                                ;   [6] - SHVC-SOUND transfer mode
+                                                                                ;   [7] - Force abort Script700 (from frontend)
+                resb    1
+	scr700int   resb    2                                                       ;Script700 Interrupt ports
+    scr700dat   resd    1                                                       ;Script700 Data area offset
+    scr700stp   resd    1                                                       ;Script700 Stack pointer
 
-    scr700dat   resd    1                                                       ;Script700 Data Area Offset
-    scr700stp   resd    1                                                       ;Script700 Stack Pointer
-    scr700jmp   resd    1                                                       ;Script700 Jump Address
+    scr700jmp   resd    1                                                       ;Script700 Jump address
     scr700tmp   resd    1                                                       ;Script700 Temporary
-    scr700stk   resd    128                                                     ;Script700 Stack Area
-    scr700inc   resd    3                                                       ;Script700 Include Depth
-    scr700pth   resd    256                                                     ;Script700 Include Path
+    scr700stk   resd    128                                                     ;Script700 Stack area
+    scr700inc   resd    3                                                       ;Script700 Include depth
+    scr700pth   resd    256                                                     ;Script700 Include path
 
     pAPURAM     resd    1                                                       ;Pointer to SNESAPU 64KB RAM
     pSCRRAM     resd    1                                                       ;Pointer to Script700 RAM
@@ -631,7 +640,7 @@ USES ECX,EDX
 ENDP
 
 
-; ----- degrade-factory code [2015/12/12] -----
+; ----- degrade-factory code [2021/09/18] -----
 ;===================================================================================================
 ;Set/Reset TimerTrick Compatible Function
 
@@ -1221,7 +1230,25 @@ USES ECX,EDX,EBX,ESI,EDI
     Jmp     short .SETVAL
 
     .W:                                                                                                             ; w
+    Inc     ECX                                                                 ;ECX++
+    Mov     AL,[ECX]                                                            ;AL = [ECX]
+    And     AL,0DFh                                                             ;AL &= 0xDF
+    Cmp     AL,49h                                                              ;Is char "I"?
+    JE      short .WI                                                           ;   Yes
+    Cmp     AL,4Fh                                                              ;Is char "O"?
+    JE      short .WO                                                           ;   Yes
+    Dec     ECX                                                                 ;ECX--
     Mov     byte [ESI+EBX],01h                                                  ;Program[EBX] = 0x01
+    Jmp     short .WNEXT
+
+    .WI:                                                                                                            ; wi
+    Mov     byte [ESI+EBX],16h                                                  ;Program[EBX] = 0x16
+    Jmp     short .WNEXT
+
+    .WO:                                                                                                            ; wo
+    Mov     byte [ESI+EBX],17h                                                  ;Program[EBX] = 0x17
+
+    .WNEXT:
     Inc     EBX                                                                 ;EBX++
     Inc     ECX                                                                 ;ECX++
     Call    GetScript700Next                                                    ;Seek Next
@@ -2050,7 +2077,7 @@ PROC SetScript700Data, addr, pData, size
     Mov     [scr700inc+08h],EAX
 
 ENDP
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #34 -----
 
 
 ; ----- degrade-factory code [2015/07/11] -----
