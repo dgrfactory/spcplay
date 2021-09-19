@@ -56,13 +56,14 @@
 #define SCR700MASK  SCR700SIZE - 1              //Script700 Program Area Mask
 // ----- degrade-factory code [END] -----
 
-// ----- degrade-factory code [2015/11/23] -----
+// ----- degrade-factory code [2021/09/19] -----
 //SNESAPU callback effect
 #define CBE_DSPREG  0x01                        //Write DSP value event
 #define CBE_S700FCH 0x02                        //Write SPC700 fetch event
 #define CBE_INCS700 0x40000000                  //Include Script700 text file
 #define CBE_INCDATA 0x20000000                  //Include Script700 binary file
-// ----- degrade-factory code [END] -----
+#define CBE_REQBP   0x10000000                  //Request break point
+// ----- degrade-factory code [END] #35 -----
 
 // ----- degrade-factory code [2016/05/09] -----
 //**************************************************************************************************

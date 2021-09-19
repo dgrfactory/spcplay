@@ -690,7 +690,7 @@ USES ECX
 ENDP
 
 
-; ----- degrade-factory code [2021/09/18] -----
+; ----- degrade-factory code [2021/09/19] -----
 ;===================================================================================================
 ;Run Script700 emulation
 ;   EAX = Free / (AL) Calculate option of N command
@@ -776,6 +776,8 @@ PROC RunScript700, interrupt
     JZ      .700WI                                                              ;   Yes
     Dec     AH                                                                  ;Is command WO?
     JZ      .700WO                                                              ;   Yes
+    Dec     AH                                                                  ;Is command BP?
+    JZ      .700BP                                                              ;   Yes
     Jmp     .700ERROR
 
     .700GETPVAL:
@@ -1462,12 +1464,31 @@ PROC RunScript700, interrupt
     .700WI:                                                                                                         ; wi
     Call    .700WX
     Mov     [scr700int],DL                                                      ;Interrupt Input = DL
-    Jmp     .700EXIT
+    Jmp     short .700EXIT
 
     .700WO:                                                                                                         ; wo
     Call    .700WX
     Mov     [scr700int+1],DL                                                    ;Interrupt Output = DL
-    Jmp     .700EXIT
+    Jmp     short .700EXIT
+
+    ;---------- Command Main Routine (REQUEST) ----------
+
+    .700BP:
+    Mov     AH,[EBP+EBX]                                                        ;AH = Program[EBX]
+    Inc     EBX                                                                 ;EBX++
+    XOr     CX,CX                                                               ;CH = 0x00, CL = 0x00
+    Call    .700P1                                                              ;Get Value of Parameter
+    Add     EBX,EDI                                                             ;EBX += EDI
+
+    Test    dword [apuCbMask],CBE_REQBP
+    JZ      .700RETURN
+    Test    dword [apuCbFunc],-1
+    JZ      .700RETURN
+
+    Mov     ECX,[apuCbFunc]
+    MovZX   EDX,DX                                                              ;EDX = DX
+    Call    ECX,dword CBE_REQBP,EDX,dword 3,dword 0
+    Jmp     .700RETURN
 
     ;---------- Error ----------
 
@@ -1487,7 +1508,7 @@ PROC RunScript700, interrupt
     PopAD                                                                       ;Pop all registers
 
 ENDP
-; ----- degrade-factory code [END] #34 -----
+; ----- degrade-factory code [END] #34 #35 -----
 
 
 ;===================================================================================================
@@ -1632,7 +1653,7 @@ SPCFetch:                                                                       
     JLE     SPCTimers                                                           ;   Yes, Update timers
 ; ----- degrade-factory code [END] #18 #34 -----
 
-; ----- degrade-factory code [2021/05/27] -----
+; ----- degrade-factory code [2021/09/19] -----
     Test    dword [apuCbMask],CBE_S700FCH
     JZ      short .NoCallback
 
@@ -1650,6 +1671,7 @@ SPCFetch:                                                                       
         Mov     EDX,EAX
         Pop     ECX,EAX
 
+        And     DL,FCH_PAUSE
         Test    DL,FCH_HALT                                                     ;Exit emulation?
         JZ      short .NextCallback                                             ;   No
 
@@ -1674,7 +1696,7 @@ SPCFetch:                                                                       
         Jmp     EDX
 
     .NoCallback:
-; ----- degrade-factory code [END] #19 #27 -----
+; ----- degrade-factory code [END] #19 #27 #35 -----
 
 ; ----- degrade-factory code [2007/10/07] -----
     MovZX   EDX,byte [ESI]                                                      ;Get next opcode

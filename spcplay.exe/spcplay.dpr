@@ -2331,14 +2331,15 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.18.5 (build 7470)';
-    SNESAPU_VERSION = $21865;
+    SPCPLAY_VERSION = '2.19.0 (build 7471)';
+    SNESAPU_VERSION = $21900;
     APPLINK_VERSION = $02170500;
 
     CBE_DSPREG = $1;
     CBE_S700FCH = $2;
     CBE_INCS700 = $40000000;
     CBE_INCDATA = $20000000;
+    CBE_REQBP = $10000000;
     SCRIPT700_TEXT = $FFFFFFFF;
 
     BRKP_NEXT_STOP = $10000000;
@@ -3785,11 +3786,25 @@ begin
     FreeMem(lpBuffer, 1024);
 end;
 
+procedure RequestBreakPoint();
+begin
+    // クリティカルセクションを開始
+    API_EnterCriticalSection(@CriticalSectionThread);
+    // コールバックを追加設定
+    Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_S700FCH);
+    // BreakPoint 設定
+    if longbool(dwAddr and $10000) then API_ZeroMemory(@Status.BreakPoint, 65536)
+    else Status.BreakPoint[dwAddr and $FFFF] := dwValue and $FF or $80;
+    // クリティカルセクションを終了
+    API_LeaveCriticalSection(@CriticalSectionThread);
+end;
+
 begin
     result := dwValue;
     case dwEffect of
         CBE_INCS700: IncludeScript700File(SCRIPT700_TEXT); // #include Script700 text
         CBE_INCDATA: IncludeScript700File(dwAddr); // #include Script700 binary
+        CBE_REQBP: RequestBreakPoint();
         CBE_DSPREG: begin
             if longbool(Status.DSPCheat[dwAddr and $7F]) then result := Status.DSPCheat[dwAddr and $7F] and $FF;
 {$IFDEF DEBUGLOG}
@@ -5494,7 +5509,7 @@ begin
             @Apu.SetDSPDbg := GetProcAddress(pchar('SetDSPDbg'));
 {$ENDIF}
             if longbool(I) then result := 2;
-            Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_INCS700 or CBE_INCDATA);
+            Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_INCS700 or CBE_INCDATA or CBE_REQBP);
 {$IFNDEF TRANSMITSPC}
             Apu.SNESAPUInfo(@I, NULLPOINTER, NULLPOINTER);
             if I <> SNESAPU_VERSION then result := 3;
@@ -8655,6 +8670,8 @@ begin
         if dwType = PLAY_TYPE_PAUSE then exit;
         // クリティカルセクションを開始
         API_EnterCriticalSection(@CriticalSectionThread);
+        // Script700 で設定されたブレイクポイントを解除
+        for I := 0 to 65535 do if longbool(Status.BreakPoint[I] and $80) then Status.BreakPoint[I] := 0;
 {$IFDEF TIMERTRICK}
         // TimerTrick を設定
         Apu.SetTimerTrick(0, 16661);
