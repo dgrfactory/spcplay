@@ -19,7 +19,7 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 2003-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2019 degrade-factory
+;                                                   Copyright (C) 2003-2021 degrade-factory
 ;===================================================================================================
 
 %define APU_INC
@@ -71,27 +71,28 @@ CBE_INCDATA EQU 20000000h                                       ;Include Script7
 ;Public Variables
 
 PUBLIC  apuOpt                                                  ;Build options
-; ----- degrade-factory code [2013/10/06] -----
-PUBLIC  scr700lbl                                               ;Script700 Label Pointer
-PUBLIC  scr700stk                                               ;Script700 Stack Area
-PUBLIC  scr700dsp                                               ;Script700 DSP Enable Flag (Channel)
-PUBLIC  scr700mds                                               ;Script700 DSP Enable Flag (Master)
-PUBLIC  scr700chg                                               ;Script700 DSP Note Change
-PUBLIC  scr700det                                               ;Script700 DSP Rate Detune
-PUBLIC  scr700vol                                               ;Script700 DSP Volume Change (Source)
-PUBLIC  scr700mvl                                               ;Script700 DSP Volume Change (Master)
-PUBLIC  scr700wrk                                               ;Script700 User Work Area
-PUBLIC  scr700cmp                                               ;Script700 Cmp Param
+; ----- degrade-factory code [2021/09/18] -----
+PUBLIC  scr700lbl                                               ;Script700 Label pointer
+PUBLIC  scr700stk                                               ;Script700 Stack area
+PUBLIC  scr700dsp                                               ;Script700 DSP enable flags (Channel)
+PUBLIC  scr700mds                                               ;Script700 DSP enable flags (Master)
+PUBLIC  scr700chg                                               ;Script700 DSP note change
+PUBLIC  scr700det                                               ;Script700 DSP rate detune
+PUBLIC  scr700vol                                               ;Script700 DSP volume change (Source)
+PUBLIC  scr700mvl                                               ;Script700 DSP volume change (Master)
+PUBLIC  scr700wrk                                               ;Script700 User work area
+PUBLIC  scr700cmp                                               ;Script700 Compare parameters
 PUBLIC  scr700cnt                                               ;Script700 Wait Time Count
-PUBLIC  scr700ptr                                               ;Script700 Program Pointer
-PUBLIC  scr700stf                                               ;Script700 Stack Flag
-PUBLIC  scr700dat                                               ;Script700 Data Area Offset
-PUBLIC  scr700stp                                               ;Script700 Stack Pointer
+PUBLIC  scr700ptr                                               ;Script700 Program pointer
+PUBLIC  scr700int                                               ;Script700 Interrupt ports
+PUBLIC  scr700stf                                               ;Script700 Status flags
+PUBLIC  scr700dat                                               ;Script700 Data area offset
+PUBLIC  scr700stp                                               ;Script700 Stack pointer
 PUBLIC  pAPURAM                                                 ;Pointer to SNESAPU 64KB RAM
 PUBLIC  pSCRRAM                                                 ;Pointer to Script700 RAM
 PUBLIC  apuCbMask                                               ;SNESAPU callback mask
 PUBLIC  apuCbFunc                                               ;SNESAPU callback function
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #34 -----
 
 
 ;===================================================================================================

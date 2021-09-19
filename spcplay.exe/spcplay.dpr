@@ -374,7 +374,10 @@ type
         dwCmpParam: array[0..1] of longword;                // 比較用パラメータエリア
         dwWaitCnt: longword;                                // ウェイトカウント
         dwPointer: longword;                                // プログラムポインタ
-        dwStackFlag: longword;                              // スタックフラグ
+        cStatusFlag: byte;                                  // ステータスフラグ
+        __reserved: byte;                                   // (予約)
+        dwIntInPort: byte;                                  // 入力ポート監視ウェイト
+        dwIntOutPort: byte;                                 // 出力ポート監視ウェイト
         dwData: longword;                                   // データエリアのオフセットアドレス
         dwStack: longword;                                  // スタックポインタ
     end;
@@ -2328,7 +2331,7 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.18.5 (build 7451)';
+    SPCPLAY_VERSION = '2.18.5 (build 7470)';
     SNESAPU_VERSION = $21865;
     APPLINK_VERSION = $02170500;
 
@@ -2617,7 +2620,7 @@ const
     ORG_COLOR_GRAYTEXT = COLOR_GRAYTEXT + 1;                // 無効時の文字色
     ORG_COLOR_WINDOWTEXT = COLOR_WINDOWTEXT + 1;            // 有効時の文字色
 
-    BITMAP_NUM = 50;                                        // ビットマップ文字の数
+    BITMAP_NUM = 51;                                        // ビットマップ文字の数
     BITMAP_NUM_X6 = BITMAP_NUM * 6;
     BITMAP_NUM_X6P6 = BITMAP_NUM_X6 + 6;
     BITMAP_NUM_WIDTH = 6;                                   // ビットマップ文字の幅
@@ -2630,7 +2633,7 @@ const
          ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_RED   , ORG_COLOR_GRAYTEXT  ,
          ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  ,
          ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_WATER , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_WATER ,
-         ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_PURPLE);
+         ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_PURPLE, ORG_COLOR_BAR_RED);
 
     NOISE_RATE: array[0..$1F] of int64 =
         ($3030303030,                                       // 0
@@ -6833,8 +6836,18 @@ begin
             Script700 := @ApuData.Script700;
             Y := 1;
             Z := 0;
-            for I := 0 to 3 do UpdateNumWrite(I * 3 + 11, IntToHex(StrData, ApuData.SPCApuPort.Port[I], 2));
-            for I := 0 to 3 do UpdateNumWrite(I * 3 + 31, IntToHex(StrData, ApuData.SPCOutPort.Port[I], 2));
+            for I := 0 to 3 do begin
+                UpdateNumWrite(I * 3 + 11, IntToHex(StrData, ApuData.SPCApuPort.Port[I], 2));
+                if Script700.dwIntInPort = $80 + I then StrData.bData[0] := $6F // 'o'
+                else StrData.bData[0] := $20; // ' '
+                UpdateNumWrite(I * 3 + 13, 1);
+            end;
+            for I := 0 to 3 do begin
+                UpdateNumWrite(I * 3 + 31, IntToHex(StrData, ApuData.SPCOutPort.Port[I], 2));
+                if Script700.dwIntOutPort = $80 + I then StrData.bData[0] := $6F // 'o'
+                else StrData.bData[0] := $20; // ' '
+                UpdateNumWrite(I * 3 + 33, 1);
+            end;
             Y := 2;
             for I := 0 to 3 do UpdateNumWrite(I * 9 + 11, IntToHex(StrData, Script700.dwWork[I], 8));
             Y := 3;
@@ -6848,7 +6861,7 @@ begin
             UpdateNumWrite(23, IntToHex(StrData, Script700.dwPointer, 5));
             UpdateNumWrite(34, IntToHex(StrData, Script700.dwData, 5));
             IntToHex(StrData, Script700.dwStack, 2);
-            StrData.cData[2] := BoolTable[Script700.dwStackFlag and $1];
+            StrData.cData[2] := BoolTable[Script700.cStatusFlag and $1];
             UpdateNumWrite(43, 3);
         end;
     end;
@@ -8433,7 +8446,7 @@ begin
     // 演奏中の場合
     if Status.bPlay then begin
         // Script700 を強制終了
-        Status.Script700.Data.dwStackFlag := Status.Script700.Data.dwStackFlag or $80000000;
+        Status.Script700.Data.cStatusFlag := Status.Script700.Data.cStatusFlag or $80;
         Status.bWaveWrite := false;
         // 演奏を一時停止
         WavePause();
@@ -9524,7 +9537,7 @@ var
     dwResult: longword;
 begin
     // Script700 を強制終了
-    Status.Script700.Data.dwStackFlag := Status.Script700.Data.dwStackFlag or $80000000;
+    Status.Script700.Data.cStatusFlag := Status.Script700.Data.cStatusFlag or $80;
     Status.bWaveWrite := false;
     // クリティカルセクションを開始
     API_EnterCriticalSection(@CriticalSectionThread);

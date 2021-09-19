@@ -22,7 +22,7 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2008 Alpha-II Productions
-;                                                   Copyright (C) 2003-2016 degrade-factory
+;                                                   Copyright (C) 2003-2021 degrade-factory
 ;===================================================================================================
 
 %define SPC700_INC
@@ -49,12 +49,12 @@ FCH_NOP     EQU 02h
 FCH_PAUSE   EQU 03h
 ; ----- degrade-factory code [END] -----
 
-; ----- degrade-factory code [2010/04/03] -----
+; ----- degrade-factory code [2021/09/18] -----
 %ifdef SHVC_SOUND_SUPPORT
 ;Extend function pointer address ------------
 EXT_WRPORT  EQU 10014h                                          ;Callback function to write port
 EXT_RDPORT  EQU 10018h                                          ;Callback function to read port
-EXT_RESET   EQU 10022h                                          ;Callback function to reset
+EXT_RESET   EQU 1001Ch                                          ;Callback function to reset
 %endif
 ; ----- degrade-factory code [END] -----
 
