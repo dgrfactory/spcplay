@@ -58,13 +58,14 @@ SCR700SIZE  EQU 100000h                                         ;Script700 Progr
 SCR700MASK  EQU SCR700SIZE - 1                                  ;Script700 Program Area Mask
 ; ----- degrade-factory code [END] -----
 
-; ----- degrade-factory code [2015/11/23] -----
+; ----- degrade-factory code [2021/09/19] -----
 ;SNESAPU callback effect
 CBE_DSPREG  EQU 01h                                             ;Write DSP value event
 CBE_S700FCH EQU 02h                                             ;Write SPC700 fetch event
 CBE_INCS700 EQU 40000000h                                       ;Include Script700 text file
 CBE_INCDATA EQU 20000000h                                       ;Include Script700 binary file
-; ----- degrade-factory code [END] -----
+CBE_REQBP   EQU 10000000h                                       ;Request break point
+; ----- degrade-factory code [END] #35 -----
 
 
 ;===================================================================================================

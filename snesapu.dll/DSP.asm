@@ -369,11 +369,13 @@ SECTION .bss ALIGN=64
     dspNoise    resb    1                                                       ;DSP noise flags
     dspNoiseF   resb    1                                                       ;DSP noise flags (force)
     dspMute     resb    1                                                       ;DSP mute flags
-    disFlag     resb    1                                                       ;DSP disabled channel flags
+    disFlag     resb    1                                                       ;DSP disabled channel flags (see EmuDSP)
     konRsv      resb    1                                                       ;Reserved KON flags
     koffRsv     resb    1                                                       ;Reserved KOFF flags
     konRun      resb    1                                                       ;Running KON process flags
     envFlag     resb    1                                                       ;DSP envelope flags
+                                                                                ;   [1] - Suspended envelope by frontend
+                                                                                ;   [5] - Suspended envelope by SetSPCDbg
                 resb    3
     konCnt      resd    1                                                       ;t64 count of set KON/KOFF
                 resd    1

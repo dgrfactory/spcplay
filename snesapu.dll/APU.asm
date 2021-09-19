@@ -45,12 +45,12 @@ SECTION .data ALIGN=256
 SECTION .data ALIGN=32
 %endif
 
-; ----- degrade-factory code [2021/09/18] -----
+; ----- degrade-factory code [2021/09/19] -----
     apuOpt      DD  (CPU_CYC << 24) | (DEBUG << 16) | (DSPINTEG << 17) | (VMETERM << 8) | (VMETERV << 9) | (1 << 10) | (STEREO << 11) \
                     | (HALFC << 1) | (CNTBK << 2) | (SPEED << 3) | (IPLW << 4) | (DSPBK << 5) | (INTBK << 6)
-    apuDllVer   DD  21865h                                                      ;SNESAPU.DLL Current Version
+    apuDllVer   DD  21900h                                                      ;SNESAPU.DLL Current Version
     apuCmpVer   DD  11000h                                                      ;SNESAPU.DLL Backwards Compatible Version
-    apuVerStr   DD  "2.18.5 (build 7470)"                                       ;SNESAPU.DLL Current Version (32byte String)
+    apuVerStr   DD  "2.19.0 (build 7471)"                                       ;SNESAPU.DLL Current Version (32byte String)
                 DD  8
 ; ----- degrade-factory code [END] -----
 
@@ -640,7 +640,7 @@ USES ECX,EDX
 ENDP
 
 
-; ----- degrade-factory code [2021/09/18] -----
+; ----- degrade-factory code [2021/09/19] -----
 ;===================================================================================================
 ;Set/Reset TimerTrick Compatible Function
 
@@ -1379,6 +1379,8 @@ USES ECX,EDX,EBX,ESI,EDI
     And     AH,0DFh                                                             ;AH &= 0xDF
     Test    AH,AH                                                               ;AH = 0x00?
     JZ      .NORMALERROR                                                        ;   Yes
+    Cmp     AH,50h                                                              ;Is char "P"?
+    JE      .BP                                                                 ;   Yes
     Inc     ECX                                                                 ;ECX++
     Mov     AL,[ECX]                                                            ;AL = [ECX]
     And     AL,0DFh                                                             ;AL &= 0xDF
@@ -1453,6 +1455,16 @@ USES ECX,EDX,EBX,ESI,EDI
     Add     EBX,2                                                               ;EBX += 2
     Jmp     .NORMALRETURN
 
+    .BP:                                                                                                            ; bp
+    Mov     byte [ESI+EBX],18h                                                  ;Program[EBX] = 0x18
+    Inc     EBX                                                                 ;EBX++
+    Inc     ECX                                                                 ;ECX++
+    Call    GetScript700Next                                                    ;Seek Next
+    JZ      .NORMALERROR                                                        ;   Failure
+    Mov     dword [scr700jmp],.NORMALRETURN                                     ;Set Return Address
+    XOr     DH,DH                                                               ;DH = 0x00
+    Jmp     .SETVAL
+
     .R:                                                                                                             ; r
     Inc     ECX                                                                 ;ECX++
     Mov     AL,[ECX]                                                            ;AL = [ECX]
@@ -1512,9 +1524,7 @@ USES ECX,EDX,EBX,ESI,EDI
     .Shp:                                                                                                           ; #
     Test    dword [apuCbMask],CBE_INCS700 | CBE_INCDATA
     JZ      .ShpERROR
-
-    Mov     EDX,[apuCbFunc]
-    Test    EDX,EDX
+    Test    dword [apuCbFunc],-1
     JZ      .ShpERROR
 
     Inc     ECX                                                                 ;ECX++
@@ -2077,7 +2087,7 @@ PROC SetScript700Data, addr, pData, size
     Mov     [scr700inc+08h],EAX
 
 ENDP
-; ----- degrade-factory code [END] #34 -----
+; ----- degrade-factory code [END] #34 #35 -----
 
 
 ; ----- degrade-factory code [2015/07/11] -----
