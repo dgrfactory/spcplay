@@ -714,11 +714,15 @@ PROC RunScript700, interrupt
     Mov     EBP,[pSCRRAM]                                                       ;EBP = Script RAM Pointer
     JZ      short .700RETURN                                                    ;   No
 
-    XOr     EDX,EDX                                                             ;Left Tick = t64kHz / T64_CYC
-    Mov     EAX,[t64kHz]                                                        ;Left Timer = Left Tick * 64
-    Mov     ECX,T64_CYC/64
-    Div     ECX
-    Add     [scr700cmp],EAX
+    Mov     EAX,[clkExec]                                                       ;EAX = Actual number of clock cycles emulated
+    Sub     EAX,[clkLeft]
+    Add     EAX,T64_CYC
+    Sub     EAX,[t64kHz]
+    XOr     EDX,EDX                                                             ;EDX = 0
+    Mov     ECX,12                                                              ;Base on 2.048MHz (see APU.inc)
+    Div     ECX                                                                 ;EAX = EDX:EAX / ECX
+    Add     [scr700cmp],EAX                                                     ;Left cycle on Script700
+    Sub     [scr700cnt],EAX
 
     ;---------- Command Fetcher ----------
 
@@ -1480,14 +1484,14 @@ PROC RunScript700, interrupt
     Call    .700P1                                                              ;Get Value of Parameter
     Add     EBX,EDI                                                             ;EBX += EDI
 
-    Test    dword [apuCbMask],CBE_REQBP
-    JZ      .700RETURN
-    Test    dword [apuCbFunc],-1
-    JZ      .700RETURN
+    Test    dword [apuCbMask],CBE_REQBP                                         ;Is supported callback?
+    JZ      .700RETURN                                                          ;   No
+    Test    dword [apuCbFunc],-1                                                ;Is defined callback function?
+    JZ      .700RETURN                                                          ;   No
 
     Mov     ECX,[apuCbFunc]
     MovZX   EDX,DX                                                              ;EDX = DX
-    Call    ECX,dword CBE_REQBP,EDX,dword 3,dword 0
+    Call    ECX,dword CBE_REQBP,EDX,FCH_PAUSE,dword 0
     Jmp     .700RETURN
 
     ;---------- Error ----------
@@ -1643,12 +1647,12 @@ SPCBreak:
 SPCFetch:                                                                       ;(All opcode handlers return to this point)
 ; ----- degrade-factory code [2021/09/18] -----
     Test    byte [scr700stf],20h
-    JZ      .SkipInterrupt
+    JZ      .No700
 
     And     byte [scr700stf],~20h
     Call    RunScript700,1
 
-    .SkipInterrupt:
+    .No700:
     Cmp     dword [clkLeft],0                                                   ;Have we executed all clock cycles?
     JLE     SPCTimers                                                           ;   Yes, Update timers
 ; ----- degrade-factory code [END] #18 #34 -----
@@ -1788,7 +1792,7 @@ SPCTimers:
 
         Test    word [scr700int],-1                                             ;Waiting for ports interrupt?
         JNZ     short .CheckInt                                                 ;   Yes
-        Test    byte [scr700stf],08h                                            ;Waiting for matched port 0 with SHVC-SOUND?
+        Test    byte [scr700stf],0Ch                                            ;Waiting for matched port 0?
         JNZ     short .CheckPort0                                               ;   Yes
 
         Test    dword [scr700cnt],-1                                            ;TimeCount = 0?
@@ -1798,7 +1802,7 @@ SPCTimers:
         Jmp     short .Run700
 
         .CheckInt:
-        Test    byte [scr700stf],08h                                            ;Waiting for matched port 0 with SHVC-SOUND?
+        Test    byte [scr700stf],0Ch                                            ;Waiting for matched port 0?
         JNZ     short .CheckPort0                                               ;   Yes
         Add     dword [scr700cmp],32                                            ;CmpParam[0] += 32
         Jmp     short .No700
@@ -5801,7 +5805,7 @@ ALIGN 16
     JNE     short %%NoInt                                                       ;   No
 
     Mov     byte [scr700int+1],0                                                ;Interrupt Output = 0
-    Jmp     short %%RunScript700
+    Jmp     short %%Run700
 
     %%NoInt:
     Test    byte [scr700stf],04h                                                ;Waiting for matched port 0 without SHVC-SOUND?
@@ -5812,7 +5816,7 @@ ALIGN 16
     And     byte [scr700stf],~0Ch                                               ;Status Flags &= ~0x0C
     Or      byte [scr700stf],02h                                                ;Status Flags |= 0x02
 
-    %%RunScript700:
+    %%Run700:
     Or      byte [scr700stf],20h                                                ;Status Flags |= 0x20
 
     %%NoFlush:

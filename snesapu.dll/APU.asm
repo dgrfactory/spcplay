@@ -45,12 +45,12 @@ SECTION .data ALIGN=256
 SECTION .data ALIGN=32
 %endif
 
-; ----- degrade-factory code [2021/09/19] -----
+; ----- degrade-factory code [2021/09/21] -----
     apuOpt      DD  (CPU_CYC << 24) | (DEBUG << 16) | (DSPINTEG << 17) | (VMETERM << 8) | (VMETERV << 9) | (1 << 10) | (STEREO << 11) \
                     | (HALFC << 1) | (CNTBK << 2) | (SPEED << 3) | (IPLW << 4) | (DSPBK << 5) | (INTBK << 6)
     apuDllVer   DD  21900h                                                      ;SNESAPU.DLL Current Version
     apuCmpVer   DD  11000h                                                      ;SNESAPU.DLL Backwards Compatible Version
-    apuVerStr   DD  "2.19.0 (build 7471)"                                       ;SNESAPU.DLL Current Version (32byte String)
+    apuVerStr   DD  "2.19.0 (build 7473)"                                       ;SNESAPU.DLL Current Version (32byte String)
                 DD  8
 ; ----- degrade-factory code [END] -----
 
@@ -1063,12 +1063,14 @@ USES ECX,EDX,EBX,ESI,EDI
     .E:                                                                                                             ; e
     Call    GetScript700Last                                                    ;Check Last
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     byte [scr700inc+03h],01h                                            ;Extension Command Zone
     Jmp     .EXTRETURN
 
     .Q:                                                                                                             ; q
     Call    GetScript700Last                                                    ;Check Last
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     byte [ESI+EBX],00h                                                  ;Program[EBX] = 0x00
     Inc     EBX                                                                 ;EBX++
     Jmp     .NORMALRETURN
@@ -1080,6 +1082,7 @@ USES ECX,EDX,EBX,ESI,EDI
     JE      short .LABEL2                                                       ;   Yes
     Call    GetScript700Number                                                  ;Parse Number (EAX = result)        ; :[LABEL]
     JZ      .NORMALERROR                                                        ;   Failure
+
     And     EAX,1023                                                            ;EAX &= 1023
     Mov     [scr700lbl+EAX*4],EBX                                               ;Label[EAX] = EBX
     Jmp     .NORMALRETURN
@@ -1087,6 +1090,7 @@ USES ECX,EDX,EBX,ESI,EDI
     .LABEL2:                                                                                                        ; ::
     Call    GetScript700Last                                                    ;Check Last
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     byte [scr700inc+03h],01h                                            ;Extension Command Zone
     Jmp     .EXTRETURN
 
@@ -1095,9 +1099,11 @@ USES ECX,EDX,EBX,ESI,EDI
     Mov     AL,[ECX]                                                            ;AL = [ECX]
     Test    AL,AL                                                               ;AL = 0x00?
     JZ      .NORMALERROR                                                        ;   Yes
+
     And     AL,0DFh                                                             ;AL &= 0xDF
     Cmp     AL,50h                                                              ;Is char "P"?
     JNE     .NORMALERROR                                                        ;   No
+
     Call    GetScript700Last                                                    ;Check Last
     JZ      .NORMALERROR                                                        ;   Failure
     Jmp     .NORMALRETURN
@@ -1111,10 +1117,12 @@ USES ECX,EDX,EBX,ESI,EDI
     Mov     DL,04h                                                              ;DL = 0x04
     Call    GetScript700Next                                                    ;Seek Next
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     [scr700tmp],ECX                                                     ;Temp = ECX (Save Param1 Pointer)
     Call    GetScript700Skip                                                    ;Skip
     Call    GetScript700Next                                                    ;Seek Next
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     AL,[ECX]                                                            ;AL = [ECX]
     XOr     DH,DH                                                               ;DH = 0x00
     Cmp     AL,2Bh                                                              ;Is char "+"?
@@ -1195,6 +1203,7 @@ USES ECX,EDX,EBX,ESI,EDI
     .SETN:
         Inc     DH                                                              ;DH++ (DH = 0xFF?)
         JZ      .NORMALERROR                                                    ;   Yes
+
         Dec     DH                                                              ;DH--
         Mov     [ESI+EBX],DL                                                    ;Program[EBX] = DL
         Inc     EBX                                                             ;EBX++
@@ -1204,6 +1213,7 @@ USES ECX,EDX,EBX,ESI,EDI
     .SETASUD:
         Inc     DH                                                              ;DH++ (DH = 0xFF?)
         JZ      .NORMALERROR                                                    ;   Yes
+
         Dec     DH                                                              ;DH--
         Mov     byte [ESI+EBX],04h                                              ;Program[EBX] = 0x04
         Inc     EBX                                                             ;EBX++
@@ -1215,6 +1225,7 @@ USES ECX,EDX,EBX,ESI,EDI
     JNE     short .NNEXT                                                        ;   No
         Call    GetScript700Last                                                ;Check Last
         JZ      .NORMALERROR                                                    ;   Failure
+
         Mov     ECX,[scr700tmp]                                                 ;ECX = Temp (Restore Param1 Pointer)
         Jmp     short .N1E
 
@@ -1238,6 +1249,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Cmp     AL,4Fh                                                              ;Is char "O"?
     JE      short .WO                                                           ;   Yes
     Dec     ECX                                                                 ;ECX--
+
     Mov     byte [ESI+EBX],01h                                                  ;Program[EBX] = 0x01
     Jmp     short .WNEXT
 
@@ -1253,6 +1265,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Inc     ECX                                                                 ;ECX++
     Call    GetScript700Next                                                    ;Seek Next
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     dword [scr700jmp],.NORMALRETURN                                     ;Set Return Address
     XOr     DH,DH                                                               ;DH = 0x00
     Jmp     short .SETVAL
@@ -1268,6 +1281,7 @@ USES ECX,EDX,EBX,ESI,EDI
     .N2E:
     Call    GetScript700Next                                                    ;Seek Next
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     dword [scr700jmp],.NORMALRETURN                                     ;Set Return Address
     Mov     DH,01h                                                              ;DH = 0x01
 
@@ -1333,6 +1347,7 @@ USES ECX,EDX,EBX,ESI,EDI
     JE      short .SETVALCMP                                                    ;   Yes
     Call    GetScript700Number                                                  ;Parse Number (EAX = result)
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     [ESI+EBX],DL                                                        ;Program[EBX] = DL
     Inc     EBX                                                                 ;EBX++
     Mov     [ESI+EBX],EAX                                                       ;Program[EBX] = EAX
@@ -1346,6 +1361,7 @@ USES ECX,EDX,EBX,ESI,EDI
     JE      short .SETVALCMP                                                    ;   Yes
     Call    GetScript700Number                                                  ;Parse Number (EAX = result)
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     [ESI+EBX],DL                                                        ;Program[EBX] = DL
     Inc     EBX                                                                 ;EBX++
     Mov     [ESI+EBX],AL                                                        ;Program[EBX] = AL
@@ -1359,6 +1375,7 @@ USES ECX,EDX,EBX,ESI,EDI
     JE      short .SETVALCMP                                                    ;   Yes
     Call    GetScript700Number                                                  ;Parse Number (EAX = result)
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     [ESI+EBX],DL                                                        ;Program[EBX] = DL
     Inc     EBX                                                                 ;EBX++
     Mov     [ESI+EBX],AX                                                        ;Program[EBX] = AX
@@ -1368,6 +1385,7 @@ USES ECX,EDX,EBX,ESI,EDI
     .SETVALCMP:                                                                                                     ; cmp method
     Call    GetScript700Last                                                    ;Check Last
     JZ      .NORMALERROR                                                        ;   Failure
+
     Add     DL,10h                                                              ;DL += 0x10
     Mov     [ESI+EBX],DL                                                        ;Program[EBX] = DL
     Inc     EBX                                                                 ;EBX++
@@ -1379,6 +1397,7 @@ USES ECX,EDX,EBX,ESI,EDI
     And     AH,0DFh                                                             ;AH &= 0xDF
     Test    AH,AH                                                               ;AH = 0x00?
     JZ      .NORMALERROR                                                        ;   Yes
+
     Cmp     AH,50h                                                              ;Is char "P"?
     JE      .BP                                                                 ;   Yes
     Inc     ECX                                                                 ;ECX++
@@ -1386,6 +1405,7 @@ USES ECX,EDX,EBX,ESI,EDI
     And     AL,0DFh                                                             ;AL &= 0xDF
     Test    AL,AL                                                               ;AL = 0x00?
     JZ      .NORMALERROR                                                        ;   Yes
+
     Mov     DL,05h                                                              ;DL = 0x05
     Cmp     AX,5241h                                                            ;Is string "BRA"?                   ; bra
     JE      short .BXXNEXT                                                      ;   Yes
@@ -1425,6 +1445,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Inc     ECX                                                                 ;ECX++
     Call    GetScript700Next                                                    ;Seek Next
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     AL,[ECX]                                                            ;AL = [ECX]
     Cmp     AL,23h                                                              ;Is char "#"?
     JE      short .BXXVALN                                                      ;   Yes
@@ -1437,6 +1458,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Inc     ECX                                                                 ;ECX++
     Call    GetScript700Number                                                  ;Parse Number (EAX = result)
     JZ      .NORMALERROR                                                        ;   Failure
+
     And     EAX,1023                                                            ;EAX &= 1023
     Mov     [ESI+EBX],DL                                                        ;Program[EBX] = DL
     Inc     EBX                                                                 ;EBX++
@@ -1448,6 +1470,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Inc     ECX                                                                 ;ECX++
     Call    GetScript700Number                                                  ;Parse Number (EAX = result)
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     AH,80h                                                              ;AH = 0x80
     Mov     [ESI+EBX],DL                                                        ;Program[EBX] = DL
     Inc     EBX                                                                 ;EBX++
@@ -1456,11 +1479,17 @@ USES ECX,EDX,EBX,ESI,EDI
     Jmp     .NORMALRETURN
 
     .BP:                                                                                                            ; bp
+    Test    dword [apuCbMask],CBE_REQBP                                         ;Is supported callback?
+    JZ      .NORMALERROR                                                        ;   No
+    Test    dword [apuCbFunc],-1                                                ;Is defined callback function?
+    JZ      .NORMALERROR                                                        ;   No
+
     Mov     byte [ESI+EBX],18h                                                  ;Program[EBX] = 0x18
     Inc     EBX                                                                 ;EBX++
     Inc     ECX                                                                 ;ECX++
     Call    GetScript700Next                                                    ;Seek Next
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     dword [scr700jmp],.NORMALRETURN                                     ;Set Return Address
     XOr     DH,DH                                                               ;DH = 0x00
     Jmp     .SETVAL
@@ -1475,6 +1504,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Dec     ECX                                                                 ;ECX--
     Call    GetScript700Last                                                    ;Check Last
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     byte [ESI+EBX],10h                                                  ;Program[EBX] = 0x10
     Inc     EBX                                                                 ;EBX++
     Jmp     .NORMALRETURN
@@ -1489,6 +1519,7 @@ USES ECX,EDX,EBX,ESI,EDI
     .R1:                                                                                                            ; r1
     Call    GetScript700Last                                                    ;Check Last
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     byte [ESI+EBX],12h                                                  ;Program[EBX] = 0x12
     Inc     EBX                                                                 ;EBX++
     Jmp     .NORMALRETURN
@@ -1503,6 +1534,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Dec     ECX                                                                 ;ECX--
     Call    GetScript700Last                                                    ;Check Last
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     byte [ESI+EBX],13h                                                  ;Program[EBX] = 0x13
     Inc     EBX                                                                 ;EBX++
     Jmp     .NORMALRETURN
@@ -1510,6 +1542,7 @@ USES ECX,EDX,EBX,ESI,EDI
     .F0:                                                                                                            ; f0
     Call    GetScript700Last                                                    ;Check Last
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     byte [ESI+EBX],14h                                                  ;Program[EBX] = 0x14
     Inc     EBX                                                                 ;EBX++
     Jmp     .NORMALRETURN
@@ -1517,15 +1550,16 @@ USES ECX,EDX,EBX,ESI,EDI
     .F1:                                                                                                            ; f1
     Call    GetScript700Last                                                    ;Check Last
     JZ      .NORMALERROR                                                        ;   Failure
+
     Mov     byte [ESI+EBX],15h                                                  ;Program[EBX] = 0x15
     Inc     EBX                                                                 ;EBX++
     Jmp     .NORMALRETURN
 
     .Shp:                                                                                                           ; #
-    Test    dword [apuCbMask],CBE_INCS700 | CBE_INCDATA
-    JZ      .ShpERROR
-    Test    dword [apuCbFunc],-1
-    JZ      .ShpERROR
+    Test    dword [apuCbMask],CBE_INCS700 | CBE_INCDATA                         ;Is supported callback?
+    JZ      .ShpERROR                                                           ;   No
+    Test    dword [apuCbFunc],-1                                                ;Is defined callback function?
+    JZ      .ShpERROR                                                           ;   No
 
     Inc     ECX                                                                 ;ECX++
     Mov     AL,[ECX]                                                            ;AL = [ECX]
@@ -1612,8 +1646,8 @@ USES ECX,EDX,EBX,ESI,EDI
     Mov     [scr700inc+02h],DL                                                  ;          02h:NEW 01h:OLD 00h:NEW
                                                                                 ;EDX = 0x40 (TEXT) or 0x20 (DATA)
     ShL     EDX,24                                                              ;EDX << 24 (0x40000000 or 0x20000000)
-    Test    dword [apuCbMask],EDX
-    JZ      short .ShpERROR
+    Test    dword [apuCbMask],EDX                                               ;Is supported callback?
+    JZ      short .ShpERROR                                                     ;   No
 
     Push    EDI,EBX,ECX                                                         ;STDCALL is destroy EAX,ECX,EDX
     Mov     EDI,[apuCbFunc]
@@ -1684,6 +1718,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Mov     AL,[ECX]                                                            ;AL = [ECX]
     Cmp     AL,3Ah                                                              ;Is char ":"?
     JNE     .EXTERROR                                                           ;   No
+
     Call    GetScript700Last                                                    ;Check Last
     JZ      .EXTERROR                                                           ;   Failure
     Jmp     short .EXTRETURN
@@ -1691,6 +1726,7 @@ USES ECX,EDX,EBX,ESI,EDI
     .EXE:                                                                                                           ; e
     Call    GetScript700Last                                                    ;Check Last
     JZ      .EXTERROR                                                           ;   Failure
+
     Mov     byte [scr700inc+03h],02h                                            ;Data Command Zone
     Jmp     .DATARETURN
 
@@ -1698,11 +1734,13 @@ USES ECX,EDX,EBX,ESI,EDI
     Inc     ECX                                                                 ;ECX++
     Call    GetScript700Next                                                    ;Seek Next
     JZ      .EXTERROR                                                           ;   Failure
+
     Mov     AL,[ECX]                                                            ;AL = [ECX]
     Cmp     AL,21h                                                              ;Is char "!"?
     JE      short .EXMALL                                                       ;   Yes
     Call    GetScript700Number                                                  ;Parse Number (EAX = result)
     JZ      .EXTERROR                                                           ;   Failure
+
     MovZX   EAX,AL                                                              ;EAX = AL
     XOr     byte [scr700dsp+EAX],01h                                            ;pDSPFlag[EAX] ^= 0x01
     Jmp     .EXTRETURN
@@ -1723,16 +1761,19 @@ USES ECX,EDX,EBX,ESI,EDI
     Inc     ECX                                                                 ;ECX++
     Call    GetScript700Next                                                    ;Seek Next
     JZ      .EXTERROR                                                           ;   Failure
+
     Mov     AL,[ECX]                                                            ;AL = [ECX]
     Cmp     AL,21h                                                              ;Is char "!"?
     JE      short .EXCALL                                                       ;   Yes
     Call    GetScript700Number                                                  ;Parse Number (EAX = result)
     JZ      .EXTERROR                                                           ;   Failure
+
     Mov     DL,AL                                                               ;DL = AL
     Call    GetScript700Next                                                    ;Seek Next
     JZ      .EXTERROR                                                           ;   Failure
     Call    GetScript700Number                                                  ;Parse Number (EAX = result)
     JZ      .EXTERROR                                                           ;   Failure
+
     MovZX   EDX,DL                                                              ;EDX = DL
     Or      byte [scr700dsp+EDX],02h                                            ;pDSPFlag[EDX] |= 0x02
     Mov     [scr700chg+EDX],AL                                                  ;pDSPChange[EDX] = AL
@@ -1761,16 +1802,19 @@ USES ECX,EDX,EBX,ESI,EDI
     Inc     ECX                                                                 ;ECX++
     Call    GetScript700Next                                                    ;Seek Next
     JZ      .EXTERROR                                                           ;   Failure
+
     Mov     AL,[ECX]                                                            ;AL = [ECX]
     Cmp     AL,21h                                                              ;Is char "!"?
     JE      short .EXDALL                                                       ;   Yes
     Call    GetScript700Number                                                  ;Parse Number (EAX = result)
     JZ      .EXTERROR                                                           ;   Failure
+
     Mov     DL,AL                                                               ;DL = AL
     Call    GetScript700Next                                                    ;Seek Next
     JZ      .EXTERROR                                                           ;   Failure
     Call    GetScript700Number                                                  ;Parse Number (EAX = result)
     JZ      .EXTERROR                                                           ;   Failure
+
     MovZX   EDX,DL                                                              ;EDX = DL
     Or      byte [scr700dsp+EDX],04h                                            ;pDSPFlag[EDX] |= 0x04
     Mov     [scr700det+EDX*4],EAX                                               ;pDSPDetune[EDX] = EAX
@@ -1799,6 +1843,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Inc     ECX                                                                 ;ECX++
     Call    GetScript700Next                                                    ;Seek Next
     JZ      .EXTERROR                                                           ;   Failure
+
     XOr     DH,DH                                                               ;DH = 0x00
     Mov     AL,[ECX]                                                            ;AL = [ECX]
     Inc     ECX                                                                 ;ECX++
@@ -1818,6 +1863,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Dec     ECX                                                                 ;ECX--
     Call    GetScript700Number                                                  ;Parse Number (EAX = result)
     JZ      .EXTERROR                                                           ;   Failure
+
     MovZX   DX,AL                                                               ;DL = AL, DH = 0x00
     Mov     dword [scr700jmp],.EXTRETURN                                        ;Set Return Address
 
@@ -1827,6 +1873,7 @@ USES ECX,EDX,EBX,ESI,EDI
     JZ      .EXTERROR                                                           ;   Failure
     Call    GetScript700Number                                                  ;Parse Number (EAX = result)
     JZ      .EXTERROR                                                           ;   Failure
+
     Push    EDX                                                                 ;Push EDX
     Test    EAX,EAX                                                             ;If EAX < 0
     SetS    DL                                                                  ;   Yes, DL = 1
@@ -1871,6 +1918,7 @@ USES ECX,EDX,EBX,ESI,EDI
     JZ      .EXTERROR                                                           ;   Failure
     Call    GetScript700Number                                                  ;Parse Number (EAX = result)
     JZ      .EXTERROR                                                           ;   Failure
+
     Test    EAX,EAX                                                             ;If EAX < 0
     SetS    DL                                                                  ;   Yes, DL = 1
     MovZX   EDX,DL                                                              ;EDX = DL
@@ -1971,6 +2019,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Mov     AL,[ECX]                                                            ;AL = [ECX]
     Call    GetScript700Number                                                  ;Parse Number (EAX = result)        ; :[LABEL]
     JZ      .DATAERROR                                                          ;   Failure
+
     And     EAX,1023                                                            ;EAX &= 1023
     Mov     EDX,EBX                                                             ;EDX = EBX
     Sub     EDX,[scr700dat]                                                     ;EDX -= Data Offset
@@ -1987,6 +2036,7 @@ USES ECX,EDX,EBX,ESI,EDI
     .DATANUM:
     Dec     DL                                                                  ;DL-- (DL = 0x00?)
     JZ      short .DATANUM2                                                     ;   Yes
+
     ShL     AX,12                                                               ;AX << 12 (Mov AH,AL; ShL AH,4)
     Add     DL,2                                                                ;DL += 2
     Jmp     short .DATARETURNLINE
@@ -1997,6 +2047,7 @@ USES ECX,EDX,EBX,ESI,EDI
     And     EBX,SCR700MASK                                                      ;EBX &= Program Mask
     Cmp     EBX,EDI                                                             ;EBX < EDI?
     JB      short .CRITICALERROR                                                ;   Yes
+
     Mov     [ESI+EBX],AH                                                        ;Program[EBX] = AH
     Mov     EDI,EBX                                                             ;EDI = EBX
     Jmp     .DATARETURNLINE
@@ -2029,9 +2080,11 @@ USES ECX,EDX,EBX,ESI,EDI
     Inc     EAX                                                                 ;EAX++
     Test    byte [scr700inc+02h],-1                                             ;Include mode?
     JNZ     short .FINALIZE                                                     ;   Yes
+
     Mov     ECX,[scr700dat]                                                     ;ECX = Data Offset
     Test    ECX,ECX                                                             ;ECX = 0x00?
     JNZ     short .FINALIZE                                                     ;   No
+
     Mov     [ESI+EBX],CL                                                        ;Program[EBX] = CL
     Mov     [scr700dat],EAX                                                     ;Data Offset = EAX
 

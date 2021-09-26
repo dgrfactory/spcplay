@@ -2331,7 +2331,7 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.19.0 (build 7471)';
+    SPCPLAY_VERSION = '2.19.0 (build 7473)';
     SNESAPU_VERSION = $21900;
     APPLINK_VERSION = $02170500;
 
@@ -6853,7 +6853,8 @@ begin
             Z := 0;
             for I := 0 to 3 do begin
                 UpdateNumWrite(I * 3 + 11, IntToHex(StrData, ApuData.SPCApuPort.Port[I], 2));
-                if Script700.dwIntInPort = $80 + I then StrData.bData[0] := $6F // 'o'
+                if not longbool(I) and longbool(Script700.cStatusFlag and $C) then StrData.bData[0] := $6F // 'o'
+                else if Script700.dwIntInPort = $80 + I then StrData.bData[0] := $6F // 'o'
                 else StrData.bData[0] := $20; // ' '
                 UpdateNumWrite(I * 3 + 13, 1);
             end;
