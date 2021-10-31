@@ -2331,7 +2331,7 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.19.0 (build 7473)';
+    SPCPLAY_VERSION = '2.19.0 (build 7489)';
     SNESAPU_VERSION = $21900;
     APPLINK_VERSION = $02170500;
 
@@ -2390,7 +2390,7 @@ const
     BUFFER_PRIORITY: string = 'PRIORITY 0 : ';
     BUFFER_RATE____: string = 'RATE     0 : ';
     BUFFER_SCALE___: string = 'SCALE    0 : ';
-    BUFFER_SEEKFAST: string = 'SEEKFAST 1 : ';
+    BUFFER_SEEKFAST: string = 'SEEKFAST 2 : ';
     BUFFER_SEEKINT_: string = 'SEEKINT  1 : ';
     BUFFER_SEEKMAX_: string = 'SEEKMAX  1 : ';
     BUFFER_SEEKNUM_: string = 'SEEKNUM  2 : ';
@@ -5362,7 +5362,7 @@ begin
     Option.dwPriority := NORMAL_PRIORITY_CLASS;
     Option.dwRate := 32000;
     Option.dwScale := 100;
-    Option.dwSeekFast := 1;
+    Option.dwSeekFast := 0;
     Option.dwSeekInt := 15000;
     Option.dwSeekMax := 600000;
     Option.dwSeekNum := 40;
