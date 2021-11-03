@@ -1,17 +1,17 @@
-# SNES SPC700 Player + 改良版 SNESAPU.DLL
+# SNES SPC700 Player + Improved SNESAPU.DLL
 
-## 概要
+![SNES SPC700 Player](https://dgrfactory.jp/img/spcplaye.png)
 
-SNES SPC700 Player と改良版 SNESAPU.DLL 一式のソースコードです。  
-ビルド済みのバイナリのダウンロード、および、ソフトウェアの詳細情報については、  
-[デグレファクトリーのサイト](https://dgrfactory.jp/spcplay/index.html) をご覧ください。
+The **SNES SPC700 Player** is a simple SPC player.  
+This is the official source code for SNES SPC700 Player, and improved SNESAPU.DLL is also included.
 
-## Overview
+## Links
 
-Source codes of SNES SPC700 Player and improved SNESAPU.DLL.  
-If you want to download binary of this software, please visit [release page](https://github.com/dgrfactory/spcplay/releases/latest).  
-For more information on this software, please visit [wiki page](https://github.com/dgrfactory/spcplay/wiki).
+* Official website: https://dgrfactory.jp/spcplay
+* Latest stable release: [release page](https://github.com/dgrfactory/spcplay/releases/latest)
+* Known issues: [issues page](https://github.com/dgrfactory/spcplay/issues)
+* For more information: [wiki page](https://github.com/dgrfactory/spcplay/wiki)
 
 ## License
 
-GPL 2.0
+GNU General Public License v2.0
