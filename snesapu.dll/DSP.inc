@@ -43,18 +43,18 @@ DSP_OLDSMP  EQU 02h                                             ;Traditional ADP
 DSP_SURND   EQU 04h                                             ;Surround sound
 DSP_REVERSE EQU 08h                                             ;Reverse stereo samples
 DSP_NOECHO  EQU 10h                                             ;Disable echo (must not be bit 0 or 5, see disEcho)
-; ----- degrade-factory code [2008/09/09] -----
+; ----- degrade-factory code [2021/11/08] -----
 DSP_NOPMOD  EQU 20h                                             ;Disable pitch modulation
 DSP_NOPREAD EQU 40h                                             ;Disable pitch read
 DSP_NOFIR   EQU 80h                                             ;Disable FIR Filter
 DSP_BASS    EQU 100h                                            ;BASS BOOST (low-pass filter)
 DSP_NOENV   EQU 200h                                            ;Disable envelope
 DSP_NONOISE EQU 400h                                            ;Disable noise
-DSP_ECHOMEM EQU 800h                                            ;Write DSP echo memory map
+DSP_ECHOFIR EQU 800h                                            ;Simulate SNES echo/FIR method
 DSP_NOSURND EQU 1000h                                           ;Disable surround sound
 DSP_FLOAT   EQU 40000000h                                       ;32bit floating-point volume output
 DSP_NOSAFE  EQU 80000000h                                       ;Disable volume safe
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #37 -----
 
 ;PackWave options (unused)
 BRR_LINEAR  EQU 01h                                             ;Use linear compression for all blocks

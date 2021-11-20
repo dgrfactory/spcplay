@@ -262,7 +262,7 @@ SECTION .bss ALIGN=64
 ;Don't touch!  All arrays are carefully aligned on large boundaries to facillitate easier indexing
 ;and better cache utilization.
 
-; ----- degrade-factory code [2019/07/07] -----
+; ----- degrade-factory code [2021/10/31] -----
     ;DSP Core ---------------------------- [0]
     mix         resb    1024                                                    ;<VoiceMix> Mixing settings for each voice
     dsp         resb    128                                                     ;<DSPRAM> DSP registers
@@ -281,8 +281,9 @@ SECTION .bss ALIGN=64
     outLeft     resd    1                                                       ;Number of samples left to fill output buffer
     outCnt      resd    1                                                       ;t64 count at last call to EmuDSP
     outDec      resd    1                                                       ;Fractional number of samples to be generated
+                resd    3
 
-    ;DSP Options ---------------------- [4514]
+    ;DSP Options ---------------------- [4520]
     dspMix      resb    1                                                       ;Mixing routine
     dspChn      resb    1                                                       ;Number of channels being output
     dspSize     resb    1                                                       ;Size of samples in bytes
@@ -300,7 +301,7 @@ SECTION .bss ALIGN=64
     surround    resb    1                                                       ;Turn on surround sound  (OFF:0x00 / ON:0xFF)
     surroff     resb    1                                                       ;Turn off surround sound (OFF:0x00 / ON:0x80)
 
-    ;Volume --------------------------- [4534]
+    ;Volume --------------------------- [4540]
     volSepar    resd    1                                                       ;Stereo separation
     volRamp1    resd    1                                                       ;Amount to ramp volume per sample
     volRamp2    resd    1                                                       ;Amount to ramp volume per sample
@@ -318,7 +319,7 @@ SECTION .bss ALIGN=64
     vMMaxL      resd    1                                                       ;Maximum absolute sample output
     vMMaxR      resd    1
 
-    ;Noise ---------------------------- [4574]
+    ;Noise ---------------------------- [4580]
     nRate       resd    1                                                       ;Noise sample rate reciprocal [.32]
     nfRate      resd    1
     nAcc        resd    1                                                       ;Noise accumulator [.32] (>= 1 generate a new sample)
@@ -326,15 +327,15 @@ SECTION .bss ALIGN=64
     nSmp        resd    1                                                       ;Current Noise sample
     nfSmp       resd    1
     nSeed       resd    1                                                       ;Noise random seed
+                resd    1
 
-    ;Echo filtering ------------------- [4590]
+    ;Echo filtering ------------------- [45A0]
     firCur      resd    1                                                       ;Index of the first sample to feed into the filter
     firRate     resd    1                                                       ;Rate to feed samples into filter
-    firDec      resd    1                                                       ;Temp
-                resd    1
-    firTaps     resd    16                                                      ;Filter coefficents (doubled for stereo MMX)
+                resd    2
+    firTaps     resd    8                                                       ;Filter coefficents
 
-    ;Echo ----------------------------- [45E0]
+    ;Echo ----------------------------- [45D0]
     echoDel     resd    1                                                       ;Size of delay (in bytes)
     echoCur     resd    1                                                       ;Current sample in echo area
     echoLen     resd    1                                                       ;Size of write echo buffer (dword)
@@ -343,10 +344,11 @@ SECTION .bss ALIGN=64
     echoPtr     resd    1
     echoDec     resd    1                                                       ;Decimal counter
     efbct       resd    1                                                       ;User specified echo feedback crosstalk
-    echoFB      resd    2                                                       ;Echo feedback
-    echoFBCT    resd    2                                                       ;Echo feedback crosstalk
+    echoFB      resd    1                                                       ;Echo feedback
+    echoFBCT    resd    1                                                       ;Echo feedback crosstalk
+                resd    2
 
-    ;Single source playback ----------- [4610]
+    ;Single source playback ----------- [4600]
     tBRR        resb    8                                                       ;Temporary buffer for storing BRR block
                 resw    4                                                       ;Temporary buffer for single sound playback
     tBuf        resw    16
@@ -359,7 +361,7 @@ SECTION .bss ALIGN=64
     tP2         resd    1
                 resd    1
 
-    ;Emulation work ------------------- [4660]
+    ;Emulation work ------------------- [4650]
     songLen     resd    1                                                       ;Length of song (in ticks)
     fadeLen     resd    1                                                       ;Length of fade (in ticks)
     outRate     resd    1                                                       ;Out sampling rate
@@ -378,9 +380,9 @@ SECTION .bss ALIGN=64
                                                                                 ;   [5] - Suspended envelope by SetSPCDbg
                 resb    3
     konCnt      resd    1                                                       ;t64 count of set KON/KOFF
-                resd    1
+                resd    3
 
-    ;BASS BOOST ----------------------- [4688]
+    ;BASS BOOST ----------------------- [4680]
     lowRstL1    resd    1                                                       ;BASS-BOOST reset counter (Left)
     lowRstL2    resd    1
     lowRstR1    resd    1                                                       ;BASS-BOOST reset counter (Right)
@@ -395,6 +397,7 @@ SECTION .bss ALIGN=64
     lowSize2    resd    1
     lowLv1      resd    1                                                       ;BASS-BOOST level
     lowLv2      resd    1
+                resd    2
 
     ;Anti-Alies filter ---------------- [46C0]
     aaf1A1      resd    1                                                       ;Anti-Alies 1st filter coefficients
@@ -417,7 +420,7 @@ SECTION .bss ALIGN=64
     lowBufL2    resd    LOWBUF2
     lowBufR1    resd    LOWBUF1                                                 ;BASS-BOOST buffer (Right)
     lowBufR2    resd    LOWBUF2
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #37 -----
 
 ; ----- degrade-factory code [2015/07/11] -----
     dspVarEP    resd    1                                                       ;Endpoint of DSP.asm variables
@@ -914,9 +917,7 @@ USES ECX,EBX,EDI
     Mov     [echoPtr],EAX
     Mov     [echoDec],EAX
     Mov     [echoFB],EAX
-    Mov     [4+echoFB],EAX
     Mov     [echoFBCT],EAX
-    Mov     [4+echoFBCT],EAX
 
 ; ----- degrade-factory code [2020/01/05] -----
     Call    ResetVol
@@ -925,11 +926,11 @@ USES ECX,EBX,EDI
 ; ----- degrade-factory code [END] -----
 
     Mov     EDI,firTaps                                                         ;Reset filter coefficients
-    Mov     CL,2*8
+; ----- degrade-factory code [2021/10/31] -----
+    Mov     CL,8
+; ----- degrade-factory code [END] #37 -----
     Rep     StoSD
-
     Mov     [firCur],EAX                                                        ;Reset filter variables
-    Mov     [firDec],EAX
 
     ;Disable voices --------------------------
     Mov     [voiceMix],AL
@@ -1203,7 +1204,6 @@ USES ALL
 
         ;Reset FIR info -----------------------
         XOr     EAX,EAX
-        Mov     [firDec],EAX
         Mov     [firCur],EAX
 
         Mov     EAX,[dspRate]
@@ -2636,6 +2636,26 @@ ENDP
 ; ----- degrade-factory code [END] #25 #29 -----
 
 
+; ----- degrade-factory code [2021/10/31] -----
+;===================================================================================================
+;Set the Denormalized Numbers to 0
+;
+;If using a CPU that does not support denormalized numbers, you will experience significant
+;performance degradation.  In many cases, if the value is a denormalized number, it is
+;exceedingly close to 0, therefore can be treated as 0.
+;
+;Destroys:
+;   EAX
+%macro ZeroDN 1
+    Mov     EAX,[%1]
+    And     EAX,7E000000h
+    JNZ     short %%Normal
+        Mov     [%1],EAX                                                        ;EAX = 0
+    %%Normal:
+%endmacro
+; ----- degrade-factory code [END] -----
+
+
 ;===================================================================================================
 ;DSP Register Handlers
 
@@ -2967,18 +2987,24 @@ REFB:
     FLd     ST
     FIMul   dword [efbct]
     FMul    dword [fpShR23]                                                     ;Convert from fixed to floating-point
-    FSt     dword [echoFB]                                                      ;7-bits (efb) + 16-bits (efbct) = 23-bits
-    FStP    dword [4+echoFB]
+; ----- degrade-factory code [2021/10/31] -----                                 ;7-bits (efb) + 16-bits (efbct) = 23-bits
+    FStP    dword [echoFB]
+    ZeroDN  echoFB
+; ----- degrade-factory code [END] #37 -----
     FLd     dword [fp64k]
     FISub   dword [efbct]
     FMulP   ST1,ST
     FMul    dword [fpShR23]
-    FSt     dword [echoFBCT]
-    FStP    dword [4+echoFBCT]
+; ----- degrade-factory code [2021/10/31] -----
+    FStP    dword [echoFBCT]
+    ZeroDN  echoFBCT
+; ----- degrade-factory code [END] #37 -----
 %else
     FMul    dword [fpShR7]
-    FSt     dword [echoFB]
-    FStP    dword [4+echoFB]
+; ----- degrade-factory code [2021/10/31] -----
+    FStP    dword [echoFB]
+    ZeroDN  echoFB
+; ----- degrade-factory code [END] #37 -----
 %endif
     XOr     EAX,EAX
     Inc     EAX
@@ -3017,13 +3043,16 @@ REDl:
     Ret
 
 RFCf:
-    ShR     EBX,4
+; ----- degrade-factory code [2021/10/31] -----
+    ShR     EBX,5
+; ----- degrade-factory code [END] #37 -----
     MovSX   EAX,AL
     Mov     [ESP-4],EAX
     FILd    dword [ESP-4]
     FMul    dword [fpShR7]
-    FSt     dword [EBX+firTaps]
-    FStP    dword [4+EBX+firTaps]
+; ----- degrade-factory code [2021/10/31] -----
+    FStP    dword [EBX+firTaps]
+; ----- degrade-factory code [END] #37 -----
 
     XOr     EAX,EAX                                                             ;DSP state changed if echo was enabled
     Inc     EAX
@@ -3632,101 +3661,175 @@ ENDP
 ;Destroys:
 ;   EAX,EDX,EBX,CL
 
+; ----- degrade-factory code [2021/11/08] -----
+%macro FIRCut16 1
+    FISt    dword [ESP-4]
+    Mov     EAX,[ESP-4]
+    Add     EAX,32768
+    SAR     EAX,16                                                              ;Did a sample overflow signed-16bit?
+    JZ      short %%OK                                                          ;   No, do nothing
+        Mov     EAX,[ESP-4]                                                     ;There is no overflow because FIR is handled with
+        MovSX   EAX,AX                                                          ; 32bit-float, emulates signed-16bit overflow here.
+        And     EAX,~1                                                          ;All numbers used by DSP are even
+
+        Mov     [ESP-4],EAX
+        FSubP   %1,ST
+        FILd    dword [ESP-4]
+        FAdd    %1,ST
+
+    %%OK:
+%endmacro
+
+%macro FIRClampL 1
+    FISt    dword [ESP-4]
+    Mov     EAX,[ESP-4]
+    Add     EAX,32768
+    SAR     EAX,16                                                              ;Did a sample overflow signed-16bit?
+    JZ      short %%OK                                                          ;   No, do nothing
+        Mov     EAX,[ESP-4]                                                     ;If s < -32768, s = -32768
+        SAR     EAX,31                                                          ;If s > 32767, s = 32767
+        Not     EAX
+        XOr     EAX,-32768
+        And     EAX,~1                                                          ;All numbers used by DSP are even
+
+        Mov     [ESP-4],EAX
+        FSubP   %1,ST
+        FILd    dword [ESP-4]
+        FAdd    %1,ST
+
+    %%OK:
+%endmacro
+
+%macro FIRClampH 1
+    FISt    dword [ESP-4]
+    Mov     EAX,[ESP-4]
+    Add     EAX,65536
+    SAR     EAX,17                                                              ;Did a sample overflow signed-16bit?
+    JZ      short %%OK                                                          ;   No, do nothing
+        Mov     EAX,[ESP-4]                                                     ;If s < -65536, s = -65536
+        SAR     EAX,31                                                          ;If s > 65535, s = 65535
+        Not     EAX
+        XOr     EAX,-65536
+
+        Mov     [ESP-4],EAX
+        FSubP   %1,ST
+        FILd    dword [ESP-4]
+        FAdd    %1,ST
+
+    %%OK:
+%endmacro
+; ----- degrade-factory code [END] #37 -----
+
 %macro FIRFilter 0
-    Sub     byte [firCur],4
-    Mov     EBX,[firCur]
-    LEA     EBX,[EBX*2+firBuf]
+    Sub     byte [firCur],4                                                     ;Move index back one sample. (Index will wrap around
+    Mov     EBX,[firCur]                                                        ; after 64 samples, enough for up to 256kHz output.)
+    LEA     EBX,[EBX*2+firBuf]                                                  ;EBX -> Current sample in filter buffer
                                                                                 ;                                   |FBR FBL
-    FSt     dword [EBX]
+; ----- degrade-factory code [2021/11/08] -----
+    Test    dword [dspOpts],DSP_ECHOFIR
+    JZ      short %%Skip
+        FLd     ST                                                              ;Clamp 16-bit sample                |FBR FBL FBL
+        FIRClampL   ST1
+        FStP    ST                                                              ;                                   |FBR FBL
+
+        FLd     ST1                                                             ;                                   |FBR FBL FBR
+        FIRClampL   ST2
+        FStP    ST                                                              ;                                   |FBR FBL
+
+    %%Skip:
+; ----- degrade-factory code [END] #37 -----
+
+    FSt     dword [EBX]                                                         ;Store new samples in buffer
     FStP    dword [FIRBUF*2+EBX]                                                ;                                   |FBR
     FSt     dword [4+EBX]
     FStP    dword [FIRBUF*2+4+EBX]                                              ;                                   |(empty)
 
     FLdZ                                                                        ;                                   |0
     FLdZ                                                                        ;                                   |0 0
-    Mov     EDX,firTaps+56
-    Mov     dword [firDec],0
-    Mov     CL,8
+; ----- degrade-factory code [2021/10/31] -----
+    Mov     EDX,firTaps+28                                                      ;EDX -> Filter taps
+; ----- degrade-factory code [END] #37 -----
+    Mov     dword [ESP-8],0                                                     ;Reset decimal overflow, so filtering is consistant
+    Mov     CL,8                                                                ;8-tap FIR filter
 
     %%Tap:
-        FILd    dword [firDec]                                                  ;                                   |0 0 firDec
+        FILd    dword [ESP-8]                                                   ;                                   |0 0 firDec
         FMul    dword [fpShR16]                                                 ;                                   |0 0 firDec>>16=FD
 
-; ----- degrade-factory code [2006/02/23] -----
-        Mov     EAX,[8+EBX]
-        And     EAX,7E000000h
-        JNZ     short %%FIRZL
-            Mov     [8+EBX],EAX
-        %%FIRZL:
+; ----- degrade-factory code [2021/10/31] -----
+        ZeroDN  8+EBX
+        ZeroDN  EBX
 ; ----- degrade-factory code [END] -----
 
-        FLd     dword [8+EBX]                                                   ;                                   |0 0 FD S1
+        FLd     dword [8+EBX]                                                   ;Interpolate left sample            |0 0 FD S1
         FSub    dword [EBX]                                                     ;                                   |0 0 FD S1-S2
         FMul    ST1                                                             ;                                   |0 0 FD (S1-S2)*FD
         FAdd    dword [EBX]                                                     ;                                   |0 0 FD (S1-S2)*FD+S2
         FMul    dword [EDX]                                                     ;                                   |0 0 FD ((S1-S2)*FD+S2)*FT
         FAddP   ST2,ST                                                          ;                                   |0 ((S1-S2)*FD+S2)*FT FD
 
-; ----- degrade-factory code [2006/02/23] -----
-        Mov     EAX,[12+EBX]
-        And     EAX,7E000000h
-        JNZ     short %%FIRZR
-            Mov     [12+EBX],EAX
-        %%FIRZR:
+; ----- degrade-factory code [2021/10/31] -----
+        ZeroDN  4+EBX
+        ZeroDN  12+EBX
 ; ----- degrade-factory code [END] -----
 
-        FLd     dword [12+EBX]                                                  ;                                   |0 FBL FD S1
+        FLd     dword [12+EBX]                                                  ;Interpolate right sample           |0 FBL FD S1
         FSub    dword [4+EBX]                                                   ;                                   |0 FBL FD S1-S2
         FMulP   ST1,ST                                                          ;                                   |0 FBL (S1-S2)*FD
         FAdd    dword [4+EBX]                                                   ;                                   |0 FBL (S1-S2)*FD+S2
         FMul    dword [EDX]                                                     ;                                   |0 FBL ((S1-S2)*FD+S2)*FT
         FAddP   ST2,ST                                                          ;                                   |FBR FBL
 
-; ----- degrade-factory code [2021/02/09] -----
-        FLd     ST                                                              ;Clamp left                         |FBR FBL FBL
-        FISt    dword [ESP-4]
-        Mov     EAX,[ESP-4]
-        Add     EAX,65536
-        SAR     EAX,17
-        JZ      short %%ClampL
-            SetS    AL
-            MovZX   EAX,AL
-            Dec     EAX
-            XOr     EAX,-65536
-            Mov     [ESP-4],EAX
-            FSubP   ST1,ST                                                      ;                                   |FBR 0
-            FILd    dword [ESP-4]                                               ;                                   |FBR 0 FBL
-            FAdd    ST1,ST                                                      ;                                   |FBR FBL FBL
+; ----- degrade-factory code [2021/11/08] -----
+        Test    dword [dspOpts],DSP_ECHOFIR
+        JZ      %%ClampH
+
+        Dec     CL                                                              ;Is calculate the oldest sample (n=0)?
+        JZ      short %%ClampL                                                  ;   Yes
+            FLd     ST                                                          ;Cut high-order bits                |FBR FBL FBL
+            FIRCut16    ST1
+            FStP    ST                                                          ;                                   |FBR FBL
+
+            FLd     ST1                                                         ;                                   |FBR FBL FBR
+            FIRCut16    ST2
+            FStP    ST                                                          ;                                   |FBR FBL
+
+            Inc     CL                                                          ;Restore CL
+            Jmp     %%Next
 
         %%ClampL:
-        FStP    ST                                                              ;                                   |FBR FBL
+            FLd     ST                                                          ;Clamp 16-bit sample                |FBR FBL FBL
+            FIRClampL   ST1
+            FStP    ST                                                          ;                                   |FBR FBL
 
-        FLd     ST1                                                             ;Clamp right                        |FBR FBL FBR
-        FISt    dword [ESP-4]
-        Mov     EAX,[ESP-4]
-        Add     EAX,65536
-        SAR     EAX,17
-        JZ      short %%ClampR
-            SetS    AL
-            MovZX   EAX,AL
-            Dec     EAX
-            XOr     EAX,-65536
-            Mov     [ESP-4],EAX
-            FSubP   ST2,ST                                                      ;                                   |0 FBL
-            FILd    dword [ESP-4]                                               ;                                   |0 FBL FBR
-            FAdd    ST2,ST                                                      ;                                   |FBR FBL FBR
+            FLd     ST1                                                         ;                                   |FBR FBL FBR
+            FIRClampL   ST2
+            FStP    ST                                                          ;                                   |FBR FBL
 
-        %%ClampR:
-        FStP    ST                                                              ;                                   |FBR FBL
-; ----- degrade-factory code [END] #23 -----
+            Inc     CL                                                          ;Restore CL
+            Jmp     short %%Next
 
-        Mov     EAX,[firDec]
+        %%ClampH:
+            FLd     ST                                                          ;Clamp 17-bit sample                |FBR FBL FBL
+            FIRClampH   ST1
+            FStP    ST                                                          ;                                   |FBR FBL
+
+            FLd     ST1                                                         ;                                   |FBR FBL FBR
+            FIRClampH   ST2
+            FStP    ST                                                          ;                                   |FBR FBL
+
+        %%Next:
+; ----- degrade-factory code [END] #23 #37 -----
+
+        Mov     EAX,[ESP-8]                                                     ;Determine next sample to use in filter
         Add     EAX,[firRate]
-        Mov     [firDec],AX
+        Mov     [ESP-8],AX
         ShR     EAX,16
 
-        LEA     EBX,[EAX*8+EBX]
-        Sub     EDX,8
+        LEA     EBX,[EAX*8+EBX]                                                 ;EBX -> Sample to use in filter
+; ----- degrade-factory code [2021/10/31] -----
+        Sub     EDX,4                                                           ;EDX -> Next filter tap
+; ----- degrade-factory code [END] #37 -----
 
     Dec     CL
     JNZ     %%Tap
@@ -3824,7 +3927,7 @@ ENDP
 PROC EmuDSP, pBuf, num
 USES ALL
 
-; ----- degrade-factory code [2016/08/20] -----
+; ----- degrade-factory code [2021/11/08] -----
     Mov     EAX,[pBuf]
 
     Mov     EDX,[num]
@@ -3843,13 +3946,16 @@ USES ALL
     Mov     DH,[dsp+flg]                                                        ;disFlag
     And     DH,0E0h                                                             ;   [0] - Disabled write echo memory
     Or      DH,[dspMute]                                                        ;   [1] - (not used)
-    Mov     DL,[dspOpts]                                                        ;   [2] - (not used)
-    And     DL,DSP_NOECHO                                                       ;   [3] - Disabled DSP emulation (pBuf is NULL)
-    Or      DH,DL                                                               ;   [4] - Disabled echo (user setting)
-    Test    dword [echoLen],-1                                                  ;   [5] - Disabled echo (DSP no echo flag)
-    SetZ    DL                                                                  ;   [6] - Disabled DSP emulation (DSP mute flag)
-    Or      DH,DL                                                               ;   [7] - Disabled DSP emulation (DSP reset flag)
-    Test    dword [dspOpts],DSP_ECHOMEM                                         ;Is echo disabled?
+                                                                                ;   [2] - (not used)
+    Mov     DL,[dspOpts]                                                        ;   [3] - Disabled DSP emulation (pBuf is NULL)
+    And     DL,DSP_NOECHO                                                       ;   [4] - Disabled echo (user setting)
+    Or      DH,DL                                                               ;   [5] - Disabled echo (DSP no echo flag)
+                                                                                ;   [6] - Disabled DSP emulation (DSP mute flag)
+    Test    dword [echoLen],-1                                                  ;   [7] - Disabled DSP emulation (DSP reset flag)
+    SetZ    DL
+    Or      DH,DL
+
+    Test    dword [dspOpts],DSP_ECHOFIR                                         ;Is echo disabled?
     SetZ    DL
     Or      DH,DL
     Or      DH,BL
@@ -3896,7 +4002,7 @@ USES ALL
     And     DH,BH
     Mov     [dspNoiseF],DH
     Or      [dspNoise],DH
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #37 -----
 
 ; ----- degrade-factory code [2007/10/03] -----
     Test    dword [dspOpts],DSP_FLOAT                                           ;Is volume output floating-point?
@@ -4074,7 +4180,7 @@ ENDP
         JZ      short %%Force
     %endif
 
-        CalRamp1 volRamp2
+        CalRamp1    volRamp2
         Jmp     short %%OK
 
     %%Force:
@@ -4085,7 +4191,7 @@ ENDP
 %endmacro
 ; ----- degrade-factory code [END] -----
 
-; ----- degrade-factory code [2009/08/08] -----
+; ----- degrade-factory code [2021/10/31] -----
 %macro MixSample 0
     ;Get sample ========================
     Mov     ESI,[EBX+sIdx]
@@ -4269,9 +4375,9 @@ ENDP
 %macro MixMaster 0
     ;Multiply samples by main volume ------
     Mov     ECX,nowMainL
-    CalRamp2 1
+    CalRamp2    1
     Mov     ECX,nowMainR
-    CalRamp2 1
+    CalRamp2    1
 
     FLd     dword [ESI]
     FMul    dword [nowMainL]
@@ -4300,6 +4406,8 @@ ENDP
     Mov     EDI,[echoCur]
     Add     EDI,echoBuf
 
+    ZeroDN  4+EDI
+    ZeroDN  EDI
     FLd     dword [4+EDI]                                                       ;                                   |FBR
     FLd     dword [EDI]                                                         ;                                   |FBR FBL
 
@@ -4336,6 +4444,7 @@ ENDP
 
     FAdd    dword [ESI]                                                         ;                                   |FBR FBL FBR EchoL+ML
     FStP    dword [ESI]                                                         ;                                   |FBR FBL FBR
+    ZeroDN  ESI
 
     FMul    dword [nowEchoR]                                                    ;                                   |FBR FBL FBR*EchoR
     Mov     AH,[scr700mds+S700_ECHO_R]
@@ -4347,9 +4456,11 @@ ENDP
 
     FAdd    dword [4+ESI]                                                       ;                                   |FBR FBL FBR+MR
     FStP    dword [4+ESI]                                                       ;                                   |FBR FBL
+    ZeroDN  4+ESI
 
     ;Calculate echo feedback -----------
 %if STEREO
+    ZeroDN  8+ESI
     FLd     ST                                                                  ;                                   |FBR FBL FBL
     FMul    dword [echoFB]                                                      ;                                   |FBR FBL FBL*EchoFB
     FLd     ST2                                                                 ;                                   |FBR FBL EFBL FBR
@@ -4357,21 +4468,28 @@ ENDP
     FAddP   ST1,ST                                                              ;                                   |FBR FBL EFBL+EFBCR
     FAdd    dword [8+ESI]                                                       ;                                   |FBR FBL EFBL+EL
     FStP    dword [EDI]                                                         ;                                   |FBR FBL
+    ZeroDN  EDI
 
+    ZeroDN  12+ESI
     FMul    dword [echoFBCT]                                                    ;                                   |FBR FBL*EchoFBCT
     FXCh    ST1                                                                 ;                                   |EFBCL FBR
     FMul    dword [echoFB]                                                      ;                                   |EFBCL FBR*EchoFB
     FAddP   ST1,ST                                                              ;                                   |EFBCL+EFBR
     FAdd    dword [12+ESI]                                                      ;                                   |EFBR+ER
     FStP    dword [4+EDI]                                                       ;                                   |(empty)
+    ZeroDN  4+EDI
 %else
+    ZeroDN  8+ESI
     FMul    dword [echoFB]                                                      ;                                   |FBR FBL*EchoFB
     FAdd    dword [8+ESI]                                                       ;                                   |FBR EFBL+EL
     FStP    dword [EDI]                                                         ;                                   |FBR
+    ZeroDN  EDI
 
+    ZeroDN  12+ESI
     FMul    dword [echoFB]                                                      ;                                   |FBR*EchoFB
     FAdd    dword [12+ESI]                                                      ;                                   |EFBR+ER
     FStP    dword [4+EDI]                                                       ;                                   |(empty)
+    ZeroDN  4+EDI
 %endif
 %endmacro
 
@@ -4559,7 +4677,7 @@ ENDP
     Add     [vMMaxR],EAX
 %endif
 %endmacro
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #37 -----
 
 ; ----- degrade-factory code [2012/02/18] -----
 %macro MixAAF 0
@@ -5100,9 +5218,8 @@ ENDP
 %endmacro
 
 %macro UnpckClamp 0
-    ;Clamp 16-bit sample to a 17-bit value
-    Add     EAX,65536
-    SAR     EAX,17
+    Add     EAX,65536                                                           ;Clamp 16-bit sample to a 17-bit value,
+    SAR     EAX,17                                                              ; because restored value by BRR is used in doubles.
     JZ      short %%OK
         SetS    DL                                                              ;If s < -65536 (FFFF0000h), s = 0000h = 0
         MovZX   EDX,DL                                                          ;If s >  65534 (0000FFFEh), s = FFFEh = -2
