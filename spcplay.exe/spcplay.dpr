@@ -2331,7 +2331,7 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.19.0 (build 7489)';
+    SPCPLAY_VERSION = '2.19.0 (build 7521)';
     SNESAPU_VERSION = $21900;
     APPLINK_VERSION = $02170500;
 
@@ -2628,12 +2628,14 @@ const
     BITMAP_NUM_HEIGHT = 9;                                  // ビットマップ文字の高さ
     BITMAP_MARK_HEIGHT = 3;                                 // 位置マークの高さ
     BITMAP_STRING_COLOR: array[0..BITMAP_NUM - 1] of longword =
-        (ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT,
-         ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT,
-         ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_WATER , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_PURPLE,
-         ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_RED   , ORG_COLOR_GRAYTEXT  ,
-         ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  ,
-         ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_WATER , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_WATER ,
+        (ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT,
+         ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT,
+         ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT,
+         ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_WATER , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_PURPLE,
+         ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  ,
+         ORG_COLOR_BAR_RED   , ORG_COLOR_GRAYTEXT  , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  ,
+         ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN ,
+         ORG_COLOR_BAR_WATER , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_WATER ,
          ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_PURPLE, ORG_COLOR_BAR_RED);
 
     NOISE_RATE: array[0..$1F] of int64 =
@@ -2773,8 +2775,8 @@ const
     AMP_300 = AMP_100 *  300 div   100;                     // 300 ％
     AMP_400 = AMP_100 *  400 div   100;                     // 400 ％
 
-    OPTION_ANALOG = $1;                                     // アンチエイリアスフィルタ (未使用)
-    OPTION_OLDSMP = $2;                                     // 古いサンプルブロック解凍メソッドを使用
+    OPTION_LOWPASS = $1;                                    // 実機と同じローパスフィルタ
+    OPTION_OLDSMP = $2;                                     // 古い ADPCM デコーダを使用
     OPTION_SURROUND = $4;                                   // 逆位相サラウンド強制
     OPTION_REVERSE = $8;                                    // 左右反転
     OPTION_NOECHO = $10;                                    // エコー無効
@@ -2784,7 +2786,7 @@ const
     OPTION_BASSBOOST = $100;                                // BASS BOOST (低音強調)
     OPTION_NOENV = $200;                                    // エンベロープ無効
     OPTION_NONOISE = $400;                                  // ノイズ無効
-    OPTION_ECHOMEMORY = $800;                               // DSP のエコーメモリを確保
+    OPTION_ECHOFIR = $800;                                  // 実機に近いエコー/FIR 処理
     OPTION_NOSURROUND = $1000;                              // サラウンド無効
     OPTION_FLOATOUT = $40000000;                            // 32 ビット (float) で出力レベルを設定
     OPTION_NOEARSAFE = $80000000;                           // イヤーセーフ無効
@@ -2878,11 +2880,11 @@ const
     MENU_SETUP_MUTE_NOISE_SIZE = 8;
     MENU_SETUP_MUTE_NOISE_ALL_SIZE = 3;
     MENU_SETUP_OPTION = 50;
-    MENU_SETUP_OPTION_SIZE = 13;
+    MENU_SETUP_OPTION_SIZE = 15;
     MENU_SETUP_OPTION_BASE = 500; // +10
     MENU_SETUP_OPTION_VALUE: array[0..MENU_SETUP_OPTION_SIZE - 1] of longword =
-        (OPTION_ANALOG, OPTION_BASSBOOST, OPTION_OLDSMP, OPTION_REVERSE, OPTION_SURROUND, OPTION_NOSURROUND, OPTION_NOECHO,
-         OPTION_NOPMOD, OPTION_NOPREAD, OPTION_NOFIR, OPTION_NOENV, OPTION_NONOISE, OPTION_ECHOMEMORY);
+        (OPTION_LOWPASS, OPTION_ECHOFIR, NULL, OPTION_BASSBOOST, OPTION_OLDSMP, OPTION_REVERSE, OPTION_SURROUND, NULL, OPTION_NOSURROUND,
+         OPTION_NOECHO, OPTION_NOPMOD, OPTION_NOPREAD, OPTION_NOFIR, OPTION_NOENV, OPTION_NONOISE);
     MENU_SETUP_TIME = 60;
     MENU_SETUP_TIME_DISABLE = 600;
     MENU_SETUP_TIME_ID666 = 601;
@@ -3047,9 +3049,9 @@ const
     STR_MENU_SETUP_SWITCH_CHANNEL: array[0..1] of pchar = ('チャンネル ', 'Channel ');
     STR_MENU_SETUP_OPTION: array[0..1] of pchar = ('拡張設定(&X)', 'E&xpansion Flags');
     STR_MENU_SETUP_TIME: array[0..1] of pchar = ('演奏時間(&T)', 'Play &Time');
-    STR_MENU_SETUP_TIME_DISABLE: array[0..1] of pchar = ('無効(&D)', '&Disable');
-    STR_MENU_SETUP_TIME_ID666: array[0..1] of pchar = ('&ID666 設定値を使用', 'Enable &ID666 Time');
-    STR_MENU_SETUP_TIME_DEFAULT: array[0..1] of pchar = ('デフォルト値を使用(&E)', '&Enable Default Time');
+    STR_MENU_SETUP_TIME_DISABLE: array[0..1] of pchar = ('無効/エンドレス(&D)', '&Disable/Endless');
+    STR_MENU_SETUP_TIME_ID666: array[0..1] of pchar = ('&ID666 時間設定を優先', 'Enable &ID666 Time');
+    STR_MENU_SETUP_TIME_DEFAULT: array[0..1] of pchar = ('常に既定時間を使用(&E)', 'Always D&efault Time');
     STR_MENU_SETUP_TIME_START: array[0..1] of pchar = ('開始位置を設定(&S)', 'Set &Start Position Mark');
     STR_MENU_SETUP_TIME_LIMIT: array[0..1] of pchar = ('終了位置を設定(&L)', 'Set &Limit Position Mark');
     STR_MENU_SETUP_TIME_RESET: array[0..1] of pchar = ('位置をリセット(&R)', '&Reset Position Marks');
@@ -3077,41 +3079,41 @@ const
         ('上へ(&U)', '下へ(&D)'),
         ('Move &Up', 'Move &Down'));
     STR_MENU_SETUP_TIP: array[0..1] of array[0..11] of pchar = (
-        ('', '［標準］', '［混合］', '［拡散］', '［反転］', '［遅］', '［速］', '［小］', '［大］', '［極遅］', '［極速］', '［極小］'),
+        ('', '[標準]', '[混合]', '[拡散]', '[反転]', '[遅]', '[速]', '[小]', '[大]', '[極遅]', '[極速]', '[極小]'),
         ('', '[Normal]', '[Mix]', '[Separate]', '[Reverse]', '[Slow]', '[Fast]', '[Low]', '[High]', '[Very Slow]', '[Very Fast]', '[Very Low]'));
     STR_MENU_SETUP_CHANNEL_SUB: array[0..1] of array[0..MENU_SETUP_CHANNEL_SIZE - 1] of pchar = (
         ('&1 チャンネル  (モノラル)', '&2 チャンネル  (ステレオ)'),
         ('&1 Channel  (Monaural)', '&2 Channels  (Stereo)'));
     STR_MENU_SETUP_BIT_SUB: array[0..1] of array[0..MENU_SETUP_BIT_SIZE - 1] of pchar = (
-        ('&8 ビット', Concat('&16 ビット', #9, '［標準］'), '&24 ビット', '&32 ビット  (int)', Concat('&32 ビット  (float)', #9, '［高音質］')),
+        ('&8 ビット', Concat('&16 ビット', #9, '[標準]'), '&24 ビット', '&32 ビット  (int)', Concat('&32 ビット  (float)', #9, '[高音質]')),
         ('&8-Bit', Concat('&16-Bit', #9, '[Normal]'), '&24-Bit', '&32-Bit  (int)', Concat('&32-Bit  (float)', #9, '[HQ]')));
     STR_MENU_SETUP_RATE_SUB: array[0..1] of array[0..MENU_SETUP_RATE_SIZE - 1] of pchar = (
         ('&8,000 Hz', '&10,000 Hz', '&11,025 Hz', '&12,000 Hz', '&16,000 Hz', '&20,000 Hz', '&22,050 Hz', '&24,000 Hz',
-         Concat('&32,000 Hz', #9, '［推奨］'), '&40,000 Hz', '&44,100 Hz', '&48,000 Hz', '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz'),
+         Concat('&32,000 Hz', #9, '[推奨]'), '&40,000 Hz', '&44,100 Hz', '&48,000 Hz', '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz'),
         ('&8,000 Hz', '&10,000 Hz', '&11,025 Hz', '&12,000 Hz', '&16,000 Hz', '&20,000 Hz', '&22,050 Hz', '&24,000 Hz',
          Concat('&32,000 Hz', #9, '[Recommend]'), '&40,000 Hz', '&44,100 Hz', '&48,000 Hz', '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz'));
     STR_MENU_SETUP_INTER_SUB: array[0..1] of array[0..MENU_SETUP_INTER_SIZE - 1] of pchar = (
-        ('無効(&D)', '線形補間(&L)', '三次スプライン補間(&C)', Concat('実機ガウス分布補間(&G)', #9, '［標準］'),
-         Concat('シンク関数補間(&S)', #9, '［高音質］'), 'ガウス関数補間(&A)'),
-        ('&Disable', '&Liner', '&Cubic Spline', Concat('SNES &Gauss Table', #9, '[Normal]'),
-         Concat('&Sinc Function', #9, '[HQ]'), 'G&auss Function'));
+        ('無効(&D)', '線形補間(&L)', '三次スプライン補間(&C)', Concat('実機ガウス分布補間(&G)', #9, '[標準]'),
+         Concat('シンク関数補間(&S)', #9, '[高音質]'), 'ガウス関数補間(&A)'),
+        ('&Disable', '&Liner', '&Cubic Spline', Concat('SNES &Gaussian Table', #9, '[Normal]'),
+         Concat('&Sinc Function', #9, '[HQ]'), 'G&aussian Function'));
     STR_MENU_SETUP_PITCH_SUB: array[0..1] of array[0..MENU_SETUP_PITCH_SIZE - 1] of pchar = (
         ('標準(&N)', '過去の &Sound Blaster 互換', '過去の &ZSNES, Snes9x 互換'),
         ('&Normal', 'OLD &Sound Blaster Card', 'OLD &ZSNES, Snes9x'));
     STR_MENU_SETUP_OPTION_SUB: array[0..1] of array[0..MENU_SETUP_OPTION_SIZE - 1] of pchar = (
-        ('実機ローパス フィルタ(&L)', '&BASS BOOST', '過去の &ADPCM を使用', '左右反転(&R)', '逆位相サラウンド強制(&S)',
-         'サラウンド無効(&U)', 'エコー無効(&E)', 'ピッチ モジュレーション無効(&P)', 'ピッチ ベンド無効(&I)', '&FIR フィルタ無効', 'エンベロープ無効(&V)',
-         'ノイズ指定無効(&N)', 'エコー作業メモリ書換(&M)'),
-        ('SNES &Low-Pass Filter', '&BASS BOOST', 'Old &ADPCM Emulation', '&Reverse Stereo', 'Opposite-Phase &Surround',
-         'Disable S&urround', 'Disable &Echo', 'Disable &Pitch Modulation', 'Disable P&itch Bend', 'Disable &FIR Filter', 'Disable En&velope',
-         'Disable &Noise Flags', 'Rewrite Echo Work &Memory'));
+        ('実機ローパス フィルタ(&L)', '実機エコー/FIR 処理(&M)', NULLPOINTER, '&BASS BOOST', '過去の &ADPCM デコーダ', '左右反転(&R)',
+         '逆位相サラウンド強制(&S)', NULLPOINTER, 'サラウンド無効(&U)', 'エコー無効(&E)', 'ピッチ モジュレーション無効(&P)', 'ピッチ ベンド無効(&I)',
+         '&FIR フィルタ無効', 'エンベロープ無効(&V)', 'ノイズ指定無効(&N)'),
+        ('SNES &Low-Pass Filter', 'SNES Echo/FIR &Method', NULLPOINTER, '&BASS BOOST', 'Old &ADPCM Decoder', '&Reverse Stereo',
+         'Opposite-Phase &Surround', NULLPOINTER, 'Disable S&urround', 'Disable &Echo', 'Disable &Pitch Modulation', 'Disable P&itch Bend',
+         'Disable &FIR Filter', 'Disable En&velope', 'Disable &Noise Flags'));
     STR_MENU_SETUP_ORDER_SUB: array[0..1] of array[0..MENU_SETUP_ORDER_SIZE - 1] of pchar = (
         ('演奏停止(&S)', '次へ(&N)', '前へ(&P)', 'ランダム(&M)', 'シャッフル(&H)', 'リピート(&R)'),
         ('&Stop', '&Next Item', '&Previous Item', 'Rando&m', 'S&huffle', '&Repeat'));
     STR_MENU_SETUP_INFO_SUB: array[0..1] of array[0..MENU_SETUP_INFO_SIZE - 1] of pchar = (
-        ('グラフィック インジケータ(&G)', 'ミキサー情報(&M)', 'チャンネル情報 1 (&C)', 'チャンネル情報 2 (&A)', 'チャンネル情報 3 (&N)',
+        ('グラフィック インジケータ(&G)', '&DSP 情報', 'チャンネル情報 1 (&C)', 'チャンネル情報 2 (&A)', 'チャンネル情報 3 (&N)',
          'チャンネル情報 4 (&E)', '&SPC 情報 1', 'S&PC 情報 2', 'Script&700 デバッグ'),
-        ('&Graphic Indicator', '&Mixer', '&Channel 1', 'Ch&annel 2', 'Cha&nnel 3',
+        ('&Graphic Indicator', '&DSP', '&Channel 1', 'Ch&annel 2', 'Cha&nnel 3',
          'Chann&el 4', '&SPC Tags 1', 'S&PC Tags 2', 'Script&700 Debug'));
     STR_MENU_SETUP_SEEK_SUB: array[0..1] of array[0..MENU_SETUP_SEEK_SIZE - 1] of pchar = (
         ('&1 秒', '&2 秒', '&3 秒', '&4 秒', '&5 秒'),
@@ -3145,9 +3147,9 @@ const
     STR_BUTTON_UP: array[0..1] of pchar = ('▲', 'UP');
     STR_BUTTON_DOWN: array[0..1] of pchar = ('▼', 'DN');
     TITLE_NAME_UNKNOWN = 'Unknown';
-    TITLE_NAME_SEPARATOR: array[0..1] of string = (' ／ ', ' / ');
-    TITLE_NAME_HEADER: array[0..1] of string = ('［', ' [');
-    TITLE_NAME_FOOTER: array[0..1] of string = ('］', ']');
+    TITLE_NAME_SEPARATOR: array[0..1] of string = (' / ', ' / ');
+    TITLE_NAME_HEADER: array[0..1] of string = (' [', ' [');
+    TITLE_NAME_FOOTER: array[0..1] of string = (']', ']');
     TITLE_MAIN_HEADER: array[0..1] of string = (' - ', ' - ');
     TITLE_INFO_HEADER: array[0..1] of string = ('《 ', '< ');
     TITLE_INFO_FOOTER: array[0..1] of string = (' 》', ' >');
@@ -3622,7 +3624,8 @@ begin
     if X >= 3 then B2 := byte(S[X2]) else B2 := 0;
     result := X = 1;
     if not result and (X >= 2) and not (((B1 >= $81) and (B1 <= $9F)) or ((B1 >= $E0) and (B1 <= $FC))) then result := true;
-    if not result and (X >= 3) and     (((B2 >= $81) and (B2 <= $9F)) or ((B2 >= $E0) and (B2 <= $FC))) and (((B1 >= $40) and (B1 <= $7E)) or ((B1 >= $80) and (B1 <= $FC))) then result := true;
+    if not result and (X >= 3) and     (((B2 >= $81) and (B2 <= $9F)) or ((B2 >= $E0) and (B2 <= $FC)))
+    and (((B1 >= $40) and (B1 <= $7E)) or ((B1 >= $80) and (B1 <= $FC))) then result := true;
 end;
 
 // ================================================================================
@@ -3855,7 +3858,8 @@ begin
     API_InitializeCriticalSection(@CriticalSectionStatic);
     // ウィンドウクラスを作成
     Status.ccClass := CCLASS.Create();
-    Status.ccClass.CreateClass(@_WindowProc, hThisInstance, pchar(CLASS_NAME), CS_HREDRAW or CS_VREDRAW or CS_OWNDC, pchar(ICON_NAME), NULLPOINTER, IDC_ARROW, COLOR_BTNFACE);
+    Status.ccClass.CreateClass(@_WindowProc, hThisInstance, pchar(CLASS_NAME), CS_HREDRAW or CS_VREDRAW or CS_OWNDC, pchar(ICON_NAME),
+        NULLPOINTER, IDC_ARROW, COLOR_BTNFACE);
     // ウィンドウを作成
     cfMain := CWINDOWMAIN.Create();
     Status.cfMain := cfMain;
@@ -4749,7 +4753,8 @@ var
 begin
     dwStyle := dwStylePlus or WS_CHILD;
     dwStyleEx := dwStyleExPlus;
-    hWnd := API_CreateWindowEx(dwStyleEx, lpItemName, lpCaption, dwStyle, Box.left, Box.top, Box.width, Box.height, hMainWnd, dwItemID, hThisInstance, NULLPOINTER);
+    hWnd := API_CreateWindowEx(dwStyleEx, lpItemName, lpCaption, dwStyle, Box.left, Box.top, Box.width, Box.height, hMainWnd, dwItemID,
+        hThisInstance, NULLPOINTER);
     SendMessage(WM_SETFONT, hFont, NULL);
 end;
 
@@ -4763,7 +4768,8 @@ var
 begin
     dwStyle := dwStylePlus or WS_OVERLAPPED;
     dwStyleEx := dwStyleExPlus;
-    hWnd := API_CreateWindowEx(dwStyleEx, lpClassName, lpWndName, dwStyle, Box.left, Box.top, Box.width, Box.height, NULL, NULL, hThisInstance, NULLPOINTER);
+    hWnd := API_CreateWindowEx(dwStyleEx, lpClassName, lpWndName, dwStyle, Box.left, Box.top, Box.width, Box.height, NULL, NULL,
+        hThisInstance, NULLPOINTER);
     bMessageBox := false;
 end;
 
@@ -4983,7 +4989,8 @@ begin
         cwSortList.SendMessage(LB_GETTEXT, I, longword(lpFile));
         // ファイルをオープン
         hFile := INVALID_HANDLE_VALUE;
-        if IsSafePath(lpFile) then hFile := API_CreateFile(lpFile, GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+        if IsSafePath(lpFile) then hFile := API_CreateFile(lpFile, GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
+            FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
         // ファイルのオープンに失敗した場合はループを再開
         if hFile = INVALID_HANDLE_VALUE then continue;
         // ファイルをロード
@@ -5170,7 +5177,10 @@ begin
     cmMenu := CMENU.Create();
     cmMenu.CreatePopupMenu();
     // メニューテキストを設定
-    for I := 0 to nSize - 1 do cmMenu.AppendMenu(dwBase + I, pchar(MsgArray[I]), bRadio);
+    for I := 0 to nSize - 1 do begin
+        if longbool(MsgArray[I]) then cmMenu.AppendMenu(dwBase + I, pchar(MsgArray[I]), bRadio)
+        else cmMenu.AppendSeparator();
+    end;
 end;
 
 procedure SetMenuTextAndTip(var cmMenu: CMENU; nSize: longint; dwBase: longint; PerIndex: array of longword; TipIndex: array of longword); overload;
@@ -5272,7 +5282,8 @@ begin
     // ウィンドウを作成
     Status.dwFocusHandle := NULL;
     cwWindowMain := CWINDOW.Create();
-    cwWindowMain.CreateWindow(hThisInstance, lpClassName, pchar(DEFAULT_TITLE), WS_CLIPSIBLINGS or WS_DLGFRAME or WS_MINIMIZEBOX or WS_OVERLAPPED or WS_SYSMENU, WS_EX_ACCEPTFILES or WS_EX_CONTROLPARENT or WS_EX_WINDOWEDGE, SimpleWindowBox(3000, 3000, 1024, 1024));
+    cwWindowMain.CreateWindow(hThisInstance, lpClassName, pchar(DEFAULT_TITLE), WS_CLIPSIBLINGS or WS_DLGFRAME or WS_MINIMIZEBOX or WS_OVERLAPPED
+        or WS_SYSMENU, WS_EX_ACCEPTFILES or WS_EX_CONTROLPARENT or WS_EX_WINDOWEDGE, SimpleWindowBox(3000, 3000, 1024, 1024));
     hWndApp := cwWindowMain.hWnd;
     // バッファを確保
     GetMem(Status.lpCurrentPath, 1024);
@@ -5352,7 +5363,7 @@ begin
     Option.dwMute := 0;
     Option.dwNextTime := 5000;
     Option.dwNoise := 0;
-    Option.dwOption := 0;
+    Option.dwOption := OPTION_LOWPASS + OPTION_ECHOFIR;
     Option.dwPitch := PITCH_NORMAL;
     Option.bPitchAsync := false;
     Option.bPlayDefault := false;
@@ -5642,18 +5653,22 @@ begin
     // ピッチキーメニューを作成
     cmSetupPitchKey := CMENU.Create();
     cmSetupPitchKey.CreatePopupMenu();
-    for I := 0 to MENU_SETUP_PITCH_KEY_SIZE - 1 do cmSetupPitchKey.AppendMenu(MENU_SETUP_PITCH_KEY_BASE + I, pchar(Concat(STR_MENU_SETUP_PITCH_PLUS[Status.dwLanguage], IntToStr(MENU_SETUP_PITCH_KEY_SIZE - I))), true);
+    for I := 0 to MENU_SETUP_PITCH_KEY_SIZE - 1 do cmSetupPitchKey.AppendMenu(MENU_SETUP_PITCH_KEY_BASE + I,
+        pchar(Concat(STR_MENU_SETUP_PITCH_PLUS[Status.dwLanguage], IntToStr(MENU_SETUP_PITCH_KEY_SIZE - I))), true);
     cmSetupPitchKey.AppendMenu(MENU_SETUP_PITCH_KEY_BASE + MENU_SETUP_PITCH_KEY_SIZE, STR_MENU_SETUP_PITCH_ZERO, true);
-    for I := 0 to MENU_SETUP_PITCH_KEY_SIZE - 1 do cmSetupPitchKey.AppendMenu(MENU_SETUP_PITCH_KEY_BASE + MENU_SETUP_PITCH_KEY_SIZE + I + 1, pchar(Concat(STR_MENU_SETUP_PITCH_MINUS[Status.dwLanguage], char($31 + I))), true);
+    for I := 0 to MENU_SETUP_PITCH_KEY_SIZE - 1 do cmSetupPitchKey.AppendMenu(MENU_SETUP_PITCH_KEY_BASE + MENU_SETUP_PITCH_KEY_SIZE + I + 1,
+        pchar(Concat(STR_MENU_SETUP_PITCH_MINUS[Status.dwLanguage], char($31 + I))), true);
     // ピッチメニューを作成
     SetMenuTextAndTip(cmSetupPitch, MENU_SETUP_PITCH_SIZE, MENU_SETUP_PITCH_BASE, STR_MENU_SETUP_PITCH_SUB[Status.dwLanguage], true);
     cmSetupPitch.AppendSeparator();
     cmSetupPitch.AppendMenu(MENU_SETUP_PITCH_KEY, STR_MENU_SETUP_PITCH_KEY[Status.dwLanguage], cmSetupPitchKey.hMenu);
     cmSetupPitch.AppendMenu(MENU_SETUP_PITCH_ASYNC, STR_MENU_SETUP_PITCH_ASYNC[Status.dwLanguage]);
     // 左右拡散度メニューを作成
-    SetMenuTextAndTip(cmSetupSeparate, MENU_SETUP_SEPARATE_SIZE, MENU_SETUP_SEPARATE_BASE, STR_MENU_SETUP_SEPARATE_PER_INDEX, STR_MENU_SETUP_SEPARATE_TIP_INDEX);
+    SetMenuTextAndTip(cmSetupSeparate, MENU_SETUP_SEPARATE_SIZE, MENU_SETUP_SEPARATE_BASE, STR_MENU_SETUP_SEPARATE_PER_INDEX,
+        STR_MENU_SETUP_SEPARATE_TIP_INDEX);
     // フィードバック反転度メニューを作成
-    SetMenuTextAndTip(cmSetupFeedback, MENU_SETUP_FEEDBACK_SIZE, MENU_SETUP_FEEDBACK_BASE, STR_MENU_SETUP_FEEDBACK_PER_INDEX, STR_MENU_SETUP_FEEDBACK_TIP_INDEX);
+    SetMenuTextAndTip(cmSetupFeedback, MENU_SETUP_FEEDBACK_SIZE, MENU_SETUP_FEEDBACK_BASE, STR_MENU_SETUP_FEEDBACK_PER_INDEX,
+        STR_MENU_SETUP_FEEDBACK_TIP_INDEX);
     // 演奏速度メニューを作成
     SetMenuTextAndTip(cmSetupSpeed, MENU_SETUP_SPEED_SIZE, MENU_SETUP_SPEED_BASE, STR_MENU_SETUP_SPEED_PER_INDEX, STR_MENU_SETUP_SPEED_TIP_INDEX);
     // 音量メニューを作成
@@ -5661,15 +5676,19 @@ begin
     // チャンネルマスクメニューを作成
     cmSetupMute := CMENU.Create();
     cmSetupMute.CreatePopupMenu();
-    for I := 0 to MENU_SETUP_MUTE_NOISE_ALL_SIZE - 1 do cmSetupMute.AppendMenu(MENU_SETUP_MUTE_ALL_BASE + I, STR_MENU_SETUP_MUTE_NOISE_ALL_SUB[Status.dwLanguage][I]);
+    for I := 0 to MENU_SETUP_MUTE_NOISE_ALL_SIZE - 1 do
+        cmSetupMute.AppendMenu(MENU_SETUP_MUTE_ALL_BASE + I, STR_MENU_SETUP_MUTE_NOISE_ALL_SUB[Status.dwLanguage][I]);
     cmSetupMute.AppendSeparator();
-    for I := 0 to MENU_SETUP_MUTE_NOISE_SIZE - 1 do cmSetupMute.AppendMenu(MENU_SETUP_MUTE_BASE + I, pchar(Concat(STR_MENU_SETUP_SWITCH_CHANNEL[Status.dwLanguage], '&', char($31 + I))));
+    for I := 0 to MENU_SETUP_MUTE_NOISE_SIZE - 1 do
+        cmSetupMute.AppendMenu(MENU_SETUP_MUTE_BASE + I, pchar(Concat(STR_MENU_SETUP_SWITCH_CHANNEL[Status.dwLanguage], '&', char($31 + I))));
     // チャンネルノイズメニューを作成
     cmSetupNoise := CMENU.Create();
     cmSetupNoise.CreatePopupMenu();
-    for I := 0 to MENU_SETUP_MUTE_NOISE_ALL_SIZE - 1 do cmSetupNoise.AppendMenu(MENU_SETUP_NOISE_ALL_BASE + I, STR_MENU_SETUP_MUTE_NOISE_ALL_SUB[Status.dwLanguage][I]);
+    for I := 0 to MENU_SETUP_MUTE_NOISE_ALL_SIZE - 1 do
+        cmSetupNoise.AppendMenu(MENU_SETUP_NOISE_ALL_BASE + I, STR_MENU_SETUP_MUTE_NOISE_ALL_SUB[Status.dwLanguage][I]);
     cmSetupNoise.AppendSeparator();
-    for I := 0 to MENU_SETUP_MUTE_NOISE_SIZE - 1 do cmSetupNoise.AppendMenu(MENU_SETUP_NOISE_BASE + I, pchar(Concat(STR_MENU_SETUP_SWITCH_CHANNEL[Status.dwLanguage], '&', char($31 + I))));
+    for I := 0 to MENU_SETUP_MUTE_NOISE_SIZE - 1 do
+        cmSetupNoise.AppendMenu(MENU_SETUP_NOISE_BASE + I, pchar(Concat(STR_MENU_SETUP_SWITCH_CHANNEL[Status.dwLanguage], '&', char($31 + I))));
     // 拡張設定メニューを作成
     SetMenuTextAndTip(cmSetupOption, MENU_SETUP_OPTION_SIZE, MENU_SETUP_OPTION_BASE, STR_MENU_SETUP_OPTION_SUB[Status.dwLanguage], false);
     // 演奏時間メニューを作成
@@ -5758,62 +5777,87 @@ begin
     lpString := pchar(ITEM_BUTTON);
     lpBuffer := pchar(ITEM_LISTBOX);
     cwFileList := CWINDOW.Create();
-    cwFileList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''), ID_LIST_FILE, LBS_NOREDRAW, NULL, ScalableWindowBox(0, 210, 220, 130));
+    cwFileList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''),
+        ID_LIST_FILE, LBS_NOREDRAW, NULL, ScalableWindowBox(0, 210, 220, 130));
     cwSortList := CWINDOW.Create();
-    cwSortList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''), ID_LIST_SORT, LBS_NOREDRAW or LBS_SORT, NULL, ScalableWindowBox(0, 210, 220, 130));
+    cwSortList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''),
+        ID_LIST_SORT, LBS_NOREDRAW or LBS_SORT, NULL, ScalableWindowBox(0, 210, 220, 130));
     cwTempList := CWINDOW.Create();
-    cwTempList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''), ID_LIST_TEMP, LBS_NOREDRAW, NULL, ScalableWindowBox(0, 210, 220, 130));
+    cwTempList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''),
+        ID_LIST_TEMP, LBS_NOREDRAW, NULL, ScalableWindowBox(0, 210, 220, 130));
     cwButtonOpen := CWINDOW.Create();
-    cwButtonOpen.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_OPEN), ID_BUTTON_OPEN, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(5, 103, 55, 21));
+    cwButtonOpen.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_OPEN),
+        ID_BUTTON_OPEN, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(5, 103, 55, 21));
     cwButtonSave := CWINDOW.Create();
-    cwButtonSave.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_SAVE), ID_BUTTON_SAVE, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(62, 103, 55, 21));
+    cwButtonSave.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_SAVE),
+        ID_BUTTON_SAVE, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(62, 103, 55, 21));
     cwButtonPlay := CWINDOW.Create();
-    cwButtonPlay.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_PLAY), ID_BUTTON_PLAY, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(126, 103, 54, 21));
+    cwButtonPlay.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_PLAY),
+        ID_BUTTON_PLAY, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(126, 103, 54, 21));
     cwButtonRestart := CWINDOW.Create();
-    cwButtonRestart.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_RESTART), ID_BUTTON_RESTART, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(182, 103, 54, 21));
+    cwButtonRestart.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_RESTART),
+        ID_BUTTON_RESTART, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(182, 103, 54, 21));
     cwButtonStop := CWINDOW.Create();
-    cwButtonStop.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_STOP), ID_BUTTON_STOP, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(238, 103, 54, 21));
+    cwButtonStop.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_STOP),
+        ID_BUTTON_STOP, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(238, 103, 54, 21));
     sBuffer := '   ';
     K := 5;
     for I := 0 to 7 do begin
         sBuffer[2] := char($31 + I);
         cwCheckTrack[I] := CWINDOW.Create();
-        cwCheckTrack[I].CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(sBuffer), ID_BUTTON_TRACK[I], BS_AUTOCHECKBOX or BS_PUSHLIKE or WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(K, 127, 14, 21));
+        cwCheckTrack[I].CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(sBuffer),
+            ID_BUTTON_TRACK[I], BS_AUTOCHECKBOX or BS_PUSHLIKE or WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE,
+            ScalableWindowBox(K, 127, 14, 21));
         Inc(K, 14);
     end;
     cwButtonVolM := CWINDOW.Create();
-    cwButtonVolM.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_AMPD), ID_BUTTON_AMPD, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(126, 127, 26, 21));
+    cwButtonVolM.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_AMPD),
+        ID_BUTTON_AMPD, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(126, 127, 26, 21));
     cwButtonVolP := CWINDOW.Create();
-    cwButtonVolP.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_AMPU), ID_BUTTON_AMPU, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(154, 127, 26, 21));
+    cwButtonVolP.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_AMPU),
+        ID_BUTTON_AMPU, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(154, 127, 26, 21));
     cwButtonSlow := CWINDOW.Create();
-    cwButtonSlow.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_SLOW), ID_BUTTON_SLOW, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(182, 127, 26, 21));
+    cwButtonSlow.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_SLOW),
+        ID_BUTTON_SLOW, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(182, 127, 26, 21));
     cwButtonFast := CWINDOW.Create();
-    cwButtonFast.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_FAST), ID_BUTTON_FAST, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(210, 127, 26, 21));
+    cwButtonFast.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_FAST),
+        ID_BUTTON_FAST, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(210, 127, 26, 21));
     cwButtonBack := CWINDOW.Create();
-    cwButtonBack.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_BACK), ID_BUTTON_BACK, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(238, 127, 26, 21));
+    cwButtonBack.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_BACK),
+        ID_BUTTON_BACK, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(238, 127, 26, 21));
     cwButtonNext := CWINDOW.Create();
-    cwButtonNext.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_NEXT), ID_BUTTON_NEXT, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(266, 127, 26, 21));
+    cwButtonNext.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_NEXT),
+        ID_BUTTON_NEXT, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(266, 127, 26, 21));
     cwPlayList := CWINDOW.Create();
-    cwPlayList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''), ID_LIST_PLAY, LBS_DISABLENOSCROLL or LBS_NOTIFY or WS_TABSTOP or WS_VISIBLE or WS_VSCROLL, WS_EX_CLIENTEDGE or WS_EX_NOPARENTNOTIFY, ScalableWindowBox(300, 0, 215, 124));
+    cwPlayList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''),
+        ID_LIST_PLAY, LBS_DISABLENOSCROLL or LBS_NOTIFY or WS_TABSTOP or WS_VISIBLE or WS_VSCROLL, WS_EX_CLIENTEDGE or WS_EX_NOPARENTNOTIFY,
+        ScalableWindowBox(300, 0, 215, 124));
     ScalableWindowBox(300, 0, 215, Option.dwListHeight);
     Box.top := (Status.dwScale - 2) shl 1;
     API_MoveWindow(cwPlayList.hWnd, Box.left, Box.top, Box.width, Box.height, false); // プレイリストが小さくなるバグ回避
     cwButtonListAdd := CWINDOW.Create();
-    cwButtonListAdd.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_APPEND), ID_BUTTON_ADD, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(300, 127, 54, 21));
+    cwButtonListAdd.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_APPEND),
+        ID_BUTTON_ADD, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(300, 127, 54, 21));
     cwButtonListRemove := CWINDOW.Create();
-    cwButtonListRemove.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_REMOVE), ID_BUTTON_REMOVE, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(356, 127, 54, 21));
+    cwButtonListRemove.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_REMOVE),
+        ID_BUTTON_REMOVE, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(356, 127, 54, 21));
     cwButtonListClear := CWINDOW.Create();
-    cwButtonListClear.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_CLEAR), ID_BUTTON_CLEAR, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(412, 127, 54, 21));
+    cwButtonListClear.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_CLEAR),
+        ID_BUTTON_CLEAR, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(412, 127, 54, 21));
     cwButtonListUp := CWINDOW.Create();
-    cwButtonListUp.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_UP[Status.dwLanguage]), ID_BUTTON_UP, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(471, 127, 21, 21));
+    cwButtonListUp.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_UP[Status.dwLanguage]),
+        ID_BUTTON_UP, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(471, 127, 21, 21));
     cwButtonListDown := CWINDOW.Create();
-    cwButtonListDown.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_DOWN[Status.dwLanguage]), ID_BUTTON_DOWN, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(494, 127, 21, 21));
+    cwButtonListDown.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_DOWN[Status.dwLanguage]),
+        ID_BUTTON_DOWN, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(494, 127, 21, 21));
     // Static を作成
     lpBuffer := pchar(ITEM_STATIC);
     cwStaticFile := CWINDOW.Create();
-    cwStaticFile.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(FILE_DEFAULT), ID_STATIC_FILE, SS_NOPREFIX, WS_EX_NOPARENTNOTIFY, ScalableWindowBox(0, 0, 0, 0));
+    cwStaticFile.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(FILE_DEFAULT),
+        ID_STATIC_FILE, SS_NOPREFIX, WS_EX_NOPARENTNOTIFY, ScalableWindowBox(0, 0, 0, 0));
     cwStaticMain := CWINDOW.Create();
-    cwStaticMain.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(sInfo), ID_STATIC_MAIN, SS_LEFTNOWORDWRAP or SS_NOPREFIX or SS_NOTIFY or WS_VISIBLE, WS_EX_NOPARENTNOTIFY, ScalableWindowBox(5, 2, 287, 96));
+    cwStaticMain.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(sInfo),
+        ID_STATIC_MAIN, SS_LEFTNOWORDWRAP or SS_NOPREFIX or SS_NOTIFY or WS_VISIBLE, WS_EX_NOPARENTNOTIFY, ScalableWindowBox(5, 2, 287, 96));
     // Static のウィンドウプロシージャを取得
     Status.lpStaticProc := pointer(API_SetWindowLong(cwStaticMain.hWnd, GWL_WNDPROC, longword(@_StaticProc)));
     // Static のデバイスコンテキストを取得
@@ -6548,8 +6592,10 @@ begin
         INFO_INDICATOR: begin
             // 各レベル値を計算
             if bWave and not Status.bPause then begin
-                Status.NowLevel.cMasterLevelLeft := Max(Status.NowLevel.cMasterLevelLeft - byte(Option.dwVolumeSpeed), GetVolumeLevel(ApuData.VolumeMaxLeft));
-                Status.NowLevel.cMasterLevelRight := Max(Status.NowLevel.cMasterLevelRight - byte(Option.dwVolumeSpeed), GetVolumeLevel(ApuData.VolumeMaxRight));
+                Status.NowLevel.cMasterLevelLeft := Max(Status.NowLevel.cMasterLevelLeft - byte(Option.dwVolumeSpeed),
+                    GetVolumeLevel(ApuData.VolumeMaxLeft));
+                Status.NowLevel.cMasterLevelRight := Max(Status.NowLevel.cMasterLevelRight - byte(Option.dwVolumeSpeed),
+                    GetVolumeLevel(ApuData.VolumeMaxRight));
                 Status.NowLevel.cMasterVolumeLeft := GetLevelAbs(DspReg.MainVolumeLeft);
                 Status.NowLevel.cMasterVolumeRight := GetLevelAbs(DspReg.MainVolumeRight);
                 Status.NowLevel.cMasterEchoLeft := GetLevelAbs(DspReg.EchoVolumeLeft);
@@ -6559,14 +6605,17 @@ begin
                 for I := 0 to 7 do begin
                     Voice := @Voices.Voice[I];
                     DspVoice := @DspReg.Voice[I];
-                    Status.NowLevel.Channel[I].cChannelLevelLeft := Max(Status.NowLevel.Channel[I].cChannelLevelLeft - byte(Option.dwVolumeSpeed), GetVolumeLevel(Voice.VolumeMaxLeft));
-                    Status.NowLevel.Channel[I].cChannelLevelRight := Max(Status.NowLevel.Channel[I].cChannelLevelRight - byte(Option.dwVolumeSpeed), GetVolumeLevel(Voice.VolumeMaxRight));
+                    Status.NowLevel.Channel[I].cChannelLevelLeft := Max(Status.NowLevel.Channel[I].cChannelLevelLeft - byte(Option.dwVolumeSpeed),
+                        GetVolumeLevel(Voice.VolumeMaxLeft));
+                    Status.NowLevel.Channel[I].cChannelLevelRight := Max(Status.NowLevel.Channel[I].cChannelLevelRight - byte(Option.dwVolumeSpeed),
+                        GetVolumeLevel(Voice.VolumeMaxRight));
                     Status.NowLevel.Channel[I].cChannelVolumeLeft := GetLevelAbs(DspVoice.VolumeLeft);
                     Status.NowLevel.Channel[I].cChannelVolumeRight := GetLevelAbs(DspVoice.VolumeRight);
                     Status.NowLevel.Channel[I].cChannelPitch := GetPitchLevel(DspVoice.Pitch);
                     Status.NowLevel.Channel[I].cChannelEnvelope := GetLevelAbs(DspVoice.CurrentEnvelope);
                     if Option.bVolumeReset then begin
-                        if not longbool(Voice.VolumeMaxLeft) and not longbool(Voice.VolumeMaxRight) then Wave.dwTimeout[I] := Min(Option.dwHideTime, Wave.dwTimeout[I] + Option.dwBufferTime)
+                        if not longbool(Voice.VolumeMaxLeft) and not longbool(Voice.VolumeMaxRight) then
+                            Wave.dwTimeout[I] := Min(Option.dwHideTime, Wave.dwTimeout[I] + Option.dwBufferTime)
                         else Wave.dwTimeout[I] := 0;
                         V := Voice.MixFlag and $1;
                         if Wave.dwTimeout[I] = Option.dwHideTime then Inc(V);
@@ -6628,12 +6677,18 @@ begin
                         if Status.NowLevel.Channel[I].dwChannelEffect.NoiseOn then StrData.bData[2] := $4B; // 'K'
                         UpdateNumWrite(X + 9, 3);
                     end;
-                    UpdateVolumeWrite(Status.LastLevel.Channel[I].cChannelVolumeLeft, Status.NowLevel.Channel[I].cChannelVolumeLeft, COLOR_BAR_GREEN, V + 48, 3);
-                    UpdateVolumeWrite(Status.LastLevel.Channel[I].cChannelVolumeRight, Status.NowLevel.Channel[I].cChannelVolumeRight, COLOR_BAR_GREEN, V + 52, 3);
-                    UpdateVolumeWrite(Status.LastLevel.Channel[I].cChannelPitch, Status.NowLevel.Channel[I].cChannelPitch, COLOR_BAR_ORANGE, V + 56, 3);
-                    UpdateVolumeWrite(Status.LastLevel.Channel[I].cChannelEnvelope, Status.NowLevel.Channel[I].cChannelEnvelope, COLOR_BAR_RED, V + 60, 3);
-                    UpdateVolumeWrite(Status.LastLevel.Channel[I].cChannelLevelLeft, Status.NowLevel.Channel[I].cChannelLevelLeft, COLOR_BAR_BLUE, V + 64, 5);
-                    UpdateVolumeWrite(Status.LastLevel.Channel[I].cChannelLevelRight, Status.NowLevel.Channel[I].cChannelLevelRight, COLOR_BAR_BLUE, V + 70, 5);
+                    UpdateVolumeWrite(Status.LastLevel.Channel[I].cChannelVolumeLeft, Status.NowLevel.Channel[I].cChannelVolumeLeft,
+                        COLOR_BAR_GREEN, V + 48, 3);
+                    UpdateVolumeWrite(Status.LastLevel.Channel[I].cChannelVolumeRight, Status.NowLevel.Channel[I].cChannelVolumeRight,
+                        COLOR_BAR_GREEN, V + 52, 3);
+                    UpdateVolumeWrite(Status.LastLevel.Channel[I].cChannelPitch, Status.NowLevel.Channel[I].cChannelPitch,
+                        COLOR_BAR_ORANGE, V + 56, 3);
+                    UpdateVolumeWrite(Status.LastLevel.Channel[I].cChannelEnvelope, Status.NowLevel.Channel[I].cChannelEnvelope,
+                        COLOR_BAR_RED, V + 60, 3);
+                    UpdateVolumeWrite(Status.LastLevel.Channel[I].cChannelLevelLeft, Status.NowLevel.Channel[I].cChannelLevelLeft,
+                        COLOR_BAR_BLUE, V + 64, 5);
+                    UpdateVolumeWrite(Status.LastLevel.Channel[I].cChannelLevelRight, Status.NowLevel.Channel[I].cChannelLevelRight,
+                        COLOR_BAR_BLUE, V + 70, 5);
                 end else if Status.LastLevel.Channel[I].bChannelShow then begin
                     Z := 3;
                     StrData.dwData[0] := $202020; // '   '
@@ -6792,7 +6847,8 @@ begin
             DspVoice := @DspReg.Voice[I];
             UpdateChannelSource();
             Voice := @Voices.Voice[I];
-            if not longbool(Voice.VolumeMaxLeft) and not longbool(Voice.VolumeMaxRight) then StrData.dwData[0] := $5656 else StrData.dwData[0] := $4847; // 'VV' or 'GH'
+            if not longbool(Voice.VolumeMaxLeft) and not longbool(Voice.VolumeMaxRight) then StrData.dwData[0] := $5656 // 'VV'
+            else StrData.dwData[0] := $4847; // 'GH'
             Z := 0;
             UpdateNumWrite(X +  4, 2);
             if not bytebool(DspReg.EchoOn and V) then StrData.dwData[0] := $56 else StrData.dwData[0] := $49; // 'V' or 'I'
@@ -6939,7 +6995,8 @@ begin
             FILE_TYPE_LIST_A, FILE_TYPE_LIST_B: if not bList then bList := ListLoad(lpFile, dwType, false);
             FILE_TYPE_FOLDER: begin
                 // タイトルを更新
-                cwWindowMain.SetCaption(pchar(Concat(TITLE_INFO_HEADER[Status.dwLanguage], TITLE_INFO_FILE_APPEND[Status.dwLanguage], TITLE_INFO_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage], DEFAULT_TITLE)));
+                cwWindowMain.SetCaption(pchar(Concat(TITLE_INFO_HEADER[Status.dwLanguage], TITLE_INFO_FILE_APPEND[Status.dwLanguage],
+                    TITLE_INFO_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage], DEFAULT_TITLE)));
                 // ファイルパスを初期化
                 dwPathSize := GetSize(lpFile, 260);
                 API_ZeroMemory(@cFilePath[0], 260);
@@ -6959,7 +7016,8 @@ begin
                         if dwPathSize + dwFileSize < 260 then begin
                             API_MoveMemory(@cFilePath[dwPathSize], @Win32_Find_Data.cFileName[0], dwFileSize);
                             API_ZeroMemory(@cFilePath[dwPathSize + dwFileSize], 260 - dwPathSize - dwFileSize);
-                            if GetFileType(@cFilePath, false, false) = FILE_TYPE_SPC then cwSortList.SendMessage(LB_ADDSTRING, NULL, longword(@cFilePath));
+                            if GetFileType(@cFilePath, false, false) = FILE_TYPE_SPC then
+                                cwSortList.SendMessage(LB_ADDSTRING, NULL, longword(@cFilePath));
                         end;
                     end;
                     if not API_FindNextFile(hFile, @Win32_Find_Data) then begin
@@ -7010,7 +7068,8 @@ begin
         result := FILE_TYPE_NOTREAD;
         // ファイルをオープン
         hFile := INVALID_HANDLE_VALUE;
-        if bSafe then hFile := API_CreateFile(lpFile, GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+        if bSafe then hFile := API_CreateFile(lpFile, GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
+            FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
         // ファイルのオープンに失敗した場合はループを抜ける
         if hFile = INVALID_HANDLE_VALUE then break;
         // 初期化
@@ -7055,7 +7114,8 @@ begin
     // ID666 フォーマットの種類を取得
     if (Bin[$23] = $1A) or (
         // PHASE 1
-        bytebool(((Bin[$2E] or Bin[$4E] or Bin[$6E] or Bin[$7E] or Bin[$B0] or Bin[$B1]) and $E0) or Bin[$24] or Bin[$9E] or Bin[$A9] or Bin[$AC] or Bin[$D1] or Bin[$D2])) then begin
+        bytebool(((Bin[$2E] or Bin[$4E] or Bin[$6E] or Bin[$7E] or Bin[$B0] or Bin[$B1]) and $E0) or Bin[$24] or Bin[$9E] or Bin[$A9] or Bin[$AC]
+            or Bin[$D1] or Bin[$D2])) then begin
         Hdr.TagFormat := ID666_TEXT;
         // PHASE 2
         if ((Bin[$A2] or Bin[$A3] or Bin[$A4] or Bin[$A5] or Bin[$A6] or Bin[$A7] or Bin[$A8] or Bin[$AB] or Bin[$AF]) < $20)
@@ -7303,7 +7363,8 @@ begin
     repeat
         // ファイルをオープン
         hFile := INVALID_HANDLE_VALUE;
-        if IsSafePath(lpFile) then hFile := API_CreateFile(lpFile, GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+        if IsSafePath(lpFile) then hFile := API_CreateFile(lpFile, GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
+            FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
         // ファイルのオープンに失敗した場合はループを抜ける
         if hFile = INVALID_HANDLE_VALUE then break;
         // プレイリストをクリア
@@ -7655,7 +7716,8 @@ begin
     result := false;
     // ファイルをオープン
     hFile := INVALID_HANDLE_VALUE;
-    if IsSafePath(lpFile) then hFile := API_CreateFile(lpFile, GENERIC_WRITE, FILE_SHARE_READ, NULLPOINTER, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    if IsSafePath(lpFile) then hFile := API_CreateFile(lpFile, GENERIC_WRITE, FILE_SHARE_READ, NULLPOINTER, CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
     // ファイルのオープンに失敗した場合は終了
     if hFile = INVALID_HANDLE_VALUE then exit;
     // ファイルのヘッダを保存
@@ -7766,7 +7828,8 @@ begin
     result := false;
     // ファイルをオープン
     hFile := INVALID_HANDLE_VALUE;
-    if IsSafePath(lpFile) then hFile := API_CreateFile(lpFile, GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    if IsSafePath(lpFile) then hFile := API_CreateFile(lpFile, GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
     // ファイルのオープンに失敗した場合は終了
     if hFile = INVALID_HANDLE_VALUE then exit;
     // ファイルサイズを取得
@@ -7806,6 +7869,27 @@ var
     KeyState: TKEYSTATE;
     WindowRect: TRECT;
     ScreenRect: TRECT;
+
+function isEnabledAero(): longbool;
+var
+    hDLL: longword;
+    API_DwmIsCompositionEnabled: function(pfEnabled: pointer): longword; stdcall;
+    fEnabled: longbool;
+begin
+    result := false;
+    // Windows 10 以上または XP 以下の場合は終了
+    if bWin10 or (Status.OsVersionInfo.dwMajorVersion < 6) then exit;
+    // DWMAPI.DLL のロードに失敗した場合は終了
+    hDLL := API_LoadLibrary(pchar('dwmapi.dll'));
+    if not longbool(hDLL) then exit;
+    // DwmIsCompositionEnabled API のロードに失敗した場合は終了
+    @API_DwmIsCompositionEnabled := API_GetProcAddress(hDLL, pchar('DwmIsCompositionEnabled'));
+    if not longbool(@API_DwmIsCompositionEnabled) then exit;
+    // Aero 有効判定
+    API_DwmIsCompositionEnabled(@fEnabled);
+    result := fEnabled;
+end;
+
 begin
     // OS バージョンを取得
     bWin8 := (Status.OsVersionInfo.dwMajorVersion = 6) and (Status.OsVersionInfo.dwMinorVersion >= 2);
@@ -7816,7 +7900,7 @@ begin
     if bytebool((KeyState.k[VK_SHIFT] or KeyState.k[VK_CONTROL] or KeyState.k[VK_MENU]) and $80) then exit;
     // ウィンドウの間隔を取得
     dwBorder := 0;
-    if not bWin10 then dwBorder := API_GetSystemMetrics(SM_AEROFRAME);
+    if isEnabledAero() then dwBorder := API_GetSystemMetrics(SM_AEROFRAME);
     if longbool(dwBorder) then dwBorder := API_GetSystemMetrics(SM_CXFRAME) - dwBorder;
     // 現在のウィンドウ位置、サイズを取得
     API_GetWindowRect(cwWindowMain.hWnd, @WindowRect);
@@ -7829,10 +7913,10 @@ begin
     // 新しいウィンドウ位置を取得
     dwWidth := WindowRect.right - WindowRect.left;
     dwHeight := WindowRect.bottom - WindowRect.top;
-    if bWin8 then Dec(dwBorder, 1);
+    if bWin8 then Dec(dwBorder, 1);     // ズレ補正 for Windows 8, 8.1
     Inc(ScreenRect.top, dwBorder);
-    if bWin8 then Inc(dwBorder, 1);
-    if bWin10 then Dec(dwBorder, 2);
+    if bWin8 then Inc(dwBorder, 1);     // ズレ補正 for Windows 8, 8.1
+    if bWin10 then Dec(dwBorder, 2);    // ズレ補正 for Windows 10
     Inc(ScreenRect.left, dwBorder);
     Dec(ScreenRect.right, dwBorder);
     Dec(ScreenRect.bottom, dwBorder);
@@ -8235,7 +8319,8 @@ begin
     case dwType and $FFFF of
         FUNCTION_TYPE_SEPARATE: begin // 左右拡散度
             // 左右拡散度を設定
-            I := UpdateFunction(Option.dwSeparate, MENU_SETUP_SEPARATE_SIZE, MENU_SETUP_SEPARATE_VALUE, STR_MENU_SETUP_SEPARATE_PER_INDEX, SEPARATE_050, 50, SEPARATE_000, SEPARATE_100);
+            I := UpdateFunction(Option.dwSeparate, MENU_SETUP_SEPARATE_SIZE, MENU_SETUP_SEPARATE_VALUE, STR_MENU_SETUP_SEPARATE_PER_INDEX,
+                SEPARATE_050, 50, SEPARATE_000, SEPARATE_100);
             if I = $FFFFFFFF then exit;
             Option.dwSeparate := I;
             // タイトルを更新
@@ -8245,7 +8330,8 @@ begin
         end;
         FUNCTION_TYPE_FEEDBACK: begin // フィードバック反転度
             // フィードバック反転度を設定
-            I := UpdateFunction(Option.dwFeedback, MENU_SETUP_FEEDBACK_SIZE, MENU_SETUP_FEEDBACK_VALUE, STR_MENU_SETUP_FEEDBACK_PER_INDEX, FEEDBACK_000, 0, FEEDBACK_050, FEEDBACK_100);
+            I := UpdateFunction(Option.dwFeedback, MENU_SETUP_FEEDBACK_SIZE, MENU_SETUP_FEEDBACK_VALUE, STR_MENU_SETUP_FEEDBACK_PER_INDEX,
+                FEEDBACK_000, 0, FEEDBACK_050, FEEDBACK_100);
             if I = $FFFFFFFF then exit;
             Option.dwFeedback := I;
             // タイトルを更新
@@ -8255,7 +8341,8 @@ begin
         end;
         FUNCTION_TYPE_SPEED: begin // 演奏速度
             // 演奏速度を設定
-            I := UpdateFunction(Option.dwSpeedBas, MENU_SETUP_SPEED_SIZE, MENU_SETUP_SPEED_VALUE, STR_MENU_SETUP_SPEED_PER_INDEX, SPEED_100, 100, SPEED_025, SPEED_400);
+            I := UpdateFunction(Option.dwSpeedBas, MENU_SETUP_SPEED_SIZE, MENU_SETUP_SPEED_VALUE, STR_MENU_SETUP_SPEED_PER_INDEX,
+                SPEED_100, 100, SPEED_025, SPEED_400);
             if I = $FFFFFFFF then exit;
             Option.dwSpeedBas := I;
             // タイトルを更新
@@ -8265,7 +8352,8 @@ begin
         end;
         FUNCTION_TYPE_AMP: begin // 音量
             // 音量を設定
-            I := UpdateFunction(Option.dwAmp, MENU_SETUP_AMP_SIZE, MENU_SETUP_AMP_VALUE, STR_MENU_SETUP_AMP_PER_INDEX, AMP_100, 100, AMP_025, AMP_400);
+            I := UpdateFunction(Option.dwAmp, MENU_SETUP_AMP_SIZE, MENU_SETUP_AMP_VALUE, STR_MENU_SETUP_AMP_PER_INDEX,
+                AMP_100, 100, AMP_025, AMP_400);
             if I = $FFFFFFFF then exit;
             Option.dwAmp := I;
             // タイトルを更新
@@ -8456,7 +8544,8 @@ begin
     result := false;
     // ファイルをオープン
     hFile := INVALID_HANDLE_VALUE;
-    if IsSafePath(lpFile) then hFile := API_CreateFile(lpFile, GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    if IsSafePath(lpFile) then hFile := API_CreateFile(lpFile, GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
     // ファイルのオープンに失敗した場合は終了
     if hFile = INVALID_HANDLE_VALUE then exit;
     // 演奏中の場合
@@ -8493,7 +8582,8 @@ begin
     // ID666 バイナリフォーマットの場合
     if Spc.Hdr.TagFormat = ID666_BINARY then begin
         // 日付を変換
-        if (HdrBin.DateYear > 0) and (HdrBin.DateYear < 10000) and (HdrBin.DateMonth > 0) and (HdrBin.DateMonth < 13) and (HdrBin.DateDay > 0) and (HdrBin.DateDay < 32) then begin
+        if (HdrBin.DateYear > 0) and (HdrBin.DateYear < 10000) and (HdrBin.DateMonth > 0) and (HdrBin.DateMonth < 13) and (HdrBin.DateDay > 0)
+        and (HdrBin.DateDay < 32) then begin
             IntToStr(StrData, longword(HdrBin.DateYear), 4);
             API_MoveMemory(@Spc.Hdr.Date[0], @StrData, 4);
             Spc.Hdr.Date[4] := '/';
@@ -8798,7 +8888,8 @@ begin
     hFile := INVALID_HANDLE_VALUE;
     if IsSafePath(lpFile) then begin
         API_MakeSureDirectoryPathExists(lpFile);
-        hFile := API_CreateFile(lpFile, GENERIC_WRITE, FILE_SHARE_READ, NULLPOINTER, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+        hFile := API_CreateFile(lpFile, GENERIC_WRITE, FILE_SHARE_READ, NULLPOINTER, CREATE_ALWAYS,
+            FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
     end;
     // ファイルのオープンに失敗した場合はメッセージを表示して終了
     if hFile = INVALID_HANDLE_VALUE then begin
@@ -8960,6 +9051,7 @@ end;
 procedure CWINDOWMAIN.UpdateDevice(dwDeviceID: longint; dwFlag: longword);
 var
     I: longint;
+    J: longint;
     sBuffer: string;
     WaveOutCaps: TWAVEOUTCAPS;
 begin
@@ -8979,11 +9071,17 @@ begin
             // デバイス名を取得
             API_waveOutGetDevCaps(I, @WaveOutCaps, SizeOf(TWAVEOUTCAPS));
             sBuffer := string(WaveOutCaps.szPname);
-            cmSetupDevice.AppendMenu(MENU_SETUP_DEVICE_BASE + I + 1, pchar(Concat('&', char($31 + I), '   ', sBuffer)), true);
             Status.sDeviceName[I + 1] := sBuffer;
-            // 前回終了時に選択していたデバイス名と一致するデバイスを優先する
-            if Option.sDeviceName = sBuffer then dwDeviceID := I;
+            // デバイス名を簡略化するため、' (' 以降を削除する
+            J := Pos(' (', sBuffer);
+            if longbool(J) then sBuffer := Copy(sBuffer, 1, J - 1);
+            cmSetupDevice.AppendMenu(MENU_SETUP_DEVICE_BASE + I + 1, pchar(Concat('&', char($31 + I), '   ', sBuffer)), true);
         end;
+        // 前回終了時に選択していたデバイス名と一致するデバイスを優先する
+        J := -1;
+        for I := 0 to Status.dwDeviceNum do
+            if Status.sDeviceName[I] = Option.sDeviceName then if J = -1 then J := I else J := -2;
+        if J >= 0 then dwDeviceID := J - 1;
     end;
     // デバイスを再選択
     if dwDeviceID >= longint(Status.dwDeviceNum) then dwDeviceID := -1;
@@ -9018,9 +9116,13 @@ begin
                 INFO_CHANNEL_4: sInfo := Concat(sInfo, CRLF, '    Src Addr Loop Read       Src Addr Loop Read');
             end;
             case Option.dwInfo of
-                INFO_MIXER: sInfo := Concat(sInfo, CRLF, 'MasterLv : L=    R=      EchoLv   : L=    R=', CRLF, 'Delay    :    (    ms)   Feedback :    (    ', STR_MENU_SETUP_PERCENT[Status.dwLanguage], ')', CRLF, 'SrcAddr  :     -   _     EchoAddr :     -', CRLF, 'DSPFlags : R=  M=  E=    NoiseClk :       Hz', CRLF, 'FIR      :');
-                INFO_CHANNEL_1, INFO_CHANNEL_2, INFO_CHANNEL_3, INFO_CHANNEL_4: sInfo := Concat(sInfo, CRLF, '1 :                      5 :', CRLF, '2 :                      6 :', CRLF, '3 :                      7 :', CRLF, '4 :                      8 :');
-                INFO_SCRIPT700: sInfo := Concat(sInfo, CRLF, 'Port  In :               Out :', CRLF, 'Work 0-3 :', CRLF, '     4-7 :', CRLF, 'CmpParam :                     Wait :', CRLF, 'UsedSize :        (Ptr=      Data=      SP=   )');
+                INFO_MIXER: sInfo := Concat(sInfo, CRLF, 'MasterLv : L=    R=      EchoLv   : L=    R=', CRLF,
+                    'Delay    :    (    ms)   Feedback :    (    ', STR_MENU_SETUP_PERCENT[Status.dwLanguage], ')', CRLF,
+                    'SrcAddr  :     -   _     EchoAddr :     -', CRLF, 'DSPFlags : R=  M=  E=    NoiseClk :       Hz', CRLF, 'FIR      :');
+                INFO_CHANNEL_1, INFO_CHANNEL_2, INFO_CHANNEL_3, INFO_CHANNEL_4: sInfo := Concat(sInfo, CRLF, '1 :                      5 :',
+                    CRLF, '2 :                      6 :', CRLF, '3 :                      7 :', CRLF, '4 :                      8 :');
+                INFO_SCRIPT700: sInfo := Concat(sInfo, CRLF, 'Port  In :               Out :', CRLF, 'Work 0-3 :', CRLF, '     4-7 :',
+                    CRLF, 'CmpParam :                     Wait :', CRLF, 'UsedSize :        (Ptr=      Data=      SP=   )');
             end;
         end;
         INFO_SPC_1: begin
@@ -9071,7 +9173,8 @@ begin
                 $8: sBuffer := 'SNESGT';
                 else sBuffer := '(Undefined)';
             end;
-            sInfo := Concat(sInfo, CRLF, 'Emulator : ', sBuffer, StringOfChar(' ', 28 - Length(sBuffer)), 'NVPBHIZC', CRLF, 'Register : PC=     YA=     X=   SP=   ');
+            sInfo := Concat(sInfo, CRLF, 'Emulator : ', sBuffer, StringOfChar(' ', 28 - Length(sBuffer)), 'NVPBHIZC', CRLF,
+                'Register : PC=     YA=     X=   SP=   ');
         end;
     end;
     // 情報を表示
@@ -9136,17 +9239,21 @@ begin
     end;
     for I := 0 to MENU_SETUP_INTER_SIZE - 1 do cmSetupInter.SetMenuCheck(MENU_SETUP_INTER_BASE + I, Option.dwInter = MENU_SETUP_INTER_VALUE[I]);
     for I := 0 to MENU_SETUP_PITCH_SIZE - 1 do cmSetupPitch.SetMenuCheck(MENU_SETUP_PITCH_BASE + I, Option.dwPitch = MENU_SETUP_PITCH_VALUE[I]);
-    for I := 0 to MENU_SETUP_PITCH_KEY_SIZE + MENU_SETUP_PITCH_KEY_SIZE do cmSetupPitchKey.SetMenuCheck(MENU_SETUP_PITCH_KEY_BASE + I, Option.dwPitch = MENU_SETUP_PITCH_VALUE[MENU_SETUP_PITCH_SIZE + I]);
+    for I := 0 to MENU_SETUP_PITCH_KEY_SIZE + MENU_SETUP_PITCH_KEY_SIZE do
+        cmSetupPitchKey.SetMenuCheck(MENU_SETUP_PITCH_KEY_BASE + I, Option.dwPitch = MENU_SETUP_PITCH_VALUE[MENU_SETUP_PITCH_SIZE + I]);
     cmSetupPitch.SetMenuCheck(MENU_SETUP_PITCH_ASYNC, Option.bPitchAsync);
-    for I := 0 to MENU_SETUP_SEPARATE_SIZE - 1 do cmSetupSeparate.SetMenuCheck(MENU_SETUP_SEPARATE_BASE + I, Option.dwSeparate = MENU_SETUP_SEPARATE_VALUE[I]);
-    for I := 0 to MENU_SETUP_FEEDBACK_SIZE - 1 do cmSetupFeedback.SetMenuCheck(MENU_SETUP_FEEDBACK_BASE + I, Option.dwFeedback = MENU_SETUP_FEEDBACK_VALUE[I]);
+    for I := 0 to MENU_SETUP_SEPARATE_SIZE - 1 do
+        cmSetupSeparate.SetMenuCheck(MENU_SETUP_SEPARATE_BASE + I, Option.dwSeparate = MENU_SETUP_SEPARATE_VALUE[I]);
+    for I := 0 to MENU_SETUP_FEEDBACK_SIZE - 1 do
+        cmSetupFeedback.SetMenuCheck(MENU_SETUP_FEEDBACK_BASE + I, Option.dwFeedback = MENU_SETUP_FEEDBACK_VALUE[I]);
     for I := 0 to MENU_SETUP_SPEED_SIZE - 1 do cmSetupSpeed.SetMenuCheck(MENU_SETUP_SPEED_BASE + I, Option.dwSpeedBas = MENU_SETUP_SPEED_VALUE[I]);
     for I := 0 to MENU_SETUP_AMP_SIZE - 1 do cmSetupAmp.SetMenuCheck(MENU_SETUP_AMP_BASE + I, Option.dwAmp = MENU_SETUP_AMP_VALUE[I]);
     for I := 0 to MENU_SETUP_MUTE_NOISE_SIZE - 1 do begin
         cmSetupMute.SetMenuCheck(MENU_SETUP_MUTE_BASE + I, longbool(Option.dwMute and (1 shl I)));
         cmSetupNoise.SetMenuCheck(MENU_SETUP_NOISE_BASE + I, longbool(Option.dwNoise and (1 shl I)));
     end;
-    for I := 0 to MENU_SETUP_OPTION_SIZE - 1 do cmSetupOption.SetMenuCheck(MENU_SETUP_OPTION_BASE + I, longbool(Option.dwOption and MENU_SETUP_OPTION_VALUE[I]));
+    for I := 0 to MENU_SETUP_OPTION_SIZE - 1 do if longbool(MENU_SETUP_OPTION_VALUE[I]) then
+        cmSetupOption.SetMenuCheck(MENU_SETUP_OPTION_BASE + I, longbool(Option.dwOption and MENU_SETUP_OPTION_VALUE[I]));
     cmSetupTime.SetMenuCheck(MENU_SETUP_TIME_DISABLE, not Option.bPlayTime);
     cmSetupTime.SetMenuCheck(MENU_SETUP_TIME_ID666, Option.bPlayTime and not Option.bPlayDefault);
     cmSetupTime.SetMenuCheck(MENU_SETUP_TIME_DEFAULT, Option.bPlayTime and Option.bPlayDefault);
@@ -9159,7 +9266,8 @@ begin
     cmSetupInfo.SetMenuCheck(MENU_SETUP_INFO_RESET, Option.bVolumeReset);
     for I := 0 to MENU_SETUP_PRIORITY_SIZE - 1 do begin
         cmSetupPriority.SetMenuCheck(MENU_SETUP_PRIORITY_BASE + I, Option.dwPriority = MENU_SETUP_PRIORITY_VALUE[I]);
-        cmSetupPriority.SetMenuEnable(MENU_SETUP_PRIORITY_BASE + I, (Status.OsVersionInfo.dwMajorVersion >= 5) or (MENU_SETUP_PRIORITY_VALUE[I] <= REALTIME_PRIORITY_CLASS));
+        cmSetupPriority.SetMenuEnable(MENU_SETUP_PRIORITY_BASE + I, (Status.OsVersionInfo.dwMajorVersion >= 5)
+            or (MENU_SETUP_PRIORITY_VALUE[I] <= REALTIME_PRIORITY_CLASS));
     end;
     cmSetup.SetMenuCheck(MENU_SETUP_TOPMOST, Option.bTopMost);
     // ボタンを更新
@@ -9227,10 +9335,14 @@ begin
     if longbool(dwInfo) then begin
         sInfo := Concat(sInfo, TITLE_INFO_HEADER[Status.dwLanguage]);
         case dwInfo of
-            TITLE_INFO_SEPARATE: sInfo := Concat(sInfo, TITLE_INFO_SEPARATE_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ', STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
-            TITLE_INFO_FEEDBACK: sInfo := Concat(sInfo, TITLE_INFO_FEEDBACK_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ', STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
-            TITLE_INFO_SPEED: sInfo := Concat(sInfo, TITLE_INFO_SPEED_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ', STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
-            TITLE_INFO_AMP: sInfo := Concat(sInfo, TITLE_INFO_AMP_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ', STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
+            TITLE_INFO_SEPARATE: sInfo := Concat(sInfo, TITLE_INFO_SEPARATE_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ',
+                STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
+            TITLE_INFO_FEEDBACK: sInfo := Concat(sInfo, TITLE_INFO_FEEDBACK_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ',
+                STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
+            TITLE_INFO_SPEED: sInfo := Concat(sInfo, TITLE_INFO_SPEED_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ',
+                STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
+            TITLE_INFO_AMP: sInfo := Concat(sInfo, TITLE_INFO_AMP_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ',
+                STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
             TITLE_INFO_SEEK: begin
                 sInfo := Concat(sInfo, TITLE_INFO_SEEK_HEADER[Status.dwLanguage]);
                 if Status.dwInfo >= 0 then sInfo := Concat(sInfo, TITLE_INFO_PLUS[Status.dwLanguage])
@@ -9247,8 +9359,10 @@ begin
             // SPC のタイトルを追加
             if not bytebool(Spc.Hdr.Title[0]) then sInfo := Concat(sInfo, TITLE_NAME_UNKNOWN)
             else sInfo := Concat(sInfo, string(Spc.Hdr.Title));
-            if bytebool(Spc.Hdr.TagFormat) and bytebool(Spc.Hdr.Game[0]) then sInfo := Concat(sInfo, TITLE_NAME_SEPARATOR[Status.dwLanguage], string(Spc.Hdr.Game));
-            sInfo := Concat(sInfo, TITLE_NAME_HEADER[Status.dwLanguage], Copy(string(Status.lpSPCName), 1, GetSize(Status.lpSPCName, 1023)), TITLE_NAME_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage]);
+            if bytebool(Spc.Hdr.TagFormat) and bytebool(Spc.Hdr.Game[0]) then sInfo := Concat(sInfo, TITLE_NAME_SEPARATOR[Status.dwLanguage],
+                string(Spc.Hdr.Game));
+            sInfo := Concat(sInfo, TITLE_NAME_HEADER[Status.dwLanguage], Copy(string(Status.lpSPCName), 1, GetSize(Status.lpSPCName, 1023)),
+                TITLE_NAME_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage]);
         end else begin
             // SPC のファイル名を追加
             sInfo := Concat(sInfo, Copy(string(Status.lpSPCName), 1, GetSize(Status.lpSPCName, 1023)), TITLE_MAIN_HEADER[Status.dwLanguage]);
@@ -9356,7 +9470,8 @@ begin
         WaveFormat(I);
         // デバイスをオープン
         for J := 0 to WAVE_FORMAT_TYPE_SIZE - 1 do begin
-            result := API_waveOutOpen(@Wave.dwHandle, Option.dwDeviceID, @Wave.Format, Status.dwThreadID, NULL, WAVE_FORMAT_TYPE_ARRAY[J] or CALLBACK_THREAD);
+            result := API_waveOutOpen(@Wave.dwHandle, Option.dwDeviceID, @Wave.Format, Status.dwThreadID, NULL,
+                WAVE_FORMAT_TYPE_ARRAY[J] or CALLBACK_THREAD);
             if not longbool(result) then break;
         end;
         if not longbool(result) then break;
@@ -9677,12 +9792,14 @@ begin
     dwSizeB := dwWaveB * longword(Wave.Format.nBlockAlign); // 100ms ごとのバイト数
     dwSizeT := dwSizeP + (dwBlank + dwCount + 10) * dwSizeB; // ヘッダ + 最初の無音 + 音声 + 最後の無音
     // 確認メッセージを表示
-    if not bQuiet then if cwWindowMain.MessageBox(pchar(Concat(WARN_WAVE_SIZE_1[Status.dwLanguage], GetMBString(dwSizeT), WARN_WAVE_SIZE_2[Status.dwLanguage])), pchar(DEFAULT_TITLE), MB_ICONQUESTION or MB_YESNO or MB_DEFBUTTON2) <> IDYES then exit;
+    if not bQuiet then if cwWindowMain.MessageBox(pchar(Concat(WARN_WAVE_SIZE_1[Status.dwLanguage], GetMBString(dwSizeT),
+        WARN_WAVE_SIZE_2[Status.dwLanguage])), pchar(DEFAULT_TITLE), MB_ICONQUESTION or MB_YESNO or MB_DEFBUTTON2) <> IDYES then exit;
     // ファイルをオープン
     hFile := INVALID_HANDLE_VALUE;
     if IsSafePath(lpFile) then begin
         API_MakeSureDirectoryPathExists(lpFile);
-        hFile := API_CreateFile(lpFile, GENERIC_WRITE, FILE_SHARE_READ, NULLPOINTER, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+        hFile := API_CreateFile(lpFile, GENERIC_WRITE, FILE_SHARE_READ, NULLPOINTER, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL
+            or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
     end;
     // ファイルのオープンに失敗した場合はメッセージを表示して終了
     if hFile = INVALID_HANDLE_VALUE then begin
@@ -9690,7 +9807,8 @@ begin
         exit;
     end;
     // 進行状況を表示
-    cwWindowMain.SetCaption(pchar(Concat(TITLE_INFO_HEADER[Status.dwLanguage], TITLE_INFO_FILE_HEADER[Status.dwLanguage], TITLE_INFO_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage], DEFAULT_TITLE)));
+    cwWindowMain.SetCaption(pchar(Concat(TITLE_INFO_HEADER[Status.dwLanguage], TITLE_INFO_FILE_HEADER[Status.dwLanguage],
+        TITLE_INFO_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage], DEFAULT_TITLE)));
     // クリティカルセクションを開始
     API_EnterCriticalSection(@CriticalSectionThread);
     // WAVE ヘッダを出力 (サイズ = WaveHeader + 28)
@@ -9737,7 +9855,9 @@ begin
         dwWaveL := Trunc((I + 1) / dwCount * 10) * 10;
         if dwWaveL <> dwPCent then begin
             dwPCent := dwWaveL;
-            cwWindowMain.SetCaption(pchar(Concat(TITLE_INFO_HEADER[Status.dwLanguage], TITLE_INFO_FILE_HEADER[Status.dwLanguage], IntToStr(dwPCent), TITLE_INFO_FILE_PROC[Status.dwLanguage], TITLE_INFO_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage], DEFAULT_TITLE)));
+            cwWindowMain.SetCaption(pchar(Concat(TITLE_INFO_HEADER[Status.dwLanguage], TITLE_INFO_FILE_HEADER[Status.dwLanguage],
+                IntToStr(dwPCent), TITLE_INFO_FILE_PROC[Status.dwLanguage], TITLE_INFO_FOOTER[Status.dwLanguage],
+                TITLE_MAIN_HEADER[Status.dwLanguage], DEFAULT_TITLE)));
         end;
     end;
     // 最後の無音 (1000ms) を出力
@@ -9767,7 +9887,8 @@ begin
     // タイトルを更新
     UpdateTitle(NULL);
     // メッセージを表示
-    if not bQuiet then cwWindowMain.MessageBox(pchar(Concat(INFO_WAVE_FINISH_1[Status.dwLanguage], GetMBString(dwSizeL), INFO_WAVE_FINISH_2[Status.dwLanguage])), pchar(DEFAULT_TITLE), MB_ICONINFORMATION or MB_OK);
+    if not bQuiet then cwWindowMain.MessageBox(pchar(Concat(INFO_WAVE_FINISH_1[Status.dwLanguage], GetMBString(dwSizeL),
+        INFO_WAVE_FINISH_2[Status.dwLanguage])), pchar(DEFAULT_TITLE), MB_ICONINFORMATION or MB_OK);
     // 成功
     result := true;
 end;
@@ -9895,7 +10016,8 @@ begin
     // Shift キーを設定
     SetChangeFunction(true);
     // ウィンドウにフォーカスを設定
-    if (API_GetForegroundWindow() = cwWindowMain.hWnd) and longbool(Status.dwFocusHandle) then cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_ACTIVATE, NULL);
+    if (API_GetForegroundWindow() = cwWindowMain.hWnd) and longbool(Status.dwFocusHandle) then
+        cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_ACTIVATE, NULL);
 end;
 
 function TransmitFile(bAutoPlay: longbool): longbool;
@@ -10171,25 +10293,33 @@ begin
                     MENU_LIST_ADD: ListAdd(1);
                     MENU_LIST_INSERT: ListAdd(2);
                     MENU_LIST_PLAY_SELECT: SPCPlay(PLAY_TYPE_LIST);
-                    MENU_LIST_PLAY_BASE..MENU_LIST_PLAY_MAX: ListNextPlay(MENU_LIST_PLAY_VALUE[wParam - MENU_LIST_PLAY_BASE], LIST_NEXT_PLAY_SELECT);
+                    MENU_LIST_PLAY_BASE..MENU_LIST_PLAY_MAX:
+                        ListNextPlay(MENU_LIST_PLAY_VALUE[wParam - MENU_LIST_PLAY_BASE], LIST_NEXT_PLAY_SELECT);
                     MENU_LIST_REMOVE: ListDelete();
                     MENU_LIST_CLEAR: ListClear();
                     MENU_LIST_UP: ListUp();
                     MENU_LIST_DOWN: ListDown();
                     else case wParam div 10 * 10 of
-                        MENU_SETUP_DEVICE_BASE..MENU_SETUP_DEVICE_BASE + 90: UpdateDevice(wParam - MENU_SETUP_DEVICE_BASE - 1, WAVE_DEVICE_UPDATE_SELECT);
+                        MENU_SETUP_DEVICE_BASE..MENU_SETUP_DEVICE_BASE + 90:
+                            UpdateDevice(wParam - MENU_SETUP_DEVICE_BASE - 1, WAVE_DEVICE_UPDATE_SELECT);
                         MENU_SETUP_CHANNEL_BASE: Option.dwChannel := MENU_SETUP_CHANNEL_VALUE[wParam - MENU_SETUP_CHANNEL_BASE];
                         MENU_SETUP_BIT_BASE: Option.dwBit := MENU_SETUP_BIT_VALUE[wParam - MENU_SETUP_BIT_BASE];
-                        MENU_SETUP_RATE_BASE..MENU_SETUP_RATE_BASE + 10: Option.dwRate := MENU_SETUP_RATE_VALUE[wParam - MENU_SETUP_RATE_BASE];
+                        MENU_SETUP_RATE_BASE..MENU_SETUP_RATE_BASE + 10:
+                            Option.dwRate := MENU_SETUP_RATE_VALUE[wParam - MENU_SETUP_RATE_BASE];
                         MENU_SETUP_INTER_BASE: Option.dwInter := MENU_SETUP_INTER_VALUE[wParam - MENU_SETUP_INTER_BASE];
-                        MENU_SETUP_PITCH_BASE..MENU_SETUP_PITCH_BASE + 20: Option.dwPitch := MENU_SETUP_PITCH_VALUE[wParam - MENU_SETUP_PITCH_BASE];
-                        MENU_SETUP_SEPARATE_BASE..MENU_SETUP_SEPARATE_BASE + 10: Option.dwSeparate := MENU_SETUP_SEPARATE_VALUE[wParam - MENU_SETUP_SEPARATE_BASE];
-                        MENU_SETUP_FEEDBACK_BASE..MENU_SETUP_FEEDBACK_BASE + 10: Option.dwFeedback := MENU_SETUP_FEEDBACK_VALUE[wParam - MENU_SETUP_FEEDBACK_BASE];
-                        MENU_SETUP_SPEED_BASE..MENU_SETUP_SPEED_BASE + 20: Option.dwSpeedBas := MENU_SETUP_SPEED_VALUE[wParam - MENU_SETUP_SPEED_BASE];
+                        MENU_SETUP_PITCH_BASE..MENU_SETUP_PITCH_BASE + 20:
+                            Option.dwPitch := MENU_SETUP_PITCH_VALUE[wParam - MENU_SETUP_PITCH_BASE];
+                        MENU_SETUP_SEPARATE_BASE..MENU_SETUP_SEPARATE_BASE + 10:
+                            Option.dwSeparate := MENU_SETUP_SEPARATE_VALUE[wParam - MENU_SETUP_SEPARATE_BASE];
+                        MENU_SETUP_FEEDBACK_BASE..MENU_SETUP_FEEDBACK_BASE + 10:
+                            Option.dwFeedback := MENU_SETUP_FEEDBACK_VALUE[wParam - MENU_SETUP_FEEDBACK_BASE];
+                        MENU_SETUP_SPEED_BASE..MENU_SETUP_SPEED_BASE + 20:
+                            Option.dwSpeedBas := MENU_SETUP_SPEED_VALUE[wParam - MENU_SETUP_SPEED_BASE];
                         MENU_SETUP_AMP_BASE..MENU_SETUP_AMP_BASE + 20: Option.dwAmp := MENU_SETUP_AMP_VALUE[wParam - MENU_SETUP_AMP_BASE];
                         MENU_SETUP_MUTE_BASE: Option.dwMute := Option.dwMute xor (1 shl (wParam - MENU_SETUP_MUTE_BASE));
                         MENU_SETUP_NOISE_BASE: Option.dwNoise := Option.dwNoise xor (1 shl (wParam - MENU_SETUP_NOISE_BASE));
-                        MENU_SETUP_OPTION_BASE..MENU_SETUP_OPTION_BASE + 10: Option.dwOption := Option.dwOption xor MENU_SETUP_OPTION_VALUE[wParam - MENU_SETUP_OPTION_BASE];
+                        MENU_SETUP_OPTION_BASE..MENU_SETUP_OPTION_BASE + 10:
+                            Option.dwOption := Option.dwOption xor MENU_SETUP_OPTION_VALUE[wParam - MENU_SETUP_OPTION_BASE];
                         MENU_SETUP_ORDER_BASE: begin
                             // フラグを設定
                             Option.dwPlayOrder := wParam - MENU_SETUP_ORDER_BASE;
@@ -10376,7 +10506,8 @@ begin
                     // クリティカルセクションを終了
                     API_LeaveCriticalSection(@CriticalSectionThread);
                 end;
-                WM_APP_STATUS: result := (longword(Status.bOpen) and STATUS_OPEN) or (longword(Status.bPlay) and STATUS_PLAY) or (longword(Status.bPause) and STATUS_PAUSE); // ステータス取得
+                WM_APP_STATUS: result := (longword(Status.bOpen) and STATUS_OPEN) or (longword(Status.bPlay) and STATUS_PLAY)
+                    or (longword(Status.bPause) and STATUS_PAUSE); // ステータス取得
                 WM_APP_APPVER: result := APPLINK_VERSION; // バージョン取得
                 WM_APP_EMU_APU: ForceEmuAPU(); // 強制エミュレート
                 WM_APP_EMU_DEBUG: Status.bEmuDebug := longbool(wParam and $1); // SPC700 転送テスト

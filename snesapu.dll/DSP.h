@@ -44,18 +44,18 @@
 #define DSP_SURND   0x04                        //Surround sound
 #define DSP_REVERSE 0x08                        //Reverse stereo samples
 #define DSP_NOECHO  0x10                        //Disable echo
-// ----- degrade-factory code [2008/09/09] -----
+// ----- degrade-factory code [2021/11/08] -----
 #define DSP_NOPMOD  0x20                        //Disable pitch modulation
 #define DSP_NOPREAD 0x40                        //Disable pitch read
 #define DSP_NOFIR   0x80                        //Disable FIR filter
 #define DSP_BASS    0x100                       //BASS BOOST (low-pass filter)
 #define DSP_NOENV   0x200                       //Disable envelope
 #define DSP_NONOISE 0x400                       //Disable noise
-#define DSP_ECHOMEM 0x800                       //Write DSP echo memory map
+#define DSP_ECHOFIR 0x800                       //Simulate SNES echo/FIR method
 #define DSP_NOSURND 0x1000                      //Disable surround sound
 #define DSP_FLOAT   0x40000000                  //32bit floating-point volume output
 #define DSP_NOSAFE  0x80000000                  //Disable volume safe
-// ----- degrade-factory code [END] -----
+// ----- degrade-factory code [END] #37 -----
 
 //PackWave options -----------------------------
 #define BRR_LINEAR  0x01                        //Use linear compression for all blocks
