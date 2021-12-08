@@ -44,7 +44,7 @@
 //  ※ GNU 一般公衆利用許諾契約書バージョン 2 のドキュメントは、付属の LICENSE にあります。
 //
 //
-//  Copyright (C) 2003-2019 degrade-factory. All rights reserved.
+//  Copyright (C) 2003-2020 degrade-factory. All rights reserved.
 //
 // =================================================================================================
 program spccmd;
@@ -151,13 +151,13 @@ const
     CLASS_NAME: string = 'SSDLabo_SPCPLAY';
     SPC_FILE_HEADER = 'SNES-SPC700 Sound File Data ';
     SPC_FILE_HEADER_LEN = 28;
-    SPCCMD_VERSION = '1.5.0 (build 4062)';
+    SPCCMD_VERSION = '1.5.1 (build 4212)';
     APPLINK_VERSION = $02170500;
     HexTable: array[0..15] of char = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F');
     INI_FILE: string = 'spcplay.ini';
     BUFFER_LENGTH = 13;
     BUFFER_START = BUFFER_LENGTH + 1;
-    BUFFER_LANGUAGE: string = 'LANGUAGE 0 : ';
+    BUFFER_LANGUAGE: string = 'LANGUAGE 1 : ';
     LIST_FILE: string = 'spcplay.stk';
     LIST_FILE_HEADER_A: string = 'SSDLabo Spcplay ListFile v1.0';
     LIST_FILE_HEADER_A_LEN = 29;
@@ -195,6 +195,10 @@ const
     OPEN_EXISTING = $3;
     OPEN_ALWAYS = $4;
     TRUNCATE_EXISTING = $5;
+
+    LOCALE_AUTO = 0;                                        // 自動
+    LOCALE_JA = 1;                                          // 日本語
+    LOCALE_EN = 2;                                          // 英語
 
     WM_COMMAND = $111;
     MENU_FILE_PLAY_BASE = 110;
@@ -248,62 +252,62 @@ const
     STATUS_PAUSE = $4;                                      // Pause フラグ
 
     STR_VERSION_1: array[0..1] of string = ('SNES SPC700 Player 外部拡張コマンド ツール', 'SNES SPC700 Player external command tool');
-    STR_VERSION_2: array[0..1] of string = ('サポートしている SPCPLAY.EXE のバージョン： v2.17.7 以降', 'Supported SPCPLAY.EXE version: v2.17.7 or later');
+    STR_VERSION_2: array[0..1] of string = ('サポートしている SPCPLAY.EXE のバージョン： v2.18.0 以降', 'Supported SPCPLAY.EXE version: v2.18.0 or later');
 
     STR_USAGE_TITLE: array[0..1] of string = ('<< 構文 >>', '<< USAGE >>');
     STR_USAGE_NEXT: array[0..1] of string = ('Enter キーで続きを表示します...', 'Press Enter key to continue...');
     STR_USAGE_COMMAND: array[0..1] of string = ('  spccmd.exe [オプション]', '  spccmd.exe [option]');
     STR_USAGE_OPTION: array[0..1] of string = ('[オプション]', '[option]');
-    STR_USAGE_OPTION_BASE: array[0..1] of string = ('基本オプション', 'Base Option');
+    STR_USAGE_OPTION_BASE: array[0..1] of string = ('基本オプション', 'Base options');
     STR_USAGE_OPTION_BASE_H: array[0..1] of string = ('構文ヘルプを表示', 'Show usage');
     STR_USAGE_OPTION_BASE_V: array[0..1] of string = ('バージョン情報を表示', 'Show version');
     STR_USAGE_OPTION_BASE_P: array[0..1] of string = ('演奏開始・一時停止', 'Play/Pause');
     STR_USAGE_OPTION_BASE_R: array[0..1] of string = ('最初から演奏', 'Restart');
     STR_USAGE_OPTION_BASE_S: array[0..1] of string = ('演奏停止', 'Stop');
-    STR_USAGE_OPTION_DSP: array[0..1] of string = ('DSP レジスタ値の読取・書込', 'Read/Write DSP Register');
-    STR_USAGE_OPTION_DSP_G: array[0..1] of string = ('読取 <XX>(アドレス) = $00～$7F', 'Read  <XX>(Address) = $00-$7F');
-    STR_USAGE_OPTION_DSP_S: array[0..1] of string = ('書込 <YY>(値) = $00～$FF (8bit)', 'Write <YY>(Value) = $00-$FF (8bit)');
+    STR_USAGE_OPTION_DSP: array[0..1] of string = ('DSP レジスタ値の読取・書込', 'Read/Write DSP registers');
+    STR_USAGE_OPTION_DSP_G: array[0..1] of string = ('読取   <XX>(アドレス) = $00～$7F', 'Read    <XX>(Address) = $00-$7F');
+    STR_USAGE_OPTION_DSP_S: array[0..1] of string = ('書込   <YY>(値) = $00～$FF (8bit)', 'Write   <YY>(Value) = $00-$FF (8bit)');
     STR_USAGE_OPTION_DSP_M: array[0..1] of string = ('DSP レジスタ メモリマップ表示', 'Show DSP Register Memory Map');
-    STR_USAGE_OPTION_PORT: array[0..1] of string = ('SPC700 I/O ポート値の読取・書込', 'Read/Write I/O Port');
-    STR_USAGE_OPTION_PORT_G: array[0..1] of string = ('読取 <XX>(アドレス) = 0～3', 'Read  <XX>(Address) = 0-3');
-    STR_USAGE_OPTION_PORT_S: array[0..1] of string = ('書込 <YY>(値) = $00～$FF (8bit)', 'Write <YY>(Value) = $00-$FF (8bit)');
+    STR_USAGE_OPTION_PORT: array[0..1] of string = ('SPC700 I/O ポート値の読取・書込', 'Read/Write I/O ports');
+    STR_USAGE_OPTION_PORT_G: array[0..1] of string = ('読取   <XX>(アドレス) = 0～3', 'Read    <XX>(Address) = 0-3');
+    STR_USAGE_OPTION_PORT_S: array[0..1] of string = ('書込   <YY>(値) = $00～$FF (8bit)', 'Write   <YY>(Value) = $00-$FF (8bit)');
     STR_USAGE_OPTION_PORT_T: array[0..1] of string = ('値を書込後すぐに元の値に戻す', 'Test write mode');
     STR_USAGE_OPTION_RAM: array[0..1] of string = ('64KB APU RAM の読取・書込', 'Read/Write 64KB APU RAM');
-    STR_USAGE_OPTION_RAM_G: array[0..1] of string = ('読取 <XX>(アドレス) = $0000～$FFFF', 'Read  <XX>(Address) = $0000-$FFFF');
-    STR_USAGE_OPTION_RAM_S: array[0..1] of string = ('書込 <YY>(値) = $00000000～$FFFFFFFF (32bit)', 'Write <YY>(Value) = $00000000-$FFFFFFFF (32bit)');
+    STR_USAGE_OPTION_RAM_G: array[0..1] of string = ('読取   <XX>(アドレス) = $0000～$FFFF', 'Read    <XX>(Address) = $0000-$FFFF');
+    STR_USAGE_OPTION_RAM_S: array[0..1] of string = ('書込   <YY>(値) = $00000000～$FFFFFFFF (32bit)', 'Write   <YY>(Value) = $00000000-$FFFFFFFF (32bit)');
     STR_USAGE_OPTION_RAM_M: array[0..1] of string = ('APU RAM メモリマップ表示 <ZZ>(表示量)', 'Show Memory Map <ZZ>(Table size)');
-    STR_USAGE_OPTION_WORK: array[0..1] of string = ('Script700 Work の読取・書込', 'Read/Write Script700 Work');
-    STR_USAGE_OPTION_WORK_G: array[0..1] of string = ('読取 <XX>(アドレス) = 0～7', 'Read  <XX>(Address) = 0-7');
-    STR_USAGE_OPTION_WORK_S: array[0..1] of string = ('書込 <YY>(値) = $00000000～$FFFFFFFF (32bit)', 'Write <YY>(Value) = $00000000-$FFFFFFFF (32bit)');
-    STR_USAGE_OPTION_CMP: array[0..1] of string = ('Script700 CmpParam の読取・書込', 'Read/Write Script700 Cmp Param');
-    STR_USAGE_OPTION_CMP_G: array[0..1] of string = ('読取 <XX>(アドレス) = 0／1', 'Read  <XX>(Address) = 0/1');
-    STR_USAGE_OPTION_CMP_S: array[0..1] of string = ('書込 <YY>(値) = $00000000～$FFFFFFFF (32bit)', 'Write <YY>(Value) = $00000000-$FFFFFFFF (32bit)');
-    STR_USAGE_OPTION_SPC: array[0..1] of string = ('SPC700 レジスタ値の読取・書込', 'Read/Write SPC700 Register');
-    STR_USAGE_OPTION_SPC_G: array[0..1] of string = ('読取 <XX>(0=PC, 1=Y+A, 2=SP+X, 3:PSW)', 'Read  <XX>(0=PC, 1=Y+A, 2=SP+X, 3:PSW)');
-    STR_USAGE_OPTION_SPC_S: array[0..1] of string = ('書込 <YY>(値) = $0000～$FFFF (16bit)', 'Write <YY>(Value) = $0000-$FFFF (16bit)');
-    STR_USAGE_OPTION_HALT: array[0..1] of string = ('エミュレーション動作', 'Emulation running');
+    STR_USAGE_OPTION_WORK: array[0..1] of string = ('Script700 Work の読取・書込', 'Read/Write Script700 working memories');
+    STR_USAGE_OPTION_WORK_G: array[0..1] of string = ('読取   <XX>(アドレス) = 0～7', 'Read    <XX>(Address) = 0-7');
+    STR_USAGE_OPTION_WORK_S: array[0..1] of string = ('書込   <YY>(値) = $00000000～$FFFFFFFF (32bit)', 'Write   <YY>(Value) = $00000000-$FFFFFFFF (32bit)');
+    STR_USAGE_OPTION_CMP: array[0..1] of string = ('Script700 CmpParam の読取・書込', 'Read/Write Script700 CMP parameters');
+    STR_USAGE_OPTION_CMP_G: array[0..1] of string = ('読取   <XX>(アドレス) = 0／1', 'Read    <XX>(Address) = 0/1');
+    STR_USAGE_OPTION_CMP_S: array[0..1] of string = ('書込   <YY>(値) = $00000000～$FFFFFFFF (32bit)', 'Write   <YY>(Value) = $00000000-$FFFFFFFF (32bit)');
+    STR_USAGE_OPTION_SPC: array[0..1] of string = ('SPC700 レジスタ値の読取・書込', 'Read/Write SPC700 registers');
+    STR_USAGE_OPTION_SPC_G: array[0..1] of string = ('読取   <XX>(0=PC, 1=Y+A, 2=SP+X, 3:PSW)', 'Read    <XX>(0=PC, 1=Y+A, 2=SP+X, 3:PSW)');
+    STR_USAGE_OPTION_SPC_S: array[0..1] of string = ('書込   <YY>(値) = $0000～$FFFF (16bit)', 'Write   <YY>(Value) = $0000-$FFFF (16bit)');
+    STR_USAGE_OPTION_HALT: array[0..1] of string = ('エミュレーション動作', 'Set emulation flags');
     STR_USAGE_OPTION_HALT_S1: array[0..1] of string = ('<XX>(1=SPC_RETURN, 2=SPC_HALT, 4=DSP_HALT, 8=SPC_NODSP,', '<XX>(1=SPC_RETURN, 2=SPC_HALT, 4=DSP_HALT, 8=SPC_NODSP,');
     STR_USAGE_OPTION_HALT_S2: array[0..1] of string = ('     32=DSP_PAUSE, 34=SPC_HALT+DSP_PAUSE)', '     32=DSP_PAUSE, 34=SPC_HALT+DSP_PAUSE)');
-    STR_USAGE_OPTION_BP: array[0..1] of string = ('SPC700 ブレイクポイント', 'SPC700 Break Point');
+    STR_USAGE_OPTION_BP: array[0..1] of string = ('SPC700 ブレイクポイント', 'SPC700 break points');
     STR_USAGE_OPTION_BP_X: array[0..1] of string = ('<XX>(アドレス) = $0000～$FFFF', '<XX>(Address) = $0000-$FFFF');
     STR_USAGE_OPTION_BP_Y: array[0..1] of string = ('<YY>(0=解除, 1>=設定※)', '<YY>(0=UNSET, 1>=SET *)');
-    STR_USAGE_OPTION_BPAC: array[0..1] of string = ('ブレイクポイント全解除', 'Break Point ALL clear');
+    STR_USAGE_OPTION_BPAC: array[0..1] of string = ('ブレイクポイント全解除', 'All clear break points');
     STR_USAGE_OPTION_NEXT: array[0..1] of string = ('次へ進む', 'Next tick');
-    STR_USAGE_OPTION_NEXT_X: array[0..1] of string = ('<XX>(0=次のBPまで, 1>=次の命令まで※)', '<XX>(0=Next BP, 1>=Next Operate *)');
+    STR_USAGE_OPTION_NEXT_Z: array[0..1] of string = ('<ZZ>(0=次のBPまで, 1>=次の命令まで※)', '<XX>(0=Next BP, 1>=Next Operate *)');
     STR_USAGE_OPTION_STOP_FLAGS: array[0..1] of string = ('  ※停止方法：1=SPC_HALT, 2=NOP, 3=SPC_HALT+DSP_PAUSE', '    * How to stop: 1=SPC_HALT, 2=NOP, 3=SPC_HALT+DSP_PAUSE');
-    STR_USAGE_OPTION_DSPC: array[0..1] of string = ('DSP チート', 'DSP cheat');
+    STR_USAGE_OPTION_DSPC: array[0..1] of string = ('DSP チート', 'DSP cheats');
     STR_USAGE_OPTION_DSPC_X: array[0..1] of string = ('<XX>(アドレス) = $00～$7F', '<XX>(Address) = $00-$7F');
     STR_USAGE_OPTION_DSPC_Y: array[0..1] of string = ('<YY>(値) = $00～$FF (8bit), $100>=解除', '<YY>(Value) = $00-$FF (8bit), $100>=UNSET');
-    STR_USAGE_OPTION_DSPCAC: array[0..1] of string = ('DSP チート全解除', 'DSP cheat ALL clear');
-    STR_USAGE_OPTION_OW: array[0..1] of string = ('SPC 書換', 'Rewrite SPC');
-    STR_USAGE_OPTION_OW_ZC_1: array[0..1] of string = ('エコー作業領域をゼロクリア', 'Zero clear the echo work area');
+    STR_USAGE_OPTION_DSPCAC: array[0..1] of string = ('DSP チート全解除', 'All clear DSP cheats');
+    STR_USAGE_OPTION_OW: array[0..1] of string = ('SPC 書換', 'Rewriting SPC');
+    STR_USAGE_OPTION_OW_ZC_1: array[0..1] of string = ('エコー作業領域をゼロクリア', 'Clear echo work area to $00');
     STR_USAGE_OPTION_OW_ZC_2: array[0..1] of string = ('<IF> = 読込ファイル  <OF> = 書込ファイル', '<IF> = Read path  <OF> = Write path');
-    STR_USAGE_OPTION_EMU: array[0..1] of string = ('SPC 転送エミュレート', 'Emulate SPC Transfer');
-    STR_USAGE_OPTION_EMU_PD_1: array[0..1] of string = ('SHVC-SOUND への転送をエミュレート', 'Emulate transfer to SHVC-SOUND');
+    STR_USAGE_OPTION_EMU: array[0..1] of string = ('SPC 転送シミュレーション', 'SPC transfer simulation');
+    STR_USAGE_OPTION_EMU_PD_1: array[0..1] of string = ('SHVC-SOUND への転送をシミュレート', 'Simulate transfer to SHVC-SOUND');
     STR_USAGE_OPTION_EMU_PD_2: array[0..1] of string = ('<IF> = 読込ファイル', '<IF> = Read path');
     STR_USAGE_OPTION_EMU_PD_3: array[0..1] of string = ('<SF> = Script700 ファイル', '<SF> = Script700 path');
-    STR_USAGE_OPTION_CNV: array[0..1] of string = ('SPC 変換', 'Convert SPC');
-    STR_USAGE_OPTION_CNV_CW_1: array[0..1] of string = ('SPC -> WAVE 変換', 'SPC -> WAVE');
+    STR_USAGE_OPTION_CNV: array[0..1] of string = ('SPC 変換', 'SPC converter');
+    STR_USAGE_OPTION_CNV_CW_1: array[0..1] of string = ('SPC -> WAVE (.wav) 変換', 'SPC -> WAVE (.wav)');
     STR_USAGE_OPTION_CNV_CW_2: array[0..1] of string = ('<IF> = 読込ファイル  <OF> = 書込ファイル', '<IF> = Read path  <OF> = Write path');
     STR_ERROR_008: array[0..1] of string = ('SPCCMD.EXE が起動できません。', 'SPCCMD.EXE cannot open.');
     STR_ERROR_009: array[0..1] of string = ('SPCCMD.EXE が起動できません。', 'SPCCMD.EXE cannot open.');
@@ -431,6 +435,7 @@ function  API_GetFileAttributes(lpFileName: pointer): longword; stdcall; externa
 function  API_GetFileSize(hFile: longword; pFileSizeHigh: pointer): longword; stdcall; external 'kernel32.dll' name 'GetFileSize';
 function  API_GetModuleFileName(hModule: longword; lpFileName: pointer; nSize: longword): longword; stdcall; external 'kernel32.dll' name 'GetModuleFileNameA';
 function  API_GetProcAddress(hModule: longword; lpProcName: pointer): pointer; stdcall; external 'kernel32.dll' name 'GetProcAddress';
+function  API_GetUserDefaultLCID(): longword; stdcall; external 'kernel32.dll' name 'GetUserDefaultLCID';
 function  API_LoadLibrary(lpLibFileName: pointer): longword; stdcall; external 'kernel32.dll' name 'LoadLibraryA';
 function  API_MapFileAndCheckSum(Filename: pointer; HeaderSum: pointer; CheckSum: pointer): longword; stdcall; external 'imagehlp.dll' name 'MapFileAndCheckSumA';
 procedure API_MoveMemory(Destination: pointer; Source: pointer; Length: longword); stdcall; external 'kernel32.dll' name 'RtlMoveMemory';
@@ -782,18 +787,16 @@ begin
     writeln(output, '');
     writeln(output, Concat(' == ', STR_USAGE_OPTION_BP[dwLanguage]));
     writeln(output, Concat('  -bp <XX> <YY> : ', STR_USAGE_OPTION_BP_X[dwLanguage]));
-    writeln(output, Concat('                : ', STR_USAGE_OPTION_BP_Y[dwLanguage]));
-    writeln(output, Concat('  -bpn <XX>     : ', STR_USAGE_OPTION_NEXT[dwLanguage]));
-    writeln(output, Concat('                  ', STR_USAGE_OPTION_NEXT_X[dwLanguage]));
+    writeln(output, Concat('                  ', STR_USAGE_OPTION_BP_Y[dwLanguage]));
+    writeln(output, Concat('  -bpn <ZZ>     : ', STR_USAGE_OPTION_NEXT[dwLanguage]));
+    writeln(output, Concat('                  ', STR_USAGE_OPTION_NEXT_Z[dwLanguage]));
     writeln(output, Concat('                  ', STR_USAGE_OPTION_STOP_FLAGS[dwLanguage]));
     writeln(output, Concat('  -bpc          : ', STR_USAGE_OPTION_BPAC[dwLanguage]));
     writeln(output, '');
     writeln(output, Concat(' == ', STR_USAGE_OPTION_DSPC[dwLanguage]));
     writeln(output, Concat('  -dc <XX> <YY> : ', STR_USAGE_OPTION_DSPC_X[dwLanguage]));
-    writeln(output, Concat('                : ', STR_USAGE_OPTION_DSPC_Y[dwLanguage]));
+    writeln(output, Concat('                  ', STR_USAGE_OPTION_DSPC_Y[dwLanguage]));
     writeln(output, Concat('  -dcc          : ', STR_USAGE_OPTION_DSPCAC[dwLanguage]));
-    writeln(output, '');
-    writeln(output, '');
     writeln(output, '');
     writeln(output, STR_USAGE_NEXT[dwLanguage]);
     readln(input);
@@ -1880,7 +1883,7 @@ begin
     // バッファを解放
     FreeMem(lpBuffer, 1024);
     // 設定を初期化
-    dwLanguage := 0;
+    dwLanguage := LOCALE_AUTO;
     // INI の存在をチェック
     sData := Concat(sChPath, INI_FILE);
     if Exists(pchar(sData), $FFFFFFFF) then begin
@@ -1897,6 +1900,9 @@ begin
         CloseFile(fsFile);
     end;
     // 設定値をチェック
+    if longbool(dwLanguage) then dwLanguage := dwLanguage - 1
+    else if API_GetUserDefaultLCID() and $FFFF = $0411 then dwLanguage := 0
+    else dwLanguage := 1;
     if dwLanguage > 1 then dwLanguage := 0;
     // SPCCMD.EXE の破損を確認
     dwBuffer := GetPosSeparator(sEXEPath);

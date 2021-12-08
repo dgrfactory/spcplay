@@ -852,6 +852,7 @@ type
         cmSetupOption: CMENU;                               // メニュー クラス (設定 - 拡張設定)
         cmSetupTime: CMENU;                                 // メニュー クラス (設定 - 演奏時間)
         cmSetupOrder: CMENU;                                // メニュー クラス (設定 - 演奏順序)
+        cmSetupSeek: CMENU;                                 // メニュー クラス (設定 - シーク時間)
         cmSetupInfo: CMENU;                                 // メニュー クラス (設定 - 情報表示)
         cmSetupPriority: CMENU;                             // メニュー クラス (設定 - 基本優先度)
         cmList: CMENU;                                      // メニュー クラス (プレイリスト)
@@ -2325,8 +2326,8 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.18.0 (build 6694)';
-    SNESAPU_VERSION = $21800;
+    SPCPLAY_VERSION = '2.18.1 (build 6862)';
+    SNESAPU_VERSION = $21861;
     APPLINK_VERSION = $02170500;
 
     CBE_DSPREG = $1;
@@ -2851,15 +2852,19 @@ const
     MENU_SETUP_ORDER = 61;
     MENU_SETUP_ORDER_SIZE = 6;
     MENU_SETUP_ORDER_BASE = 610;
-    MENU_SETUP_INFO = 62;
+    MENU_SETUP_SEEK = 62;
+    MENU_SETUP_SEEK_SIZE = 5;
+    MENU_SETUP_SEEK_BASE = 620; // +10
+    MENU_SETUP_SEEK_VALUE: array[0..MENU_SETUP_SEEK_SIZE - 1] of longword = (1000, 2000, 3000, 4000, 5000);
+    MENU_SETUP_INFO = 63;
     MENU_SETUP_INFO_SIZE = 9;
-    MENU_SETUP_INFO_BASE = 620;
-    MENU_SETUP_INFO_RESET = 619;
-    MENU_SETUP_PRIORITY = 63;
+    MENU_SETUP_INFO_BASE = 630;
+    MENU_SETUP_INFO_RESET = 629;
+    MENU_SETUP_PRIORITY = 64;
     MENU_SETUP_PRIORITY_SIZE = 6;
-    MENU_SETUP_PRIORITY_BASE = 630;
+    MENU_SETUP_PRIORITY_BASE = 640;
     MENU_SETUP_PRIORITY_VALUE: array[0..MENU_SETUP_PRIORITY_SIZE - 1] of longword = (REALTIME_PRIORITY_CLASS, HIGH_PRIORITY_CLASS, ABOVE_NORMAL_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS, BELOW_NORMAL_PRIORITY_CLASS, IDLE_PRIORITY_CLASS);
-    MENU_SETUP_TOPMOST = 640;
+    MENU_SETUP_TOPMOST = 650;
     MENU_LIST_PLAY = 700;
     MENU_LIST_PLAY_SELECT = 701;
     MENU_LIST_PLAY_SIZE = 6;
@@ -2984,17 +2989,18 @@ const
     STR_MENU_SETUP_MUTE: array[0..1] of pchar = ('チャンネル ミュート(&M)', 'Channel &Mute');
     STR_MENU_SETUP_NOISE: array[0..1] of pchar = ('チャンネル ノイズ(&N)', 'Channel &Noise');
     STR_MENU_SETUP_SWITCH_CHANNEL: array[0..1] of pchar = ('チャンネル ', 'Channel ');
-    STR_MENU_SETUP_OPTION: array[0..1] of pchar = ('拡張設定(&X)', 'E&xpansion');
+    STR_MENU_SETUP_OPTION: array[0..1] of pchar = ('拡張設定(&X)', 'E&xpansion Flags');
     STR_MENU_SETUP_TIME: array[0..1] of pchar = ('演奏時間(&T)', 'Play &Time');
     STR_MENU_SETUP_TIME_DISABLE: array[0..1] of pchar = ('無効(&D)', '&Disable');
     STR_MENU_SETUP_TIME_ID666: array[0..1] of pchar = ('&ID666 設定値を使用', 'Enable &ID666 Time');
     STR_MENU_SETUP_TIME_DEFAULT: array[0..1] of pchar = ('デフォルト値を使用(&E)', '&Enable Default Time');
-    STR_MENU_SETUP_TIME_START: array[0..1] of pchar = ('開始位置を設定(&S)', 'Set &Start Mark');
-    STR_MENU_SETUP_TIME_LIMIT: array[0..1] of pchar = ('終了位置を設定(&L)', 'Set &Limit Mark');
-    STR_MENU_SETUP_TIME_RESET: array[0..1] of pchar = ('位置をリセット(&R)', '&Reset Mark');
+    STR_MENU_SETUP_TIME_START: array[0..1] of pchar = ('開始位置を設定(&S)', 'Set &Start Position Mark');
+    STR_MENU_SETUP_TIME_LIMIT: array[0..1] of pchar = ('終了位置を設定(&L)', 'Set &Limit Position Mark');
+    STR_MENU_SETUP_TIME_RESET: array[0..1] of pchar = ('位置をリセット(&R)', '&Reset Position Marks');
     STR_MENU_SETUP_ORDER: array[0..1] of pchar = ('演奏順序(&O)', 'Play &Order');
     STR_MENU_SETUP_INFO: array[0..1] of pchar = ('情報表示(&A)', 'I&nformation Viewer');
-    STR_MENU_SETUP_INFO_RESET: array[0..1] of pchar = ('無音チャンネル非表示(&H)', '&Hide Mute Channel');
+    STR_MENU_SETUP_INFO_RESET: array[0..1] of pchar = ('無音チャンネル非表示(&H)', '&Hide Muted Channels');
+    STR_MENU_SETUP_SEEK: array[0..1] of pchar = ('シーク時間(&K)', 'See&k Time');
     STR_MENU_SETUP_PRIORITY: array[0..1] of pchar = ('処理優先度(&U)', 'CP&U Priority');
     STR_MENU_SETUP_TOPMOST: array[0..1] of pchar = ('常に手前に表示(&W)', 'Al&ways on Top');
     STR_MENU_LIST_PLAY: array[0..1] of pchar = ('演奏開始(&P)', '&Play');
@@ -3041,14 +3047,19 @@ const
     STR_MENU_SETUP_INFO_SUB: array[0..1] of array[0..MENU_SETUP_INFO_SIZE - 1] of pchar = (
         ('グラフィック インジケータ(&G)', 'ミキサー情報(&M)', 'チャンネル情報 1 (&C)', 'チャンネル情報 2 (&A)', 'チャンネル情報 3 (&N)', 'チャンネル情報 4 (&E)', '&SPC 情報 1', 'S&PC 情報 2', 'Script&700 デバッグ'),
         ('&Graphic Indicator', '&Mixer', '&Channel 1', 'Ch&annel 2', 'Cha&nnel 3', 'Chann&el 4', '&SPC Tags 1', 'S&PC Tags 2', 'Script&700 Debug'));
+    STR_MENU_SETUP_SEEK_SUB: array[0..1] of array[0..MENU_SETUP_SEEK_SIZE - 1] of pchar = (
+        ('&1 秒', '&2 秒', '&3 秒', '&4 秒', '&5 秒'),
+        ('&1 s', '&2 s', '&3 s', '&4 s', '&5 s'));
     STR_MENU_SETUP_PRIORITY_SUB: array[0..1] of array[0..MENU_SETUP_PRIORITY_SIZE - 1] of pchar = (
         ('リアルタイム(&R)', '高(&H)', '標準以上(&A)', '標準(&N)', '標準以下(&B)', '低(&L)'),
         ('&Realtime', '&High', '&Above Normal', '&Normal', '&Below Normal', '&Low'));
     STR_MENU_LIST_PLAY_SUB: array[0..1] of array[0..MENU_LIST_PLAY_SIZE - 1] of pchar = (
         ('次へ(&N)', '前へ(&P)', 'ランダム(&M)', 'シャッフル(&H)', '最初から(&F)', '最後から(&L)'),
         ('&Next Item', '&Previous Item', 'Rando&m', 'S&huffle', '&First Item', '&Last Item'));
-    STR_MENU_SETUP_PERCENT: array[0..1] of string = (' ％', ' %');
-    STR_MENU_SETUP_MSEC: array[0..1] of string = (' ms', ' ms');
+    STR_MENU_SETUP_PERCENT: array[0..1] of string = ('％', '%');
+    STR_MENU_SETUP_SEC1: array[0..1] of string = ('秒', 's');
+    STR_MENU_SETUP_SEC2: array[0..1] of string = ('sec', 's  ');
+    STR_MENU_SETUP_MSEC: array[0..1] of string = ('ms', 'ms');
     STR_BUTTON_OPEN = 'OPEN';
     STR_BUTTON_SAVE = 'SAVE';
     STR_BUTTON_PLAY = 'PLAY';
@@ -3074,10 +3085,10 @@ const
     TITLE_MAIN_HEADER: array[0..1] of string = (' - ', ' - ');
     TITLE_INFO_HEADER: array[0..1] of string = ('《 ', '< ');
     TITLE_INFO_FOOTER: array[0..1] of string = (' 》', ' >');
-    TITLE_INFO_SEPARATE_HEADER: array[0..1] of string = ('左右拡散度 ', 'Separate = ');
-    TITLE_INFO_FEEDBACK_HEADER: array[0..1] of string = ('フィードバック反転度 ', 'Echo Feedback = ');
-    TITLE_INFO_SPEED_HEADER: array[0..1] of string = ('演奏速度 ', 'Speed = ');
-    TITLE_INFO_AMP_HEADER: array[0..1] of string = ('音量 ', 'Volume = ');
+    TITLE_INFO_SEPARATE_HEADER: array[0..1] of string = ('左右拡散度 ', 'Separate ');
+    TITLE_INFO_FEEDBACK_HEADER: array[0..1] of string = ('フィードバック反転度 ', 'Echo Feedback ');
+    TITLE_INFO_SPEED_HEADER: array[0..1] of string = ('演奏速度 ', 'Speed ');
+    TITLE_INFO_AMP_HEADER: array[0..1] of string = ('音量 ', 'Volume ');
     TITLE_INFO_SEEK_HEADER: array[0..1] of string = ('シーク ', 'Seek ');
     TITLE_INFO_PLUS: array[0..1] of string = ('＋', '+');
     TITLE_INFO_MINUS: array[0..1] of string = ('－', '-');
@@ -5090,7 +5101,7 @@ begin
     cmMenu.CreatePopupMenu();
     // メニュー テキストを設定
     for I := 0 to nSize - 1 do begin
-        sBuffer := Concat('&', IntToStr(STR_MENU_SETUP_PER_INTEGER[PerIndex[I]]), STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
+        sBuffer := Concat('&', IntToStr(STR_MENU_SETUP_PER_INTEGER[PerIndex[I]]), ' ', STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
         if longbool(TipIndex[I]) then sBuffer := Concat(sBuffer, #9, STR_MENU_SETUP_TIP[Status.dwLanguage][TipIndex[I]]);
         cmMenu.AppendMenu(dwBase + I, pchar(sBuffer), true);
     end;
@@ -5591,6 +5602,8 @@ begin
     cmSetupTime.AppendMenu(MENU_SETUP_TIME_RESET, STR_MENU_SETUP_TIME_RESET[Status.dwLanguage]);
     // 演奏順序メニューを作成
     SetMenuTextAndTip(cmSetupOrder, MENU_SETUP_ORDER_SIZE, MENU_SETUP_ORDER_BASE, STR_MENU_SETUP_ORDER_SUB[Status.dwLanguage], true);
+    // シーク時間メニューを作成
+    SetMenuTextAndTip(cmSetupSeek, MENU_SETUP_SEEK_SIZE, MENU_SETUP_SEEK_BASE, STR_MENU_SETUP_SEEK_SUB[Status.dwLanguage], true);
     // 情報表示メニューを作成
     SetMenuTextAndTip(cmSetupInfo, MENU_SETUP_INFO_SIZE, MENU_SETUP_INFO_BASE, STR_MENU_SETUP_INFO_SUB[Status.dwLanguage], true);
     cmSetupInfo.AppendSeparator();
@@ -5617,6 +5630,7 @@ begin
     cmSetup.AppendSeparator();
     cmSetup.AppendMenu(MENU_SETUP_TIME, STR_MENU_SETUP_TIME[Status.dwLanguage], cmSetupTime.hMenu);
     cmSetup.AppendMenu(MENU_SETUP_ORDER, STR_MENU_SETUP_ORDER[Status.dwLanguage], cmSetupOrder.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_SEEK, STR_MENU_SETUP_SEEK[Status.dwLanguage], cmSetupSeek.hMenu);
     cmSetup.AppendMenu(MENU_SETUP_INFO, STR_MENU_SETUP_INFO[Status.dwLanguage], cmSetupInfo.hMenu);
     cmSetup.AppendMenu(MENU_SETUP_PRIORITY, STR_MENU_SETUP_PRIORITY[Status.dwLanguage], cmSetupPriority.hMenu);
     cmSetup.AppendSeparator();
@@ -5829,7 +5843,6 @@ begin
     Writeln(fsFile, Concat(BUFFER_SEEKINT_, IntToStr(Option.dwSeekInt)));
     Writeln(fsFile, Concat(BUFFER_SEEKMAX_, IntToStr(Option.dwSeekMax)));
     Writeln(fsFile, Concat(BUFFER_SEEKNUM_, IntToStr(Option.dwSeekNum)));
-    Writeln(fsFile, Concat(BUFFER_SEEKTIME, IntToStr(Option.dwSeekTime)));
     Writeln(fsFile, Concat(BUFFER_SPEEDTUN, IntToStr(Option.dwSpeedTun)));
     Writeln(fsFile, Concat(BUFFER_VOLCOLOR, IntToStr(Option.dwVolumeColor)));
     Writeln(fsFile, Concat(BUFFER_VOLSPEED, IntToStr(Option.dwVolumeSpeed)));
@@ -5856,6 +5869,7 @@ begin
     Writeln(fsFile, Concat(BUFFER_PLAYTYPE, IntToStr(Option.dwPlayOrder)));
     Writeln(fsFile, Concat(BUFFER_PRIORITY, IntToStr(Option.dwPriority)));
     Writeln(fsFile, Concat(BUFFER_RATE____, IntToStr(Option.dwRate)));
+    Writeln(fsFile, Concat(BUFFER_SEEKTIME, IntToStr(Option.dwSeekTime)));
     Writeln(fsFile, Concat(BUFFER_SEPARATE, IntToStr(Option.dwSeparate)));
     Writeln(fsFile, Concat(BUFFER_SPEED___, IntToStr(Option.dwSpeedBas)));
     Writeln(fsFile, Concat(BUFFER_TOP_____, IntToStr(NormalRect.top + ScreenRect.top)));
@@ -5923,6 +5937,8 @@ begin
     cmSetupTime.Free();
     cmSetupOrder.DeleteMenu();
     cmSetupOrder.Free();
+    cmSetupSeek.DeleteMenu();
+    cmSetupSeek.Free();
     cmSetupInfo.DeleteMenu();
     cmSetupInfo.Free();
     cmSetupPriority.DeleteMenu();
@@ -8865,7 +8881,7 @@ begin
                 INFO_CHANNEL_4: sInfo := Concat(sInfo, CRLF, '    Src Addr Loop Read       Src Addr Loop Read');
             end;
             case Option.dwInfo of
-                INFO_MIXER: sInfo := Concat(sInfo, CRLF, 'MasterLv : L=    R=      EchoLv   : L=    R=', CRLF, 'Delay    :    (   ', STR_MENU_SETUP_MSEC[Status.dwLanguage], ')   Feedback :    (   ', STR_MENU_SETUP_PERCENT[Status.dwLanguage], ')', CRLF, 'SrcAddr  :     -   _     EchoAddr :     -', CRLF, 'DSPFlags : R=  M=  E=    NoiseClk :       Hz', CRLF, 'FIR      :');
+                INFO_MIXER: sInfo := Concat(sInfo, CRLF, 'MasterLv : L=    R=      EchoLv   : L=    R=', CRLF, 'Delay    :    (    ms)   Feedback :    (    ', STR_MENU_SETUP_PERCENT[Status.dwLanguage], ')', CRLF, 'SrcAddr  :     -   _     EchoAddr :     -', CRLF, 'DSPFlags : R=  M=  E=    NoiseClk :       Hz', CRLF, 'FIR      :');
                 INFO_CHANNEL_1, INFO_CHANNEL_2, INFO_CHANNEL_3, INFO_CHANNEL_4: sInfo := Concat(sInfo, CRLF, '1 :                      5 :', CRLF, '2 :                      6 :', CRLF, '3 :                      7 :', CRLF, '4 :                      8 :');
                 INFO_SCRIPT700: sInfo := Concat(sInfo, CRLF, 'Port  In :               Out :', CRLF, 'Work 0-3 :', CRLF, '     4-7 :', CRLF, 'CmpParam :                     Wait :', CRLF, 'UsedSize :        (Ptr=      Data=      SP=   )');
             end;
@@ -8887,9 +8903,9 @@ begin
             if not bytebool(Spc.Hdr.TagFormat) or not longbool(Spc.Hdr.dwSongLen) then sInfo := Concat(sInfo, '(Unknown)')
             else begin
                 sBuffer := IntToStr(Spc.Hdr.dwSongLen);
-                sInfo := Concat(sInfo, sBuffer, ' sec', StringOfChar(' ', 10 - Length(sBuffer)));
+                sInfo := Concat(sInfo, sBuffer, ' ', STR_MENU_SETUP_SEC2[Status.dwLanguage], StringOfChar(' ', 10 - Length(sBuffer)));
                 if not longbool(Spc.Hdr.dwFadeLen) then sInfo := Concat(sInfo, '(No Fadeout)')
-                else sInfo := Concat(sInfo, 'FadeTime : ', IntToStr(Spc.Hdr.dwFadeLen), ' ms');
+                else sInfo := Concat(sInfo, 'FadeTime : ', IntToStr(Spc.Hdr.dwFadeLen), ' ', STR_MENU_SETUP_MSEC[Status.dwLanguage]);
             end;
         end;
         INFO_SPC_2: begin
@@ -9001,6 +9017,7 @@ begin
     cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_LIMIT, Status.bPlay and Option.bPlayTime);
     cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_RESET, Status.bOpen and Status.bTimeRepeat);
     for I := 0 to MENU_SETUP_ORDER_SIZE - 1 do cmSetupOrder.SetMenuCheck(MENU_SETUP_ORDER_BASE + I, Option.dwPlayOrder = longword(I));
+    for I := 0 to MENU_SETUP_SEEK_SIZE - 1 do cmSetupSeek.SetMenuCheck(MENU_SETUP_SEEK_BASE + I, Option.dwSeekTime = MENU_SETUP_SEEK_VALUE[I]);
     for I := 0 to MENU_SETUP_INFO_SIZE - 1 do cmSetupInfo.SetMenuCheck(MENU_SETUP_INFO_BASE + I, Option.dwInfo = longword(I));
     cmSetupInfo.SetMenuCheck(MENU_SETUP_INFO_RESET, Option.bVolumeReset);
     for I := 0 to MENU_SETUP_PRIORITY_SIZE - 1 do begin
@@ -9058,7 +9075,6 @@ procedure CWINDOWMAIN.UpdateTitle(dwFlag: longword);
 var
     dwInfo: longword;
     sInfo: string;
-    sPlus: string;
 begin
     // タイトルを更新しない場合は終了
     if not longbool(Status.dwTitle) then exit;
@@ -9074,14 +9090,16 @@ begin
     if longbool(dwInfo) then begin
         sInfo := Concat(sInfo, TITLE_INFO_HEADER[Status.dwLanguage]);
         case dwInfo of
-            TITLE_INFO_SEPARATE: sInfo := Concat(sInfo, TITLE_INFO_SEPARATE_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
-            TITLE_INFO_FEEDBACK: sInfo := Concat(sInfo, TITLE_INFO_FEEDBACK_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
-            TITLE_INFO_SPEED: sInfo := Concat(sInfo, TITLE_INFO_SPEED_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
-            TITLE_INFO_AMP: sInfo := Concat(sInfo, TITLE_INFO_AMP_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
+            TITLE_INFO_SEPARATE: sInfo := Concat(sInfo, TITLE_INFO_SEPARATE_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ', STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
+            TITLE_INFO_FEEDBACK: sInfo := Concat(sInfo, TITLE_INFO_FEEDBACK_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ', STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
+            TITLE_INFO_SPEED: sInfo := Concat(sInfo, TITLE_INFO_SPEED_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ', STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
+            TITLE_INFO_AMP: sInfo := Concat(sInfo, TITLE_INFO_AMP_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ', STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
             TITLE_INFO_SEEK: begin
-                if Status.dwInfo >= 0 then sPlus := TITLE_INFO_PLUS[Status.dwLanguage]
-                else sPlus := TITLE_INFO_MINUS[Status.dwLanguage];
-                sInfo := Concat(sInfo, TITLE_INFO_SEEK_HEADER[Status.dwLanguage], sPlus, IntToStr(Abs(Status.dwInfo)), STR_MENU_SETUP_MSEC[Status.dwLanguage]);
+                sInfo := Concat(sInfo, TITLE_INFO_SEEK_HEADER[Status.dwLanguage]);
+                if Status.dwInfo >= 0 then sInfo := Concat(sInfo, TITLE_INFO_PLUS[Status.dwLanguage])
+                else sInfo := Concat(sInfo, TITLE_INFO_MINUS[Status.dwLanguage]);
+                if longbool(Abs(Status.dwInfo) mod 1000) then sInfo := Concat(sInfo, IntToStr(Abs(Status.dwInfo)), STR_MENU_SETUP_MSEC[Status.dwLanguage])
+                else sInfo := Concat(sInfo, IntToStr(longword(Trunc(Abs(Status.dwInfo) / 1000))), ' ', STR_MENU_SETUP_SEC1[Status.dwLanguage]);
             end;
         end;
         sInfo := Concat(sInfo, TITLE_INFO_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage]);
@@ -10021,6 +10039,7 @@ begin
                             // インジケータを再描画
                             cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
                         end;
+                        MENU_SETUP_SEEK_BASE: Option.dwSeekTime := MENU_SETUP_SEEK_VALUE[wParam - MENU_SETUP_SEEK_BASE];
                         MENU_SETUP_INFO_BASE: begin
                             SetChangeInfo(true, wParam - MENU_SETUP_INFO_BASE);
                             exit; // UpdateMenu を実行しない
