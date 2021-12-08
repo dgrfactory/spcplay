@@ -44,7 +44,7 @@
 //  ※ GNU 一般公衆利用許諾契約書バージョン 2 のドキュメントは、付属の LICENSE にあります。
 //
 //
-//  Copyright (C) 2003-2019 degrade-factory. All rights reserved.
+//  Copyright (C) 2003-2021 degrade-factory. All rights reserved.
 //
 // =================================================================================================
 program spcplay;
@@ -2331,8 +2331,8 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.19.0 (build 7521)';
-    SNESAPU_VERSION = $21900;
+    SPCPLAY_VERSION = '2.19.1 (build 7540)';
+    SNESAPU_VERSION = $21961;
     APPLINK_VERSION = $02170500;
 
     CBE_DSPREG = $1;
@@ -3005,17 +3005,18 @@ const
     DIALOG_OPEN_FILTER: array[0..1] of string = (
         'SNES SPC700 サウンド (*.spc)' + NULLCHAR + '*.spc;*.sp0;*.sp1;*.sp2;*.sp3;*.sp4;*.sp5;*.sp6;*.sp7;*.sp8;*.sp9' + NULLCHAR +
         'プレイリスト (*.lst)' + NULLCHAR + '*.lst' + NULLCHAR +
-        'すべての対応形式ファイル' + NULLCHAR + '*.spc;*.sp0;*.sp1;*.sp2;*.sp3;*.sp4;*.sp5;*.sp6;*.sp7;*.sp8;*.sp9;*.lst' + NULLCHAR +
-        'すべてのファイル' + NULLCHAR + '*.*' + NULLCHAR,
+        'SPC, プレイリスト (*.spc; *.lst)' + NULLCHAR + '*.spc;*.sp0;*.sp1;*.sp2;*.sp3;*.sp4;*.sp5;*.sp6;*.sp7;*.sp8;*.sp9;*.lst' + NULLCHAR,
         'SNES SPC700 sound (*.spc)' + NULLCHAR + '*.spc;*.sp0;*.sp1;*.sp2;*.sp3;*.sp4;*.sp5;*.sp6;*.sp7;*.sp8;*.sp9' + NULLCHAR +
         'Playlist (*.lst)' + NULLCHAR + '*.lst' + NULLCHAR +
-        'All Supported Files' + NULLCHAR + '*.spc;*.sp0;*.sp1;*.sp2;*.sp3;*.sp4;*.sp5;*.sp6;*.sp7;*.sp8;*.sp9;*.lst' + NULLCHAR +
-        'All Files' + NULLCHAR + '*.*' + NULLCHAR);
+        'SPC, Playlist (*.spc; *.lst)' + NULLCHAR + '*.spc;*.sp0;*.sp1;*.sp2;*.sp3;*.sp4;*.sp5;*.sp6;*.sp7;*.sp8;*.sp9;*.lst' + NULLCHAR);
     DIALOG_SCRIPT700_FILTER: array[0..1] of string = (
         'Script700 (*.700; *.7se)' + NULLCHAR + '*.700;*.7se;*.700.txt;*.7se.txt' + NULLCHAR,
         'Script700 (*.700; *.7se)' + NULLCHAR + '*.700;*.7se;*.700.txt;*.7se.txt' + NULLCHAR);
+    DIALOG_ALL_FILTER: array[0..1] of string = (
+        'すべてのファイル (*.*)' + NULLCHAR + '*.*' + NULLCHAR,
+        'All Files (*.*)' + NULLCHAR + '*.*' + NULLCHAR);
     DIALOG_OPEN_DEFAULT = 3;
-    DIALOG_SAVE_FILTER: array[0..1] of string = (
+    DIALOG_LIST_FILTER: array[0..1] of string = (
         'プレイリスト (*.lst)' + NULLCHAR + '*.lst' + NULLCHAR,
         'Playlist (*.lst)' + NULLCHAR + '*.lst' + NULLCHAR);
     DIALOG_WAVE_FILTER: array[0..1] of string = (
@@ -7950,6 +7951,7 @@ begin
     // ファイル選択ダイアログを開く
     sFilter := DIALOG_OPEN_FILTER[Status.dwLanguage];
     if Status.bOpen then sFilter := Concat(sFilter, DIALOG_SCRIPT700_FILTER[Status.dwLanguage]);
+    sFilter := Concat(sFilter, DIALOG_ALL_FILTER[Status.dwLanguage]);
     API_ZeroMemory(lpFiles, 262144);
     API_ZeroMemory(@OpenFileName, SizeOf(TOPENFILENAME));
     OpenFileName.hwndOwner := cwWindowMain.hWnd;
@@ -8148,6 +8150,8 @@ end;
 // ================================================================================
 procedure CWINDOWMAIN.SaveFile();
 var
+    I: longword;
+    J: longword;
     sFilter: string;
     bShift: longbool;
     lpFile: pointer;
@@ -8159,13 +8163,21 @@ begin
     GetMem(lpFile, 1024);
     // ファイル選択ダイアログを開く
     bShift := Status.bShiftButton;
-    sFilter := DIALOG_SAVE_FILTER[Status.dwLanguage];
+    sFilter := DIALOG_LIST_FILTER[Status.dwLanguage];
     if Status.bOpen then sFilter := Concat(sFilter, DIALOG_WAVE_FILTER[Status.dwLanguage]);
     if Status.bPlay then sFilter := Concat(sFilter, DIALOG_SNAP_FILTER[Status.dwLanguage]);
     API_ZeroMemory(lpFile, 1024);
     API_ZeroMemory(@OpenFileName, SizeOf(TOPENFILENAME));
-    if bytebool(Spc.Hdr.TagFormat) and bytebool(Spc.Hdr.Title[0]) then begin
-        API_MoveMemory(lpFile, @Spc.Hdr.Title[0], 32);
+    if Status.bOpen then begin
+        API_MoveMemory(lpFile, Status.lpSPCName, 1024);
+        J := GetSize(lpFile, 1024);
+        for I := 1 to 1024 do if IsSingleByte(string(lpFile), I, '.') then J := I;
+        I := longword(lpFile) + J - 1;
+        if J < 1020 then case Status.dwSaveFilterIndex of
+            1: API_MoveMemory(pointer(I), pchar('.lst'), 4);
+            2: API_MoveMemory(pointer(I), pchar('.wav'), 4);
+            3: API_MoveMemory(pointer(I), pchar('.spc'), 4);
+        end;
     end;
     OpenFileName.hwndOwner := cwWindowMain.hWnd;
     OpenFileName.hThisInstance := Status.hInstance;
@@ -8556,6 +8568,8 @@ begin
         // 演奏を一時停止
         WavePause();
     end;
+    // インデックスのズレを補正
+    if not Status.bOpen and (Status.dwOpenFilterIndex >= 4) then Inc(Status.dwOpenFilterIndex);
     // フラグを設定
     Status.bOpen := true;
     Status.bSPCRefresh := true;
@@ -8730,6 +8744,8 @@ begin
     end else begin
         // バッファをクリア
         API_ZeroMemory(@Spc.Hdr, SizeOf(TSPCHDR));
+        // インデックスのズレを補正
+        if not Status.bOpen and (Status.dwOpenFilterIndex >= 4) then Inc(Status.dwOpenFilterIndex);
         // フラグを設定
         Status.bOpen := true;
         // 情報を更新
