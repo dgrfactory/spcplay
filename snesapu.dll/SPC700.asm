@@ -323,17 +323,16 @@ USES ECX,EDX,ESI,EDI
 	Rep		StoSD
 
 	;Reset Function Registers ----------------
-; ----- degrade-factory code [2019/07/06] -----
+; ----- degrade-factory code [2021/06/15] -----
 	Mov		EAX,[pAPURAM]
 	Mov		AX,0F0h
 	Mov		byte [EAX+0],0Ah													;Test gets set to 0Ah
 	And		byte [EAX+1],07h													;Timer status is preserved, other bits are reset
-	Or		byte [EAX+1],80h
+	Or		byte [EAX+1],80h													;Enable ROM reading
 	Mov		dword [EAX+4],0														;Reset in-ports
 	Mov		word [EAX+8],-1														;See above comment on erasing RAM
 	Mov		dword [EAX+0Ah],0													;Timers set to 00h
 	Mov		word [EAX+0Eh],0													;Counters set to 00h
-	Mov		byte [EAX-0Fh],80h													;Enable ROM reading
 
 	;Copy IPL ROM into extra RAM -------------
 %if IPLW
@@ -370,7 +369,7 @@ USES ECX,EDX,ESI,EDI
 	Rep		StoSD
 	Mov		dword [scr700cnt],32
 	Mov		dword [scr700stf],03h
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #31 -----
 
 	Call	FixSPC,0FFC0h,0,0,0,0,0
 
@@ -1576,7 +1575,7 @@ SPCFetch:																		;(All opcode handlers return to this point)
 	JLE		SPCTimers															;	Yes, Update timers
 ; ----- degrade-factory code [END] #18 -----
 
-; ----- degrade-factory code [2020/10/26] -----
+; ----- degrade-factory code [2021/05/27] -----
 	Test	dword [apuCbMask],CBE_S700FCH
 	JZ		short .NoCallback
 
@@ -1584,6 +1583,11 @@ SPCFetch:																		;(All opcode handlers return to this point)
 	Test	EDX,EDX
 	JZ		short .NoCallback
 		Push	EAX,ECX															;STDCALL is destroy EAX,ECX,EDX
+
+		Mov		ECX,[pAPURAM]
+		Mov		EAX,[ECX]
+		Mov		[ECX+APURAMSIZE],EAX
+
 		Mov		EAX,[ESI]
 		Call	EDX,dword CBE_S700FCH,EAX,dword 0,ESI
 		Mov		EDX,EAX
@@ -1613,7 +1617,7 @@ SPCFetch:																		;(All opcode handlers return to this point)
 		Jmp		EDX
 
 	.NoCallback:
-; ----- degrade-factory code [END] #19 -----
+; ----- degrade-factory code [END] #19 #27 -----
 
 ; ----- degrade-factory code [2007/10/07] -----
 	MovZX	EDX,byte [ESI]														;Get next opcode
@@ -2092,43 +2096,79 @@ Ret
 	Add		BL,Y
 %endmacro
 
+; ----- degrade-factory code [2021/05/22] -----
+;abs+?
+;   Because an overflow occurs when a 16bit value is obtained from address $FFFF,
+;   and an unexpected value is obtained, copy value of address $0000 to $10000
+;   it so that the correct 16bit value can be obtained.
+%macro LRAM 0
+	Mov		EBX,[pAPURAM]
+	Mov		CL,[EBX]
+	Mov		[EBX+APURAMSIZE],CL
+%endmacro
+; ----- degrade-factory code [END] #27 -----
+
 ;abs - Load ABSL with the 16-bit immediate value
 %macro Labs 0
-	Mov		EBX,[pAPURAM]
+; ----- degrade-factory code [2021/05/22] -----
+	LRAM
+; ----- degrade-factory code [END] #27 -----
 	Mov		BX,[OP1]
 %endmacro
 
 ;abs+X - Load ABSL with the 16-bit immediate value + X
 %macro LabsX 0
-	Mov		EBX,[pAPURAM]
+; ----- degrade-factory code [2021/05/22] -----
+	LRAM
+; ----- degrade-factory code [END] #27 -----
 	Mov		BL,X
 	Add		BX,[OP1]
 %endmacro
 
 ;abs+Y - Load ABSL with the 16-bit immediate value + Y
 %macro LabsY 0
-	Mov		EBX,[pAPURAM]
+; ----- degrade-factory code [2021/05/22] -----
+	LRAM
+; ----- degrade-factory code [END] #27 -----
 	Mov		BL,Y
 	Add		BX,[OP1]
 %endmacro
 
+; ----- degrade-factory code [2021/06/15] -----
+;[dp+?] - (dp+?+1)(dp+?)
+;   Do not obtain 16bit values beyond the address of direct page.
+%macro Ladp 0
+;	Mov		BX,[DPI]
+	Mov		CL,[DPI]
+	Inc		BL
+	Mov		BH,[DPI]
+	Mov		BL,CL
+%endmacro
+; ----- degrade-factory code [END] #30 -----
+
 ;[dp+X] - Load ABSL with the 16-bit value at [dp+X]
 %macro LadpX 0
 	LdpX
-	Mov		BX,[DPI]
+; ----- degrade-factory code [2021/06/15] -----
+	Ladp
+; ----- degrade-factory code [END] #30 -----
 %endmacro
 
 ;[dp]+Y - Load ABSL with the 16-bit value at [dp] + Y
 %macro LadpY 0
 	Ldp
-	Mov		BX,[DPI]
+; ----- degrade-factory code [2021/06/15] -----
+	Ladp
+; ----- degrade-factory code [END] #30 -----
 	Add		BL,Y
 	AdC		BH,0
 %endmacro
 
 ;[abs+X] - Load ABSL with the 16-bit value at [abs+X]
 %macro LaabsX 0
-	Mov		EBX,[pAPURAM]
+; ----- degrade-factory code [2021/05/22] -----
+	LRAM
+; ----- degrade-factory code [END] #27 -----
 	Mov		BL,X
 	Add		BX,[OP1]
 %endmacro
@@ -2674,7 +2714,14 @@ Ret
 ;AddW YA,dp
 %macro Opc7A 0
 	Ldp
-	Add		YA,[DPI]
+; ----- degrade-factory code [2021/06/02] -----
+;	Add		YA,[DPI]
+	Mov		DL,[DPI]
+	Inc		BL
+	Mov		DH,[DPI]
+	Dec		BL
+	Add		YA,DX
+; ----- degrade-factory code [END] #27 -----
 	CleanUp	5,2,RD16,NVHZC
 %endmacro
 
@@ -3067,7 +3114,12 @@ Ret
 %macro Opc3F 0
 	Add		PC,2
 	PushW	PC
-	Mov		PC,[ESI-2]
+; ----- degrade-factory code [2021/05/25] -----
+;	Mov		PC,[ESI-2]
+	LRAM
+	Sub		PC,2
+	Mov		PC,[OP1]
+; ----- degrade-factory code [END] #27 -----
 	CleanUp	8,na
 %endmacro
 
@@ -3348,7 +3400,14 @@ Ret
 ;CmpW YA,dp
 %macro Opc5A 0
 	Ldp
-	Cmp		YA,[DPI]
+; ----- degrade-factory code [2021/06/02] -----
+;	Cmp		YA,[DPI]
+	Mov		DL,[DPI]
+	Inc		BL
+	Mov		DH,[DPI]
+	Dec		BL
+	Cmp		YA,DX
+; ----- degrade-factory code [END] #27 -----
 	CleanUp	4,2,RD16,NZCs
 %endmacro
 
@@ -3467,7 +3526,17 @@ Ret
 ;DecW dp
 %macro Opc1A 0
 	Ldp
-	Dec		word [DPI]
+; ----- degrade-factory code [2021/05/22] -----
+;	Dec		word [DPI]
+	Mov		DL,[DPI]
+	Inc		BL
+	Mov		DH,[DPI]
+	Dec		DX
+	Mov		[DPI],DH
+	Dec		BL
+	Mov		[DPI],DL
+	Test	DX,DX
+; ----- degrade-factory code [END] #27 -----
 	CleanUp	6,2,WD16,NZ
 %endmacro
 
@@ -3730,7 +3799,17 @@ Ret
 ;INCW dp
 %macro Opc3A 0
 	Ldp
-	Inc		word [DPI]
+; ----- degrade-factory code [2021/05/22] -----
+;	Inc		word [DPI]
+	Mov		DL,[DPI]
+	Inc		BL
+	Mov		DH,[DPI]
+	Inc		DX
+	Mov		[DPI],DH
+	Dec		BL
+	Mov		[DPI],DL
+	Test	DX,DX
+; ----- degrade-factory code [END] #27 -----
 	CleanUp	6,2,WD16,NZ
 %endmacro
 
@@ -3741,6 +3820,9 @@ Ret
 ;
 ;Jmp abs
 %macro Opc5F 0
+; ----- degrade-factory code [2021/05/22] -----
+	LRAM
+; ----- degrade-factory code [END] #27 -----
 	Mov		PC,[OP1]
 	CleanUp	3,na
 %endmacro
@@ -4184,7 +4266,13 @@ Ret
 ;MovW YA,dp
 %macro OpcBA 0
 	Ldp
-	Mov		YA,[DPI]
+; ----- degrade-factory code [2021/06/02] -----
+;	Mov		YA,[DPI]
+	Mov		A,[DPI]
+	Inc		BL
+	Mov		Y,[DPI]
+	Dec		BL
+; ----- degrade-factory code [END] #27 -----
 	Test	YA,YA
 	CleanUp	5,2,RD16,NZ
 %endmacro
@@ -4192,7 +4280,13 @@ Ret
 ;MovW dp,YA (flags not affected)
 %macro OpcDA 0
 	Ldp
-	Mov		[DPI],YA
+; ----- degrade-factory code [2021/06/02] -----
+;	Mov		[DPI],YA
+	Mov		[DPI],A
+	Inc		BL
+	Mov		[DPI],Y
+	Dec		BL
+; ----- degrade-factory code [END] #27 -----
 ; ----- degrade-factory code [2010/09/25] -----
 	CleanUp	5,2,WD16
 ; ----- degrade-factory code [END] -----
@@ -4466,7 +4560,7 @@ Ret
 ;===================================================================================================
 ;RETI - Return From Interrupt
 ; N V P B H I Z C
-; ? ? ? ? ? 1 ? ?
+; ? ? ? ? ? ? ? ?
 ;RetI
 %macro Opc7F 0
 	PopB	PS
@@ -4750,11 +4844,10 @@ Ret
 ;===================================================================================================
 ;SETP - Set Direct Page Flag
 ; N V P B H I Z C
-;     1     0
+;     1
 ;SetP
 %macro Opc40 0
 	Mov		byte [PSW+P],1
-	Mov		byte [PSW+I],0
 	CleanUp	2,1
 %endmacro
 
@@ -4812,7 +4905,14 @@ Ret
 ;SubW YA,dp
 %macro Opc9A 0
 	Ldp
-	Sub		YA,[DPI]
+; ----- degrade-factory code [2021/06/02] -----
+;	Sub		YA,[DPI]
+	Mov		DL,[DPI]
+	Inc		BL
+	Mov		DH,[DPI]
+	Dec		BL
+	Sub		YA,DX
+; ----- degrade-factory code [END] #27 -----
 	CleanUp	5,2,RD16,NVHZCs
 %endmacro
 

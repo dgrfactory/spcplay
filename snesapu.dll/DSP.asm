@@ -371,11 +371,14 @@ SECTION .bss ALIGN=64
 	dspMute		resb	1														;DSP mute flags
 	disFlag		resb	1														;DSP disabled channel flags
 	konRsv		resb	1														;Reserved KON flags
+	koffRsv		resb	1														;Reserved KOFF flags
 	konRun		resb	1														;Running KON process flags
 	envFlag		resb	1														;DSP envelope flags
+				resb	3
 	konCnt		resd	1														;t64 count of set KON/KOFF
+				resd	1
 
-	;BASS BOOST ----------------------- [4680]
+	;BASS BOOST ----------------------- [4688]
 	lowRstL1	resd	1														;BASS-BOOST reset counter (Left)
 	lowRstL2	resd	1
 	lowRstR1	resd	1														;BASS-BOOST reset counter (Right)
@@ -390,7 +393,6 @@ SECTION .bss ALIGN=64
 	lowSize2	resd	1
 	lowLv1		resd	1														;BASS-BOOST level
 	lowLv2		resd	1
-				resd	2
 
 	;Anti-Alies filter ---------------- [46C0]
 	aaf1A1		resd	1														;Anti-Alies 1st filter coefficients
@@ -936,11 +938,12 @@ USES ECX,EBX,EDI
 	Mov		[outLeft],EAX
 	Mov		[outCnt],EAX
 	Mov		[outDec],EAX
-; ----- degrade-factory code [2016/08/20] -----
+; ----- degrade-factory code [2021/05/04] -----
 	Mov		[dspPMod],EAX														;Clear dspPMod, dspNoise, dspNoiseF, dspMute
-	Mov		[disFlag],EAX														;Clear disFlag, konRsv, konRun, envFlag
+	Mov		[disFlag],EAX														;Clear disFlag, konRsv, koffRsv, konRun
+	Mov		[envFlag],EAX														;Clear envFlag
 	Mov		dword [konCnt],-2
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #25 -----
 	Mov		dword [songLen],-1
 	Mov		dword [fadeLen],1
 
@@ -1521,9 +1524,9 @@ USES ECX,EDI
 		Mov		[dsp+kon],AL													;Reset key registers
 		Mov		[dsp+kof],AL
 		Mov		[voiceMix],AL
-; ----- degrade-factory code [2019/07/07] -----
-		Mov		[konRsv],AL
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [2021/05/04] -----
+		Mov		[konRsv],AX														;Reset konRsv, koffRsv
+; ----- degrade-factory code [END] #25 -----
 
 		Mov		CL,8
 		Mov		EDI,mix
@@ -2445,7 +2448,7 @@ DSPDone:
 ENDP
 
 
-; ----- degrade-factory code [2019/08/04] -----
+; ----- degrade-factory code [2021/06/04] -----
 ;===================================================================================================
 ;Emulate the KON/KOFF delay processing of DSP
 ;
@@ -2454,7 +2457,7 @@ ENDP
 
 %macro CatchKOff 0
 	;KOff process ----------------------
-	MovZX	ECX,byte [dsp+kof]													;Set CH = 0 for use with CatchKOn
+	MovZX	ECX,byte [koffRsv]													;Set CH = 0 for use with CatchKOn
 	Test	CL,CL
 	JZ		short %%Done
 
@@ -2495,6 +2498,7 @@ ENDP
 	Pop		ESI
 
 	%%Done:
+	Mov		[koffRsv],CH														;CH = 0
 %endmacro
 
 %macro CatchKOn 0
@@ -2533,9 +2537,9 @@ ENDP
 			Jmp		%%Skip
 
 		%%CheckKOff:
-%if DSPBK
+%if DSPBK || INTBK
 		Cmp		byte [EBX+mKOn],KON_CHKKOFF										;Did time for checked KOFF after KON had been written?
-		JNE		short %%CheckEnv												;	No
+		JA		short %%CheckEnv												;	No
 %endif
 		Test	[dsp+kof],CH													;Is KOFF still written?
 		JZ		short %%CheckEnv												;	No
@@ -2627,7 +2631,7 @@ ENDP
 	%%Done:
 	Mov		[konRsv],CH															;CH = 0
 %endmacro
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #25 #29 -----
 
 
 ;===================================================================================================
@@ -2656,7 +2660,7 @@ REndX:
 ;Key Off
 
 RKOff:
-; ----- degrade-factory code [2019/07/07] -----
+; ----- degrade-factory code [2021/05/04] -----
 %if DSPBK && DSPINTEG
 	Test	CL,CL																;If write was from SPC700, emulate DSP before
 	JZ		short .NoOutput														; processing new register data
@@ -2666,7 +2670,8 @@ RKOff:
 
 	MovZX	EAX,AL
 	Mov		[dsp+kof],AL
-; ----- degrade-factory code [END] -----
+	Mov		[koffRsv],AL
+; ----- degrade-factory code [END] #25 -----
 
 ; ----- degrade-factory code [2019/08/04] -----
 %if DSPBK && DSPINTEG
