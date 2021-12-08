@@ -45,12 +45,12 @@ SECTION .data ALIGN=256
 SECTION .data ALIGN=32
 %endif
 
-; ----- degrade-factory code [2021/11/08] -----
+; ----- degrade-factory code [2021/11/27] -----
     apuOpt      DD  (CPU_CYC << 24) | (DEBUG << 16) | (DSPINTEG << 17) | (VMETERM << 8) | (VMETERV << 9) | (1 << 10) | (STEREO << 11) \
                     | (HALFC << 1) | (CNTBK << 2) | (SPEED << 3) | (IPLW << 4) | (DSPBK << 5) | (INTBK << 6)
-    apuDllVer   DD  21900h                                                      ;SNESAPU.DLL Current Version
+    apuDllVer   DD  21961h                                                      ;SNESAPU.DLL Current Version
     apuCmpVer   DD  11000h                                                      ;SNESAPU.DLL Backwards Compatible Version
-    apuVerStr   DD  "2.19.0 (build 7521)"                                       ;SNESAPU.DLL Current Version (32byte String)
+    apuVerStr   DD  "2.19.1 (build 7540)"                                       ;SNESAPU.DLL Current Version (32byte String)
                 DD  8
 ; ----- degrade-factory code [END] -----
 
@@ -480,33 +480,53 @@ USES ECX,EDX,EBX,EDI
     Mov     ECX,APU_CLK
 
 %if DSPINTEG
+; ----- degrade-factory code [2021/11/26] -----
+    Mov     EDI,[pBuf]
+    Mov     EBX,[len]
+
+    .NextSec:
+    XOr     EDX,EDX
+    Mov     EAX,EBX
+
     ;Fixup samples/cycles --------------------
     Test    byte [type],-1
     JZ      short .Cycles
-        Call    SetEmuDSP,[pBuf],[len],[smpREmu]
+        Sub     EAX,[smpRate]                                                   ;If EAX > smpRate, EAX = smpRate
+        SetA    DL
+        Dec     EDX
+        And     EAX,EDX
+        Add     EAX,[smpRate]
 
-        Mov     EAX,[len]
-        Mul     ECX                                                             ;cycles = (APU_CLK * len) / smpREmu
+        Sub     EBX,EAX                                                         ;len -= emulate samples
+        Push    EAX
+        Call    SetEmuDSP,EDI,EAX,[smpREmu]
+        Pop     EAX
+
+        Mul     ECX                                                             ;cycles = (APU_CLK * EAX) / smpREmu
         Div     dword [smpREmu]
         Add     EAX,[cycLeft]
         JLE     short .NoCycles
         Jmp     short .Samples
 
     .Cycles:
-        Mov     EAX,[len]
+        Sub     EAX,APU_CLK                                                     ;If EAX > APU_CLK, EAX = APU_CLK
+        SetA    DL
+        Dec     EDX
+        And     EAX,EDX
+        Add     EAX,APU_CLK
+
+        Sub     EBX,EAX                                                         ;len -= emulate cycles
         Add     EAX,[cycLeft]
         JLE     short .NoCycles
 
         Push    EAX
-; ----- degrade-factory code [2020/10/20] -----
         Mov     EDX,EAX
         Mul     dword [smpREmu]                                                 ;samples = ((smpREmu * len) + smpDec) / APU_CLK
         Add     EAX,[smpDec]
         AdC     EDX,0
         Div     ECX
         Mov     [smpDec],EDX
-; ----- degrade-factory code [END] #17 -----
-        Call    SetEmuDSP,[pBuf],EAX,[smpREmu]
+        Call    SetEmuDSP,EDI,EAX,[smpREmu]
         Pop     EAX
 
     .Samples:
@@ -521,7 +541,14 @@ USES ECX,EDX,EBX,EDI
     Mov     [cycLeft],EAX
     Call    SetEmuDSP,0,0,0                                                     ;Create any remaining samples
 
+    Mov     EDI,EAX                                                             ;EAX = end of buffer
+    Test    EBX,EBX                                                             ;Is emulation complete?
+    JNZ     .NextSec                                                            ;   No, continue
+; ----- degrade-factory code [END] #17 #39 -----
 %else
+    ;Note: Setting DSPINTEG to 0, causes a minor bug here.
+    ;If 'len' parameter is given a value greater than about 87 seconds, will be occurred overflow.
+    ;If you want DSPINTEG to be 0, you must specify a small value for 'len' parameter.
 
     ;If samples were passed, convert to clock cycles
     Mov     EAX,[len]
@@ -1875,9 +1902,9 @@ USES ECX,EDX,EBX,ESI,EDI
     JZ      .EXTERROR                                                           ;   Failure
 
     Push    EDX                                                                 ;Push EDX
+    XOr     EDX,EDX                                                             ;EDX = 0
     Test    EAX,EAX                                                             ;If EAX < 0
-    SetS    DL                                                                  ;   Yes, DL = 1
-    MovZX   EDX,DL                                                              ;EDX = DL
+    SetS    DL                                                                  ;   Yes, EDX = 1
     Dec     EDX                                                                 ;EDX--
     And     EAX,EDX                                                             ;EAX &= EDX
     Pop     EDX                                                                 ;Pop EDX
@@ -1919,9 +1946,9 @@ USES ECX,EDX,EBX,ESI,EDI
     Call    GetScript700Number                                                  ;Parse Number (EAX = result)
     JZ      .EXTERROR                                                           ;   Failure
 
+    XOr     EDX,EDX                                                             ;EDX = 0
     Test    EAX,EAX                                                             ;If EAX < 0
-    SetS    DL                                                                  ;   Yes, DL = 1
-    MovZX   EDX,DL                                                              ;EDX = DL
+    SetS    DL                                                                  ;   Yes, EDX = 1
     Dec     EDX                                                                 ;EDX--
     And     EAX,EDX                                                             ;EAX &= EDX
     XOr     EDX,EDX
