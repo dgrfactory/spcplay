@@ -1,6 +1,6 @@
 1 VERSIONINFO
-    FILEVERSION 2,18,3,7258
-    PRODUCTVERSION 2,18,3,0
+    FILEVERSION 2,18,4,7379
+    PRODUCTVERSION 2,18,4,0
     FILEFLAGSMASK 0x3fL
     FILEFLAGS 0x8L
     FILEOS 0x10004L
@@ -12,11 +12,11 @@ BEGIN
         BLOCK "041103A4"
         BEGIN
             VALUE "FileDescription", "SNES SPC700 Emulator\0"
-            VALUE "FileVersion", "2.18.3 (build 7258)\0"
+            VALUE "FileVersion", "2.18.4 (build 7379)\0"
             VALUE "LegalCopyright", "Copyright (C) 1999-2008 Alpha-II Productions; (C) 2003-2021 degrade-factory.\0"
             VALUE "LegalTrademarks", "SNES is a registered trademark of Nintendo.\0"
             VALUE "ProductName", "SNESAPU\0"
-            VALUE "ProductVersion", "2.18.3\0"
+            VALUE "ProductVersion", "2.18.4\0"
             VALUE "URL", "http://dgrfactory.jp/\0"
         END
     END

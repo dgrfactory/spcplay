@@ -27,4 +27,4 @@
 ;===================================================================================================
 ;Equates
 
-DSP_ALIGN		EQU	128											;DSP Object Locate Alignment
+DSP_ALIGN	EQU	128																;DSP Object Locate Alignment
