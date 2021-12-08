@@ -2089,12 +2089,12 @@ ChgAtt:
 ; ----- degrade-factory code [END] -----
 
 ChgDec:
-; ----- degrade-factory code [2012/06/09] -----
+; ----- degrade-factory code [2021/11/24] -----
         Mov     AL,[ESI+adsr+1]                                                 ;Set destination to AL/8
         ShR     AL,5
         Inc     AL
-        Test    AL,8                                                            ;Is destination of envelope D_MAX?
-        JNZ     .ChgSus                                                         ;   Yes, change sustain mode
+;       Test    AL,8                                                            ;Is destination of envelope D_MAX?
+;       JNZ     .ChgSus                                                         ;   Yes, change sustain mode
 
         IMul    EAX,D_EXP
         XOr     EDX,EDX                                                         ;Adjust value for internal precision
@@ -2102,25 +2102,13 @@ ChgDec:
         SetS    DL
         Add     EAX,EDX
 
-        Cmp     byte [EBX+eMode],E_DECAY                                        ;Whether the second decay mode
-        JNE     short .DecSkip
-        Cmp     [EBX+eDest],EAX                                                 ;If DR time is more than previous,
-        JGE     short .DecSkip                                                  ;   and current envelope is less then dest value,
-        Cmp     [EBX+eVal],EAX                                                  ;   forced to sustain mode and MAX SR time
+        Cmp     byte [EBX+eMode],E_DECAY                                        ;If DR changes in the middle of DECAY,
+        JNE     short .DecSkip                                                  ;   and DR is higher than current envelope value,
+        Cmp     [EBX+eVal],EAX                                                  ;   does not change to sustain mode
         JGE     short .DecSkip
 
-        Mov     dword [EBX+eAdj],A_EXP                                          ;Set adjustment rate to exponential
-        Mov     dword [EBX+eDest],D_MIN                                         ;Set destination to 0
-
-        Mov     EAX,31
-        Mov     [EBX+eRIdx],AL
-        Mov     EDX,[EAX*4+rateTab]
-        Mov     [EBX+eRate],EDX                                                 ;Set rate of change
-        Mov     [EBX+eCnt],EDX
-
-        Or      AH,E_SUST
-        Mov     [EBX+eMode],AH                                                  ;Set envelope mode to sustain
-        Jmp     short .DecNext
+        Mov     dword [EBX+eDest],D_MIN                                         ;Destination to 0 instead of changing to sustain mode,
+        Jmp     short .DecReset                                                 ;   prevents changing to sustain mode by UpdateEnv
 
     .DecSkip:
         Cmp     [EBX+eVal],EAX                                                  ;Did envelope reach destination value?
@@ -2130,6 +2118,7 @@ ChgDec:
         Mov     byte [EBX+eMode],E_DECAY                                        ;Set envelope mode to decay
         Mov     [EBX+eDest],EAX
 
+    .DecReset:
         MovZX   EAX,byte [ESI+adsr]
         And     AL,70h
         ShR     AL,3
@@ -2150,7 +2139,7 @@ ChgDec:
         Mov     EDX,[EAX*4+rateTab]                                             ;Set rate of adjustment
         Mov     [EBX+eRate],EDX
         Mov     [EBX+eCnt],EDX
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #38 -----
 
 ChgSus:
 ; ----- degrade-factory code [2011/02/19] -----
@@ -2191,8 +2180,8 @@ ChgGain:
         Mov     EDX,EAX                                                         ;Adjust value for internal precision
         ShR     DL,7-E_SHIFT                                                    ;EAX = LEVEL * A_GAIN + LEVEL / 128 * A_GAIN
         ShL     EAX,E_SHIFT                                                     ; If LEVEL = 0x00, EAX = 0
-        Add     EAX,EDX                                                         ; If LEVEL = 0x7F, EAX = 127 * A_GAIN + 127 / 128 * A_GAIN = D_MAX (128 * A_GAIN - 1)
-        Mov     [EBX+eDest],EAX
+        Add     EAX,EDX                                                         ; If LEVEL = 0x7F, EAX = 127 * A_GAIN + 127 / 128 * A_GAIN
+        Mov     [EBX+eDest],EAX                                                 ;                      = D_MAX (128 * A_GAIN - 1)
 
         Mov     byte [EBX+eRIdx],31                                             ;Envelope is set
         Mov     ESI,[31*4+rateTab]
@@ -3780,12 +3769,14 @@ ENDP
         FMul    dword [EDX]                                                     ;                                   |0 FBL ((S1-S2)*FD+S2)*FT
         FAddP   ST2,ST                                                          ;                                   |FBR FBL
 
-; ----- degrade-factory code [2021/11/08] -----
+; ----- degrade-factory code [2021/11/27] -----
         Test    dword [dspOpts],DSP_ECHOFIR
         JZ      %%ClampH
 
         Dec     CL                                                              ;Is calculate the oldest sample (n=0)?
         JZ      short %%ClampL                                                  ;   Yes
+        Test    dword [EDX],-1                                                  ;FIR coefficient is minus?
+        JS      short %%ClampL                                                  ;   Yes
             FLd     ST                                                          ;Cut high-order bits                |FBR FBL FBL
             FIRCut16    ST1
             FStP    ST                                                          ;                                   |FBR FBL
