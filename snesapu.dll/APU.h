@@ -320,7 +320,7 @@ void* EmuAPU(void *pBuf, u32 len, u8 type);
 void SeekAPU(u32 time, b8 fast);
 
 
-// ----- degrade-factory code [2013/10/12] -----
+// ----- degrade-factory code [2021/11/27] -----
 //**************************************************************************************************
 // Set/Reset TimerTrick Compatible Function
 //
@@ -349,7 +349,7 @@ void SetTimerTrick(u32 port, u32 wait);
 //      0   : NULL was set in the pSource parameter.  Script700 is disabled.
 //      -1  : Error occurred by binary-converting Script700.  Script700 is disabled.
 
-u32 SetScript700(void *pSource);
+s32 SetScript700(void *pSource);
 
 
 //**************************************************************************************************
@@ -366,7 +366,7 @@ u32 SetScript700(void *pSource);
 //      0   : NULL was set in the pData parameter.  Script700 status will be not changed.
 //      -1  : Error occurred by binary-converting Script700.  Script700 is disabled.
 
-u32 SetScript700Data(u32 addr, void *pData, u32 size);
+s32 SetScript700Data(u32 addr, void *pData, u32 size);
 // ----- degrade-factory code [END] -----
 
 
