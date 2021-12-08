@@ -19,7 +19,7 @@
 * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                                        *
 *                                                                                                  *
 *                                                 Copyright (C) 2001-2004 Alpha-II Productions     *
-*                                                 Copyright (C) 2003-2015 degrade-factory          *
+*                                                 Copyright (C) 2003-2021 degrade-factory          *
 ***************************************************************************************************/
 
 // ----- degrade-factory code [2015/02/28] -----
@@ -167,7 +167,7 @@ typedef struct TRANSMITSPCEXCALLBACK
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Functions
 
-// ----- degrade-factory code [2016/08/20] -----
+// ----- degrade-factory code [2021/09/18] -----
 #ifdef  __cplusplus
 extern  "C" {
 #endif
@@ -750,7 +750,7 @@ int __stdcall ReadPort(int address) {
 void __stdcall ResetTransmit() {
     apu_reset();
     int i = NULL;
-    MoveMemory((void *)(pAPURAM + 0x10022), &i, 4);
+    MoveMemory((void *)(pAPURAM + 0x1001c), &i, 4);
 }
 
 void CloseIOPort() {
@@ -957,7 +957,7 @@ int LocalTransmitSPC(int type) {
     i = (int)&ReadPort;
     MoveMemory((void *)(pAPURAM + 0x10018), &i, 4);
     i = (int)&ResetTransmit;
-    MoveMemory((void *)(pAPURAM + 0x10022), &i, 4);
+    MoveMemory((void *)(pAPURAM + 0x1001c), &i, 4);
 
     // copy spc data from SNESAPU library
     MoveMemory(&spcdata, (void *)pAPURAM, 65536);
@@ -1075,6 +1075,9 @@ int LocalTransmitSPC(int type) {
     //   SHVC-SOUND transmit section
     // ************************************************************************************
 
+    // SHVC-SOUND transfer mode
+    scr700stf |= 0x40;
+
     // reset SHVC-SOUND unit
     if (type == TRANSMIT_TYPE_LPT) {
         apu_reset();
@@ -1097,7 +1100,7 @@ int LocalTransmitSPC(int type) {
             apu_write(3, 0x00);
         }
         apu_write(0, port0);
-        if (type != TRANSMIT_TYPE_GIMIC && !apu_waitInport(0, port0, 500)) return 10; // timeout 10
+        if (type != TRANSMIT_TYPE_GIMIC && !apu_waitInport(0, port0, 500)) return 11; // timeout 11
         if (++port0 >= 256) port0 = 0;
     }
 
@@ -1107,8 +1110,8 @@ int LocalTransmitSPC(int type) {
     }
 
     // finalize IPL
-    if (!apu_endTransfer(0x0006)) return 11; // timeout 11
-    if (!apu_waitInport(0, 0x00, 500)) return 12; // timeout 12
+    if (!apu_endTransfer(0x0006)) return 12; // timeout 12
+    if (!apu_waitInport(0, 0x00, 500)) return 13; // timeout 13
     j = 0x01;
 
     // for GIMIC
@@ -1266,4 +1269,4 @@ u32 DllMain(u32 hinst, u32 fwdReason, u32 lpReserved) {
 #ifdef  __cplusplus
 }
 #endif
-// ----- degrade-factory code [END] -----
+// ----- degrade-factory code [END] #34 -----
