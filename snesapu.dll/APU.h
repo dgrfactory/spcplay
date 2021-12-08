@@ -19,7 +19,7 @@
 * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                                        *
 *                                                                                                  *
 *                                                 Copyright (C) 2003-2006 Alpha-II Productions     *
-*                                                 Copyright (C) 2003-2016 degrade-factory          *
+*                                                 Copyright (C) 2003-2021 degrade-factory          *
 ***************************************************************************************************/
 
 #ifndef __INC_APU
@@ -56,13 +56,14 @@
 #define SCR700MASK  SCR700SIZE - 1              //Script700 Program Area Mask
 // ----- degrade-factory code [END] -----
 
-// ----- degrade-factory code [2015/11/23] -----
+// ----- degrade-factory code [2021/09/19] -----
 //SNESAPU callback effect
 #define CBE_DSPREG  0x01                        //Write DSP value event
 #define CBE_S700FCH 0x02                        //Write SPC700 fetch event
 #define CBE_INCS700 0x40000000                  //Include Script700 text file
 #define CBE_INCDATA 0x20000000                  //Include Script700 binary file
-// ----- degrade-factory code [END] -----
+#define CBE_REQBP   0x10000000                  //Request break point
+// ----- degrade-factory code [END] #35 -----
 
 // ----- degrade-factory code [2016/05/09] -----
 //**************************************************************************************************
@@ -94,24 +95,25 @@ typedef u32 (__stdcall *CBFUNC)(u32 effect, u32 addr, u32 value, void *pData);
 
 #ifdef  __cplusplus
 extern  "C" u32 apuOpt;                         //Build options
-// ----- degrade-factory code [2006/10/20] -----
-extern  "C" u8  scr700dsp[256];                 //Script700 DSP Enable Flag (Channel)
-extern  "C" u8  scr700mds[32];                  //Script700 DSP Enable Flag (Master)
-extern  "C" u8  scr700chg[256];                 //Script700 DSP Note Change
-extern  "C" u32 scr700det[256];                 //Script700 DSP Rate Detune
-extern  "C" u32 scr700vol[256];                 //Script700 DSP Volume Change (Source)
-extern  "C" u32 scr700mvl[32];                  //Script700 DSP Volume Change (Master)
-extern  "C" u32 scr700wrk[8];                   //Script700 User Work Area
-extern  "C" u32 scr700cmp[2];                   //Script700 Cmp Param
-extern  "C" u32 scr700cnt;                      //Script700 Wait Count
-extern  "C" u32 scr700ptr;                      //Script700 Program Pointer
-extern  "C" u32 scr700dat;                      //Script700 Data Area Offset
+// ----- degrade-factory code [2021/09/18] -----
+extern  "C" u8  scr700dsp[256];                 //Script700 DSP enable flags (Channel)
+extern  "C" u8  scr700mds[32];                  //Script700 DSP enable flags (Master)
+extern  "C" u8  scr700chg[256];                 //Script700 DSP note change
+extern  "C" u32 scr700det[256];                 //Script700 DSP rate detune
+extern  "C" u32 scr700vol[256];                 //Script700 DSP volume change (Source)
+extern  "C" u32 scr700mvl[32];                  //Script700 DSP volume change (Master)
+extern  "C" u32 scr700wrk[8];                   //Script700 User work area
+extern  "C" u32 scr700cmp[2];                   //Script700 Compare parameters
+extern  "C" u32 scr700cnt;                      //Script700 Waiting count
+extern  "C" u32 scr700ptr;                      //Script700 Program pointer
+extern  "C" u8  scr700stf;                      //Script700 Status flags
+extern  "C" u32 scr700dat;                      //Script700 Data area offset
 extern  "C" u32 pAPURAM;                        //Pointer to SNESAPU 64KB RAM
 extern  "C" u32 pSCRRAM;                        //Pointer to Script700 RAM
-// ----- degrade-factory code [END] -----
+// ----- degrade-factory code [END] #34 -----
 #else
 extern  u32 apuOpt;
-// ----- degrade-factory code [2006/10/20] -----
+// ----- degrade-factory code [2021/09/18] -----
 extern  u8  scr700dsp[256];
 extern  u8  scr700mds[32];
 extern  u8  scr700chg[256];
@@ -122,10 +124,11 @@ extern  u32 scr700wrk[8];
 extern  u32 scr700cmp[2];
 extern  u32 scr700cnt;
 extern  u32 scr700ptr;
+extern  u8  scr700stf;
 extern  u32 scr700dat;
 extern  u32 pAPURAM;
 extern  u32 pSCRRAM;
-// ----- degrade-factory code [END] -----
+// ----- degrade-factory code [END] #34 -----
 #endif
 
 
