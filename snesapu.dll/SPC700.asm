@@ -22,7 +22,7 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2008 Alpha-II Productions
-;                                                   Copyright (C) 2003-2019 degrade-factory
+;                                                   Copyright (C) 2003-2020 degrade-factory
 ;===================================================================================================
 
 CPU		386
@@ -211,10 +211,6 @@ SECTION .bss ALIGN=64
 	regYA		resd	1
 	regSP		resd	1
 	regX		resd	1
-
-	tmpTotal	resd	1														;clkTotal which was set before EmuAPU was called
-	tmpExec		resd	1														;clkExec which was set before EmuAPU was called
-	tmpLeft		resd	1														;clkLeft which was set before EmuAPU was called
 
 %ifdef SHVC_SOUND_SUPPORT
 	cbWrPort	resd	1														;Callback function to write port
@@ -1181,7 +1177,7 @@ PROC RunScript700
 	JZ		short .700NCALERROR													;	Yes
 	Mov		EAX,ECX																;EAX = ECX
 	Mov		ECX,EDX																;ECX = EDX
-	Cdq																			;(EAX < 0) EDX = 0xFFFFFFFF / (EAX >= 0) EDX = 0x00
+	CDQ																			;(EAX < 0) EDX = 0xFFFFFFFF / (EAX >= 0) EDX = 0x00
 	IDiv	ECX																	;EAX = EDX:EAX / ECX
 	Mov		EDX,EAX																;EDX = EAX
 	Ret
@@ -1201,7 +1197,7 @@ PROC RunScript700
 	JZ		short .700NCALERROR													;	Yes
 	Mov		EAX,ECX																;EAX = ECX
 	Mov		ECX,EDX																;ECX = EDX
-	Cdq																			;(EAX < 0) EDX = 0xFFFFFFFF / (EAX >= 0) EDX = 0x00
+	CDQ																			;(EAX < 0) EDX = 0xFFFFFFFF / (EAX >= 0) EDX = 0x00
 	IDiv	ECX																	;EAX = EDX:EAX / ECX
 	Ret
 
@@ -1457,23 +1453,13 @@ PROC EmuSPC, cyc
 	Mov		EBP,SPCFetch
 %endif
 
-; ----- degrade-factory code [2016/08/20] -----
-	Mov		EDX,[clkTotal]
-	Mov		[tmpTotal],EDX
-	Mov		EDX,[clkExec]
-	Mov		[tmpExec],EDX
-	Mov		EDX,[clkLeft]
-	Mov		[tmpLeft],EDX
-; ----- degrade-factory code [END] -----
-
 	;Setup clock cycle execution -------------
 	;clkLeft contains the number of clock cycles to emulate until timer 2 increases or it's time to quit
-
 	XOr		EDX,EDX
 	Mov		[clkTotal],EAX
 
-	Sub		EAX,[t64kHz]														;If cyc > t64kHz, clkExec = t64kHz
-	SetA	DL																	;else clkExec = cyc
+	Sub		EAX,[t64kHz]														;If clkTotal > t64kHz, clkExec = t64kHz
+	SetA	DL																	;else clkExec = clkTotal
 	Dec		EDX
 	And		EAX,EDX
 	Add		EAX,[t64kHz]
@@ -1518,10 +1504,10 @@ ENDP
 ;In the debug build, before the fetcher handles the next opcode a user defined function is called.
 
 SPCTrace:
-; ----- degrade-factory code [2008/01/11] -----
+; ----- degrade-factory code [2020/10/20] -----
 	Cmp		dword [clkLeft],0													;Have we executed all clock cycles?
-	JL		SPCTimers															;	Yes, Update timers
-; ----- degrade-factory code [END] -----
+	JLE		SPCTimers															;	Yes, Update timers
+; ----- degrade-factory code [END] #18 -----
 
 SPCBreak:
 	;Call SPCTrace ---------------------------
@@ -1575,12 +1561,12 @@ SPCBreak:
 	;to jump directly to the handler without needing to use a jump table.
 
 SPCFetch:																		;(All opcode handlers return to this point)
-; ----- degrade-factory code [2008/01/11] -----
+; ----- degrade-factory code [2020/10/20] -----
 	Cmp		dword [clkLeft],0													;Have we executed all clock cycles?
-	JL		SPCTimers															;	Yes, Update timers
-; ----- degrade-factory code [END] -----
+	JLE		SPCTimers															;	Yes, Update timers
+; ----- degrade-factory code [END] #18 -----
 
-; ----- degrade-factory code [2016/08/20] -----
+; ----- degrade-factory code [2020/10/26] -----
 	Test	dword [apuCbMask],CBE_S700FCH
 	JZ		short .NoCallback
 
@@ -1594,24 +1580,20 @@ SPCFetch:																		;(All opcode handlers return to this point)
 		Pop		ECX,EAX
 
 		Test	DL,FCH_HALT														;Exit emulation?
-		JZ		short .NextCallback1											;	No
+		JZ		short .NextCallback												;	No
 
-		And		DL,FCH_PAUSE & 02h												;Update disable envelope flags
-		Mov		DH,[envFlag]
+		And		DL,~FCH_HALT
+		Mov		DH,[envFlag]													;Update disable envelope flags
 		And		DH,~FCH_PAUSE
 		Or		DH,DL
 		Mov		[envFlag],DH
 
-		Mov		EDX,[tmpTotal]
+		Mov		EDX,[clkExec]													;Substitute clkTotal to processed clocks,
+		Sub		EDX,[clkLeft]													;to terminate EmuSPC at next SPCTimers
 		Mov		[clkTotal],EDX
-		Mov		EDX,[tmpExec]
-		Mov		[clkExec],EDX
-		Mov		EDX,[tmpLeft]
-		Mov		[clkLeft],EDX
+		Jmp		SPCTimers
 
-		Jmp		SPCExit
-
-	.NextCallback1:
+	.NextCallback:
 		And		byte [envFlag],~FCH_PAUSE
 
 		Test	DL,FCH_NOP														;Skip opecode?
@@ -1621,7 +1603,7 @@ SPCFetch:																		;(All opcode handlers return to this point)
 		Jmp		EDX
 
 	.NoCallback:
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #19 -----
 
 ; ----- degrade-factory code [2007/10/07] -----
 	MovZX	EDX,byte [ESI]														;Get next opcode
@@ -1635,7 +1617,7 @@ SPCFetch:																		;(All opcode handlers return to this point)
 	;be subtracted from the total number to be emulated (clkTotal) and used to update the timers.
 
 SPCTimers:
-; ----- degrade-factory code [2019/07/07] -----
+; ----- degrade-factory code [2020/10/24] -----
 	Mov		EDX,[clkExec]														;EDX = Actual number of clock cycles emulated
 	Sub		EDX,[clkLeft]
 
@@ -1750,17 +1732,20 @@ SPCTimers:
 	Sub		[clkTotal],EDX														;Have we executed all clock cycles?
 	JLE		SPCExit																;	Yes, Quit
 
-	Mov		BX,AX																;Calculate number of cycles to emulate
-	Mov		EAX,[t64kHz]														;clkExec = (t64kHz < clkTotal) ? t64kHz : clkTotal
-	Sub		EAX,[clkTotal]
+	Mov		BX,AX																;Save SPC.A, SPC.Y
+
+	Mov		EAX,[t64kHz]														;If clkTotal > t64kHz, clkExec = t64kHz
+	Sub		EAX,[clkTotal]														;else clkExec = clkTotal
 	CDQ
 	And		EAX,EDX
 	Add		EAX,[clkTotal]
+
+	Mov		[clkExec],EAX														;Save the number we want to execute this lap
 	Mov		[clkLeft],EAX
-	Mov		[clkExec],EAX
+
 	Mov		AX,BX																;Restore SPC.A, SPC.Y
 	Jmp		EBP																	;Return to fetcher
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #19 -----
 
 
 ;===================================================================================================
@@ -3052,12 +3037,14 @@ Ret
 ;       1   0
 ;Brk
 %macro Opc0F 0
-	Mov		byte [PSW+B],1
-	Mov		byte [PSW+I],0
 	PushW	PC
 	CmpPSW
 	PushB	PS
 	Mov		PC,[0FFDEh+RAM]
+; ----- degrade-factory code [2020/10/20] -----
+	Mov		byte [PSW+B],1
+	Mov		byte [PSW+I],0
+; ----- degrade-factory code [END] #20 -----
 	CleanUp	8,1
 %endmacro
 
