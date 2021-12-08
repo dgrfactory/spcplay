@@ -44,7 +44,7 @@
 //  ※ GNU 一般公衆利用許諾契約書バージョン 2 のドキュメントは、付属の LICENSE にあります。
 //
 //
-//  Copyright (C) 2003-2020 degrade-factory. All rights reserved.
+//  Copyright (C) 2003-2021 degrade-factory. All rights reserved.
 //
 // =================================================================================================
 program spccmd;

@@ -22,7 +22,7 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2008 Alpha-II Productions
-;                                                   Copyright (C) 2003-2020 degrade-factory
+;                                                   Copyright (C) 2003-2021 degrade-factory
 ;===================================================================================================
 
 CPU		386
@@ -454,6 +454,7 @@ USES ECX,EDX,EBX,ESI,EDI
 	Mov		DL,[inPSW]
 	Mov		EBX,PSW
 	Mov		AH,8
+
 	.Flag:
 		Mov		dword [EBX],0
 		ShR		DL,1
@@ -490,13 +491,21 @@ USES ECX,EDX,EBX,ESI,EDI
 	Mov		[RAM+control],AL
 
 	;Copy the correct extra RAM --------------
-	Test	byte [RAM+control],80h
-	RetNZ
-
-	LEA		ESI,[RAM+ipl]
-	Mov		EDI,extraRAM
+; ----- degrade-factory code [2021/02/18] -----
+	LEA		ESI,[RAM+ipl]														;Setup registers to move data from Extra RAM to
+	Mov		EDI,extraRAM														; IPL region
 	Mov		ECX,10h
+
+%if IPLW
+	Test	AL,AL
+	JNS		short .NoRA
+		Mov		EDI,ESI															;Setup registers to move ROM program into IPL region
+		Mov		ESI,iplROM
+	.NoRA:
+%endif
+
 	Rep		MovSD
+; ----- degrade-factory code [END] #24 -----
 
 ENDP
 
@@ -509,6 +518,7 @@ USES EBX
 
 	Mov		EBX,PSW+1
 	Mov		AL,80h
+
 	.Flag:
 		Mov		AH,[EBX]
 		Add		EBX,4
@@ -4995,25 +5005,28 @@ ALIGN 16
 	XOr		AL,BL																;Did ROM access change?
 	JNS		short %%NoRA														;	No
 		Push	ECX,ESI,EDI
+
 		Mov		ESI,extraRAM													;Setup registers to move data from Extra RAM to
 		Mov		DI,ipl															; IPL region
-
 		Mov		ECX,10h
+
 		Test	BL,BL															;Is ROM readable?
 		JNS		short %%NoRR													;	No, Perform move as intended
 			XChg	ESI,EDI														;Reverse original operation, move IPL to Extra RAM
 			Rep		MovSD
+
 			Mov		CL,10h														;Setup registers to move ROM program into IPL region
 			LEA		EDI,[ESI-40h]
 			Mov		ESI,iplROM
+
 		%%NoRR:
 		Rep		MovSD															;Move iplROM or extraRAM to IPL ROM region
 		Pop		EDI,ESI,ECX
+
 	%%NoRA:
 ; ----- degrade-factory code [END] -----
 
 	;Clear ports -----------------------------
-; ----- degrade-factory code [2015/02/28] -----
 	Test	BL,30h																;Was a clear ports command written?
 	JZ		short %%NoCP														;	No
 		Mov		EAX,EBX
@@ -5023,9 +5036,10 @@ ALIGN 16
 		SAR		AX,15
 		And		dword [RAM+port0],EAX											;Reset in-ports
 		And		dword [inPortCp],EAX
+; ----- degrade-factory code [2015/02/28] -----
 		And		dword [flushPort],EAX
-	%%NoCP:
 ; ----- degrade-factory code [END] -----
+	%%NoCP:
 
 	;Timer control ---------------------------
 	Mov		AL,[tControl]														;AL = Timers currently enabled
