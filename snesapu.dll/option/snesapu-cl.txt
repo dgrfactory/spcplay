@@ -1,0 +1,2 @@
+/nologo /G3 /Gz /MT /W3 /O2 /Ob0 /D "NDEBUG" /D "_USRDLL" /FAs /Fa"Release/" /Fo"Release/" /Fd"Release/" /FD /opt:nowin98 /c 
+./SNESAPU.cpp

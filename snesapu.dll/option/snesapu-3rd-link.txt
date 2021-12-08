@@ -1,0 +1,6 @@
+winmm.lib /nologo /dll /pdb:none /map:"Release/SNESAPU.map" /machine:I386 /def:".\SNESAPU.def" /out:"Release/SNESAPU.dll" /implib:"SNESAPU.lib" 
+.\Release\SNESAPU.obj
+.\Release\version.res
+.\Release\APU.obj
+.\Release\DSP.obj
+.\Release\SPC700.obj

@@ -1,0 +1,32 @@
+LIBRARY     SNESAPU
+DESCRIPTION "SNES SPC700 Emulator"
+EXPORTS
+  EmuAPU
+  FixAPU
+  GetAPUData
+  GetScript700Data
+  GetSNESAPUContext
+  GetSNESAPUContextSize
+  GetSPCRegs
+  InPort
+  LoadSPCFile
+  ResetAPU
+  SeekAPU
+  SetAPULength
+  SetAPUOpt
+  SetAPURAM
+  SetAPUSmpClk
+  SetDSPAmp
+  SetDSPDbg
+  SetDSPEFBCT
+  SetDSPPitch
+  SetDSPReg
+  SetDSPStereo
+  SetDSPVol
+  SetScript700
+  SetScript700Data
+  SetSNESAPUContext
+  SetSPCDbg
+  SetTimerTrick
+  SNESAPUCallback
+  SNESAPUInfo
