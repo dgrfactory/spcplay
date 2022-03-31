@@ -59,6 +59,7 @@ program spcplay;
 //{$DEFINE DEBUGLOG}                                        // デバッグログ出力             : OFF (注釈を外すと ON)
 //{$DEFINE UACDROP}                                         // UAC を超えたドロップ操作     : OFF (注釈を外すと ON)
 //{$DEFINE ITASKBARLIST3}                                   // ITaskbarList3 対応           : OFF (注釈を外すと ON)
+//{$DEFINE WIN10DARK}                                       // Windows 10 ダークテーマ      : OFF (注釈を外すと ON)
 
 {$APPTYPE GUI}                                              // アプリケーションタイプ       : GUI モード
 {$ASSERTIONS OFF}                                           // ソースコードのアサート       : 無効
@@ -2331,8 +2332,8 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.19.1 (build 7540)';
-    SNESAPU_VERSION = $21961;
+    SPCPLAY_VERSION = '2.19.2 (build 7664)';
+    SNESAPU_VERSION = $21962;
     APPLINK_VERSION = $02170500;
 
     CBE_DSPREG = $1;
@@ -3031,6 +3032,7 @@ const
     STR_MENU_LIST: array[0..1] of pchar = ('プレイリスト(&P)', '&Playlist');
     STR_MENU_FILE_EXIT: array[0..1] of pchar = ('終了(&X)', 'E&xit');
     STR_MENU_SETUP_DEVICE: array[0..1] of pchar = ('サウンド デバイス(&D)', 'Sound &Devices');
+    STR_MENU_SETUP_DEVICE_MAPPER: array[0..1] of pchar = ('システム設定を使用(&D)', 'System &Default');
     STR_MENU_SETUP_CHANNEL: array[0..1] of pchar = ('チャンネル(&C)', '&Channels');
     STR_MENU_SETUP_BIT: array[0..1] of pchar = ('ビット(&B)', '&Bit');
     STR_MENU_SETUP_RATE: array[0..1] of pchar = ('サンプリング レート(&R)', 'Sampling &Rate');
@@ -3230,7 +3232,6 @@ var
         bBreakButton: longbool;                                 // Break
         bChangePlay: longbool;                                  // 演奏変更フラグ
         bChangeShift: longbool;                                 // Shift キー変更フラグ
-        bChangeBreak: longbool;                                 // Break キー変更フラグ
         bOptionLock: longbool;                                  // オプションロック
         bWaveWrite: longbool;                                   // WAVE 書き込みフラグ
         dwTitle: longword;                                      // タイトルフラグ
@@ -3244,6 +3245,8 @@ var
         dwLastStartTime: longword;                              // 最後のリピート開始位置
         dwLimitTime: longword;                                  // リピート終了位置
         dwLastLimitTime: longword;                              // 最後のリピート終了位置
+        dwTuningAddress: longword;                              // TUNING パラメータの開始アドレス
+        dwTuningSize: longword;                                 // TUNING パラメータのサイズ
         dwOpenFilterIndex: longint;                             // ファイルタイプのインデックス (Open)
         dwSaveFilterIndex: longint;                             // ファイルタイプのインデックス (Save)
         DragPoint: TPOINT;                                      // ドラッグ開始位置
@@ -3958,10 +3961,11 @@ begin
                             // 設定をリセット
                             cfMain.SPCReset(false);
                         end;
-                        VK_PAUSE: begin // Break/Pause キー
+                        VK_F12, VK_PAUSE: begin // F12, Break/Pause キー
                             // フラグを設定
                             Status.bBreakButton := not Status.bBreakButton;
-                            Status.bChangeBreak := true;
+                            // 情報を更新
+                            cfMain.UpdateInfo(false);
                             // インジケータを再描画
                             cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
                         end;
@@ -5083,6 +5087,13 @@ var
 {$IFDEF UACDROP}
     API_ChangeWindowMessageFilter: function(msg: longword; dwFlag: longword): longword; stdcall;
 {$ENDIF}
+{$IFDEF WIN10DARK}
+    API_SetPreferredAppMode: function(dwMode: longword): longword; stdcall;
+    API_RefreshImmersiveColorPolicyState: function(): longword; stdcall;
+    API_AllowDarkModeForWindow: function(hWnd: longword; bAllow: longbool): longword; stdcall;
+    API_SetWindowTheme: function(hWnd: longword; pszSubAppName: pointer; pszSubIdList: pointer): longword; stdcall;
+    API_DwmSetWindowAttribute: function(hWnd: longword; dwAttribute: longword; pvAttribute: pointer; cbAttribute: longword): longword; stdcall;
+{$ENDIF}
 
 function GetParameter(var dwStart: longint; dwLength: longint; bLast: longbool): string;
 var
@@ -5322,7 +5333,6 @@ begin
     Status.bBreakButton := false;
     Status.bChangePlay := false;
     Status.bChangeShift := false;
-    Status.bChangeBreak := false;
     Status.bOptionLock := false;
     Status.dwTitle := TITLE_HIDE;
     Status.dwInfo := NULL;
@@ -5918,6 +5928,21 @@ begin
     Apu.SetSPCDbg(@_SPCDebug, $11);  // SPC_TRACE | SPC_RETURN
     Apu.SetDSPDbg(@_DSPDebug);
 {$ENDIF}
+{$IFDEF WIN10DARK}
+    dwBuffer := API_LoadLibrary(pchar('uxtheme.dll'));
+    if longbool(dwBuffer) then begin
+        @API_SetPreferredAppMode := API_GetProcAddress(dwBuffer, pointer(longword(135)));
+        if longbool(@API_SetPreferredAppMode) then API_SetPreferredAppMode(1);  // Dark Mode
+        @API_RefreshImmersiveColorPolicyState := API_GetProcAddress(dwBuffer, pointer(longword(104)));
+        if longbool(@API_RefreshImmersiveColorPolicyState) then API_RefreshImmersiveColorPolicyState();
+        @API_AllowDarkModeForWindow := API_GetProcAddress(dwBuffer, pointer(longword(133)));
+        if longbool(@API_AllowDarkModeForWindow) then API_AllowDarkModeForWindow(hWndApp, true);
+        @API_SetWindowTheme := API_GetProcAddress(dwBuffer, pchar('SetWindowTheme'));
+        if longbool(@API_SetWindowTheme) then API_SetWindowTheme(hWndApp, pchar('DarkMode_Explorer'), NULLPOINTER);
+        API_SendMessage(hWndApp, WM_THEMECHANGED, NULL, NULL);
+        API_FreeLibrary(dwBuffer);
+    end;
+{$ENDIF}
 end;
 
 // ================================================================================
@@ -6495,22 +6520,104 @@ begin
     result := byte(Max(0, Min(COLOR_BAR_HEIGHT, Round(22 * Log10((dwLevel and $3FFF) + 1)) - 44)));
 end;
 
-procedure UpdateChannelSource();
+procedure UpdateChannelSource(bDec: boolean);
 begin
-    // 全体を再描画する場合はいったん描画領域をクリア
-    if Status.bChangeBreak then begin
-        StrData.dwData[0] := $202020; // '   '
-        Z := 0;
-        UpdateNumWrite(X, 3);
-    end;
     // 音色番号を描画
     J := DspVoice.SoundSourcePlayBack;
-    if Status.bBreakButton then begin
+    if bDec and Status.bBreakButton then begin
         Z := 0;
         UpdateNumWrite(X, IntToStr(StrData, J, 3));
     end else begin
         Z := 3;
         UpdateNumWrite(X, IntToHex(StrData, J, 2));
+    end;
+end;
+
+function SearchTuneAddress(dwPhase: longword): bytebool;
+var
+    dwI: longint;
+    dwJ: longint;
+    dwK: longint;
+    dwSource: longint;
+    dwMatch: longword;
+    TmpVoice: ^TVOICE;
+    TmpDspVoice: ^TDSPVOICE;
+begin
+    // 探索済みの場合は終了
+    if longbool(Status.dwTuningSize) then begin
+        result := true;
+        exit;
+    end;
+    // 初期化
+    result := false;
+    dwSource := -1;
+    // 全チャンネルを探索
+    for dwI := 0 to 7 do begin
+        // 音が出力されていない場合はループを再開
+        TmpVoice := @Voices.Voice[dwI];
+        if not longbool(TmpVoice.VolumeMaxLeft) and not longbool(TmpVoice.VolumeMaxRight) then continue;
+        // ADSR が指定されていない場合はループを再開
+        TmpDspVoice := @DspReg.Voice[dwI];
+        if not longbool(TmpDspVoice.EnvelopeADSR1) and not longbool(TmpDspVoice.EnvelopeADSR2) then continue;
+        // ADSR パラメータを探索
+        for dwJ := Status.dwTuningAddress + 1 to $FFBB do begin
+            // ADSR パラメータが見つからない場合はループを再開
+            if Apu.Ram.Ram[dwJ + 0] <> TmpDspVoice.EnvelopeADSR1 then continue;
+            if Apu.Ram.Ram[dwJ + 1] <> TmpDspVoice.EnvelopeADSR2 then continue;
+            if not longbool(dwPhase) then begin
+                if Apu.Ram.Ram[dwJ + 2] <> TmpDspVoice.EnvelopeGain then continue;
+            end else begin
+                if Apu.Ram.Ram[dwJ - 1] <> TmpDspVoice.SoundSourcePlayBack then continue;
+            end;
+            // ADSR パラメータ位置を記録
+            Status.dwTuningAddress := longword(dwJ);
+            dwSource := longint(TmpDspVoice.SoundSourcePlayBack);
+            // ループを抜ける
+            break;
+        end;
+        // ADSR パラメータが見つからない場合は探索位置をリセット
+        if dwSource < 0 then Status.dwTuningAddress := $1FF;
+        // ループを抜ける
+        break;
+    end;
+    // ADSR パラメータが見つからない場合は終了
+    if dwSource < 0 then exit;
+    // 次のチャンネルを探索
+    for dwMatch := 0 to 1 do for dwI := 0 to 7 do begin
+        // 音が出力されていない場合はループを再開
+        if not longbool(dwMatch) then begin
+            TmpVoice := @Voices.Voice[dwI];
+            if not longbool(TmpVoice.VolumeMaxLeft) and not longbool(TmpVoice.VolumeMaxRight) then continue;
+        end;
+        // ADSR が指定されていない場合はループを再開
+        TmpDspVoice := @DspReg.Voice[dwI];
+        if not longbool(TmpDspVoice.EnvelopeADSR1) and not longbool(TmpDspVoice.EnvelopeADSR2) then continue;
+        // 1回目のチャンネルと同じ波形番号の場合はループを再開
+        if byte(dwSource) = TmpDspVoice.SoundSourcePlayBack then continue;
+        // ADSR パラメータを探索
+        for dwJ := 5 to 8 do begin
+            // アドレスが範囲外になる場合はループを再開
+            dwK := longint(TmpDspVoice.SoundSourcePlayBack) - dwSource;
+            dwK := longint(Status.dwTuningAddress) + dwK * dwJ;
+            if (dwK < $200) or (dwK > $FFBB) then continue;
+            // ADSR パラメータが見つからない場合はループを再開
+            if Apu.Ram.Ram[dwK + 0] <> TmpDspVoice.EnvelopeADSR1 then continue;
+            if Apu.Ram.Ram[dwK + 1] <> TmpDspVoice.EnvelopeADSR2 then continue;
+            if not longbool(dwPhase) then begin
+                if Apu.Ram.Ram[dwK + 2] <> TmpDspVoice.EnvelopeGain then continue;
+            end else begin
+                if Apu.Ram.Ram[dwK - 1] <> TmpDspVoice.SoundSourcePlayBack then continue;
+            end;
+            // ADSR パラメータ位置から TUNING 開始アドレスを取得
+            Dec(Status.dwTuningAddress, dwSource * dwJ - 3);
+            // ADSR パラメータサイズを記録
+            Status.dwTuningSize := dwJ;
+            // 成功
+            result := true;
+            exit;
+        end;
+        // ループを抜ける
+        break;
     end;
 end;
 
@@ -6746,11 +6853,12 @@ begin
             X := I div 4 * 25 + 4;
             Y := I mod 4 + 2;
             DspVoice := @DspReg.Voice[I];
-            UpdateChannelSource();
+            UpdateChannelSource(true);
             Z := 0;
             UpdateNumWrite(X +  4, IntToHex(StrData, DspVoice.VolumeLeft, 2));
             UpdateNumWrite(X +  7, IntToHex(StrData, DspVoice.VolumeRight, 2));
-            UpdateNumWrite(X + 16, IntToHex(StrData, DspVoice.CurrentEnvelope, 2));
+            if Status.bBreakButton then UpdateNumWrite(X + 16, IntToHex(StrData, DspVoice.CurrentOutput, 2))
+            else UpdateNumWrite(X + 16, IntToHex(StrData, DspVoice.CurrentEnvelope, 2));
             Z := 3;
             UpdateNumWrite(X + 10, IntToHex(StrData, DspVoice.Pitch, 4));
         end;
@@ -6759,22 +6867,53 @@ begin
             X := I div 4 * 25 + 4;
             Y := I mod 4 + 2;
             DspVoice := @DspReg.Voice[I];
-            UpdateChannelSource();
+            UpdateChannelSource(false);
             Voice := @Voices.Voice[I];
             Z := 0;
             if not longbool(T64Count) then begin
                 // 演奏停止中
-                StrData.dwData[0] := $5656; // 'VV'
-                UpdateNumWrite(X +  4, 2);
-                UpdateNumWrite(X +  7, 1);
-                UpdateNumWrite(X +  9, 1);
-                UpdateNumWrite(X + 11, 1);
-                StrData.dwData[0] := $54; // 'T'
-                UpdateNumWrite(X +  8, 1);
-                UpdateNumWrite(X + 10, 1);
-                UpdateNumWrite(X + 12, 1);
+                if not Status.bBreakButton then begin
+                    StrData.dwData[0] := $5656; // 'VV'
+                    UpdateNumWrite(X +  4, 2);
+                    UpdateNumWrite(X +  7, 1);
+                    UpdateNumWrite(X +  9, 1);
+                    UpdateNumWrite(X + 11, 1);
+                    StrData.dwData[0] := $54; // 'T'
+                    UpdateNumWrite(X +  8, 1);
+                    UpdateNumWrite(X + 10, 1);
+                    UpdateNumWrite(X + 12, 1);
+                end;
                 StrData.dwData[0] := $3030; // '00'
+                if Status.bBreakButton then begin
+                    UpdateNumWrite(X +  4, 2);
+                    UpdateNumWrite(X +  7, 2);
+                    UpdateNumWrite(X + 10, 2);
+                    UpdateNumWrite(X + 16, 2);
+                    Z := 3;
+                end;
                 UpdateNumWrite(X + 13, 2);
+            end else if Status.bBreakButton then begin
+                // AddMusicK ADSR
+                UpdateNumWrite(X +  4, IntToHex(StrData, DspVoice.EnvelopeADSR1, 2));
+                UpdateNumWrite(X +  7, IntToHex(StrData, DspVoice.EnvelopeADSR2, 2));
+                UpdateNumWrite(X + 10, IntToHex(StrData, DspVoice.EnvelopeGain, 2));
+                StrData.dwData[0] := $54; // 'T'
+                UpdateNumWrite(X +  6, 1);
+                UpdateNumWrite(X +  9, 1);
+                UpdateNumWrite(X + 12, 1);
+                // TUNING
+                if SearchTuneAddress(0) or SearchTuneAddress(1) then begin
+                    V := longword(Apu.Ram) or ((Status.dwTuningAddress + Status.dwTuningSize * DspVoice.SoundSourcePlayBack) and $FFFF);
+                    API_MoveMemory(@V, pointer(V), 4);
+                    UpdateNumWrite(X + 16, IntToHex(StrData, V shr 8, 2));
+                    Z := 3;
+                    UpdateNumWrite(X + 13, IntToHex(StrData, V, 2));
+                end else begin
+                    StrData.dwData[0] := $5656; // 'VV'
+                    UpdateNumWrite(X + 16, 2);
+                    Z := 3;
+                    UpdateNumWrite(X + 13, 2);
+                end;
             end else if bytebool(DspVoice.EnvelopeADSR1 and $80) then begin
                 // ADSR
                 V := (DspVoice.EnvelopeADSR1 shl 8) or DspVoice.EnvelopeADSR2;
@@ -6805,7 +6944,8 @@ begin
                     UpdateNumWrite(X + 13, IntToHex(StrData, V and $1F, 2));
                     StrData.dwData[0] := $54; // 'T'
                     UpdateNumWrite(X +  8, 1);
-                    V := Voice.EnvelopeCurrentMode and $F;
+                    // MixFlag and $8 = MFLG_OFF は E_REL と等価とみなす
+                    V := (Voice.EnvelopeCurrentMode and $F) or (Voice.MixFlag and $8);
                     if (V = $2) or (V = $6) then StrData.dwData[0] := $68 // 'h'
                     else if (V = $0) or (V = $1) then StrData.dwData[0] := $69 // 'i'
                     else StrData.dwData[0] := $54; // 'T'
@@ -6824,16 +6964,17 @@ begin
                     StrData.dwData[0] := $54; // 'T'
                     UpdateNumWrite(X +  8, 1);
                     UpdateNumWrite(X + 10, 1);
-                    V := Voice.EnvelopeCurrentMode and $F;
+                    // MixFlag and $8 = MFLG_OFF は E_REL と等価とみなす
+                    V := (Voice.EnvelopeCurrentMode and $F) or (Voice.MixFlag and $8);
                     if V = $7 then StrData.dwData[0] := $6D // 'm'
                     else StrData.dwData[0] := $54; // 'T'
                     UpdateNumWrite(X + 12, 1);
                 end;
             end;
             if Status.bBreakButton then begin
-                StrData.dwData[0] := $6E; // 'n'
-                UpdateNumWrite(X + 15, 1);
-                UpdateNumWrite(X + 16, IntToHex(StrData, DspVoice.CurrentOutput, 2));
+                // StrData.dwData[0] := $6E; // 'n'
+                // UpdateNumWrite(X + 15, 1);
+                // UpdateNumWrite(X + 16, IntToHex(StrData, DspVoice.CurrentOutput, 2));
             end else begin
                 StrData.dwData[0] := $54; // 'T'
                 UpdateNumWrite(X + 15, 1);
@@ -6846,7 +6987,7 @@ begin
             Y := I mod 4 + 2;
             V := 1 shl I;
             DspVoice := @DspReg.Voice[I];
-            UpdateChannelSource();
+            UpdateChannelSource(false);
             Voice := @Voices.Voice[I];
             if not longbool(Voice.VolumeMaxLeft) and not longbool(Voice.VolumeMaxRight) then StrData.dwData[0] := $5656 // 'VV'
             else StrData.dwData[0] := $4847; // 'GH'
@@ -6884,7 +7025,7 @@ begin
             X := I div 4 * 25 + 4;
             Y := I mod 4 + 2;
             DspVoice := @DspReg.Voice[I];
-            UpdateChannelSource();
+            UpdateChannelSource(false);
             Z := 0;
             Voice := @Voices.Voice[I];
             UpdateNumWrite(X +  4, IntToHex(StrData, ApuData.SPCSrcAddrs.Src[DspVoice.SoundSourcePlayBack].wStart, 4));
@@ -7058,12 +7199,12 @@ begin
     repeat
         // パスの安全性を確認
         bSafe := IsSafePath(lpFile);
-        // フォルダが存在する場合
+        // フォルダが存在する場合はループを抜ける
         if bSafe and Exists(lpFile, 0) then begin
             result := FILE_TYPE_FOLDER;
             break;
         end;
-        // ファイルが存在しない場合
+        // ファイルが存在しない場合はループを抜ける
         if bSafe and not Exists(lpFile, $FFFFFFFF) then break;
         // 初期化
         result := FILE_TYPE_NOTREAD;
@@ -8823,6 +8964,9 @@ begin
             // リピート開始位置とリピート終了位置を設定
             Status.dwStartTime := 0;
             Status.dwLimitTime := Status.dwDefaultTimeout;
+            // TUNING 開始アドレスを初期化
+            Status.dwTuningAddress := $1FF;
+            Status.dwTuningSize := 0;
         end;
         // デバイスをオープン
         Status.dwWaveMessage := WAVE_MESSAGE_MAX_COUNT;
@@ -9074,7 +9218,7 @@ begin
     // デバイス一覧を更新する場合
     if longbool(dwFlag and WAVE_DEVICE_UPDATE_LIST) then begin
         // デバイスメニューを削除
-        for I := -1 to Status.dwDeviceNum - 1 do cmSetupDevice.RemoveItem(MENU_SETUP_DEVICE_BASE + I + 1);
+        for I := 0 to Status.dwDeviceNum - 1 do cmSetupDevice.RemoveItem(MENU_SETUP_DEVICE_BASE + I + 1);
         // デバイス一覧を取得
         Status.dwDeviceNum := API_waveOutGetNumDevs();
         if Status.dwDeviceNum > 32 then Status.dwDeviceNum := 32;
@@ -9083,15 +9227,25 @@ begin
         if dwDeviceID >= longint(Status.dwDeviceNum) then dwDeviceID := -1;
         Option.dwDeviceID := dwDeviceID;
         // デバイスメニューを作成
-        for I := -1 to Status.dwDeviceNum - 1 do begin
+        if (dwFlag and WAVE_DEVICE_INITIALIZE) = WAVE_DEVICE_INITIALIZE then J := -1 else J := 0;
+        for I := J to Status.dwDeviceNum - 1 do begin
             // デバイス名を取得
-            API_waveOutGetDevCaps(I, @WaveOutCaps, SizeOf(TWAVEOUTCAPS));
-            sBuffer := string(WaveOutCaps.szPname);
+            if I < 0 then begin
+                sBuffer := STR_MENU_SETUP_DEVICE_MAPPER[Status.dwLanguage];
+            end else begin
+                API_waveOutGetDevCaps(I, @WaveOutCaps, SizeOf(TWAVEOUTCAPS));
+                sBuffer := string(WaveOutCaps.szPname);
+            end;
             Status.sDeviceName[I + 1] := sBuffer;
             // デバイス名を簡略化するため、' (' 以降を削除する
-            J := Pos(' (', sBuffer);
-            if longbool(J) then sBuffer := Copy(sBuffer, 1, J - 1);
-            cmSetupDevice.AppendMenu(MENU_SETUP_DEVICE_BASE + I + 1, pchar(Concat('&', char($31 + I), '   ', sBuffer)), true);
+            if I < 0 then begin
+                cmSetupDevice.AppendMenu(MENU_SETUP_DEVICE_BASE + I + 1, pchar(sBuffer), true);
+                cmSetupDevice.AppendSeparator();
+            end else begin
+                J := Pos(' (', sBuffer);
+                if longbool(J) then sBuffer := Copy(sBuffer, 1, J - 1);
+                cmSetupDevice.AppendMenu(MENU_SETUP_DEVICE_BASE + I + 1, pchar(Concat('&', char($31 + I), ' : ', sBuffer)), true);
+            end;
         end;
         // 前回終了時に選択していたデバイス名と一致するデバイスを優先する
         J := -1;
@@ -9126,8 +9280,12 @@ begin
     case Option.dwInfo of
         INFO_MIXER, INFO_CHANNEL_1, INFO_CHANNEL_2, INFO_CHANNEL_3, INFO_CHANNEL_4, INFO_SCRIPT700: begin
             case Option.dwInfo of
-                INFO_CHANNEL_1: sInfo := Concat(sInfo, CRLF, '    Src Level Pitch EX       Src Level Pitch EX');
-                INFO_CHANNEL_2: sInfo := Concat(sInfo, CRLF, '    Src ADSR/Gain   EX       Src ADSR/Gain   EX');
+                INFO_CHANNEL_1:
+                    if Status.bBreakButton then sInfo := Concat(sInfo, CRLF, '    Src Level Pitch OX       Src Level Pitch OX')
+                    else sInfo := Concat(sInfo, CRLF, '    Src Level Pitch EX       Src Level Pitch EX');
+                INFO_CHANNEL_2:
+                    if Status.bBreakButton then sInfo := Concat(sInfo, CRLF, '    Src ADSR/Gain Tune       Src ADSR/Gain Tune')
+                    else sInfo := Concat(sInfo, CRLF, '    Src ADSR/Gain   EX       Src ADSR/Gain   EX');
                 INFO_CHANNEL_3: sInfo := Concat(sInfo, CRLF, '    Src On Flags   F R       Src On Flags   F R');
                 INFO_CHANNEL_4: sInfo := Concat(sInfo, CRLF, '    Src Addr Loop Read       Src Addr Loop Read');
             end;
@@ -10095,8 +10253,6 @@ begin
         Status.dwRedrawInfo := REDRAW_ON;
         // インジケータを再描画
         if Status.bOpen then WaveProc(WAVE_PROC_GRAPH_ONLY);
-        // Break キーフラグを設定
-        Status.bChangeBreak := false;
     end;
     // クリティカルセクションを終了
     API_LeaveCriticalSection(@CriticalSectionStatic);

@@ -874,25 +874,22 @@ USES ECX,EBX,EDI
     Mov     byte [dsp+flg],0E0h                                                 ;Place DSP in power up mode
 
     ;Erase internal mixing settings ----------
-    Mov     AH,8
-    Mov     EBX,dsp
+; ----- degrade-factory code [2021/12/08] -----
+    Mov     BH,8
     Mov     EDI,mix
 
     .ClrMix:
-        Add     EBX,10h
-        Add     EDI,4
-        Mov     CL,mFlg-4
-        Rep     StoSB
-; ----- degrade-factory code [2009/07/11] -----
-        And     byte [EDI],MFLG_USER                                            ;Leave voice muted, noise
-; ----- degrade-factory code [END] -----
-        Or      byte [EDI],MFLG_OFF                                             ;Set voice to inactive
-        Inc     EDI
-        Mov     CL,7Fh-mFlg
-        Rep     StoSB
+        Mov     BL,[EDI+mFlg]
+        And     BL,MFLG_USER                                                    ;Leave voice muted, noise
+        Or      BL,MFLG_OFF                                                     ;Set voice to inactive
 
-    Dec     AH
+        Mov     CL,32
+        Rep     StoSD
+        Mov     [EDI-80h+mFlg],BL
+
+    Dec     BH
     JNZ     short .ClrMix
+; ----- degrade-factory code [END] -----
 
     ;Erase global volume settings ------------
     Mov     [volMainL],EAX
