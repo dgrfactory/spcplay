@@ -690,7 +690,7 @@ USES ECX
 ENDP
 
 
-; ----- degrade-factory code [2021/09/19] -----
+; ----- degrade-factory code [2022/04/02] -----
 ;===================================================================================================
 ;Run Script700 emulation
 ;   EAX = Free / (AL) Calculate option of N command
@@ -1308,8 +1308,9 @@ PROC RunScript700, interrupt
     Mov     ESI,[scr700lbl+ESI*4]                                               ;ESI = Label[ESI]
     Inc     ESI                                                                 ;ESI++, ESI = 0x00?
     JZ      .700RETURN                                                          ;   Yes
+    Dec     ESI                                                                 ;ESI--, ESI is minus?
+    JS      .700RETURN                                                          ;   Yes
 
-    Dec     ESI                                                                 ;ESI--
     Mov     EDX,EBX                                                             ;EDX = EBX
     Mov     EBX,ESI                                                             ;EBX = ESI
     Test    byte [scr700stf],01h                                                ;Is enabled stacking address?
@@ -1512,7 +1513,7 @@ PROC RunScript700, interrupt
     PopAD                                                                       ;Pop all registers
 
 ENDP
-; ----- degrade-factory code [END] #34 #35 -----
+; ----- degrade-factory code [END] #34 #35 #43 -----
 
 
 ;===================================================================================================
