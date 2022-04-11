@@ -2332,7 +2332,7 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.19.2 (build 7664)';
+    SPCPLAY_VERSION = '2.19.2 (build 7674)';
     SNESAPU_VERSION = $21962;
     APPLINK_VERSION = $02170500;
 
@@ -6530,6 +6530,7 @@ begin
     end else begin
         Z := 3;
         UpdateNumWrite(X, IntToHex(StrData, J, 2));
+        Z := 0;
     end;
 end;
 
@@ -6813,14 +6814,26 @@ begin
             // É~ÉLÉTÅ[èÓïÒÇï`âÊ
             Y := 1;
             Z := 0;
-            UpdateNumWrite(13, IntToHex(StrData, DspReg.MainVolumeLeft, 2));
-            UpdateNumWrite(19, IntToHex(StrData, DspReg.MainVolumeRight, 2));
-            UpdateNumWrite(38, IntToHex(StrData, DspReg.EchoVolumeLeft, 2));
-            UpdateNumWrite(44, IntToHex(StrData, DspReg.EchoVolumeRight, 2));
+            if Status.bBreakButton then begin
+                UpdateNumWrite(13, IntToStr(StrData, Abs(shortint(DspReg.MainVolumeLeft)) and $7F, 3));
+                UpdateNumWrite(19, IntToStr(StrData, Abs(shortint(DspReg.MainVolumeRight)) and $7F, 3));
+                UpdateNumWrite(38, IntToStr(StrData, Abs(shortint(DspReg.EchoVolumeLeft)) and $7F, 3));
+                UpdateNumWrite(44, IntToStr(StrData, Abs(shortint(DspReg.EchoVolumeRight)) and $7F, 3));
+            end else begin
+                UpdateNumWrite(13, IntToHex(StrData, DspReg.MainVolumeLeft, 2));
+                UpdateNumWrite(19, IntToHex(StrData, DspReg.MainVolumeRight, 2));
+                UpdateNumWrite(38, IntToHex(StrData, DspReg.EchoVolumeLeft, 2));
+                UpdateNumWrite(44, IntToHex(StrData, DspReg.EchoVolumeRight, 2));
+            end;
             Y := 2;
-            UpdateNumWrite(11, IntToHex(StrData, DspReg.EchoDelay, 2));
+            if Status.bBreakButton then begin
+                UpdateNumWrite(11, IntToStr(StrData, DspReg.EchoDelay, 3));
+                UpdateNumWrite(36, IntToStr(StrData, Abs(shortint(DspReg.EchoFeedback)) and $7F, 3));
+            end else begin
+                UpdateNumWrite(11, IntToHex(StrData, DspReg.EchoDelay, 2));
+                UpdateNumWrite(36, IntToHex(StrData, DspReg.EchoFeedback, 2));
+            end;
             UpdateNumWrite(15, IntToStr(StrData, (DspReg.EchoDelay and $F) shl 4, 3));
-            UpdateNumWrite(36, IntToHex(StrData, DspReg.EchoFeedback, 2));
             if bytebool(DspReg.EchoFeedback and $80) then V := Round(200 - DspReg.EchoFeedback * 0.78125) // 200 - FEEDBACK / 0x80 * 100
             else V := Round(DspReg.EchoFeedback * 0.7874015748031496062992125984252); // FEEDBACK / 0x7F * 100
             UpdateNumWrite(40, IntToStr(StrData, V, 3));
@@ -6846,7 +6859,12 @@ begin
             StrData.qwData := NOISE_RATE[V and $1F];
             UpdateNumWrite(36, 5);
             Y := 5;
-            for I := 0 to 7 do UpdateNumWrite(11 + I * 3, IntToHex(StrData, DspReg.Voice[I].Fir, 2));
+            if Status.bBreakButton then for I := 0 to 7 do begin
+                Z := I * 3;
+                UpdateNumWrite(11 + I * 3, IntToStr(StrData, Abs(shortint(DspReg.Voice[I].Fir)) and $7F, 3));
+            end else begin
+                for I := 0 to 7 do UpdateNumWrite(11 + I * 3, IntToHex(StrData, DspReg.Voice[I].Fir, 2));
+            end;
         end;
         INFO_CHANNEL_1: for I := 0 to 7 do begin
             // äeÉ`ÉÉÉìÉlÉãèÓïÒÇï`âÊ
@@ -6854,13 +6872,18 @@ begin
             Y := I mod 4 + 2;
             DspVoice := @DspReg.Voice[I];
             UpdateChannelSource(true);
-            Z := 0;
-            UpdateNumWrite(X +  4, IntToHex(StrData, DspVoice.VolumeLeft, 2));
-            UpdateNumWrite(X +  7, IntToHex(StrData, DspVoice.VolumeRight, 2));
-            if Status.bBreakButton then UpdateNumWrite(X + 16, IntToHex(StrData, DspVoice.CurrentOutput, 2))
-            else UpdateNumWrite(X + 16, IntToHex(StrData, DspVoice.CurrentEnvelope, 2));
-            Z := 3;
-            UpdateNumWrite(X + 10, IntToHex(StrData, DspVoice.Pitch, 4));
+            if Status.bBreakButton then begin
+                UpdateNumWrite(X +  4, IntToStr(StrData, Abs(shortint(DspVoice.VolumeLeft)) and $7F, 3));
+                UpdateNumWrite(X +  8, IntToStr(StrData, Abs(shortint(DspVoice.VolumeRight)) and $7F, 3));
+                UpdateNumWrite(X + 12, IntToStr(StrData, DspVoice.CurrentEnvelope, 3));
+                UpdateNumWrite(X + 16, IntToHex(StrData, DspVoice.CurrentOutput, 2));
+            end else begin
+                UpdateNumWrite(X +  4, IntToHex(StrData, DspVoice.VolumeLeft, 2));
+                UpdateNumWrite(X +  7, IntToHex(StrData, DspVoice.VolumeRight, 2));
+                UpdateNumWrite(X + 16, IntToHex(StrData, DspVoice.CurrentEnvelope, 2));
+                Z := 3;
+                UpdateNumWrite(X + 10, IntToHex(StrData, DspVoice.Pitch, 4));
+            end;
         end;
         INFO_CHANNEL_2: for I := 0 to 7 do begin
             // äeÉ`ÉÉÉìÉlÉãèÓïÒÇï`âÊ
@@ -6869,7 +6892,6 @@ begin
             DspVoice := @DspReg.Voice[I];
             UpdateChannelSource(false);
             Voice := @Voices.Voice[I];
-            Z := 0;
             if not longbool(T64Count) then begin
                 // ââëtí‚é~íÜ
                 if not Status.bBreakButton then begin
@@ -6987,14 +7009,12 @@ begin
             Y := I mod 4 + 2;
             V := 1 shl I;
             DspVoice := @DspReg.Voice[I];
-            UpdateChannelSource(false);
+            UpdateChannelSource(true);
             Voice := @Voices.Voice[I];
             if not longbool(Voice.VolumeMaxLeft) and not longbool(Voice.VolumeMaxRight) then StrData.dwData[0] := $5656 // 'VV'
             else StrData.dwData[0] := $4847; // 'GH'
-            Z := 0;
             UpdateNumWrite(X +  4, 2);
             if not bytebool(DspReg.EchoOn and V) then StrData.dwData[0] := $56 else StrData.dwData[0] := $49; // 'V' or 'I'
-            Z := 0;
             UpdateNumWrite(X +  7, 1);
             if not bytebool(DspReg.PitchModOn and V) then StrData.dwData[0] := $56 else StrData.dwData[0] := $4A; // 'V' or 'J'
             Inc(Z);
@@ -7025,8 +7045,7 @@ begin
             X := I div 4 * 25 + 4;
             Y := I mod 4 + 2;
             DspVoice := @DspReg.Voice[I];
-            UpdateChannelSource(false);
-            Z := 0;
+            UpdateChannelSource(true);
             Voice := @Voices.Voice[I];
             UpdateNumWrite(X +  4, IntToHex(StrData, ApuData.SPCSrcAddrs.Src[DspVoice.SoundSourcePlayBack].wStart, 4));
             UpdateNumWrite(X +  9, IntToHex(StrData, ApuData.SPCSrcAddrs.Src[DspVoice.SoundSourcePlayBack].wLoop, 4));
@@ -7038,29 +7057,48 @@ begin
             Y := 5;
             Z := 0;
             UpdateNumWrite(14, IntToHex(StrData, SPC700Reg.pc, 4));
-            UpdateNumWrite(22, IntToHex(StrData, SPC700Reg.ya, 4));
-            UpdateNumWrite(29, IntToHex(StrData, SPC700Reg.x, 2));
-            UpdateNumWrite(35, IntToHex(StrData, SPC700Reg.sp, 2));
-            for I := 0 to 7 do StrData.cData[I] := BoolTable[(SPC700Reg.psw[7 - I] and $100) shr 8];
-            UpdateNumWrite(39, 8);
+            if Status.bBreakButton then begin
+                UpdateNumWrite(21, IntToStr(StrData, SPC700Reg.ya and $FF, 3));
+                UpdateNumWrite(27, IntToStr(StrData, (SPC700Reg.ya shr 8) and $FF, 3));
+                UpdateNumWrite(33, IntToStr(StrData, SPC700Reg.x and $FF, 3));
+                UpdateNumWrite(40, IntToStr(StrData, SPC700Reg.sp and $FF, 3));
+            end else begin
+                UpdateNumWrite(22, IntToHex(StrData, SPC700Reg.ya, 4));
+                UpdateNumWrite(29, IntToHex(StrData, SPC700Reg.x, 2));
+                UpdateNumWrite(35, IntToHex(StrData, SPC700Reg.sp, 2));
+                for I := 0 to 7 do StrData.cData[I] := BoolTable[(SPC700Reg.psw[7 - I] and $100) shr 8];
+                UpdateNumWrite(39, 8);
+            end;
         end;
         INFO_SCRIPT700: begin
             // Script700 èÓïÒÇï`âÊ
             Script700 := @ApuData.Script700;
             Y := 1;
-            Z := 0;
-            for I := 0 to 3 do begin
-                UpdateNumWrite(I * 3 + 11, IntToHex(StrData, ApuData.SPCApuPort.Port[I], 2));
-                if not longbool(I) and longbool(Script700.cStatusFlag and $C) then StrData.bData[0] := $6F // 'o'
-                else if Script700.dwIntInPort = $80 + I then StrData.bData[0] := $6F // 'o'
-                else StrData.bData[0] := $20; // ' '
-                UpdateNumWrite(I * 3 + 13, 1);
-            end;
-            for I := 0 to 3 do begin
-                UpdateNumWrite(I * 3 + 31, IntToHex(StrData, ApuData.SPCOutPort.Port[I], 2));
-                if Script700.dwIntOutPort = $80 + I then StrData.bData[0] := $6F // 'o'
-                else StrData.bData[0] := $20; // ' '
-                UpdateNumWrite(I * 3 + 33, 1);
+            if Status.bBreakButton then begin
+                for I := 0 to 3 do begin
+                    Z := I * 3;
+                    UpdateNumWrite(I * 3 + 11, IntToStr(StrData, ApuData.SPCApuPort.Port[I], 3));
+                end;
+                for I := 0 to 3 do begin
+                    Z := I * 3;
+                    UpdateNumWrite(I * 3 + 32, IntToStr(StrData, ApuData.SPCOutPort.Port[I], 3));
+                end;
+                Z := 0;
+            end else begin
+                Z := 0;
+                for I := 0 to 3 do begin
+                    UpdateNumWrite(I * 3 + 11, IntToHex(StrData, ApuData.SPCApuPort.Port[I], 2));
+                    if not longbool(I) and longbool(Script700.cStatusFlag and $C) then StrData.bData[0] := $6F // 'o'
+                    else if Script700.dwIntInPort = $80 + I then StrData.bData[0] := $6F // 'o'
+                    else StrData.bData[0] := $20; // ' '
+                    UpdateNumWrite(I * 3 + 13, 1);
+                end;
+                for I := 0 to 3 do begin
+                    UpdateNumWrite(I * 3 + 32, IntToHex(StrData, ApuData.SPCOutPort.Port[I], 2));
+                    if Script700.dwIntOutPort = $80 + I then StrData.bData[0] := $6F // 'o'
+                    else StrData.bData[0] := $20; // ' '
+                    UpdateNumWrite(I * 3 + 34, 1);
+                end;
             end;
             Y := 2;
             for I := 0 to 3 do UpdateNumWrite(I * 9 + 11, IntToHex(StrData, Script700.dwWork[I], 8));
@@ -9281,8 +9319,8 @@ begin
         INFO_MIXER, INFO_CHANNEL_1, INFO_CHANNEL_2, INFO_CHANNEL_3, INFO_CHANNEL_4, INFO_SCRIPT700: begin
             case Option.dwInfo of
                 INFO_CHANNEL_1:
-                    if Status.bBreakButton then sInfo := Concat(sInfo, CRLF, '    Src Level Pitch OX       Src Level Pitch OX')
-                    else sInfo := Concat(sInfo, CRLF, '    Src Level Pitch EX       Src Level Pitch EX');
+                    if Status.bBreakButton then sInfo := Concat(sInfo, CRLF, '    Src VL  VR  EX  OX       Src VL  VR  EX  OX')
+                    else sInfo := Concat(sInfo, CRLF, '    Src VL VR Pitch EX       Src VL VR Pitch EX');
                 INFO_CHANNEL_2:
                     if Status.bBreakButton then sInfo := Concat(sInfo, CRLF, '    Src ADSR/Gain Tune       Src ADSR/Gain Tune')
                     else sInfo := Concat(sInfo, CRLF, '    Src ADSR/Gain   EX       Src ADSR/Gain   EX');
@@ -9295,7 +9333,7 @@ begin
                     'SrcAddr  :     -   _     EchoAddr :     -', CRLF, 'DSPFlags : R=  M=  E=    NoiseClk :       Hz', CRLF, 'FIR      :');
                 INFO_CHANNEL_1, INFO_CHANNEL_2, INFO_CHANNEL_3, INFO_CHANNEL_4: sInfo := Concat(sInfo, CRLF, '1 :                      5 :',
                     CRLF, '2 :                      6 :', CRLF, '3 :                      7 :', CRLF, '4 :                      8 :');
-                INFO_SCRIPT700: sInfo := Concat(sInfo, CRLF, 'Port  In :               Out :', CRLF, 'Work 0-3 :', CRLF, '     4-7 :',
+                INFO_SCRIPT700: sInfo := Concat(sInfo, CRLF, 'Port  In :                Out :', CRLF, 'Work 0-3 :', CRLF, '     4-7 :',
                     CRLF, 'CmpParam :                     Wait :', CRLF, 'UsedSize :        (Ptr=      Data=      SP=   )');
             end;
         end;
@@ -9347,7 +9385,9 @@ begin
                 $8: sBuffer := 'SNESGT';
                 else sBuffer := '(Undefined)';
             end;
-            sInfo := Concat(sInfo, CRLF, 'Emulator : ', sBuffer, StringOfChar(' ', 28 - Length(sBuffer)), 'NVPBHIZC', CRLF,
+            if Status.bBreakButton then sInfo := Concat(sInfo, CRLF, 'Emulator : ', sBuffer, CRLF,
+                'Register : PC=     A=    Y=    X=    SP=   ')
+            else sInfo := Concat(sInfo, CRLF, 'Emulator : ', sBuffer, StringOfChar(' ', 28 - Length(sBuffer)), 'NVPBHIZC', CRLF,
                 'Register : PC=     YA=     X=   SP=   ');
         end;
     end;
