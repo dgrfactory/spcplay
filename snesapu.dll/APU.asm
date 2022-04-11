@@ -45,12 +45,12 @@ SECTION .data ALIGN=256
 SECTION .data ALIGN=32
 %endif
 
-; ----- degrade-factory code [2022/03/30] -----
+; ----- degrade-factory code [2022/04/10] -----
     apuOpt      DD  (CPU_CYC << 24) | (DEBUG << 16) | (DSPINTEG << 17) | (VMETERM << 8) | (VMETERV << 9) | (1 << 10) | (STEREO << 11) \
                     | (HALFC << 1) | (CNTBK << 2) | (SPEED << 3) | (IPLW << 4) | (DSPBK << 5) | (INTBK << 6)
     apuDllVer   DD  21962h                                                      ;SNESAPU.DLL Current Version
     apuCmpVer   DD  11000h                                                      ;SNESAPU.DLL Backwards Compatible Version
-    apuVerStr   DD  "2.19.2 (build 7664)"                                       ;SNESAPU.DLL Current Version (32byte String)
+    apuVerStr   DD  "2.19.2 (build 7674)"                                       ;SNESAPU.DLL Current Version (32byte String)
                 DD  8
 ; ----- degrade-factory code [END] -----
 
@@ -667,7 +667,7 @@ USES ECX,EDX
 ENDP
 
 
-; ----- degrade-factory code [2021/09/19] -----
+; ----- degrade-factory code [2022/04/02] -----
 ;===================================================================================================
 ;Set/Reset TimerTrick Compatible Function
 
@@ -2051,6 +2051,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Mov     EDX,EBX                                                             ;EDX = EBX
     Sub     EDX,[scr700dat]                                                     ;EDX -= Data Offset
     Inc     EDX                                                                 ;EDX++
+    Or      EDX,80000000h                                                       ;EDX |= 0x80000000
     Mov     [scr700lbl+EAX*4],EDX                                               ;Label[EAX] = EDX
 
     .DATANEWLINE:
@@ -2167,7 +2168,7 @@ PROC SetScript700Data, addr, pData, size
     Mov     [scr700inc+08h],EAX
 
 ENDP
-; ----- degrade-factory code [END] #34 #35 -----
+; ----- degrade-factory code [END] #34 #35 #43 -----
 
 
 ; ----- degrade-factory code [2015/07/11] -----
