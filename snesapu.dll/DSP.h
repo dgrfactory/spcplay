@@ -19,7 +19,7 @@
 * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                                        *
 *                                                                                                  *
 *                                                 Copyright (C) 1999-2006 Alpha-II Productions     *
-*                                                 Copyright (C) 2003-2016 degrade-factory          *
+*                                                 Copyright (C) 2003-2022 degrade-factory          *
 ***************************************************************************************************/
 
 #ifndef __INC_DSP
@@ -44,7 +44,7 @@
 #define DSP_SURND   0x04                        //Surround sound
 #define DSP_REVERSE 0x08                        //Reverse stereo samples
 #define DSP_NOECHO  0x10                        //Disable echo
-// ----- degrade-factory code [2021/11/08] -----
+// ----- degrade-factory code [2022/05/01] -----
 #define DSP_NOPMOD  0x20                        //Disable pitch modulation
 #define DSP_NOPREAD 0x40                        //Disable pitch read
 #define DSP_NOFIR   0x80                        //Disable FIR filter
@@ -53,9 +53,10 @@
 #define DSP_NONOISE 0x400                       //Disable noise
 #define DSP_ECHOFIR 0x800                       //Simulate SNES echo/FIR method
 #define DSP_NOSURND 0x1000                      //Disable surround sound
+#define DSP_ENVSPD  0x2000                      //Synchronize envelope updates with speed
 #define DSP_FLOAT   0x40000000                  //32bit floating-point volume output
 #define DSP_NOSAFE  0x80000000                  //Disable volume safe
-// ----- degrade-factory code [END] #37 -----
+// ----- degrade-factory code [END] #37 #45 -----
 
 //PackWave options -----------------------------
 #define BRR_LINEAR  0x01                        //Use linear compression for all blocks

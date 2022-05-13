@@ -44,7 +44,7 @@
 //  ※ GNU 一般公衆利用許諾契約書バージョン 2 のドキュメントは、付属の LICENSE にあります。
 //
 //
-//  Copyright (C) 2003-2021 degrade-factory. All rights reserved.
+//  Copyright (C) 2003-2022 degrade-factory. All rights reserved.
 //
 // =================================================================================================
 program spcplay;
@@ -2332,8 +2332,8 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.19.2 (build 7674)';
-    SNESAPU_VERSION = $21962;
+    SPCPLAY_VERSION = '2.19.3 (build 7700)';
+    SNESAPU_VERSION = $21963;
     APPLINK_VERSION = $02170500;
 
     CBE_DSPREG = $1;
@@ -2789,6 +2789,7 @@ const
     OPTION_NONOISE = $400;                                  // ノイズ無効
     OPTION_ECHOFIR = $800;                                  // 実機に近いエコー/FIR 処理
     OPTION_NOSURROUND = $1000;                              // サラウンド無効
+    OPTION_ENVSPEED = $2000;                                // エンベロープ速度を同期
     OPTION_FLOATOUT = $40000000;                            // 32 ビット (float) で出力レベルを設定
     OPTION_NOEARSAFE = $80000000;                           // イヤーセーフ無効
 
@@ -2881,11 +2882,11 @@ const
     MENU_SETUP_MUTE_NOISE_SIZE = 8;
     MENU_SETUP_MUTE_NOISE_ALL_SIZE = 3;
     MENU_SETUP_OPTION = 50;
-    MENU_SETUP_OPTION_SIZE = 15;
+    MENU_SETUP_OPTION_SIZE = 16;
     MENU_SETUP_OPTION_BASE = 500; // +10
     MENU_SETUP_OPTION_VALUE: array[0..MENU_SETUP_OPTION_SIZE - 1] of longword =
-        (OPTION_LOWPASS, OPTION_ECHOFIR, NULL, OPTION_BASSBOOST, OPTION_OLDSMP, OPTION_REVERSE, OPTION_SURROUND, NULL, OPTION_NOSURROUND,
-         OPTION_NOECHO, OPTION_NOPMOD, OPTION_NOPREAD, OPTION_NOFIR, OPTION_NOENV, OPTION_NONOISE);
+        (OPTION_LOWPASS, OPTION_ECHOFIR, NULL, OPTION_BASSBOOST, OPTION_OLDSMP, OPTION_SURROUND, OPTION_REVERSE, OPTION_ENVSPEED,
+         NULL, OPTION_NOSURROUND, OPTION_NOECHO, OPTION_NOPMOD, OPTION_NOPREAD, OPTION_NOFIR, OPTION_NOENV, OPTION_NONOISE);
     MENU_SETUP_TIME = 60;
     MENU_SETUP_TIME_DISABLE = 600;
     MENU_SETUP_TIME_ID666 = 601;
@@ -3042,7 +3043,7 @@ const
     STR_MENU_SETUP_PITCH_PLUS: array[0..1] of string = ('＋&', '+ &');
     STR_MENU_SETUP_PITCH_MINUS: array[0..1] of string = ('－&', '- &');
     STR_MENU_SETUP_PITCH_ZERO: pchar = ' &0 ';
-    STR_MENU_SETUP_PITCH_ASYNC: array[0..1] of pchar = ('常に演奏速度と同期(&A)', '&Always Sync Speed');
+    STR_MENU_SETUP_PITCH_ASYNC: array[0..1] of pchar = ('演奏速度と同期(&Y)', 'S&ynchronize with Speed');
     STR_MENU_SETUP_SEPARATE: array[0..1] of pchar = ('左右拡散度(&E)', 'Stereo S&eparator');
     STR_MENU_SETUP_FEEDBACK: array[0..1] of pchar = ('フィードバック反転度(&F)', 'Echo &Feedback');
     STR_MENU_SETUP_SPEED: array[0..1] of pchar = ('演奏速度(&S)', '&Speed');
@@ -3104,12 +3105,12 @@ const
         ('標準(&N)', '過去の &Sound Blaster 互換', '過去の &ZSNES, Snes9x 互換'),
         ('&Normal', 'OLD &Sound Blaster Card', 'OLD &ZSNES, Snes9x'));
     STR_MENU_SETUP_OPTION_SUB: array[0..1] of array[0..MENU_SETUP_OPTION_SIZE - 1] of pchar = (
-        ('実機ローパス フィルタ(&L)', '実機エコー/FIR 処理(&M)', NULLPOINTER, '&BASS BOOST', '過去の &ADPCM デコーダ', '左右反転(&R)',
-         '逆位相サラウンド強制(&S)', NULLPOINTER, 'サラウンド無効(&U)', 'エコー無効(&E)', 'ピッチ モジュレーション無効(&P)', 'ピッチ ベンド無効(&I)',
-         '&FIR フィルタ無効', 'エンベロープ無効(&V)', 'ノイズ指定無効(&N)'),
-        ('SNES &Low-Pass Filter', 'SNES Echo/FIR &Method', NULLPOINTER, '&BASS BOOST', 'Old &ADPCM Decoder', '&Reverse Stereo',
-         'Opposite-Phase &Surround', NULLPOINTER, 'Disable S&urround', 'Disable &Echo', 'Disable &Pitch Modulation', 'Disable P&itch Bend',
-         'Disable &FIR Filter', 'Disable En&velope', 'Disable &Noise Flags'));
+        ('実機ローパス フィルタ(&L)', '実機エコー/FIR 処理(&M)', NULLPOINTER, '&BASS BOOST', '過去の &ADPCM デコーダ', '逆位相サラウンド強制(&S)',
+         '左右反転(&R)', 'エンベロープ速度を同期(&Y)', NULLPOINTER, 'サラウンド無効(&U)', 'エコー無効(&E)',
+         'ピッチ モジュレーション無効(&P)', 'ピッチ ベンド無効(&I)', '&FIR フィルタ無効', 'エンベロープ無効(&V)', 'ノイズ発音指定無効(&N)'),
+        ('SNES &Low-Pass Filter', 'SNES Echo/FIR &Method', NULLPOINTER, '&BASS BOOST', 'Old &ADPCM Decoder', 'Opposite-Phase &Surround',
+         '&Reverse Stereo', 'S&ynchronize Envelope with Speed', NULLPOINTER, 'Disable S&urround', 'Disable &Echo',
+         'Disable &Pitch Modulation', 'Disable P&itch Bend', 'Disable &FIR Filter', 'Disable En&velope', 'Disable &Noise Flags'));
     STR_MENU_SETUP_ORDER_SUB: array[0..1] of array[0..MENU_SETUP_ORDER_SIZE - 1] of pchar = (
         ('演奏停止(&S)', '次へ(&N)', '前へ(&P)', 'ランダム(&M)', 'シャッフル(&H)', 'リピート(&R)'),
         ('&Stop', '&Next Item', '&Previous Item', 'Rando&m', 'S&huffle', '&Repeat'));
@@ -6894,7 +6895,16 @@ begin
             Voice := @Voices.Voice[I];
             if not longbool(T64Count) then begin
                 // 演奏停止中
-                if not Status.bBreakButton then begin
+                if Status.bBreakButton then begin
+                    StrData.dwData[0] := $3030; // '00'
+                    UpdateNumWrite(X +  4, 2);
+                    UpdateNumWrite(X +  7, 2);
+                    UpdateNumWrite(X + 10, 2);
+                    StrData.dwData[0] := $5656; // 'VV'
+                    UpdateNumWrite(X + 16, 2);
+                    Z := 3;
+                    UpdateNumWrite(X + 13, 2);
+                end else begin
                     StrData.dwData[0] := $5656; // 'VV'
                     UpdateNumWrite(X +  4, 2);
                     UpdateNumWrite(X +  7, 1);
@@ -6904,16 +6914,9 @@ begin
                     UpdateNumWrite(X +  8, 1);
                     UpdateNumWrite(X + 10, 1);
                     UpdateNumWrite(X + 12, 1);
+                    StrData.dwData[0] := $3030; // '00'
+                    UpdateNumWrite(X + 13, 2);
                 end;
-                StrData.dwData[0] := $3030; // '00'
-                if Status.bBreakButton then begin
-                    UpdateNumWrite(X +  4, 2);
-                    UpdateNumWrite(X +  7, 2);
-                    UpdateNumWrite(X + 10, 2);
-                    UpdateNumWrite(X + 16, 2);
-                    Z := 3;
-                end;
-                UpdateNumWrite(X + 13, 2);
             end else if Status.bBreakButton then begin
                 // AddMusicK ADSR
                 UpdateNumWrite(X +  4, IntToHex(StrData, DspVoice.EnvelopeADSR1, 2));
