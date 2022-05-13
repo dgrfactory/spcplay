@@ -19,7 +19,7 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2019 degrade-factory
+;                                                   Copyright (C) 2003-2022 degrade-factory
 ;===================================================================================================
 
 %define DSP_INC
@@ -43,7 +43,7 @@ DSP_OLDSMP  EQU 02h                                             ;Traditional ADP
 DSP_SURND   EQU 04h                                             ;Surround sound
 DSP_REVERSE EQU 08h                                             ;Reverse stereo samples
 DSP_NOECHO  EQU 10h                                             ;Disable echo (must not be bit 0 or 5, see disEcho)
-; ----- degrade-factory code [2021/11/08] -----
+; ----- degrade-factory code [2022/05/01] -----
 DSP_NOPMOD  EQU 20h                                             ;Disable pitch modulation
 DSP_NOPREAD EQU 40h                                             ;Disable pitch read
 DSP_NOFIR   EQU 80h                                             ;Disable FIR Filter
@@ -52,9 +52,10 @@ DSP_NOENV   EQU 200h                                            ;Disable envelop
 DSP_NONOISE EQU 400h                                            ;Disable noise
 DSP_ECHOFIR EQU 800h                                            ;Simulate SNES echo/FIR method
 DSP_NOSURND EQU 1000h                                           ;Disable surround sound
+DSP_ENVSPD  EQU 2000h                                           ;Synchronize envelope updates with speed
 DSP_FLOAT   EQU 40000000h                                       ;32bit floating-point volume output
 DSP_NOSAFE  EQU 80000000h                                       ;Disable volume safe
-; ----- degrade-factory code [END] #37 -----
+; ----- degrade-factory code [END] #37 #45 -----
 
 ;PackWave options (unused)
 BRR_LINEAR  EQU 01h                                             ;Use linear compression for all blocks
@@ -193,10 +194,11 @@ PUBLIC  mix                                                     ;Mixing structur
 PUBLIC  dsp                                                     ;1 page of DSP RAM
 PUBLIC  vMMaxL                                                  ;Maximum absolute sample output
 PUBLIC  vMMaxR
-; ----- degrade-factory code [2016/08/20] -----
+; ----- degrade-factory code [2022/05/01] -----
 PUBLIC  envFlag                                                 ;Update envelope flags
 PUBLIC  dspVarEP                                                ;Endpoint of DSP.asm variables
-; ----- degrade-factory code [END] -----
+PUBLIC  adsrAdj                                                 ;Update envelope rate adjustment (16.16)
+; ----- degrade-factory code [END] #45 -----
 
 
 ;===================================================================================================
