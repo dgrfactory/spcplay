@@ -323,7 +323,8 @@ type
         VolumeMaxRight: ^single;                            // ミキシング最大出力レベル (右) のポインタ
         SPC700Reg: ^TSPC700REG;                             // SPC700 レジスタのポインタ
         EmuAPU: function(buffer: pointer; length: longword; ltype: byte): pointer; stdcall;
-        GetAPUData: procedure(ppRam: pointer; ppXRam: pointer; ppSPCOutput: pointer; ppT64Count: pointer; ppDsp: pointer; ppVoices: pointer; ppVolumeMaxLeft: pointer; ppVolumeMaxRight: pointer); stdcall;
+        GetAPUData: procedure(ppRam: pointer; ppXRam: pointer; ppSPCOutput: pointer; ppT64Count: pointer; ppDsp: pointer; ppVoices: pointer;
+            ppVolumeMaxLeft: pointer; ppVolumeMaxRight: pointer); stdcall;
         GetScript700Data: procedure(pVer: pointer; ppSPCReg: pointer; ppScript700: pointer); stdcall;
         GetSPCRegs: procedure(pPC: pointer; pA: pointer; pY: pointer; pX: pointer; pPSW: pointer; pSP: pointer); stdcall;
         InPort: procedure(port: byte; val: byte); stdcall;
@@ -772,7 +773,8 @@ type
     CCLASS = class
     private
     public
-        procedure CreateClass(lpWindowProc: pointer; hThisInstance: longword; lpClassName: pointer; dwStyle: longword; lpIcon: pointer; lpSmallIcon: pointer; dwCursor: longword; dwBackColor: longword);
+        procedure CreateClass(lpWindowProc: pointer; hThisInstance: longword; lpClassName: pointer; dwStyle: longword; lpIcon: pointer;
+            lpSmallIcon: pointer; dwCursor: longword; dwBackColor: longword);
         procedure DeleteClass(hThisInstance: longword; lpClassName: pointer);
     end;
 
@@ -781,7 +783,8 @@ type
     private
     public
         hFont: longword;                                    // フォントハンドル
-        procedure CreateFont(lpFontName: pointer; nHeight: longint; nWidth: longint; bBold: longbool; bItalic: longbool; bUnderLine: longbool; bStrike: longbool);
+        procedure CreateFont(lpFontName: pointer; nHeight: longint; nWidth: longint; bBold: longbool; bItalic: longbool; bUnderLine: longbool;
+            bStrike: longbool);
         procedure DeleteFont();
     end;
 
@@ -812,7 +815,8 @@ type
     public
         hWnd: longword;                                     // ウィンドウハンドル
         bMessageBox: longbool;                              // メッセージボックスフラグ
-        procedure CreateItem(hThisInstance: longword; hMainWnd: longword; hFont: longword; lpItemName: pointer; lpCaption: pointer; dwItemID: longword; dwStylePlus: longword; dwStyleExPlus: longword; Box: TBOX);
+        procedure CreateItem(hThisInstance: longword; hMainWnd: longword; hFont: longword; lpItemName: pointer; lpCaption: pointer; dwItemID: longword;
+            dwStylePlus: longword; dwStyleExPlus: longword; Box: TBOX);
         procedure CreateWindow(hThisInstance: longword; lpClassName: pointer; lpWndName: pointer; dwStylePlus: longword; dwStyleExPlus: longword; Box: TBOX);
         procedure DeleteWindow();
         function  GetCaption(lpCaption: pointer; nMaxCount: longint): longint;
@@ -2332,7 +2336,7 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.19.3 (build 7700)';
+    SPCPLAY_VERSION = '2.19.3 (build 7707)';
     SNESAPU_VERSION = $21963;
     APPLINK_VERSION = $02170500;
 
@@ -2362,6 +2366,7 @@ const
     BUFFER_START = BUFFER_LENGTH + 1;
     BUFFER_AMP_____: string = 'AMP      0 : ';
     BUFFER_BIT_____: string = 'BIT      0 : ';
+    BUFFER_BMPFONT_: string = 'BMPFONT  0 : ';
     BUFFER_BUFNUM__: string = 'BUFNUM   2 : ';
     BUFFER_BUFTIME_: string = 'BUFTIME  2 : ';
     BUFFER_CHANNEL_: string = 'CHANNEL  0 : ';
@@ -2623,10 +2628,12 @@ const
     ORG_COLOR_WINDOWTEXT = COLOR_WINDOWTEXT + 1;            // 有効時の文字色
 
     BITMAP_NUM = 51;                                        // ビットマップ文字の数
-    BITMAP_NUM_X6 = BITMAP_NUM * 6;
-    BITMAP_NUM_X6P6 = BITMAP_NUM_X6 + 6;
     BITMAP_NUM_WIDTH = 6;                                   // ビットマップ文字の幅
     BITMAP_NUM_HEIGHT = 9;                                  // ビットマップ文字の高さ
+    BITMAP_NUM_FONT = 2;                                    // 数値フォントのパターン数
+    BITMAP_NUM_X6 = BITMAP_NUM * BITMAP_NUM_WIDTH;
+    BITMAP_NUM_X6P6 = BITMAP_NUM_X6 + BITMAP_NUM_WIDTH;
+    BITMAP_NUM_HEX_X6 = 16 * BITMAP_NUM_WIDTH;
     BITMAP_MARK_HEIGHT = 3;                                 // 位置マークの高さ
     BITMAP_STRING_COLOR: array[0..BITMAP_NUM - 1] of longword =
         (ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT,
@@ -3273,6 +3280,7 @@ var
     Option: record                                          // オプション
         dwAmp: longword;                                        // 音量
         dwBit: longint;                                         // ビット
+        dwBmpFont: longword;                                    // 数値フォント
         dwBufferNum: longword;                                  // バッファ数
         dwBufferTime: longword;                                 // バッファ時間
         dwChannel: longword;                                    // チャンネル
@@ -3478,7 +3486,8 @@ procedure API_ZeroMemory(Destination: pointer; Length: longword); stdcall; exter
 // ================================================================================
 // API_TransparentBlt - TransparentBlt の 32bit カラー対応版
 // ================================================================================
-procedure API_TransparentBlt(hdcDest: longword; nXDest: longint; nYDest: longint; nWidthDest: longint; nHeightDest: longint; hdcSrc: longword; nXSrc: longint; nYSrc: longint; nWidthSrc: longint; nHeightSrc: longint; crTransparent: longword);
+procedure API_TransparentBlt(hdcDest: longword; nXDest: longint; nYDest: longint; nWidthDest: longint; nHeightDest: longint; hdcSrc: longword; nXSrc: longint;
+    nYSrc: longint; nWidthSrc: longint; nHeightSrc: longint; crTransparent: longword);
 var
     hDCMaskBase: longword;
     hBitmapMaskBase: longword;
@@ -4555,7 +4564,8 @@ end;
 // ================================================================================
 // CreateClass - クラス作成
 // ================================================================================
-procedure CCLASS.CreateClass(lpWindowProc: pointer; hThisInstance: longword; lpClassName: pointer; dwStyle: longword; lpIcon: pointer; lpSmallIcon: pointer; dwCursor: longword; dwBackColor: longword);
+procedure CCLASS.CreateClass(lpWindowProc: pointer; hThisInstance: longword; lpClassName: pointer; dwStyle: longword; lpIcon: pointer; lpSmallIcon: pointer;
+    dwCursor: longword; dwBackColor: longword);
 var
     WndClassEx: TWNDCLASSEX;
 begin
@@ -4752,7 +4762,8 @@ end;
 // ================================================================================
 // CreateItem - ウィンドウアイテム作成
 // ================================================================================
-procedure CWINDOW.CreateItem(hThisInstance: longword; hMainWnd: longword; hFont: longword; lpItemName: pointer; lpCaption: pointer; dwItemID: longword; dwStylePlus: longword; dwStyleExPlus: longword; Box: TBOX);
+procedure CWINDOW.CreateItem(hThisInstance: longword; hMainWnd: longword; hFont: longword; lpItemName: pointer; lpCaption: pointer; dwItemID: longword;
+    dwStylePlus: longword; dwStyleExPlus: longword; Box: TBOX);
 var
     dwStyle: longword;
     dwStyleEx: longword;
@@ -5356,6 +5367,7 @@ begin
     // 設定を初期化
     Option.dwAmp := AMP_100;
     Option.dwBit := BIT_16;
+    Option.dwBmpFont := 0;
     Option.dwBufferNum := 22;
     Option.dwBufferTime := 23;
     Option.dwChannel := CHANNEL_STEREO;
@@ -5413,6 +5425,7 @@ begin
             sBuffer := Copy(sData, 1, BUFFER_LENGTH);
             if sBuffer = BUFFER_AMP_____ then Option.dwAmp := GetINIValue(Option.dwAmp);
             if sBuffer = BUFFER_BIT_____ then Option.dwBit := GetINIValue(Option.dwBit);
+            if sBuffer = BUFFER_BMPFONT_ then Option.dwBmpFont := GetINIValue(Option.dwBmpFont);
             if sBuffer = BUFFER_BUFNUM__ then Option.dwBufferNum := GetINIValue(Option.dwBufferNum);
             if sBuffer = BUFFER_BUFTIME_ then Option.dwBufferTime := GetINIValue(Option.dwBufferTime);
             if sBuffer = BUFFER_CHANNEL_ then Option.dwChannel := GetINIValue(Option.dwChannel);
@@ -5981,6 +5994,7 @@ begin
     AssignFile(fsFile, Concat(sChPath, INI_FILE));
     Rewrite(fsFile);
     Writeln(fsFile, SECTION_USER_POLICY);
+    Writeln(fsFile, Concat(BUFFER_BMPFONT_, IntToStr(Option.dwBmpFont)));
     Writeln(fsFile, Concat(BUFFER_BUFNUM__, IntToStr(Option.dwBufferNum)));
     Writeln(fsFile, Concat(BUFFER_BUFTIME_, IntToStr(Option.dwBufferTime)));
     Writeln(fsFile, Concat(BUFFER_DRAWINFO, IntToStr(Option.dwDrawInfo)));
@@ -8476,7 +8490,8 @@ var
     J: longword;
     T64Count: longword;
 
-function UpdateFunction(dwNow: longword; dwSize: longword; dwValues: array of longword; dwIdxs: array of longword; dwDef1: longword; dwIdx: longint; dwDef2: longword; dwDef3: longword): longword;
+function UpdateFunction(dwNow: longword; dwSize: longword; dwValues: array of longword; dwIdxs: array of longword; dwDef1: longword; dwIdx: longint;
+    dwDef2: longword; dwDef3: longword): longword;
 var
     dwI: longint;
 begin
@@ -8635,7 +8650,13 @@ begin
     hDCBitmapBuffer := API_CreateCompatibleDC(Status.hDCStatic);
     hBitmap := API_SelectObject(hDCBitmapBuffer, API_LoadBitmap(Status.hInstance, pchar(BITMAP_NAME)));
     // ビットマップリソースから文字表示用のデバイスコンテキストへ画像を転送 (AND 処理)
-    API_BitBlt(Status.hDCStringBuffer, 0, 0, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT, hDCBitmapBuffer, 0, 0, SRCAND);
+    if longbool(Option.dwBmpFont) and (Option.dwBmpFont < BITMAP_NUM_FONT) then begin
+        API_BitBlt(Status.hDCStringBuffer, 0, 0, BITMAP_NUM_HEX_X6, BITMAP_NUM_HEIGHT, hDCBitmapBuffer, BITMAP_NUM_X6 * Option.dwBmpFont, 0, SRCAND);
+        API_BitBlt(Status.hDCStringBuffer, BITMAP_NUM_HEX_X6, 0, BITMAP_NUM_X6 - BITMAP_NUM_HEX_X6, BITMAP_NUM_HEIGHT, hDCBitmapBuffer,
+            BITMAP_NUM_HEX_X6, 0, SRCAND);
+    end else begin
+        API_BitBlt(Status.hDCStringBuffer, 0, 0, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT, hDCBitmapBuffer, 0, 0, SRCAND);
+    end;
     // ビットマップリソース用のデバイスコンテキストを作り直す
     API_DeleteObject(API_SelectObject(hDCBitmapBuffer, hBitmap));
     hBitmap := API_SelectObject(hDCBitmapBuffer, API_CreateCompatibleBitmap(Status.hDCStatic, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT));
