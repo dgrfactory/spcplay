@@ -2336,7 +2336,7 @@ const
     DEFAULT_TITLE: string = 'SNES SPC700 Player';
     SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '2.19.3 (build 7707)';
+    SPCPLAY_VERSION = '2.19.3 (build 7744)';
     SNESAPU_VERSION = $21963;
     APPLINK_VERSION = $02170500;
 
@@ -2436,7 +2436,7 @@ const
     DRAG_START_THRESHOLD = 5;
     DRAG_LIMIT_THRESHOLD = 2;
     WINDOW_MOVE_THRESHOLD = 10;
-    WINDOW_WIDTH = 520;
+    WINDOW_WIDTH = 521;
     WINDOW_HEIGHT = 152;
 
     WM_APP_MESSAGE = $8000;                                 // 通知メッセージ
@@ -5856,25 +5856,25 @@ begin
     cwPlayList := CWINDOW.Create();
     cwPlayList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''),
         ID_LIST_PLAY, LBS_DISABLENOSCROLL or LBS_NOTIFY or WS_TABSTOP or WS_VISIBLE or WS_VSCROLL, WS_EX_CLIENTEDGE or WS_EX_NOPARENTNOTIFY,
-        ScalableWindowBox(300, 0, 215, 124));
-    ScalableWindowBox(300, 0, 215, Option.dwListHeight);
+        ScalableWindowBox(301, 0, 215, 124));
+    ScalableWindowBox(301, 0, 215, Option.dwListHeight);
     Box.top := (Status.dwScale - 2) shl 1;
     API_MoveWindow(cwPlayList.hWnd, Box.left, Box.top, Box.width, Box.height, false); // プレイリストが小さくなるバグ回避
     cwButtonListAdd := CWINDOW.Create();
     cwButtonListAdd.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_APPEND),
-        ID_BUTTON_ADD, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(300, 127, 54, 21));
+        ID_BUTTON_ADD, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(301, 127, 54, 21));
     cwButtonListRemove := CWINDOW.Create();
     cwButtonListRemove.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_REMOVE),
-        ID_BUTTON_REMOVE, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(356, 127, 54, 21));
+        ID_BUTTON_REMOVE, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(357, 127, 54, 21));
     cwButtonListClear := CWINDOW.Create();
     cwButtonListClear.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_CLEAR),
-        ID_BUTTON_CLEAR, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(412, 127, 54, 21));
+        ID_BUTTON_CLEAR, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(413, 127, 54, 21));
     cwButtonListUp := CWINDOW.Create();
     cwButtonListUp.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_UP[Status.dwLanguage]),
-        ID_BUTTON_UP, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(471, 127, 21, 21));
+        ID_BUTTON_UP, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(472, 127, 21, 21));
     cwButtonListDown := CWINDOW.Create();
     cwButtonListDown.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_DOWN[Status.dwLanguage]),
-        ID_BUTTON_DOWN, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(494, 127, 21, 21));
+        ID_BUTTON_DOWN, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(495, 127, 21, 21));
     // Static を作成
     lpBuffer := pchar(ITEM_STATIC);
     cwStaticFile := CWINDOW.Create();
@@ -9287,6 +9287,7 @@ begin
         SetLength(Status.sDeviceName, Status.dwDeviceNum + 1);
         // デバイスを仮選択
         if dwDeviceID >= longint(Status.dwDeviceNum) then dwDeviceID := -1;
+        if dwDeviceID < -1 then dwDeviceID := -1;
         Option.dwDeviceID := dwDeviceID;
         // デバイスメニューを作成
         if (dwFlag and WAVE_DEVICE_INITIALIZE) = WAVE_DEVICE_INITIALIZE then J := -1 else J := 0;
@@ -9310,6 +9311,7 @@ begin
             end;
         end;
         // 前回終了時に選択していたデバイス名と一致するデバイスを優先する
+        // 同名のデバイスが複数ある場合は、前回選択位置を優先する
         J := -1;
         for I := 0 to Status.dwDeviceNum do
             if Status.sDeviceName[I] = Option.sDeviceName then if J = -1 then J := I else J := -2;
@@ -9318,7 +9320,9 @@ begin
     // デバイスを再選択
     if dwDeviceID >= longint(Status.dwDeviceNum) then dwDeviceID := -1;
     Option.dwDeviceID := dwDeviceID;
-    if longbool(dwFlag and WAVE_DEVICE_UPDATE_SELECT) then Option.sDeviceName := Status.sDeviceName[dwDeviceID + 1];
+    // デバイス名を記録
+    if longbool(dwFlag and WAVE_DEVICE_UPDATE_SELECT) then
+        if dwDeviceID < 0 then Option.sDeviceName := '' else Option.sDeviceName := Status.sDeviceName[dwDeviceID + 1];
 end;
 
 // ================================================================================
