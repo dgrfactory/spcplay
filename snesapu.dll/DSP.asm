@@ -19,7 +19,7 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2021 degrade-factory
+;                                                   Copyright (C) 2003-2022 degrade-factory
 ;===================================================================================================
 
 CPU     386
@@ -262,7 +262,7 @@ SECTION .bss ALIGN=64
 ;Don't touch!  All arrays are carefully aligned on large boundaries to facillitate easier indexing
 ;and better cache utilization.
 
-; ----- degrade-factory code [2021/10/31] -----
+; ----- degrade-factory code [2022/05/01] -----
     ;DSP Core ---------------------------- [0]
     mix         resb    1024                                                    ;<VoiceMix> Mixing settings for each voice
     dsp         resb    128                                                     ;<DSPRAM> DSP registers
@@ -409,8 +409,13 @@ SECTION .bss ALIGN=64
     aafBufL     resd    3                                                       ;Anti-Alies filter buffer (Left)
     aafBufR     resd    3                                                       ;Anti-Alies filter buffer (Right)
 
-    ;Others --------------------------- [46F0]
-                resd    4
+    ;ADSR/Gain ------------------------ [46F0]
+    adsrAdj     resd    1                                                       ;Update envelope rate adjustment (16.16)
+    adsrClk     resw    1                                                       ;Update envelope rate clock
+    adsrCnt     resw    1                                                       ;Number of times to update envelope
+    adsrUpd     resb    1                                                       ;Number of updates executed by UpdateEnv
+                resb    3
+                resd    1
 
     ;Storage buffers ------------------ [4700]
     mixBuf      resd    MIX_SIZE*4                                              ;Temporary mixing buffer (linear buffer)
@@ -420,7 +425,7 @@ SECTION .bss ALIGN=64
     lowBufL2    resd    LOWBUF2
     lowBufR1    resd    LOWBUF1                                                 ;BASS-BOOST buffer (Right)
     lowBufR2    resd    LOWBUF2
-; ----- degrade-factory code [END] #37 -----
+; ----- degrade-factory code [END] #37 #45 -----
 
 ; ----- degrade-factory code [2015/07/11] -----
     dspVarEP    resd    1                                                       ;Endpoint of DSP.asm variables
@@ -938,12 +943,13 @@ USES ECX,EBX,EDI
     Mov     [outLeft],EAX
     Mov     [outCnt],EAX
     Mov     [outDec],EAX
-; ----- degrade-factory code [2021/05/04] -----
+; ----- degrade-factory code [2022/05/01] -----
     Mov     [dspPMod],EAX                                                       ;Clear dspPMod, dspNoise, dspNoiseF, dspMute
     Mov     [disFlag],EAX                                                       ;Clear disFlag, konRsv, koffRsv, konRun
     Mov     [envFlag],EAX                                                       ;Clear envFlag
+    Mov     [adsrClk],EAX                                                       ;Clear adsrClk, adsrCnt
     Mov     dword [konCnt],-2
-; ----- degrade-factory code [END] #25 -----
+; ----- degrade-factory code [END] #25 #45 -----
     Mov     dword [songLen],-1
     Mov     dword [fadeLen],1
 
@@ -3427,16 +3433,22 @@ ENDP
 ;   EAX,CL,EDX,ESI
 
 %macro UpdateEnv 0
-; ----- degrade-factory code [2012/10/29] -----
+; ----- degrade-factory code [2022/05/01] -----
     Test    byte [EBX+mKOn],-1                                                  ;Did time pass after KON had been written?
     JNZ     %%Done                                                              ;   No, quit
 
+    Mov     AL,[adsrCnt]
+    Test    AL,AL                                                               ;Should update envelope?
+    JZ      %%Done                                                              ;   No, quit
+    Mov     [adsrUpd],AL
+
+    %%Loop:
     Mov     CL,[EBX+eMode]
     Test    CL,E_IDLE                                                           ;Is the envelope constant?
-    JNZ     %%EnvDone                                                           ;   Yes
+    JNZ     %%EnvDone                                                           ;   Yes, go to ADSR/Gain check
 
     Dec     word [2+EBX+eCnt]                                                   ;Decrease sample counter, is it zero?
-    JNZ     %%Done                                                              ;   No, quit
+    JNZ     %%LoopDone                                                          ;   No, go to next loop
 
     Mov     EAX,[EBX+eRate]                                                     ;Restore sample counter
     Add     [EBX+eCnt],EAX
@@ -3445,7 +3457,7 @@ ENDP
     And     AL,E_ADSR|E_DIRECT
     Cmp     AL,E_DIRECT                                                         ;Is the envelope direct mode?
     JE      %%EnvDirect                                                         ;   Yes
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #45 -----
 
 ; ----- degrade-factory code [2008/02/10] -----
     ;Adjust Envelope -------------------------
@@ -3585,7 +3597,7 @@ ENDP
         Or      byte [EBX+eMode],E_IDLE                                         ;Envelope is now constant
 ; ----- degrade-factory code [END] -----
 
-; ----- degrade-factory code [2011/01/30] -----
+; ----- degrade-factory code [2022/05/01] -----
     %%EnvDone:
     Mov     AL,[EBX+vRsv]
     Test    AL,1
@@ -3595,19 +3607,23 @@ ENDP
         Sub     EBX,mix
         Call    RADSR
         Pop     EBX
-        Jmp     short %%Done
+        Jmp     short %%LoopDone
 
     %%ChkGain:
     Test    AL,2
-    JZ      short %%Done
+    JZ      short %%LoopDone
         Mov     byte [EBX+vRsv],0
         Push    EBX                                                             ;Update new Gain parameters
         Sub     EBX,mix
         Call    RGain
         Pop     EBX
 
+    %%LoopDone:
+    Dec     byte [adsrUpd]
+    JNZ     %%Loop
+
     %%Done:
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #45 -----
 %endmacro
 
 
@@ -4793,6 +4809,18 @@ PROC RunDSP
         ;Generate Noise =======================
         NoiseGen
 
+; ----- degrade-factory code [2022/05/01] -----
+        Mov     EAX,[adsrAdj]                                                   ;Calculate number of times to update envelope
+        Add     [adsrClk],EAX
+
+        Test    dword [dspOpts],DSP_ENVSPD                                      ;Is synchronize envelope updates enabled?
+        SetZ    CL                                                              ;   When yes, adsrCnt is not cleared
+        Dec     CL                                                              ;   When no, always adsrCnt is set 1
+        And     [adsrCnt],CL
+        Inc     CL
+        Or      [adsrCnt],CL
+; ----- degrade-factory code [END] #45 -----
+
         ;Voice Loop ===========================
         XOr     ECX,ECX
         XOr     EAX,EAX
@@ -4831,11 +4859,12 @@ PROC RunDSP
             .VoiceDone:
             Sub     EBX,-80h
 
-; ----- degrade-factory code [2016/08/20] -----
+; ----- degrade-factory code [2022/05/01] -----
         Add     CH,CH
         JNZ     .VoiceMix
-; ----- degrade-factory code [END] -----
 
+        Mov     [adsrCnt],CH                                                    ;Clear number of times to update envelope
+; ----- degrade-factory code [END] #45 -----
         Add     EDI,16
 
 ; ----- degrade-factory code [2008/04/24] -----
