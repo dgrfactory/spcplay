@@ -27,7 +27,7 @@
 ;===================================================================================================
 ;Options
 
-; ----- degrade-factory code [2019/07/15] -----
+; ----- degrade-factory code [2022/09/03] -----
 CPU_CYC     EQU 24                                              ;CPU clock divisor
                                                                 ;10 = 2.457MHz
                                                                 ;12 = 2.048MHz
@@ -48,6 +48,10 @@ INTBK       EQU 1                                               ;Break SPC700/Up
                                                                 ;   Notes:  If all of CNTBK, DSPBK and INTBK are set to 0, sound will be not output.
                                                                 ;           If you want the behavior closest to the SNES, set only INTBK to "1".
 
+ECHOMEM     EQU 0                                               ;Processing related to echo memory is made closer to the actual device
+                                                                ;   Notes:  If set to 1 and the playing speed is set to anything other than 100%,
+                                                                ;           playing may stop.  See REDl in DSP.asm
+
 VMETERM     EQU 1                                               ;Monitor main output level (for APR)
 VMETERV     EQU 1                                               ;Monitor levels of each voice (for visualization)
 
@@ -56,7 +60,7 @@ STEREO      EQU 1                                               ;Enable stereo c
 APURAMSIZE  EQU 10000h                                          ;APU RAM Memory Size
 SCR700SIZE  EQU 100000h                                         ;Script700 Program Area Size
 SCR700MASK  EQU SCR700SIZE - 1                                  ;Script700 Program Area Mask
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #52 -----
 
 ; ----- degrade-factory code [2021/09/19] -----
 ;SNESAPU callback effect

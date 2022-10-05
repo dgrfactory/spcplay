@@ -262,7 +262,7 @@ SECTION .bss ALIGN=64
 ;Don't touch!  All arrays are carefully aligned on large boundaries to facillitate easier indexing
 ;and better cache utilization.
 
-; ----- degrade-factory code [2022/05/01] -----
+; ----- degrade-factory code [2022/09/03] -----
     ;DSP Core ---------------------------- [0]
     mix         resb    1024                                                    ;<VoiceMix> Mixing settings for each voice
     dsp         resb    128                                                     ;<DSPRAM> DSP registers
@@ -336,17 +336,19 @@ SECTION .bss ALIGN=64
     firTaps     resd    8                                                       ;Filter coefficents
 
     ;Echo ----------------------------- [45D0]
-    echoDel     resd    1                                                       ;Size of delay (in bytes)
-    echoCur     resd    1                                                       ;Current sample in echo area
-    echoLen     resd    1                                                       ;Size of write echo buffer (dword)
-    echoCnt     resd    1
-    echoMem     resd    1                                                       ;Pointer of 64KB RAM write echo buffer
-    echoPtr     resd    1
-    echoDec     resd    1                                                       ;Decimal counter
+    echoLenD    resd    1                                                       ;Size of delay in echo area (in bytes)
+    echoMaxD    resd    1                                                       ;Maximum position in echo area (in bytes)
+    echoCurD    resd    1                                                       ;Writing position counter (in bytes)
+                resd    1
+    echoLenM    resd    1                                                       ;Size of delay in echo memory (in bytes)
+    echoMaxM    resd    1                                                       ;Maximum position in echo memory (in bytes)
+    echoCurM    resd    1                                                       ;Writing position counter (in bytes)
+    echoDecM    resd    1                                                       ;Decimal counter
+
     efbct       resd    1                                                       ;User specified echo feedback crosstalk
     echoFB      resd    1                                                       ;Echo feedback
     echoFBCT    resd    1                                                       ;Echo feedback crosstalk
-                resd    2
+                resd    1
 
     ;Single source playback ----------- [4600]
     tBRR        resb    8                                                       ;Temporary buffer for storing BRR block
@@ -379,8 +381,7 @@ SECTION .bss ALIGN=64
                                                                                 ;   [1] - Suspended envelope by frontend
                                                                                 ;   [5] - Suspended envelope by SetSPCDbg
                 resb    3
-    konCnt      resd    1                                                       ;t64 count of set KON/KOFF
-                resd    3
+                resd    4
 
     ;BASS BOOST ----------------------- [4680]
     lowRstL1    resd    1                                                       ;BASS-BOOST reset counter (Left)
@@ -425,7 +426,7 @@ SECTION .bss ALIGN=64
     lowBufL2    resd    LOWBUF2
     lowBufR1    resd    LOWBUF1                                                 ;BASS-BOOST buffer (Right)
     lowBufR2    resd    LOWBUF2
-; ----- degrade-factory code [END] #37 #45 -----
+; ----- degrade-factory code [END] #37 #45 #52 -----
 
 ; ----- degrade-factory code [2015/07/11] -----
     dspVarEP    resd    1                                                       ;Endpoint of DSP.asm variables
@@ -911,15 +912,19 @@ USES ECX,EBX,EDI
 ; ----- degrade-factory code [END] -----
 
     ;Erase echo settings --------------------
-    Mov     [echoCur],EAX                                                       ;Reset echo variables
-    Mov     dword [echoDel],8                                                   ;Delay 1 sample
-    Mov     [echoLen],EAX
-    Mov     [echoCnt],EAX
-    Mov     [echoMem],EAX
-    Mov     [echoPtr],EAX
-    Mov     [echoDec],EAX
+; ----- degrade-factory code [2022/09/03] -----
+    Mov     [echoDecM],EAX                                                      ;Reset echo variables
     Mov     [echoFB],EAX
     Mov     [echoFBCT],EAX
+    Mov     EAX,4
+    Mov     [echoLenM],EAX                                                      ;Minimum value of echoLenM is 4byte (16-bit, stereo)
+    Mov     [echoMaxM],EAX
+    Mov     [echoCurM],EAX
+    Add     EAX,EAX
+    Mov     [echoLenD],EAX                                                      ;Minimum value of echoLenD is 8byte (32-bit, stereo)
+    Mov     [echoMaxD],EAX
+    Mov     [echoCurD],EAX
+; ----- degrade-factory code [END] #52 -----
 
 ; ----- degrade-factory code [2020/01/05] -----
     Call    ResetVol
@@ -943,13 +948,12 @@ USES ECX,EBX,EDI
     Mov     [outLeft],EAX
     Mov     [outCnt],EAX
     Mov     [outDec],EAX
-; ----- degrade-factory code [2022/05/01] -----
+; ----- degrade-factory code [2022/09/03] -----
     Mov     [dspPMod],EAX                                                       ;Clear dspPMod, dspNoise, dspNoiseF, dspMute
     Mov     [disFlag],EAX                                                       ;Clear disFlag, konRsv, koffRsv, konRun
     Mov     [envFlag],EAX                                                       ;Clear envFlag
     Mov     [adsrClk],EAX                                                       ;Clear adsrClk, adsrCnt
-    Mov     dword [konCnt],-2
-; ----- degrade-factory code [END] #25 #45 -----
+; ----- degrade-factory code [END] #25 #45 #52 -----
     Mov     dword [songLen],-1
     Mov     dword [fadeLen],1
 
@@ -3003,33 +3007,40 @@ REFB:
     Ret
 
 REDl:
-; ----- degrade-factory code [2009/04/25] -----
+; ----- degrade-factory code [2022/09/03] -----
     Push    ECX
 
     Mov     AL,byte [dsp+edl]
     And     EAX,0Fh
     ShL     EAX,9                                                               ;EAX = Number of samples to delay
-    Mov     [echoLen],EAX
-    Mov     [echoCnt],EAX
-    SetZ    CL                                                                  ;If echoLen = 0, echoLen = 1
-    Or      [echoLen],CL
-    Or      [echoCnt],CL
-    Mul     dword [dspRate]                                                     ;EAX *= Rate / 32kHz
-    Mov     ECX,32000
-    Div     ECX
+    Push    EAX
+
     Test    EAX,EAX                                                             ;If EAX = 0, EAX = 1
     SetZ    CL
     Or      AL,CL
-    ShL     EAX,3                                                               ;Multiply by 8, since echo is stored in 32-bit stereo
-    Mov     [echoDel],EAX
+    ShL     EAX,2                                                               ;Multiply by 4, since original echo is stored in 16-bit stereo
+    Mov     [echoLenM],EAX
 
-    Mov     EAX,[pAPURAM]
-    Mov     AH,[dsp+esa]
-    Mov     [echoMem],EAX
-    Mov     [echoPtr],EAX
+%if ECHOMEM=0
+    ;Normally, the current pointer is NOT initialized by changing the EDL, but when the playing speed
+    ;is set other than 100%, the current pointer is initialized to rewrite memory in unexpected places.
+    Mov     [echoMaxM],EAX
+    Mov     [echoCurM],EAX
+%endif
+
+    Pop     EAX
+    Mul     dword [dspRate]                                                     ;EAX *= Rate / 32kHz
+    Mov     ECX,32000
+    Div     ECX
+
+    Test    EAX,EAX                                                             ;If EAX = 0, EAX = 1
+    SetZ    CL
+    Or      AL,CL
+    ShL     EAX,3                                                               ;Multiply by 8, since SNESAPU echo is stored in 32-bit stereo
+    Mov     [echoLenD],EAX
 
     Pop     ECX
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #52 -----
     XOr     EAX,EAX
     Inc     EAX
     Ret
@@ -3931,7 +3942,7 @@ ENDP
 PROC EmuDSP, pBuf, num
 USES ALL
 
-; ----- degrade-factory code [2021/11/08] -----
+; ----- degrade-factory code [2022/09/03] -----
     Mov     EAX,[pBuf]
 
     Mov     EDX,[num]
@@ -3947,7 +3958,7 @@ USES ALL
     And     BL,8                                                                ;BL = 8 or 0
     Not     BH                                                                  ;BH = 0 or 0xFF
 
-    Mov     DH,[dsp+flg]                                                        ;disFlag
+    Mov     DH,[dsp+flg]                                                        ;DH = disFlag
     And     DH,0E0h                                                             ;   [0] - Disabled write echo memory
     Or      DH,[dspMute]                                                        ;   [1] - (not used)
                                                                                 ;   [2] - (not used)
@@ -3955,14 +3966,11 @@ USES ALL
     And     DL,DSP_NOECHO                                                       ;   [4] - Disabled echo (user setting)
     Or      DH,DL                                                               ;   [5] - Disabled echo (DSP no echo flag)
                                                                                 ;   [6] - Disabled DSP emulation (DSP mute flag)
-    Test    dword [echoLen],-1                                                  ;   [7] - Disabled DSP emulation (DSP reset flag)
-    SetZ    DL
-    Or      DH,DL
+    Or      DH,BL                                                               ;   [7] - Disabled DSP emulation (DSP reset flag)
 
     Test    dword [dspOpts],DSP_ECHOFIR                                         ;Is echo disabled?
     SetZ    DL
     Or      DH,DL
-    Or      DH,BL
     Mov     [disFlag],DH
 
     Mov     DH,[dsp+pmon]                                                       ;Set DSP pitch modulation flags
@@ -4006,7 +4014,7 @@ USES ALL
     And     DH,BH
     Mov     [dspNoiseF],DH
     Or      [dspNoise],DH
-; ----- degrade-factory code [END] #37 -----
+; ----- degrade-factory code [END] #37 #52 -----
 
 ; ----- degrade-factory code [2007/10/03] -----
     Test    dword [dspOpts],DSP_FLOAT                                           ;Is volume output floating-point?
@@ -4230,7 +4238,9 @@ ENDP
     Test    AH,S700_MUTE                                                        ;AH and S700_MUTE = S700_MUTE?
     JNZ     .VoiceOff                                                           ;   Yes
 %endmacro
+; ----- degrade-factory code [END] -----
 
+; ----- degrade-factory code [2021/10/31] -----
 %macro MixVoice 0
 %if STEREO
     Test    byte [EBX+mFlg],MFLG_KOFF
@@ -4375,7 +4385,9 @@ ENDP
     %%Done:
 %endif
 %endmacro
+; ----- degrade-factory code [END] -----
 
+; ----- degrade-factory code [2021/10/31] -----
 %macro MixMaster 0
     ;Multiply samples by main volume ------
     Mov     ECX,nowMainL
@@ -4405,9 +4417,12 @@ ENDP
 
     FStP    dword [4+ESI]
 %endmacro
+; ----- degrade-factory code [END] -----
 
-%macro MixEcho 0
-    Mov     EDI,[echoCur]
+; ----- degrade-factory code [2022/09/03] -----
+%macro MixEchoDSP 0
+    Mov     EDI,[echoMaxD]
+    Sub     EDI,[echoCurD]
     Add     EDI,echoBuf
 
     ZeroDN  4+EDI
@@ -4425,12 +4440,12 @@ ENDP
     FLd     ST1                                                                 ;                                   |FBR FBL FBR FBL
 
     ;Advance echo sample pointer -------
-    XOr     EAX,EAX
-    Sub     dword [echoCur],8
-    SetNC   AL
-    Dec     EAX
-    And     EAX,[echoDel]
-    Add     [echoCur],EAX
+    Sub     dword [echoCurD],8
+    JNZ     short %%NoReset
+        Mov     EAX,[echoLenD]
+        Mov     [echoMaxD],EAX
+        Mov     [echoCurD],EAX
+    %%NoReset:
 
     ;Add echo to main output -----------
     Mov     ECX,nowEchoL
@@ -4496,42 +4511,70 @@ ENDP
     ZeroDN  4+EDI
 %endif
 %endmacro
+; ----- degrade-factory code [END] #37 #52 -----
 
+; ----- degrade-factory code [2022/09/03] -----
 %macro MixEchoMem 0
     Push    EBX,ECX
-    Mov     EBX,[echoDec]
+    Mov     EDX,[echoDecM]
+    Sub     EDX,32000
+    JNS     short %%Skip
 
-    %%NextMem:
-    Sub     EBX,32000
-    JNS     short %%SkipMem
-    Mov     EDX,[echoPtr]
-
-    Push    ECX
+    Push    ECX                                                                 ;Dummy stack
     FLd     dword [EDI]
     FIStP   word [ESP]
     FLd     dword [4+EDI]
     FIStP   word [2+ESP]
-    Pop     ECX
+    Pop     ECX                                                                 ;ECX = [ESP] (dword)
+    And     ECX,~1 & ~10000h                                                    ;All numbers used by DSP are even
 
-    %%LoopMem:
-    Mov     [EDX],ECX
-    Add     DX,4
-    Dec     dword [echoCnt]
-    JNZ     short %%NextPtr
-        Mov     EAX,[echoLen]
-        Mov     [echoCnt],EAX
-        Mov     EDX,[echoMem]
-    %%NextPtr:
+    %%Loop:
+    Mov     EBX,[pAPURAM]
+    Mov     BH,[dsp+esa]
+    Mov     EAX,[echoMaxM]
+    Sub     EAX,[echoCurM]
+    Add     BX,AX
+    Mov     [EBX],ECX
 
-    Add     EBX,[dspRate]
-    JS      short %%LoopMem
-    Mov     [echoPtr],EDX
+    Sub     dword [echoCurM],4
+    JNZ     short %%NoReset
+        Mov     EAX,[echoLenM]
+        Mov     [echoMaxM],EAX
+        Mov     [echoCurM],EAX
+    %%NoReset:
 
-    %%SkipMem:
-    Mov     [echoDec],EBX
+    Add     EDX,[dspRate]
+    JS      short %%Loop
+
+    %%Skip:
+    Mov     [echoDecM],EDX
     Pop     ECX,EBX
 %endmacro
+; ----- degrade-factory code [END] #52 -----
 
+; ----- degrade-factory code [2022/09/03] -----
+%macro NopEchoMem 0
+    Mov     EDX,[echoDecM]
+    Sub     EDX,32000
+    JNS     short %%Skip
+
+    %%Loop:
+    Sub     dword [echoCurM],4
+    JNZ     short %%NoReset
+        Mov     EAX,[echoLenM]
+        Mov     [echoMaxM],EAX
+        Mov     [echoCurM],EAX
+    %%NoReset:
+
+    Add     EDX,[dspRate]
+    JS      short %%Loop
+
+    %%Skip:
+    Mov     [echoDecM],EDX
+%endmacro
+; ----- degrade-factory code [END] #52 -----
+
+; ----- degrade-factory code [2021/10/31] -----
 %macro MixBASS 0
     ;Save Current Sample --------------
     Mov     ECX,[lowCnt1]                                                       ;ECX = Cnt1
@@ -4643,7 +4686,9 @@ ENDP
     %%RstR2:
     Mov     [lowRstR2],EAX                                                      ;RstR2 = EAX
 %endmacro
+; ----- degrade-factory code [END] -----
 
+; ----- degrade-factory code [2021/10/31] -----
 %macro ApplyLevel 0
 %if VMETERM
     Mov     EAX,[ESI]                                                           ;EAX = |Left|
@@ -4681,7 +4726,7 @@ ENDP
     Add     [vMMaxR],EAX
 %endif
 %endmacro
-; ----- degrade-factory code [END] #37 -----
+; ----- degrade-factory code [END] -----
 
 ; ----- degrade-factory code [2012/02/18] -----
 %macro MixAAF 0
@@ -4884,18 +4929,25 @@ PROC RunDSP
 ; ----- degrade-factory code [END] -----
 
     .NextSmp:
-; ----- degrade-factory code [2008/04/18] -----
+; ----- degrade-factory code [2022/09/03] -----
         MixMaster
 
         Test    byte [disFlag],30h                                              ;Is echo disabled by DSP? (disFlag = [4][5])
-        JNZ     .NoEcho                                                         ;   Yes
-            MixEcho
-        .NoEcho:
+        JNZ     .NoEchoDSP                                                      ;   Yes
+            MixEchoDSP
+        .NoEchoDSP:
 
         Test    byte [disFlag],31h                                              ;Is echo delay disabled? (disFlag = [0][4][5])
         JNZ     short .NoEchoMem                                                ;   Yes
             MixEchoMem
+%if ECHOMEM
+            Jmp     short .ExitEchoMem
+%endif
         .NoEchoMem:
+%if ECHOMEM
+            NopEchoMem                                                          ;Increment cursor only
+        .ExitEchoMem:
+%endif
 
         Test    dword [dspOpts],DSP_BASS                                        ;Is BASS BOOST enabled?
         JZ      .NoBASS                                                         ;   No
@@ -4904,7 +4956,6 @@ PROC RunDSP
 
         ApplyLevel
 ; ----- degrade-factory code [END] -----
-
         Add     ESI,16
 
 ; ----- degrade-factory code [2008/04/23] -----
