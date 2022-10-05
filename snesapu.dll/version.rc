@@ -15,6 +15,7 @@ BEGIN
             VALUE "FileVersion", "$CAP_FILE_VER\0"
             VALUE "LegalCopyright", "Copyright (C) 1999-2008 Alpha-II Productions; (C) 2003-$YEAR degrade-factory.\0"
             VALUE "LegalTrademarks", "SNES is a registered trademark of Nintendo.\0"
+            VALUE "OriginalFilename", "snesapu.dll\0"
             VALUE "ProductName", "SNESAPU\0"
             VALUE "ProductVersion", "$CAP_PRODUCT_VER\0"
             VALUE "URL", "http://dgrfactory.jp/\0"
