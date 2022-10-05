@@ -3444,6 +3444,7 @@ function  API_PostThreadMessage(idThread: longword; msg: longword; wParam: longw
 function  API_ReadFile(hFile: longword; lpBuffer: pointer; nNumberOfBytesToRead: longword; lpNumberOfBytesRead: pointer; lpOverlapped: pointer): longbool; stdcall; external 'kernel32.dll' name 'ReadFile';
 function  API_RegisterClassEx(lpwcx: pointer): smallint; stdcall; external 'user32.dll' name 'RegisterClassExA';
 function  API_ReleaseDC(hWnd: longword; hDC: longword): longint; stdcall; external 'user32.dll' name 'ReleaseDC';
+procedure API_ReleaseStgMedium(lpStgMedium: pointer); stdcall; external 'ole32.dll' name 'ReleaseStgMedium';
 function  API_SelectObject(hDC: longword; hGdiObj: longword): longword; stdcall; external 'gdi32.dll' name 'SelectObject';
 function  API_SendMessage(hWnd: longword; msg: longword; wParam: longword; lParam: longword): longword; stdcall; external 'user32.dll' name 'SendMessageA';
 function  API_SetBkColor(hDC: longword; crColor: longword): longword; stdcall; external 'gdi32.dll' name 'SetBkColor';
@@ -4284,10 +4285,8 @@ end;
 function _OLEIDataObjectRelease(lpDataObject: pointer): longword; stdcall;
 var
     I: longint;
-    J: longint;
     IDataObject: ^TIDATAOBJECT;
     SelfObject: ^TDROPOBJECT;
-    ClearObject: ^TDROPOBJECT;
 begin
     // 参照カウントをデクリメント
     IDataObject := lpDataObject;
@@ -4297,15 +4296,14 @@ begin
     // メモリを解放
     for I := 0 to IDataObject.dwObjectCnt - 1 do begin
         SelfObject := @IDataObject.Objects[I];
-        if SelfObject.fRelease then begin
-            if longbool(SelfObject.FormatEtc) then API_GlobalFree(longword(SelfObject.FormatEtc));
-            if longbool(SelfObject.StgMedium) then API_GlobalFree(longword(SelfObject.StgMedium));
+        if not SelfObject.fRelease then continue;
+        if longbool(SelfObject.FormatEtc) then API_GlobalFree(longword(SelfObject.FormatEtc));
+        if longbool(SelfObject.StgMedium) then begin
+            // コピーされた追加のデータを解放
+            API_ReleaseStgMedium(SelfObject.StgMedium);
+            API_GlobalFree(longword(SelfObject.StgMedium));
         end;
-        for J := I to IDataObject.dwObjectCnt - 1 do begin
-            ClearObject := @IDataObject.Objects[J];
-            if ClearObject.FormatEtc = SelfObject.FormatEtc then ClearObject.FormatEtc := NULLPOINTER;
-            if ClearObject.StgMedium = SelfObject.StgMedium then ClearObject.StgMedium := NULLPOINTER;
-        end;
+        break;
     end;
     API_GlobalFree(longword(IDataObject.lpVtbl));
     API_GlobalFree(longword(IDataObject));
@@ -6339,10 +6337,13 @@ begin
         // バッファを解放
         _OLEIDropSourceRelease(IDropSource);
         _OLEIDataObjectRelease(IDataObject);
+        // IDropSource と IDataObject の Release で参照カウントが 0 になったときにメモリ解放するため、
+        // 後続では DropFiles, FormatEtc, StgMedium を含めて解放しない
         IDropSourceVtbl := NULLPOINTER;
         IDropSource := NULLPOINTER;
         IDataObjectVtbl := NULLPOINTER;
         IDataObject := NULLPOINTER;
+        DropFiles := NULLPOINTER;
         FormatEtc := NULLPOINTER;
         StgMedium := NULLPOINTER;
     until true;
