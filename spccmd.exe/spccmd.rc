@@ -1,6 +1,6 @@
 1 VERSIONINFO
-    FILEVERSION 1,5,1,4212
-    PRODUCTVERSION 1,5,1,0
+    FILEVERSION $RES_FILE_VER
+    PRODUCTVERSION $RES_PRODUCT_VER
     FILEFLAGSMASK 0x3fL
     FILEFLAGS 0x8L
     FILEOS 0x10004L
@@ -12,10 +12,12 @@ BEGIN
         BLOCK "041103A4"
         BEGIN
             VALUE "FileDescription", "SNES SPC700 Player external command tool\0"
-            VALUE "FileVersion", "1.5.1 (build 4212)\0"
-            VALUE "LegalCopyright", "Copyright (C) 2008-2021 degrade-factory.\0"
+            VALUE "FileVersion", "$CAP_FILE_VER\0"
+            VALUE "LegalCopyright", "Copyright (C) 2008-$YEAR degrade-factory.\0"
             VALUE "LegalTrademarks", "SNES is a registered trademark of Nintendo.\0"
-            VALUE "ProductVersion", "1.5.1\0"
+            VALUE "OriginalFilename", "spccmd.exe\0"
+            VALUE "ProductName", "SPCCMD\0"
+            VALUE "ProductVersion", "$CAP_PRODUCT_VER\0"
             VALUE "URL", "http://dgrfactory.jp/\0"
         END
     END

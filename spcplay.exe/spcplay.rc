@@ -2,8 +2,8 @@ MAINICON ICON DISCARDABLE "spcplay.ico"
 MAINBMP BITMAP DISCARDABLE "spcplay.bmp"
 
 1 VERSIONINFO
-    FILEVERSION 2,19,3,7744
-    PRODUCTVERSION 2,19,3,0
+    FILEVERSION $RES_FILE_VER
+    PRODUCTVERSION $RES_PRODUCT_VER
     FILEFLAGSMASK 0x3fL
     FILEFLAGS 0x8L
     FILEOS 0x10004L
@@ -15,11 +15,12 @@ BEGIN
         BLOCK "041103A4"
         BEGIN
             VALUE "FileDescription", "SNES SPC700 Player\0"
-            VALUE "FileVersion", "2.19.3 (build 7744)\0"
-            VALUE "LegalCopyright", "Copyright (C) 2003-2022 degrade-factory.\0"
+            VALUE "FileVersion", "$CAP_FILE_VER\0"
+            VALUE "LegalCopyright", "Copyright (C) 2003-$YEAR degrade-factory.\0"
             VALUE "LegalTrademarks", "SNES is a registered trademark of Nintendo.\0"
+            VALUE "OriginalFilename", "spcplay.exe\0"
             VALUE "ProductName", "SPCPLAY\0"
-            VALUE "ProductVersion", "2.19.3\0"
+            VALUE "ProductVersion", "$CAP_PRODUCT_VER\0"
             VALUE "URL", "http://dgrfactory.jp/\0"
         END
     END
