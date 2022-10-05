@@ -45,12 +45,12 @@ SECTION .data ALIGN=256
 SECTION .data ALIGN=32
 %endif
 
-; ----- degrade-factory code [2022/06/19] -----
+; ----- degrade-factory code [2022/07/04] -----
     apuOpt      DD  (CPU_CYC << 24) | (DEBUG << 16) | (DSPINTEG << 17) | (VMETERM << 8) | (VMETERV << 9) | (1 << 10) | (STEREO << 11) \
                     | (HALFC << 1) | (CNTBK << 2) | (SPEED << 3) | (IPLW << 4) | (DSPBK << 5) | (INTBK << 6)
-    apuDllVer   DD  21963h                                                      ;SNESAPU.DLL Current Version
+    apuDllVer   DD  20000h                                                      ;SNESAPU.DLL Current Version
     apuCmpVer   DD  11000h                                                      ;SNESAPU.DLL Backwards Compatible Version
-    apuVerStr   DD  "2.19.3 (build 7744)"                                       ;SNESAPU.DLL Current Version (32byte String)
+    apuVerStr   DD  "$CAP_FILE_VER"                                             ;SNESAPU.DLL Current Version (32byte String)
                 DD  8
 ; ----- degrade-factory code [END] -----
 
