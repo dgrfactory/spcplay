@@ -2338,7 +2338,7 @@ const
     SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
     SPCPLAY_VERSION = '$CAP_FILE_VER';
     SNESAPU_VERSION = $20000; // SNESAPU_VER
-    APPLINK_VERSION = $02170500;
+    APPLINK_VERSION = $02190400;
 
     CBE_DSPREG = $1;
     CBE_S700FCH = $2;
@@ -2485,6 +2485,8 @@ const
     WM_APP_NEXT_TICK = $F4100000;                           // 次の命令で止める   ($F410????, lParam:0=CBE Flags)
     WM_APP_DSP_CHEAT = $F5000000;                           // DSP チート設定     ($F500??XX, XX:DSP Address, lParam:Value (-1:UNSET))
     WM_APP_DSP_THRU = $F5010000;                            // DSP チート全解除   ($F501????)
+    WM_APP_GET_MUTE = $F6000000;                            // ミュート取得       ($F60000??)
+    WM_APP_SET_MUTE = $F6010000;                            // ミュート設定       ($F60100??)
     WM_APP_STATUS = $FF000000;                              // ステータス取得     ($FF00????)
     WM_APP_APPVER = $FF010000;                              // バージョン取得     ($FF01????)
     WM_APP_EMU_APU = $FFFE0000;                             // 強制エミュレート   ($FFFE????)
@@ -10020,7 +10022,7 @@ begin
     // 無音のサイズを計算
     dwWaveL := Option.dwWaveBlank; // 最初の無音時間
     dwBlank := 0;
-    if dwWaveL < $80000000 then begin
+    if (dwWaveL < $80000000) and not longbool(Option.dwMute and $FF) then begin
         Inc(dwWaveL, dwWaveL mod 100); // 間隔調整
         dwBlank := dwWaveL div 100;
     end;
@@ -10078,7 +10080,7 @@ begin
     // WAVE データを出力
     dwPCent := $FFFFFFFF;
     dwSizeL := dwSizeP; // 最後のポインタ、現在のポインタ
-    if Option.dwWaveBlank >= 0 then dwSizeT := 0 else dwSizeT := 1;
+    if (Option.dwWaveBlank >= 0) and not longbool(Option.dwMute and $FF) then dwSizeT := 0 else dwSizeT := 1;
     for I := 0 to dwCount - 1 do begin
         // 新しいバッファを取得
         Apu.VolumeMaxLeft^ := 0;
@@ -10691,10 +10693,12 @@ begin
                     API_LeaveCriticalSection(@CriticalSectionThread);
                 end;
                 WM_APP_GET_WORK, WM_APP_SET_WORK: begin // ワーク読み取り・書き込み
+                    // Script700 ユーザワークエリア
                     result := Status.Script700.Data.dwWork[wParam and $7];
                     if longbool(wParam and $10000) then Status.Script700.Data.dwWork[wParam and $7] := lParam;
                 end;
                 WM_APP_GET_CMP, WM_APP_SET_CMP: begin // 比較値読み取り・書き込み
+                    // Script700 データエリア
                     result := Status.Script700.Data.dwCmpParam[wParam and $1];
                     if longbool(wParam and $10000) then Status.Script700.Data.dwCmpParam[wParam and $1] := lParam;
                 end;
@@ -10746,6 +10750,16 @@ begin
                     else Status.DSPCheat[wParam and $7F] := (lParam and $FF) or $100;
                     // クリティカルセクションを終了
                     API_LeaveCriticalSection(@CriticalSectionThread);
+                end;
+                WM_APP_GET_MUTE, WM_APP_SET_MUTE: begin // ミュート設定
+                    // チャンネルマスク
+                    result := Option.dwMute;
+                    if longbool(wParam and $10000) then begin
+                        // チャンネルマスクを設定
+                        Option.dwMute := wParam and $FF;
+                        // 設定をリセット
+                        SPCReset(false);
+                    end;
                 end;
                 WM_APP_STATUS: result := (longword(Status.bOpen) and STATUS_OPEN) or (longword(Status.bPlay) and STATUS_PLAY)
                     or (longword(Status.bPause) and STATUS_PAUSE); // ステータス取得

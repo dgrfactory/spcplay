@@ -44,7 +44,7 @@
 //  ※ GNU 一般公衆利用許諾契約書バージョン 2 のドキュメントは、付属の LICENSE にあります。
 //
 //
-//  Copyright (C) 2003-2021 degrade-factory. All rights reserved.
+//  Copyright (C) 2003-2022 degrade-factory. All rights reserved.
 //
 // =================================================================================================
 program spccmd;
@@ -151,8 +151,8 @@ const
     CLASS_NAME: string = 'SSDLabo_SPCPLAY';
     SPC_FILE_HEADER = 'SNES-SPC700 Sound File Data ';
     SPC_FILE_HEADER_LEN = 28;
-    SPCCMD_VERSION = '1.5.1 (build 4212)';
-    APPLINK_VERSION = $02170500;
+    SPCCMD_VERSION = '$CAP_FILE_VER';
+    APPLINK_VERSION = $02190400;
     HexTable: array[0..15] of char = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F');
     INI_FILE: string = 'spcplay.ini';
     BUFFER_LENGTH = 13;
@@ -233,6 +233,8 @@ const
     WM_APP_NEXT_TICK = $F4100000;                           // 次の命令で止める   ($F410????, lParam:0=CBE Flags)
     WM_APP_DSP_CHEAT = $F5000000;                           // DSP チート設定     ($F500??XX, XX:DSP Address, lParam:Value (-1:UNSET))
     WM_APP_DSP_THRU = $F5010000;                            // DSP チート全解除   ($F501????)
+    WM_APP_GET_MUTE = $F6000000;                            // ミュート取得       ($F60000??)
+    WM_APP_SET_MUTE = $F6010000;                            // ミュート設定       ($F60100??)
     WM_APP_STATUS = $FF000000;                              // ステータス取得     ($FF00????)
     WM_APP_APPVER = $FF010000;                              // バージョン取得     ($FF01????)
     WM_APP_EMU_APU = $FFFE0000;                             // 強制エミュレート   ($FFFE????)
@@ -252,7 +254,7 @@ const
     STATUS_PAUSE = $4;                                      // Pause フラグ
 
     STR_VERSION_1: array[0..1] of string = ('SNES SPC700 Player 外部拡張コマンド ツール', 'SNES SPC700 Player external command tool');
-    STR_VERSION_2: array[0..1] of string = ('サポートしている SPCPLAY.EXE のバージョン： v2.18.0 以降', 'Supported SPCPLAY.EXE version: v2.18.0 or later');
+    STR_VERSION_2: array[0..1] of string = ('サポートしている SPCPLAY.EXE のバージョン： v2.19.4 以降', 'Supported SPCPLAY.EXE version: v2.19.4 or later');
 
     STR_USAGE_TITLE: array[0..1] of string = ('<< 構文 >>', '<< USAGE >>');
     STR_USAGE_NEXT: array[0..1] of string = ('Enter キーで続きを表示します...', 'Press Enter key to continue...');
@@ -261,6 +263,7 @@ const
     STR_USAGE_OPTION_BASE: array[0..1] of string = ('基本オプション', 'Base options');
     STR_USAGE_OPTION_BASE_H: array[0..1] of string = ('構文ヘルプを表示', 'Show usage');
     STR_USAGE_OPTION_BASE_V: array[0..1] of string = ('バージョン情報を表示', 'Show version');
+    STR_USAGE_OPTION_BASE_O: array[0..1] of string = ('ファイルを開く   <IF> = 読込ファイル', 'Open file   <IF> = Read path');
     STR_USAGE_OPTION_BASE_P: array[0..1] of string = ('演奏開始・一時停止', 'Play/Pause');
     STR_USAGE_OPTION_BASE_R: array[0..1] of string = ('最初から演奏', 'Restart');
     STR_USAGE_OPTION_BASE_S: array[0..1] of string = ('演奏停止', 'Stop');
@@ -306,24 +309,28 @@ const
     STR_USAGE_OPTION_EMU_PD_1: array[0..1] of string = ('SHVC-SOUND への転送をシミュレート', 'Simulate transfer to SHVC-SOUND');
     STR_USAGE_OPTION_EMU_PD_2: array[0..1] of string = ('<IF> = 読込ファイル', '<IF> = Read path');
     STR_USAGE_OPTION_EMU_PD_3: array[0..1] of string = ('<SF> = Script700 ファイル', '<SF> = Script700 path');
+    STR_USAGE_OPTION_MUTE: array[0..1] of string = ('チャンネルミュート', 'Channel mute');
+    STR_USAGE_OPTION_MUTE_G: array[0..1] of string = ('取得', 'Get');
+    STR_USAGE_OPTION_MUTE_S: array[0..1] of string = ('設定   <XX>(チャンネル番号) = 0|[1-8]+', 'Set     <XX>(Channel numbers) = 0|[1-8]+');
+    STR_USAGE_OPTION_MUTE_REV: array[0..1] of string = ('フラグ反転', 'Reverse flags');
     STR_USAGE_OPTION_CNV: array[0..1] of string = ('SPC 変換', 'SPC converter');
     STR_USAGE_OPTION_CNV_CW_1: array[0..1] of string = ('SPC -> WAVE (.wav) 変換', 'SPC -> WAVE (.wav)');
     STR_USAGE_OPTION_CNV_CW_2: array[0..1] of string = ('<IF> = 読込ファイル  <OF> = 書込ファイル', '<IF> = Read path  <OF> = Write path');
-    STR_ERROR_008: array[0..1] of string = ('SPCCMD.EXE が起動できません。', 'SPCCMD.EXE cannot open.');
-    STR_ERROR_009: array[0..1] of string = ('SPCCMD.EXE が起動できません。', 'SPCCMD.EXE cannot open.');
+    STR_ERROR_008: array[0..1] of string = ('SPCCMD.EXE を起動できません。', 'SPCCMD.EXE cannot open.');
+    STR_ERROR_009: array[0..1] of string = ('SPCCMD.EXE を起動できません。', 'SPCCMD.EXE cannot open.');
     STR_ERROR_101: array[0..1] of string = ('SNES SPC700 Player が起動していません。', 'SNES SPC700 Player is not running.');
     STR_ERROR_102: array[0..1] of string = ('起動している SNES SPC700 Player のバージョンには対応していません。', 'Does not support version of this SNES SPC700 Player.');
     STR_ERROR_109: array[0..1] of string = ('スイッチは使用できません。', 'switch cannot be used.');
     STR_ERROR_201: array[0..1] of string = ('書き込み先のファイル名が指定されていません。', 'Write path is undefined.');
     STR_ERROR_202: array[0..1] of string = ('読み込み先のファイル名と書き込み先のファイル名が同じです。', 'Read path is same Write path.');
-    STR_ERROR_203: array[0..1] of string = ('ファイルが書き込めません。', 'Cannot write file.');
-    STR_ERROR_204: array[0..1] of string = ('ファイルが読み込めません。', 'Cannot read file.');
-    STR_ERROR_205: array[0..1] of string = ('SNESAPU.DLL が読み込めません。', 'Cannot read SNESAPU.DLL.');
+    STR_ERROR_203: array[0..1] of string = ('ファイルを書き込めません。', 'Cannot write file.');
+    STR_ERROR_204: array[0..1] of string = ('ファイルを読み込めません。', 'Cannot read file.');
+    STR_ERROR_205: array[0..1] of string = ('SNESAPU.DLL を読み込めません。', 'Cannot read SNESAPU.DLL.');
     STR_ERROR_206: array[0..1] of string = ('対応していない SNESAPU.DLL です。', 'Does not support version of this SNESAPU.DLL.');
-    STR_ERROR_301: array[0..1] of string = ('ファイルが読み込めません。', 'Cannot read file.');
-    STR_ERROR_302: array[0..1] of string = ('SNESAPU.DLL が読み込めません。', 'Cannot read SNESAPU.DLL.');
+    STR_ERROR_301: array[0..1] of string = ('ファイルを読み込めません。', 'Cannot read file.');
+    STR_ERROR_302: array[0..1] of string = ('SNESAPU.DLL を読み込めません。', 'Cannot read SNESAPU.DLL.');
     STR_ERROR_303: array[0..1] of string = ('対応していない SNESAPU.DLL です。', 'Does not support version of this SNESAPU.DLL.');
-    STR_ERROR_304: array[0..1] of string = ('ファイルが読み込めません。', 'Cannot read file.');
+    STR_ERROR_304: array[0..1] of string = ('ファイルを読み込めません。', 'Cannot read file.');
     STR_ERROR_401: array[0..1] of string = ('ファイルを読み込めません。', 'Cannot read file.');
     STR_ERROR_402: array[0..1] of string = ('ファイルを転送できません。', 'Cannot transfer file path.');
     STR_ERROR_403: array[0..1] of string = ('ファイルを読み込めません。', 'Cannot read file.');
@@ -715,7 +722,7 @@ var
 begin
     // チェックサムを取得
     sData := Concat(sChPath, sPath);
-    writeln(sData);
+    // writeln(sData);
     dwResult := API_MapFileAndCheckSum(pchar(sData), @dwHeaderSum, @dwCheckSum);
     // ファイルのオープンに失敗した場合は終了
     result := dwBase + dwResult;
@@ -744,6 +751,7 @@ begin
     writeln(output, Concat(' == ', STR_USAGE_OPTION_BASE[dwLanguage]));
     writeln(output, Concat('  -? -h         : ', STR_USAGE_OPTION_BASE_H[dwLanguage]));
     writeln(output, Concat('  -v            : ', STR_USAGE_OPTION_BASE_V[dwLanguage]));
+    writeln(output, Concat('  -o <IF>       : ', STR_USAGE_OPTION_BASE_O[dwLanguage]));
     writeln(output, Concat('  -p            : ', STR_USAGE_OPTION_BASE_P[dwLanguage]));
     writeln(output, Concat('  -r            : ', STR_USAGE_OPTION_BASE_R[dwLanguage]));
     writeln(output, Concat('  -s            : ', STR_USAGE_OPTION_BASE_S[dwLanguage]));
@@ -774,13 +782,13 @@ begin
     writeln(output, Concat('  -gc <XX>      : ', STR_USAGE_OPTION_CMP_G[dwLanguage]));
     writeln(output, Concat('  -sc <XX> <YY> : ', STR_USAGE_OPTION_CMP_S[dwLanguage]));
     writeln(output, '');
-    writeln(output, STR_USAGE_NEXT[dwLanguage]);
-    readln(input);
-
     writeln(output, Concat(' == ', STR_USAGE_OPTION_SPC[dwLanguage]));
     writeln(output, Concat('  -gs <XX>      : ', STR_USAGE_OPTION_SPC_G[dwLanguage]));
     writeln(output, Concat('  -ss <XX> <YY> : ', STR_USAGE_OPTION_SPC_S[dwLanguage]));
     writeln(output, '');
+    writeln(output, STR_USAGE_NEXT[dwLanguage]);
+    readln(input);
+
     writeln(output, Concat(' == ', STR_USAGE_OPTION_HALT[dwLanguage]));
     writeln(output, Concat('  -sh <XX>      : ', STR_USAGE_OPTION_HALT_S1[dwLanguage]));
     writeln(output, Concat('                  ', STR_USAGE_OPTION_HALT_S2[dwLanguage]));
@@ -798,9 +806,6 @@ begin
     writeln(output, Concat('                  ', STR_USAGE_OPTION_DSPC_Y[dwLanguage]));
     writeln(output, Concat('  -dcc          : ', STR_USAGE_OPTION_DSPCAC[dwLanguage]));
     writeln(output, '');
-    writeln(output, STR_USAGE_NEXT[dwLanguage]);
-    readln(input);
-
     writeln(output, Concat(' == ', STR_USAGE_OPTION_OW[dwLanguage]));
     writeln(output, Concat('  -zc <IF> <OF> : ', STR_USAGE_OPTION_OW_ZC_1[dwLanguage]));
     writeln(output, Concat('                  ', STR_USAGE_OPTION_OW_ZC_2[dwLanguage]));
@@ -810,6 +815,14 @@ begin
     writeln(output, Concat('  -td <IF> <SF> : ', STR_USAGE_OPTION_EMU_PD_1[dwLanguage]));
     writeln(output, Concat('                  ', STR_USAGE_OPTION_EMU_PD_2[dwLanguage]));
     writeln(output, Concat('                  ', STR_USAGE_OPTION_EMU_PD_3[dwLanguage]));
+    writeln(output, '');
+    writeln(output, STR_USAGE_NEXT[dwLanguage]);
+    readln(input);
+
+    writeln(output, Concat(' == ', STR_USAGE_OPTION_MUTE[dwLanguage]));
+    writeln(output, Concat('  -gm           : ', STR_USAGE_OPTION_MUTE_G[dwLanguage]));
+    writeln(output, Concat('  -sm <XX>      : ', STR_USAGE_OPTION_MUTE_S[dwLanguage]));
+    writeln(output, Concat('    --rev       : ', STR_USAGE_OPTION_MUTE_REV[dwLanguage]));
     writeln(output, '');
     writeln(output, Concat(' == ', STR_USAGE_OPTION_CNV[dwLanguage]));
     writeln(output, Concat('  -cw <IF> <OF> : ', STR_USAGE_OPTION_CNV_CW_1[dwLanguage]));
@@ -1554,15 +1567,81 @@ begin
     result := longbool(dwVer);
 end;
 
-procedure OutputValue(dwValue: longword);
+procedure OutputValueInt(dwValue: longword);
+var
+    sParam: string;
 begin
-    IntToHex(StrData, dwValue, 8);
-    write(output, STR_RESULT[dwLanguage]);
-    write(output, ' = $');
-    write(output, String(StrData.cData));
-    write(output, ' (');
-    write(output, IntToStr(dwValue));
-    writeln(output, ')');
+    sParam := GetParameter(I, J, false);
+    if (sParam = '/quiet') or (sParam = '--quiet') then begin
+        // 何もしない
+    end else if (sParam = '/hex') or (sParam = '--hex') then begin
+        IntToHex(StrData, dwValue, 8);
+        write(output, '$');
+        writeln(output, String(StrData.cData));
+    end else if (sParam = '/dec') or (sParam = '--dec') then begin
+        writeln(output, IntToStr(dwValue));
+    end else begin
+        IntToHex(StrData, dwValue, 8);
+        write(output, STR_RESULT[dwLanguage]);
+        write(output, ' = $');
+        write(output, String(StrData.cData));
+        write(output, ' (');
+        write(output, IntToStr(dwValue));
+        writeln(output, ')');
+    end;
+end;
+
+function InputValueChs(dwValue: longword): longword;
+var
+    sParam: string;
+    M: longword;
+    N: longword;
+begin
+    result := 0;
+    // Dec
+    M := I;
+    sParam := GetParameter(I, J, false);
+    if (sParam = '/dec') or (sParam = '--dec') then begin
+        I := M;
+        result := dwValue;
+    end else begin
+        I := M;
+        M := dwValue;
+        while longbool(M) do begin
+            N := M mod 10;
+            if (N >= 1) and (N <= 8) then result := result or (1 shl (N - 1));
+            M := Trunc(M * 0.1);
+        end;
+    end;
+    // NOT
+    M := I;
+    sParam := GetParameter(I, J, false);
+    if (sParam = '/rev') or (sParam = '--rev') then result := result xor $FF else I := M;
+end;
+
+procedure OutputValueChs(dwValue: longword);
+var
+    sParam: string;
+    M: longword;
+begin
+    sParam := GetParameter(I, J, false);
+    if (sParam = '/quiet') or (sParam = '--quiet') then begin
+        // 何もしない
+    end else if (sParam = '/hex') or (sParam = '--hex') then begin
+        IntToHex(StrData, dwValue, 8);
+        write(output, '$');
+        writeln(output, String(StrData.cData));
+    end else if (sParam = '/dec') or (sParam = '--dec') then begin
+        writeln(output, IntToStr(dwValue));
+    end else if (sParam = '/ch') or (sParam = '--ch') then begin
+        for M := 0 to 7 do if longbool((dwValue shr M) and 1) then write(output, IntToStr(M + 1));
+        if longbool(dwValue) then writeln(output, '') else writeln(output, '0');
+    end else begin
+        write(output, STR_RESULT[dwLanguage]);
+        write(output, ' = ');
+        for M := 0 to 7 do if longbool((dwValue shr M) and 1) then write(output, IntToStr(M + 1)) else write(output, '-');
+        writeln(output, '');
+    end;
 end;
 
 procedure OutputMemoryMap(msg: longword; size: longint);
@@ -1606,25 +1685,6 @@ begin
     writeln(output, '');
 end;
 
-function OutputWave(): longword;
-var
-    M: longint;
-    N: longint;
-    X: longword;
-    Y: longword;
-    dwType: longword;
-    dwCount: longword;
-    sInFile: string;
-    sSPCFiles: array of string;
-    sSPCFile: string;
-    sOutFile: string;
-    sWavFile: string;
-    posYen: longint;
-    posDot: longint;
-    hWndStatic: longword;
-    lpString: pointer;
-    lpPath: pointer;
-
 function GetFileType(lpFile: pointer): longword;
 var
     hFile: longword;
@@ -1664,6 +1724,65 @@ begin
         API_CloseHandle(hFile);
     until true;
 end;
+
+function OpenFile(): longword;
+var
+    X: longword;
+    dwType: longword;
+    sInFile: string;
+    hWndStatic: longword;
+begin
+    // パスを取得
+    sInFile := GetParameter(I, J, false);
+    // ウィンドウを検索
+    hWndStatic := API_FindWindowEx(hWnd, NULL, pchar(ITEM_STATIC), pchar(FILE_DEFAULT));
+    if not longbool(hWndStatic) then begin
+        result := 402;
+        writeln(output, Concat(STR_ERROR_402[dwLanguage], ' (code 402)'));
+        exit;
+    end;
+    // メッセージを送信
+    API_SendMessage(hWndStatic, WM_SETTEXT, NULL, longword(pchar(sInFile)));
+    X := API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_TRANSMIT, hWndStatic);
+    if not longbool(X) then begin
+        result := 403;
+        writeln(output, Concat(STR_ERROR_403[dwLanguage], ' (code 403)'));
+        exit;
+    end;
+    // ファイルタイプを取得
+    dwType := GetFileType(pchar(sInFile));
+    case dwType of
+        FILE_TYPE_SPC: API_SendMessage(hWnd, WM_COMMAND, MENU_FILE_PLAY, NULL); // 再生
+        FILE_TYPE_LIST_A, FILE_TYPE_LIST_B: ; // 何もしない
+        else begin
+            result := 401;
+            writeln(output, Concat(STR_ERROR_401[dwLanguage], ' (code 401)'));
+            exit;
+        end;
+    end;
+    // 終了
+    writeln(output, STR_DONE[dwLanguage]);
+    result := 0;
+end;
+
+function OutputWave(): longword;
+var
+    M: longint;
+    N: longint;
+    X: longword;
+    Y: longword;
+    dwType: longword;
+    dwCount: longword;
+    sInFile: string;
+    sSPCFiles: array of string;
+    sSPCFile: string;
+    sOutFile: string;
+    sWavFile: string;
+    posYen: longint;
+    posDot: longint;
+    hWndStatic: longword;
+    lpString: pointer;
+    lpPath: pointer;
 
 function GetList(lpFile: pointer): longbool;
 var
@@ -1927,8 +2046,8 @@ begin
         ShowVersion();
         result := 1;
         exit;
-    end else if (sCmdLine = '/gd') or (sCmdLine = '/gp') or (sCmdLine = '/gr') or (sCmdLine = '/gw') or (sCmdLine = '/gc') or (sCmdLine = '/gs') or (sCmdLine = '/sh') or (sCmdLine = '/bpn') or
-                (sCmdLine = '-gd') or (sCmdLine = '-gp') or (sCmdLine = '-gr') or (sCmdLine = '-gw') or (sCmdLine = '-gc') or (sCmdLine = '-gs') or (sCmdLine = '-sh') or (sCmdLine = '-bpn') then begin
+    end else if (sCmdLine = '/gd') or (sCmdLine = '/gp') or (sCmdLine = '/gr') or (sCmdLine = '/gw') or (sCmdLine = '/gc') or (sCmdLine = '/gs') or (sCmdLine = '/sh') or (sCmdLine = '/bpn') or (sCmdLine = '/sm') or
+                (sCmdLine = '-gd') or (sCmdLine = '-gp') or (sCmdLine = '-gr') or (sCmdLine = '-gw') or (sCmdLine = '-gc') or (sCmdLine = '-gs') or (sCmdLine = '-sh') or (sCmdLine = '-bpn') or (sCmdLine = '-sm') then begin
         dwParam1 := StrToInt(GetParameter(I, J, false), dwParam1);
     end else if (sCmdLine = '/sd') or (sCmdLine = '/sp') or (sCmdLine = '/sr') or (sCmdLine = '/sw') or (sCmdLine = '/sc') or (sCmdLine = '/ss') or (sCmdLine = '/tp') or (sCmdLine = '/mr') or (sCmdLine = '/bp') or (sCmdLine = '/dc') or
                 (sCmdLine = '-sd') or (sCmdLine = '-sp') or (sCmdLine = '-sr') or (sCmdLine = '-sw') or (sCmdLine = '-sc') or (sCmdLine = '-ss') or (sCmdLine = '-tp') or (sCmdLine = '-mr') or (sCmdLine = '-bp') or (sCmdLine = '-dc') then begin
@@ -1971,29 +2090,29 @@ begin
     else if (sCmdLine = '/s')   or
             (sCmdLine = '-s')   then API_SendMessage(hWnd, WM_COMMAND, MENU_FILE_STOP, NULL)
     else if (sCmdLine = '/gd')  or
-            (sCmdLine = '-gd')  then OutputValue(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_GET_DSP  or (dwParam1 and $FFFF), NULL))
+            (sCmdLine = '-gd')  then OutputValueInt(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_GET_DSP  or (dwParam1 and $FFFF), NULL))
     else if (sCmdLine = '/sd')  or
-            (sCmdLine = '-sd')  then OutputValue(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_SET_DSP  or (dwParam1 and $FFFF), dwParam2))
+            (sCmdLine = '-sd')  then OutputValueInt(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_SET_DSP  or (dwParam1 and $FFFF), dwParam2))
     else if (sCmdLine = '/gp')  or
-            (sCmdLine = '-gp')  then OutputValue(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_GET_PORT or (dwParam1 and $FFFF), NULL))
+            (sCmdLine = '-gp')  then OutputValueInt(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_GET_PORT or (dwParam1 and $FFFF), NULL))
     else if (sCmdLine = '/sp')  or
-            (sCmdLine = '-sp')  then OutputValue(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_SET_PORT or (dwParam1 and $FFFF), dwParam2))
+            (sCmdLine = '-sp')  then OutputValueInt(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_SET_PORT or (dwParam1 and $FFFF), dwParam2))
     else if (sCmdLine = '/gr')  or
-            (sCmdLine = '-gr')  then OutputValue(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_GET_RAM  or (dwParam1 and $FFFF), NULL))
+            (sCmdLine = '-gr')  then OutputValueInt(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_GET_RAM  or (dwParam1 and $FFFF), NULL))
     else if (sCmdLine = '/sr')  or
-            (sCmdLine = '-sr')  then OutputValue(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_SET_RAM  or (dwParam1 and $FFFF), dwParam2))
+            (sCmdLine = '-sr')  then OutputValueInt(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_SET_RAM  or (dwParam1 and $FFFF), dwParam2))
     else if (sCmdLine = '/gw')  or
-            (sCmdLine = '-gw')  then OutputValue(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_GET_WORK or (dwParam1 and $FFFF), NULL))
+            (sCmdLine = '-gw')  then OutputValueInt(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_GET_WORK or (dwParam1 and $FFFF), NULL))
     else if (sCmdLine = '/sw')  or
-            (sCmdLine = '-sw')  then OutputValue(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_SET_WORK or (dwParam1 and $FFFF), dwParam2))
+            (sCmdLine = '-sw')  then OutputValueInt(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_SET_WORK or (dwParam1 and $FFFF), dwParam2))
     else if (sCmdLine = '/gc')  or
-            (sCmdLine = '-gc')  then OutputValue(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_GET_CMP  or (dwParam1 and $FFFF), NULL))
+            (sCmdLine = '-gc')  then OutputValueInt(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_GET_CMP  or (dwParam1 and $FFFF), NULL))
     else if (sCmdLine = '/sc')  or
-            (sCmdLine = '-sc')  then OutputValue(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_SET_CMP  or (dwParam1 and $FFFF), dwParam2))
+            (sCmdLine = '-sc')  then OutputValueInt(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_SET_CMP  or (dwParam1 and $FFFF), dwParam2))
     else if (sCmdLine = '/gs')  or
-            (sCmdLine = '-gs')  then OutputValue(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_GET_SPC  or (dwParam1 and $FFFF), NULL))
+            (sCmdLine = '-gs')  then OutputValueInt(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_GET_SPC  or (dwParam1 and $FFFF), NULL))
     else if (sCmdLine = '/ss')  or
-            (sCmdLine = '-ss')  then OutputValue(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_SET_SPC  or (dwParam1 and $FFFF), dwParam2))
+            (sCmdLine = '-ss')  then OutputValueInt(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_SET_SPC  or (dwParam1 and $FFFF), dwParam2))
     else if (sCmdLine = '/sh')  or
             (sCmdLine = '-sh')  then API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_HALT, dwParam1)
     else if (sCmdLine = '/bp')  or
@@ -2006,6 +2125,10 @@ begin
             (sCmdLine = '-dc')  then API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_DSP_CHEAT or (dwParam1 and $FFFF), dwParam2)
     else if (sCmdLine = '/dcc') or
             (sCmdLine = '-dcc') then API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_DSP_THRU, NULL)
+    else if (sCmdLine = '/gm')  or
+            (sCmdLine = '-gm')  then OutputValueChs(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_GET_MUTE, NULL))
+    else if (sCmdLine = '/sm')  or
+            (sCmdLine = '-sm')  then OutputValueChs(API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_SET_MUTE or InputValueChs(dwParam1), dwParam2))
     else if (sCmdLine = '/md')  or
             (sCmdLine = '-md')  then begin
         writeln(STR_DSP_MAP[dwLanguage]);
@@ -2025,6 +2148,10 @@ begin
         API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_SET_PORT + (dwParam1 and $FF), dwParam2);
         API_Sleep(100);
         API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_SET_PORT + (dwParam1 and $FF), I);
+    end else if (sCmdLine = '/o') or
+                (sCmdLine = '-o') then begin
+        result := OpenFile();
+        exit;
     end else if (sCmdLine = '/cw') or
                 (sCmdLine = '-cw') then begin
         result := OutputWave();

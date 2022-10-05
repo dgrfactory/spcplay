@@ -18,6 +18,7 @@ BEGIN
             VALUE "FileVersion", "$CAP_FILE_VER\0"
             VALUE "LegalCopyright", "Copyright (C) 2003-$YEAR degrade-factory.\0"
             VALUE "LegalTrademarks", "SNES is a registered trademark of Nintendo.\0"
+            VALUE "OriginalFilename", "spcplay.exe\0"
             VALUE "ProductName", "SPCPLAY\0"
             VALUE "ProductVersion", "$CAP_PRODUCT_VER\0"
             VALUE "URL", "http://dgrfactory.jp/\0"
