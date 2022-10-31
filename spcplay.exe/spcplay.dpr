@@ -2396,6 +2396,7 @@ const
     BUFFER_PRIORITY: string = 'PRIORITY 0 : ';
     BUFFER_RATE____: string = 'RATE     0 : ';
     BUFFER_SCALE___: string = 'SCALE    0 : ';
+    BUFFER_SEEKBAR_: string = 'SEEKBAR  0 : ';
     BUFFER_SEEKFAST: string = 'SEEKFAST 2 : ';
     BUFFER_SEEKINT_: string = 'SEEKINT  1 : ';
     BUFFER_SEEKMAX_: string = 'SEEKMAX  1 : ';
@@ -2525,6 +2526,10 @@ const
     PLAY_TYPE_LIST = $3;                                    // プレイリストからアイテム選択
     PLAY_TYPE_RANDOM = $4;                                  // プレイリストからランダム選択
 
+    PLAY_MAX_ENDLESS = $0;                                  // エンドレス
+    PLAY_MAX_ID666 = $1;                                    // ID666 設定時間を優先
+    PLAY_MAX_DEFAULT = $2;                                  // デフォルト演奏時間を優先
+
     PLAY_ORDER_STOP = $0;                                   // 停止
     PLAY_ORDER_NEXT = $1;                                   // 次へ
     PLAY_ORDER_PREVIOUS = $2;                               // 前へ
@@ -2629,7 +2634,7 @@ const
     ORG_COLOR_GRAYTEXT = COLOR_GRAYTEXT + 1;                // 無効時の文字色
     ORG_COLOR_WINDOWTEXT = COLOR_WINDOWTEXT + 1;            // 有効時の文字色
 
-    BITMAP_NUM = 51;                                        // ビットマップ文字の数
+    BITMAP_NUM = 53;                                        // ビットマップ文字の数
     BITMAP_NUM_WIDTH = 6;                                   // ビットマップ文字の幅
     BITMAP_NUM_HEIGHT = 9;                                  // ビットマップ文字の高さ
     BITMAP_NUM_FONT = 2;                                    // 数値フォントのパターン数
@@ -2646,7 +2651,7 @@ const
          ORG_COLOR_BAR_RED   , ORG_COLOR_GRAYTEXT  , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  ,
          ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN ,
          ORG_COLOR_BAR_WATER , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_WATER ,
-         ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_PURPLE, ORG_COLOR_BAR_RED);
+         ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_PURPLE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_ORANGE);
 
     NOISE_RATE: array[0..$1F] of int64 =
         ($3030303030,                                       // 0
@@ -3304,13 +3309,13 @@ var
         dwOption: longword;                                     // 拡張設定
         dwPitch: longword;                                      // ピッチ
         bPitchAsync: longbool;                                  // 常に演奏速度と同期
-        bPlayDefault: longbool;                                 // 常にデフォルト値を使用
         dwPlayTime: longword;                                   // デフォルト演奏時間
-        bPlayTime: longbool;                                    // 演奏時間
+        dwPlayMax: longint;                                     // 最大演奏時間
         dwPlayOrder: longword;                                  // 演奏順序
         dwPriority: longword;                                   // 基本優先度
         dwRate: longword;                                       // サンプリングレート
         dwScale: longint;                                       // 表示倍率
+        dwSeekBar: longword;                                    // エンドレス時シークバー時間
         dwSeekFast: longword;                                   // 高速シーク
         dwSeekInt: longword;                                    // シークキャッシュ保存間隔
         dwSeekMax: longword;                                    // シーク可能時間
@@ -5091,6 +5096,7 @@ var
     sChPath: string;
     sFontName: string;
     dwLeft: longint;
+    dwPlayDefault: longint;
     dwTop: longint;
     hWndApp: longword;
     hFontApp: longword;
@@ -5390,13 +5396,14 @@ begin
     Option.dwOption := OPTION_LOWPASS + OPTION_ECHOFIR;
     Option.dwPitch := PITCH_NORMAL;
     Option.bPitchAsync := false;
-    Option.bPlayDefault := false;
+    dwPlayDefault := -1;
     Option.dwPlayTime := 120000;
-    Option.bPlayTime := true;
+    Option.dwPlayMax := 1;
     Option.dwPlayOrder := PLAY_ORDER_NEXT;
     Option.dwPriority := NORMAL_PRIORITY_CLASS;
     Option.dwRate := 32000;
     Option.dwScale := 100;
+    Option.dwSeekBar := 180000;
     Option.dwSeekFast := 0;
     Option.dwSeekInt := 15000;
     Option.dwSeekMax := 600000;
@@ -5448,13 +5455,14 @@ begin
             if sBuffer = BUFFER_OPTION__ then Option.dwOption := GetINIValue(Option.dwOption);
             if sBuffer = BUFFER_PITCH___ then Option.dwPitch := GetINIValue(Option.dwPitch);
             if sBuffer = BUFFER_PITCHSNC then Option.bPitchAsync := longbool(GetINIValue(longint(Option.bPitchAsync)));
-            if sBuffer = BUFFER_PLAYDEF_ then Option.bPlayDefault := longbool(GetINIValue(longint(Option.bPlayDefault)));
+            if sBuffer = BUFFER_PLAYDEF_ then dwPlayDefault := GetINIValue(longint(0));
             if sBuffer = BUFFER_PLAYLENG then Option.dwPlayTime := GetINIValue(Option.dwPlayTime);
-            if sBuffer = BUFFER_PLAYTIME then Option.bPlayTime := longbool(GetINIValue(longint(Option.bPlayTime)));
+            if sBuffer = BUFFER_PLAYTIME then Option.dwPlayMax := GetINIValue(Option.dwPlayMax);
             if sBuffer = BUFFER_PLAYTYPE then Option.dwPlayOrder := GetINIValue(Option.dwPlayOrder);
             if sBuffer = BUFFER_PRIORITY then Option.dwPriority := GetINIValue(Option.dwPriority);
             if sBuffer = BUFFER_RATE____ then Option.dwRate := GetINIValue(Option.dwRate);
             if sBuffer = BUFFER_SCALE___ then Option.dwScale := GetINIValue(Option.dwScale);
+            if sBuffer = BUFFER_SEEKBAR_ then Option.dwSeekBar := GetINIValue(Option.dwSeekBar);
             if sBuffer = BUFFER_SEEKFAST then Option.dwSeekFast := GetINIValue(Option.dwSeekFast);
             if sBuffer = BUFFER_SEEKINT_ then Option.dwSeekInt := GetINIValue(Option.dwSeekInt);
             if sBuffer = BUFFER_SEEKMAX_ then Option.dwSeekMax := GetINIValue(Option.dwSeekMax);
@@ -5483,6 +5491,7 @@ begin
     if Option.dwVolumeColor > 3 then Option.dwVolumeColor := 0;
     if Option.dwScale >= 200 then Status.dwScale := 4
     else if Option.dwScale >= 150 then Status.dwScale := 3;
+    if (Option.dwPlayMax >= 1) and (dwPlayDefault >= 0) then Option.dwPlayMax := (Option.dwPlayMax and 1) + (dwPlayDefault and 1);
     Status.dwPlayOrder := Option.dwPlayOrder;
 {$IFNDEF TRY700A}{$IFNDEF TRY700W}
     // SPCPLAY.EXE の破損を確認
@@ -6007,6 +6016,7 @@ begin
     Writeln(fsFile, Concat(BUFFER_NEXTLENG, IntToStr(Option.dwNextTime)));
     Writeln(fsFile, Concat(BUFFER_PLAYLENG, IntToStr(Option.dwPlayTime)));
     Writeln(fsFile, Concat(BUFFER_SCALE___, IntToStr(Option.dwScale)));
+    Writeln(fsFile, Concat(BUFFER_SEEKBAR_, IntToStr(Option.dwSeekBar)));
     Writeln(fsFile, Concat(BUFFER_SEEKFAST, IntToStr(Option.dwSeekFast)));
     Writeln(fsFile, Concat(BUFFER_SEEKINT_, IntToStr(Option.dwSeekInt)));
     Writeln(fsFile, Concat(BUFFER_SEEKMAX_, IntToStr(Option.dwSeekMax)));
@@ -6033,8 +6043,7 @@ begin
     Writeln(fsFile, Concat(BUFFER_OPTION__, IntToStr(Option.dwOption)));
     Writeln(fsFile, Concat(BUFFER_PITCH___, IntToStr(Option.dwPitch)));
     Writeln(fsFile, Concat(BUFFER_PITCHSNC, GetBoolToInt(Option.bPitchAsync)));
-    Writeln(fsFile, Concat(BUFFER_PLAYDEF_, GetBoolToInt(Option.bPlayDefault)));
-    Writeln(fsFile, Concat(BUFFER_PLAYTIME, GetBoolToInt(Option.bPlayTime)));
+    Writeln(fsFile, Concat(BUFFER_PLAYTIME, IntToStr(Option.dwPlayMax)));
     Writeln(fsFile, Concat(BUFFER_PLAYTYPE, IntToStr(Option.dwPlayOrder)));
     Writeln(fsFile, Concat(BUFFER_PRIORITY, IntToStr(Option.dwPriority)));
     Writeln(fsFile, Concat(BUFFER_RATE____, IntToStr(Option.dwRate)));
@@ -6496,11 +6505,11 @@ begin
     end;
 end;
 
-procedure DeleteMarkWrite(dwI: longint; dwY: longint);
+procedure DeleteMarkWrite(dwY: longint);
 begin
     // 位置マークを消去
     Rect.left := 137;
-    Rect.right := 283 + (Status.dwScale and 1);
+    Rect.right := 284 + (Status.dwScale and 1);
     Rect.top := dwY;
     Rect.bottom := dwY + (Status.dwScale and 1) + 3;
     DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
@@ -6509,7 +6518,7 @@ end;
 procedure UpdateMarkWrite(dwI: longint; dwY: longint);
 begin
     // 位置マークを描画
-    DeleteMarkWrite(dwI, dwY);
+    DeleteMarkWrite(dwY);
     DrawInfoBitBlt(J - 2, dwY, BITMAP_NUM_WIDTH, BITMAP_MARK_HEIGHT, Status.hDCStringBuffer, (dwI + 38) * BITMAP_NUM_WIDTH, 0);
 end;
 
@@ -6669,13 +6678,20 @@ begin
         if bRedrawInfo or (J <> Status.dwLastLimitTime) then UpdateMarkWrite(1, 32);
         Status.dwLastLimitTime := J;
     end else begin
-        // リピート位置を消去
-        if bRedrawInfo then begin
-            DeleteMarkWrite(0, 24);
-            DeleteMarkWrite(1, 32);
+        J := 280;
+        if longbool(Option.dwSeekBar) then begin
+            // エンドレスマーク、または一時停止マークを描画
+            if bRedrawInfo then if Option.dwPlayMax > PLAY_MAX_ENDLESS then UpdateMarkWrite(14, 24) else UpdateMarkWrite(13, 24);
+        end else begin
+            // リピート位置を消去
+            if bRedrawInfo then DeleteMarkWrite(24);
         end;
+        Status.dwLastStartTime := J;
+        // リピート位置を消去
+        if bRedrawInfo then DeleteMarkWrite(32);
+        Status.dwLastLimitTime := $FFFFFFFF;
     end;
-    if Option.bPlayTime then begin
+    if longbool(Option.dwSeekBar) or (Option.dwPlayMax > PLAY_MAX_ENDLESS) then begin
         // タイムゲージを描画
         if not Status.bPlay then J := 140
         else if T64Count >= Status.dwDefaultTimeout then J := 280
@@ -6708,7 +6724,7 @@ begin
         // タイムゲージを消去
         if bRedrawInfo then begin
             Rect.left := 137;
-            Rect.right := 283 + (Status.dwScale and 1);
+            Rect.right := 284 + (Status.dwScale and 1);
             Rect.top := 24;
             Rect.bottom := 35 + (Status.dwScale and 1);
             DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
@@ -9026,9 +9042,11 @@ begin
             end else begin
                 Status.dwNextCache := 0;
             end;
-            // リピート開始位置とリピート終了位置を設定
+            // リピート開始位置、リピート終了位置を初期化
+            if Status.bTimeRepeat then Option.dwPlayOrder := Status.dwPlayOrder;
             Status.dwStartTime := 0;
             Status.dwLimitTime := Status.dwDefaultTimeout;
+            Status.bTimeRepeat := false;
             // TUNING 開始アドレスを初期化
             Status.dwTuningAddress := $1FF;
             Status.dwTuningSize := 0;
@@ -9049,7 +9067,7 @@ begin
         // メニューを更新
         UpdateMenu();
         // インジケータをリセット
-        ResetInfo(true);
+        if not Status.bTimeRepeat then ResetInfo(true);
 {$IFNDEF TRANSMITSPC}
         // エラーがある場合
         if longbool(I) then begin
@@ -9157,7 +9175,7 @@ begin
         T64Count := T64Cache;
     end;
     // 演奏時間、フェードアウト時間を設定
-    if Option.bPlayTime then Apu.SetAPULength(Status.dwAPUPlayTime, Status.dwAPUFadeTime);
+    Apu.SetAPULength(Status.dwAPUPlayTime, Status.dwAPUFadeTime);
 end;
 
 begin
@@ -9244,8 +9262,12 @@ begin
         Status.dwMuteTimeout := 0;
         Status.dwMuteCounter := 0;
         // 演奏時間、フェードアウト時間を計算
-        Status.bNextDefault := Option.bPlayDefault or not bytebool(Spc.Hdr.TagFormat) or not longbool(Spc.Hdr.dwSongLen);
-        if Status.bNextDefault then begin
+        Status.bNextDefault := not bytebool(Spc.Hdr.TagFormat) or not longbool(Spc.Hdr.dwSongLen) or (Option.dwPlayMax = PLAY_MAX_DEFAULT);
+        if Option.dwPlayMax = PLAY_MAX_ENDLESS then begin
+            Status.dwAPUPlayTime := $FFFFFFFF;
+            Status.dwAPUFadeTime := 0;
+            Status.dwDefaultTimeout := Option.dwSeekBar shl 6;
+        end else if Status.bNextDefault then begin
             Status.dwAPUPlayTime := Option.dwPlayTime shl 6;
             Status.dwAPUFadeTime := Option.dwFadeTime shl 6;
             Status.dwDefaultTimeout := (Option.dwPlayTime + Option.dwFadeTime + Option.dwWaitTime) shl 6;
@@ -9257,7 +9279,7 @@ begin
         if not longbool(Status.dwDefaultTimeout) then Inc(Status.dwDefaultTimeout);
     end;
     // 演奏時間を使用する場合
-    if bDefault or Option.bPlayTime then begin
+    if bDefault or (Option.dwPlayMax > PLAY_MAX_ENDLESS) then begin
         // タイムアウトを設定
         if bCal then Status.dwNextTimeout := Status.dwDefaultTimeout;
         // 演奏時間、フェードアウト時間を設定
@@ -9464,7 +9486,6 @@ begin
     end;
     Status.bChangePlay := bUp;
     Status.bChangeShift := bDown;
-    Status.bTimeRepeat := Option.bPlayTime and ((Option.dwPlayOrder = PLAY_ORDER_STOP) or (Option.dwPlayOrder = PLAY_ORDER_REPEAT));
     // 設定メニューを更新
     for I := -1 to Status.dwDeviceNum - 1 do begin
         cmSetupDevice.SetMenuCheck(MENU_SETUP_DEVICE_BASE + I + 1, Option.dwDeviceID = I);
@@ -9499,11 +9520,11 @@ begin
     end;
     for I := 0 to MENU_SETUP_OPTION_SIZE - 1 do if longbool(MENU_SETUP_OPTION_VALUE[I]) then
         cmSetupOption.SetMenuCheck(MENU_SETUP_OPTION_BASE + I, longbool(Option.dwOption and MENU_SETUP_OPTION_VALUE[I]));
-    cmSetupTime.SetMenuCheck(MENU_SETUP_TIME_DISABLE, not Option.bPlayTime);
-    cmSetupTime.SetMenuCheck(MENU_SETUP_TIME_ID666, Option.bPlayTime and not Option.bPlayDefault);
-    cmSetupTime.SetMenuCheck(MENU_SETUP_TIME_DEFAULT, Option.bPlayTime and Option.bPlayDefault);
-    cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_START, Status.bPlay and Option.bPlayTime);
-    cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_LIMIT, Status.bPlay and Option.bPlayTime);
+    cmSetupTime.SetMenuCheck(MENU_SETUP_TIME_DISABLE, Option.dwPlayMax = PLAY_MAX_ENDLESS);
+    cmSetupTime.SetMenuCheck(MENU_SETUP_TIME_ID666, Option.dwPlayMax = PLAY_MAX_ID666);
+    cmSetupTime.SetMenuCheck(MENU_SETUP_TIME_DEFAULT, Option.dwPlayMax = PLAY_MAX_DEFAULT);
+    cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_START, Status.bPlay);
+    cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_LIMIT, Status.bPlay);
     cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_RESET, Status.bOpen and Status.bTimeRepeat);
     for I := 0 to MENU_SETUP_ORDER_SIZE - 1 do cmSetupOrder.SetMenuCheck(MENU_SETUP_ORDER_BASE + I, Option.dwPlayOrder = longword(I));
     for I := 0 to MENU_SETUP_SEEK_SIZE - 1 do cmSetupSeek.SetMenuCheck(MENU_SETUP_SEEK_BASE + I, Option.dwSeekTime = MENU_SETUP_SEEK_VALUE[I]);
@@ -9858,13 +9879,18 @@ begin
         SaveSeekCache(J);
     end;
     // タイムアウトが発生していない場合
-    if not bInit and bWave and Option.bPlayTime and longbool(Status.dwNextTimeout) then begin
+    // 初期化中以外、かつ音声出力中、かつタイムアウト処理中以外、かつ（区間リピート設定済み、またはエンドレス以外）
+    if not bInit and bWave and longbool(Status.dwNextTimeout) and (Status.bTimeRepeat or (Option.dwPlayMax > PLAY_MAX_ENDLESS)) then begin
         // パラメータ初期化
         J := 0;
         K := 0;
-        // 演奏時間を確認
-        if T64Count >= Status.dwNextTimeout then J := 1;
-        if Status.bTimeRepeat and (T64Count >= Status.dwLimitTime) then J := 1;
+        // 演奏時間が終了位置を経過したか確認
+        if Status.bTimeRepeat then begin
+            if T64Count >= Status.dwLimitTime then J := 1;
+        end else begin
+            if T64Count >= Status.dwNextTimeout then J := 1;
+        end;
+        // 無音時間を確認
         if Status.bNextDefault then begin
             for I := 0 to 7 do begin
                 DspVoice := @DspReg.Voice[I];
@@ -10170,67 +10196,77 @@ begin
     API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_TIME, NULL);
 end;
 
-procedure ResetTimeMark();
+procedure ResetRepeatPosision();
 begin
-    // SPC が開かれていない、または演奏時間が無効の場合は終了
-    if not Status.bOpen or not Option.bPlayTime then exit;
     // リピート開始位置、リピート終了位置を初期化
     Status.dwStartTime := 0;
     Status.dwLimitTime := Status.dwDefaultTimeout;
+    Status.bTimeRepeat := false;
+end;
+
+procedure ResetTimeMark();
+begin
+    // SPC が開かれていない、または区間リピートが無効の場合は終了
+    if not Status.bOpen or not Status.bTimeRepeat then exit;
+    // リピート開始位置、リピート終了位置を初期化
     Option.dwPlayOrder := Status.dwPlayOrder;
-    // 区間リピートが無効の場合は終了
-    if not Status.bTimeRepeat then exit;
+    ResetRepeatPosision();
     // インジケータを再描画
     cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
 end;
 
 procedure ChangeSPCTime();
 var
-    bPlayTime: longbool;
-    bPlayDefault: longbool;
+    dwPlayMax: longint;
 begin
     // 現在の設定値を記録
-    bPlayTime := Option.bPlayTime;
-    bPlayDefault := Option.bPlayDefault;
+    dwPlayMax := Option.dwPlayMax;
     // フラグを設定
-    Option.bPlayTime := wParam <> MENU_SETUP_TIME_DISABLE;
-    if Option.bPlayTime then Option.bPlayDefault := wParam = MENU_SETUP_TIME_DEFAULT;
+    if wParam = MENU_SETUP_TIME_DISABLE then Option.dwPlayMax := PLAY_MAX_ENDLESS
+    else if wParam = MENU_SETUP_TIME_ID666 then Option.dwPlayMax := PLAY_MAX_ID666
+    else if wParam = MENU_SETUP_TIME_DEFAULT then Option.dwPlayMax := PLAY_MAX_DEFAULT;
     // 演奏時間、フェードアウト時間を設定
     SetSPCTime();
     // 設定が変更された場合は、リピート開始位置、リピート終了位置を初期化
-    if bPlayTime <> Option.bPlayTime or bPlayDefault <> Option.bPlayDefault then begin
-        Status.dwStartTime := 0;
-        Status.dwLimitTime := Status.dwDefaultTimeout;
-        if bPlayTime <> Option.bPlayTime then Option.dwPlayOrder := Status.dwPlayOrder;
+    if dwPlayMax <> Option.dwPlayMax then begin
+        if Status.bTimeRepeat then Option.dwPlayOrder := Status.dwPlayOrder;
+        ResetRepeatPosision();
     end;
     // インジケータを再描画
     cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
 end;
 
 procedure SetStartTimeMark();
+var
+    dwTime: longword;
 begin
-    // SPC が開かれていない、演奏停止中、演奏時間が無効、またはタイムアウトが発生した場合は終了
-    if not Status.bOpen or not Status.bPlay or not Option.bPlayTime or not longbool(Status.dwNextTimeout) then exit;
+    // SPC が開かれていない、演奏停止中、またはタイムアウトが発生した場合は終了
+    if not Status.bOpen or not Status.bPlay or not longbool(Status.dwNextTimeout) then exit;
+    // 現在の場所がシークバーを超える場合は終了
+    dwTime := Wave.Apu[Wave.dwIndex].T64Count;
+    if dwTime >= Status.dwDefaultTimeout then exit;
     // 現在の場所をリピート開始位置に設定
-    Status.dwStartTime := Wave.Apu[Wave.dwIndex].T64Count;
+    Status.dwStartTime := dwTime;
     if Status.dwLimitTime < Status.dwStartTime then Status.dwLimitTime := Status.dwStartTime;
-    // 強制的にリピートモードに設定
     if not Status.bTimeRepeat then Status.dwPlayOrder := Option.dwPlayOrder;
+    // 強制的にリピートモードに設定
     if Option.dwPlayOrder <> PLAY_ORDER_STOP then Option.dwPlayOrder := PLAY_ORDER_REPEAT;
+    Status.bTimeRepeat := true;
     // インジケータを再描画
     cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
 end;
 
 procedure SetLimitTimeMark();
 begin
-    // SPC が開かれていない、演奏停止中、演奏時間が無効、またはタイムアウトが発生した場合は終了
-    if not Status.bOpen or not Status.bPlay or not Option.bPlayTime or not longbool(Status.dwNextTimeout) then exit;
+    // SPC が開かれていない、演奏停止中、またはタイムアウトが発生した場合は終了
+    if not Status.bOpen or not Status.bPlay or not longbool(Status.dwNextTimeout) then exit;
     // 現在の場所をリピート終了位置に設定
     Status.dwLimitTime := Wave.Apu[Wave.dwIndex].T64Count;
     if Status.dwStartTime > Status.dwLimitTime then Status.dwStartTime := Status.dwLimitTime;
-    // 強制的にリピートモードに設定
     if not Status.bTimeRepeat then Status.dwPlayOrder := Option.dwPlayOrder;
+    // 強制的にリピートモードに設定
     if Option.dwPlayOrder <> PLAY_ORDER_STOP then Option.dwPlayOrder := PLAY_ORDER_REPEAT;
+    Status.bTimeRepeat := true;
     // インジケータを再描画
     cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
 end;
@@ -10334,8 +10370,9 @@ var
     X: longword;
     Y: longword;
 begin
-    // SPC が開かれていない、演奏時間が無効、またはタイムアウトが発生した場合は終了
-    if not Status.bOpen or not Option.bPlayTime or not longbool(Status.dwNextTimeout) then exit;
+    // SPC が開かれていない、タイムアウトが発生した、またはシークバーが無効の場合は終了
+    if not Status.bOpen or not longbool(Status.dwNextTimeout)
+        or (not longbool(Option.dwSeekBar) and (Option.dwPlayMax = PLAY_MAX_ENDLESS)) then exit;
     // クリック位置を取得
     X := lParam and $FFFF;
     Y := lParam shr 16;
@@ -10360,6 +10397,9 @@ begin
             // リピート開始位置を設定
             if X < Status.dwLimitTime then Status.dwStartTime := X
             else Status.dwStartTime := Status.dwLimitTime;
+            // 強制的にリピートモードに設定
+            if not Status.bTimeRepeat then Status.dwPlayOrder := Option.dwPlayOrder;
+            Status.bTimeRepeat := true;
             // インジケータを再描画
             cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
         end;
@@ -10367,6 +10407,9 @@ begin
             // リピート終了位置を設定
             if Y > Status.dwStartTime then Status.dwLimitTime := Y
             else Status.dwLimitTime := Status.dwStartTime;
+            // 強制的にリピートモードに設定
+            if not Status.bTimeRepeat then Status.dwPlayOrder := Option.dwPlayOrder;
+            Status.bTimeRepeat := true;
             // インジケータを再描画
             cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
         end;
@@ -10567,6 +10610,8 @@ begin
                             // フラグを設定
                             Option.dwPlayOrder := wParam - MENU_SETUP_ORDER_BASE;
                             Status.dwPlayOrder := Option.dwPlayOrder;
+                            // リピート開始位置、リピート終了位置を初期化
+                            if (Option.dwPlayOrder <> PLAY_ORDER_STOP) and (Option.dwPlayOrder <> PLAY_ORDER_REPEAT) then ResetRepeatPosision();
                             // インジケータを再描画
                             cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
                         end;
