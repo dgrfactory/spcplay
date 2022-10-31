@@ -2403,6 +2403,7 @@ const
     BUFFER_SEEKNUM_: string = 'SEEKNUM  2 : ';
     BUFFER_SEEKTIME: string = 'SEEKTIME 1 : ';
     BUFFER_SEPARATE: string = 'SEPARATE 0 : ';
+    BUFFER_SHIFTKEY: string = 'SHIFTKEY 0 : ';
     BUFFER_SPEED___: string = 'SPEED    0 : ';
     BUFFER_SPEEDTUN: string = 'SPEEDTUN 0 : ';
     BUFFER_TOP_____: string = 'TOP      0 : ';
@@ -2807,9 +2808,11 @@ const
     OPTION_FLOATOUT = $40000000;                            // 32 ビット (float) で出力レベルを設定
     OPTION_NOEARSAFE = $80000000;                           // イヤーセーフ無効
 
-    LOCALE_AUTO = 0;                                        // 自動
-    LOCALE_JA = 1;                                          // 日本語
-    LOCALE_EN = 2;                                          // 英語
+    LOCALE_AUTO = $0;                                       // 自動
+    LOCALE_JA = $1;                                         // 日本語
+    LOCALE_EN = $2;                                         // 英語
+
+    SHIFT_KEY_SEEK = $1;                                    // シークと演奏速度変更のキーボードショートカットを反転
 
     MENU_FILE = 1;
     MENU_SETUP = 2;
@@ -3264,6 +3267,7 @@ var
         dwTuningSize: longword;                                 // TUNING パラメータのサイズ
         dwOpenFilterIndex: longint;                             // ファイルタイプのインデックス (Open)
         dwSaveFilterIndex: longint;                             // ファイルタイプのインデックス (Save)
+        DblClickPoint: TPOINT;                                  // ダブルクリック位置
         DragPoint: TPOINT;                                      // ドラッグ開始位置
         bDropCancel: longbool;                                  // ドロップ禁止フラグ
         dwScale: longint;                                       // 表示倍率
@@ -3322,6 +3326,7 @@ var
         dwSeekNum: longword;                                    // シークキャッシュ数
         dwSeekTime: longword;                                   // シーク時間
         dwSeparate: longword;                                   // 左右拡散度
+        dwShiftKey: longword;                                   // シフトキー動作
         dwSpeedBas: longword;                                   // 演奏速度
         dwSpeedTun: longint;                                    // 演奏速度微調整
         bTopMost: longbool;                                     // 常に手前に表示
@@ -3927,8 +3932,10 @@ begin
                         VK_DELETE: cfMain.ListClear(); // Ctrl + Del キー
                         VK_UP: cfMain.ListUp(); // Ctrl + ↑ キー
                         VK_DOWN: cfMain.ListDown(); // Ctrl + ↓ キー
-                        VK_LEFT: cfMain.SetFunction(-1, FUNCTION_TYPE_SPEED); // Ctrl + ← キー
-                        VK_RIGHT: cfMain.SetFunction(1, FUNCTION_TYPE_SPEED); // Ctrl + → キー
+                        VK_LEFT: if Status.bShiftButton or (Option.dwShiftKey = SHIFT_KEY_SEEK) then cfMain.SetFunction(-1, FUNCTION_TYPE_SEEK)
+                            else cfMain.SetFunction(-1, FUNCTION_TYPE_SPEED); // Ctrl + ← キー
+                        VK_RIGHT: if Status.bShiftButton or (Option.dwShiftKey = SHIFT_KEY_SEEK) then cfMain.SetFunction(1, FUNCTION_TYPE_SEEK)
+                            else cfMain.SetFunction(1, FUNCTION_TYPE_SPEED); // Ctrl + → キー
                         VK_RETURN: cfMain.SPCPlay(PLAY_TYPE_RANDOM); // Ctrl + Enter キー
 {$IFDEF CONTEXT}
                         VK_OEM_PLUS: begin // Ctrl + ; キー
@@ -3989,10 +3996,10 @@ begin
                         end;
                         VK_INSERT: cfMain.ListAdd(0); // Insert キー
                         VK_DELETE: cfMain.ListDelete(); // Delete キー
-                        VK_LEFT: if Status.bShiftButton then cfMain.SetFunction(-1, FUNCTION_TYPE_SEEK)
-                            else cfMain.SetChangeInfo(false, -1); // ← キー
-                        VK_RIGHT: if Status.bShiftButton then cfMain.SetFunction(1, FUNCTION_TYPE_SEEK)
-                            else cfMain.SetChangeInfo(false, 1); // → キー
+                        VK_LEFT: if Status.bShiftButton then if Option.dwShiftKey = SHIFT_KEY_SEEK then cfMain.SetFunction(-1, FUNCTION_TYPE_SPEED)
+                            else cfMain.SetFunction(-1, FUNCTION_TYPE_SEEK) else cfMain.SetChangeInfo(false, -1); // ← キー
+                        VK_RIGHT: if Status.bShiftButton then if Option.dwShiftKey = SHIFT_KEY_SEEK then cfMain.SetFunction(1, FUNCTION_TYPE_SPEED)
+                            else cfMain.SetFunction(1, FUNCTION_TYPE_SEEK) else cfMain.SetChangeInfo(false, 1); // → キー
                         VK_RETURN: if Status.bShiftButton then cfMain.SPCPlay(PLAY_TYPE_RANDOM)
                             else cfMain.SPCPlay(PLAY_TYPE_LIST); // Enter キー
                         VK_NUMPAD1, VK_NUMPAD3: cfMain.SetFunction(dwKeyCode - VK_NUMPAD2, FUNCTION_TYPE_SPEED); // テンキー 1, 3
@@ -4028,6 +4035,8 @@ begin
                 end;
                 WM_LBUTTONDOWN, WM_LBUTTONDBLCLK: begin // 左ボタン
                     if Msg.hWnd = cfMain.cwStaticMain.hWnd then begin
+                        Status.DblClickPoint.x := Msg.lParam and $FFFF;
+                        Status.DblClickPoint.y := Msg.lParam shr 16;
                         if Status.bShiftButton then cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_START_TIME, Msg.lParam)
                         else cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_SEEK, Msg.lParam);
                     end else if Msg.hWnd = cfMain.cwPlayList.hWnd then begin
@@ -4036,6 +4045,8 @@ begin
                 end;
                 WM_RBUTTONDOWN, WM_RBUTTONDBLCLK: begin // 右ボタン
                     if Msg.hWnd = cfMain.cwStaticMain.hWnd then begin
+                        Status.DblClickPoint.x := Msg.lParam and $FFFF;
+                        Status.DblClickPoint.y := Msg.lParam shr 16;
                         if Status.bShiftButton then cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_LIMIT_TIME, Msg.lParam)
                         else cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_SEEK, Msg.lParam);
                     end else if Msg.hWnd = cfMain.cwPlayList.hWnd then begin
@@ -5358,6 +5369,8 @@ begin
     Status.dwMenuFlags := 0;
     Status.dwOpenFilterIndex := DIALOG_OPEN_DEFAULT;
     Status.dwSaveFilterIndex := DIALOG_SAVE_DEFAULT;
+    Status.DblClickPoint.x := 0;
+    Status.DblClickPoint.y := 0;
     Status.DragPoint.x := -1;
     Status.DragPoint.y := -1;
     Status.bDropCancel := false;
@@ -5410,6 +5423,7 @@ begin
     Option.dwSeekNum := 40;
     Option.dwSeekTime := 5000;
     Option.dwSeparate := SEPARATE_050;
+    Option.dwShiftKey := 0;
     Option.dwSpeedBas := SPEED_100;
     Option.dwSpeedTun := 0;
     dwTop := 100;
@@ -5469,6 +5483,7 @@ begin
             if sBuffer = BUFFER_SEEKNUM_ then Option.dwSeekNum := GetINIValue(Option.dwSeekNum);
             if sBuffer = BUFFER_SEEKTIME then Option.dwSeekTime := GetINIValue(Option.dwSeekTime);
             if sBuffer = BUFFER_SEPARATE then Option.dwSeparate := GetINIValue(Option.dwSeparate);
+            if sBuffer = BUFFER_SHIFTKEY then Option.dwShiftKey := GetINIValue(Option.dwShiftKey);
             if sBuffer = BUFFER_SPEED___ then Option.dwSpeedBas := GetINIValue(Option.dwSpeedBas);
             if sBuffer = BUFFER_SPEEDTUN then Option.dwSpeedTun := GetINIValue(Option.dwSpeedTun);
             if sBuffer = BUFFER_TOP_____ then dwTop := GetINIValue(dwTop);
@@ -6021,6 +6036,7 @@ begin
     Writeln(fsFile, Concat(BUFFER_SEEKINT_, IntToStr(Option.dwSeekInt)));
     Writeln(fsFile, Concat(BUFFER_SEEKMAX_, IntToStr(Option.dwSeekMax)));
     Writeln(fsFile, Concat(BUFFER_SEEKNUM_, IntToStr(Option.dwSeekNum)));
+    Writeln(fsFile, Concat(BUFFER_SHIFTKEY, IntToStr(Option.dwShiftKey)));
     Writeln(fsFile, Concat(BUFFER_SPEEDTUN, IntToStr(Option.dwSpeedTun)));
     Writeln(fsFile, Concat(BUFFER_VOLCOLOR, IntToStr(Option.dwVolumeColor)));
     Writeln(fsFile, Concat(BUFFER_VOLSPEED, IntToStr(Option.dwVolumeSpeed)));
@@ -8607,7 +8623,8 @@ begin
             // タイトルを更新
             UpdateTitle(TITLE_INFO_SEEK);
             // スレッドにシークを通知
-            API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_SEEK + (longword(not Status.bCtrlButton) and $1), I);
+            API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE,
+                WM_APP_SPC_SEEK + (longword(Status.bCtrlButton and Status.bShiftButton) xor $1), I);
         end;
     end;
 end;
@@ -10272,7 +10289,21 @@ begin
 end;
 
 procedure ChangeStaticClick();
+var
+    X: longword;
+    Y: longword;
 begin
+    // クリック位置を取得
+    X := Status.DblClickPoint.x;
+    Y := Status.DblClickPoint.y;
+    if Status.dwScale <> 2 then begin
+        X := Trunc(longint(X shl 1) / Status.dwScale);
+        Y := Trunc(longint(Y shl 1) / Status.dwScale);
+    end;
+    // シークバー上でダブルクリックされた場合は終了
+    if not ((X < 140) or (X > 280) or (Y < 27) or (Y >= 32)) then begin
+        if longbool(Option.dwSeekBar) or (Option.dwPlayMax > PLAY_MAX_ENDLESS) then exit;
+    end;
     // 情報表示切替
     if Status.bShiftButton then SetChangeInfo(false, -1)
     else SetChangeInfo(false, 1);
@@ -10391,7 +10422,8 @@ begin
     case wParam and $FFFFF000 of
         WM_APP_SEEK: begin
             // スレッドにシークを通知
-            API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_SEEK + (longword(not Status.bCtrlButton) and $1), X);
+            API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE,
+                WM_APP_SPC_SEEK + (longword(Status.bCtrlButton and Status.bShiftButton) xor $1), X);
         end;
         WM_APP_START_TIME: begin
             // リピート開始位置を設定
