@@ -2375,6 +2375,7 @@ const
     BUFFER_DEVICE__: string = 'DEVICE   0 : ';
     BUFFER_DEVNAME_: string = 'DEVNAME  0 : ';
     BUFFER_DRAWINFO: string = 'DRAWINFO 0 : ';
+    BUFFER_EARSAFE_: string = 'EARSAFE  0 : ';
     BUFFER_FADELENG: string = 'FADELENG 0 : ';
     BUFFER_FEEDBACK: string = 'FEEDBACK 1 : ';
     BUFFER_FONTNAME: string = 'FONTNAME 3 : ';
@@ -3300,6 +3301,7 @@ var
         dwDeviceID: longint;                                    // デバイス ID
         sDeviceName: string;                                    // デバイス名
         dwDrawInfo: longword;                                   // 情報描画フラグ
+        bEarSafe: longbool;                                     // イヤーセーフ
         dwFadeTime: longword;                                   // デフォルトフェードアウト時間
         dwFeedback: longword;                                   // フィードバック反転度
         sFontName: string;                                      // フォント名
@@ -5395,6 +5397,7 @@ begin
     Option.dwDeviceID := -1;
     Option.sDeviceName := '';
     Option.dwDrawInfo := 0;
+    Option.bEarSafe := true;
     Option.dwFadeTime := 10000;
     Option.dwFeedback := FEEDBACK_000;
     Option.sFontName := '';
@@ -5455,6 +5458,7 @@ begin
             if sBuffer = BUFFER_DEVICE__ then Option.dwDeviceID := GetINIValue(Option.dwDeviceID);
             if sBuffer = BUFFER_DEVNAME_ then Option.sDeviceName := Copy(sData, BUFFER_START, Length(sData) - BUFFER_LENGTH);
             if sBuffer = BUFFER_DRAWINFO then Option.dwDrawInfo := GetINIValue(Option.dwDrawInfo);
+            if sBuffer = BUFFER_EARSAFE_ then Option.bEarSafe := longbool(GetINIValue(longint(Option.bEarSafe)));
             if sBuffer = BUFFER_FADELENG then Option.dwFadeTime := GetINIValue(Option.dwFadeTime);
             if sBuffer = BUFFER_FEEDBACK then Option.dwFeedback := GetINIValue(Option.dwFeedback);
             if sBuffer = BUFFER_FONTNAME then Option.sFontName := Copy(sData, BUFFER_START, Length(sData) - BUFFER_LENGTH);
@@ -5498,16 +5502,23 @@ begin
         // ファイルをクローズ
         CloseFile(fsFile);
     end;
-    // 設定値をチェック
+    // 設定値を調整 (EARSAFE, OPTION)
+    if longbool(Option.dwOption and OPTION_NOEARSAFE) then Option.bEarSafe := false;
+    Option.dwOption := Option.dwOption and not (OPTION_NOEARSAFE or OPTION_FLOATOUT);
+    // 設定値を調整 (LANGUAGE)
     if longbool(Option.dwLanguage) then Status.dwLanguage := Option.dwLanguage - 1
     else if API_GetUserDefaultLCID() and $FFFF = $0411 then Status.dwLanguage := 0
     else Status.dwLanguage := 1;
     if Status.dwLanguage > 1 then Status.dwLanguage := 0;
-    if Option.dwVolumeColor > 3 then Option.dwVolumeColor := 0;
+    // 設定値を調整 (PLAYTIME)
+    if (Option.dwPlayMax >= 1) and (dwPlayDefault >= 0) then Option.dwPlayMax := (Option.dwPlayMax and 1) + (dwPlayDefault and 1);
+    // 設定値を調整 (PLAYTYPE)
+    Status.dwPlayOrder := Option.dwPlayOrder;
+    // 設定値を調整 (SCALE)
     if Option.dwScale >= 200 then Status.dwScale := 4
     else if Option.dwScale >= 150 then Status.dwScale := 3;
-    if (Option.dwPlayMax >= 1) and (dwPlayDefault >= 0) then Option.dwPlayMax := (Option.dwPlayMax and 1) + (dwPlayDefault and 1);
-    Status.dwPlayOrder := Option.dwPlayOrder;
+    // 設定値を調整 (VOLCOLOR)
+    if Option.dwVolumeColor > 3 then Option.dwVolumeColor := 0;
 {$IFNDEF TRY700A}{$IFNDEF TRY700W}
     // SPCPLAY.EXE の破損を確認
     if not longbool(result) then result := CheckImageHash(sEXEPath, 10);
@@ -6024,6 +6035,7 @@ begin
     Writeln(fsFile, Concat(BUFFER_CACHEINT, IntToStr(Option.dwCacheInt)));
     Writeln(fsFile, Concat(BUFFER_CACHENUM, IntToStr(Option.dwCacheNum)));
     Writeln(fsFile, Concat(BUFFER_DRAWINFO, IntToStr(Option.dwDrawInfo)));
+    Writeln(fsFile, Concat(BUFFER_EARSAFE_, GetBoolToInt(Option.bEarSafe)));
     Writeln(fsFile, Concat(BUFFER_FADELENG, IntToStr(Option.dwFadeTime)));
     Writeln(fsFile, Concat(BUFFER_FONTNAME, Option.sFontName));
     Writeln(fsFile, Concat(BUFFER_HIDELENG, IntToStr(Option.dwHideTime)));
@@ -8930,9 +8942,12 @@ procedure CWINDOWMAIN.SPCOption();
 var
     I: longint;
     V: byte;
+    dwOption: longword;
 begin
     // 拡張設定を設定 (dwBit は負数になる場合があるため shl は使わない)
-    Apu.SetAPUOption(1, Option.dwChannel, Option.dwBit * 8, Option.dwRate, Option.dwInter, Option.dwOption or OPTION_FLOATOUT);
+    dwOption := Option.dwOption or OPTION_FLOATOUT;
+    if not longbool(Option.bEarSafe) then dwOption := dwOption or OPTION_NOEARSAFE;
+    Apu.SetAPUOption(1, Option.dwChannel, Option.dwBit * 8, Option.dwRate, Option.dwInter, dwOption);
     // 演奏速度を設定
     Apu.SetAPUSpeed(Option.dwSpeedBas + Round(Option.dwSpeedBas / SPEED_100 * Option.dwSpeedTun));
     // ピッチを設定
