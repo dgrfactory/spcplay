@@ -2369,6 +2369,8 @@ const
     BUFFER_BMPFONT_: string = 'BMPFONT  0 : ';
     BUFFER_BUFNUM__: string = 'BUFNUM   2 : ';
     BUFFER_BUFTIME_: string = 'BUFTIME  2 : ';
+    BUFFER_CACHEINT: string = 'CACHEINT 0 : ';
+    BUFFER_CACHENUM: string = 'CACHENUM 0 : ';
     BUFFER_CHANNEL_: string = 'CHANNEL  0 : ';
     BUFFER_DEVICE__: string = 'DEVICE   0 : ';
     BUFFER_DEVNAME_: string = 'DEVNAME  0 : ';
@@ -2398,9 +2400,7 @@ const
     BUFFER_SCALE___: string = 'SCALE    0 : ';
     BUFFER_SEEKBAR_: string = 'SEEKBAR  0 : ';
     BUFFER_SEEKFAST: string = 'SEEKFAST 2 : ';
-    BUFFER_SEEKINT_: string = 'SEEKINT  1 : ';
     BUFFER_SEEKMAX_: string = 'SEEKMAX  1 : ';
-    BUFFER_SEEKNUM_: string = 'SEEKNUM  2 : ';
     BUFFER_SEEKTIME: string = 'SEEKTIME 1 : ';
     BUFFER_SEPARATE: string = 'SEPARATE 0 : ';
     BUFFER_SHIFTKEY: string = 'SHIFTKEY 0 : ';
@@ -3294,6 +3294,8 @@ var
         dwBmpFont: longword;                                    // 数値フォント
         dwBufferNum: longword;                                  // バッファ数
         dwBufferTime: longword;                                 // バッファ時間
+        dwCacheInt: longword;                                   // シークキャッシュ保存間隔
+        dwCacheNum: longword;                                   // シークキャッシュ数
         dwChannel: longword;                                    // チャンネル
         dwDeviceID: longint;                                    // デバイス ID
         sDeviceName: string;                                    // デバイス名
@@ -3321,9 +3323,7 @@ var
         dwScale: longint;                                       // 表示倍率
         dwSeekBar: longword;                                    // エンドレス時シークバー時間
         dwSeekFast: longword;                                   // 高速シーク
-        dwSeekInt: longword;                                    // シークキャッシュ保存間隔
         dwSeekMax: longword;                                    // シーク可能時間
-        dwSeekNum: longword;                                    // シークキャッシュ数
         dwSeekTime: longword;                                   // シーク時間
         dwSeparate: longword;                                   // 左右拡散度
         dwShiftKey: longword;                                   // シフトキー動作
@@ -5389,6 +5389,8 @@ begin
     Option.dwBmpFont := 0;
     Option.dwBufferNum := 22;
     Option.dwBufferTime := 23;
+    Option.dwCacheInt := 10000;
+    Option.dwCacheNum := 60;
     Option.dwChannel := CHANNEL_STEREO;
     Option.dwDeviceID := -1;
     Option.sDeviceName := '';
@@ -5418,9 +5420,7 @@ begin
     Option.dwScale := 100;
     Option.dwSeekBar := 180000;
     Option.dwSeekFast := 0;
-    Option.dwSeekInt := 15000;
     Option.dwSeekMax := 600000;
-    Option.dwSeekNum := 40;
     Option.dwSeekTime := 5000;
     Option.dwSeparate := SEPARATE_050;
     Option.dwShiftKey := 0;
@@ -5449,6 +5449,8 @@ begin
             if sBuffer = BUFFER_BMPFONT_ then Option.dwBmpFont := GetINIValue(Option.dwBmpFont);
             if sBuffer = BUFFER_BUFNUM__ then Option.dwBufferNum := GetINIValue(Option.dwBufferNum);
             if sBuffer = BUFFER_BUFTIME_ then Option.dwBufferTime := GetINIValue(Option.dwBufferTime);
+            if sBuffer = BUFFER_CACHEINT then Option.dwCacheInt := GetINIValue(Option.dwCacheInt);
+            if sBuffer = BUFFER_CACHENUM then Option.dwCacheNum := GetINIValue(Option.dwCacheNum);
             if sBuffer = BUFFER_CHANNEL_ then Option.dwChannel := GetINIValue(Option.dwChannel);
             if sBuffer = BUFFER_DEVICE__ then Option.dwDeviceID := GetINIValue(Option.dwDeviceID);
             if sBuffer = BUFFER_DEVNAME_ then Option.sDeviceName := Copy(sData, BUFFER_START, Length(sData) - BUFFER_LENGTH);
@@ -5478,9 +5480,7 @@ begin
             if sBuffer = BUFFER_SCALE___ then Option.dwScale := GetINIValue(Option.dwScale);
             if sBuffer = BUFFER_SEEKBAR_ then Option.dwSeekBar := GetINIValue(Option.dwSeekBar);
             if sBuffer = BUFFER_SEEKFAST then Option.dwSeekFast := GetINIValue(Option.dwSeekFast);
-            if sBuffer = BUFFER_SEEKINT_ then Option.dwSeekInt := GetINIValue(Option.dwSeekInt);
             if sBuffer = BUFFER_SEEKMAX_ then Option.dwSeekMax := GetINIValue(Option.dwSeekMax);
-            if sBuffer = BUFFER_SEEKNUM_ then Option.dwSeekNum := GetINIValue(Option.dwSeekNum);
             if sBuffer = BUFFER_SEEKTIME then Option.dwSeekTime := GetINIValue(Option.dwSeekTime);
             if sBuffer = BUFFER_SEPARATE then Option.dwSeparate := GetINIValue(Option.dwSeparate);
             if sBuffer = BUFFER_SHIFTKEY then Option.dwShiftKey := GetINIValue(Option.dwShiftKey);
@@ -5677,7 +5677,7 @@ begin
     SetLength(Wave.lpData, Option.dwBufferNum);
     SetLength(Wave.Header, Option.dwBufferNum);
     SetLength(Wave.Apu, Option.dwBufferNum);
-    SetLength(Status.SPCCache, Option.dwSeekNum);
+    SetLength(Status.SPCCache, Option.dwCacheNum);
     // ファイルメニューを作成
     cmFile := CMENU.Create();
     cmFile.CreatePopupMenu();
@@ -6021,6 +6021,8 @@ begin
     Writeln(fsFile, Concat(BUFFER_BMPFONT_, IntToStr(Option.dwBmpFont)));
     Writeln(fsFile, Concat(BUFFER_BUFNUM__, IntToStr(Option.dwBufferNum)));
     Writeln(fsFile, Concat(BUFFER_BUFTIME_, IntToStr(Option.dwBufferTime)));
+    Writeln(fsFile, Concat(BUFFER_CACHEINT, IntToStr(Option.dwCacheInt)));
+    Writeln(fsFile, Concat(BUFFER_CACHENUM, IntToStr(Option.dwCacheNum)));
     Writeln(fsFile, Concat(BUFFER_DRAWINFO, IntToStr(Option.dwDrawInfo)));
     Writeln(fsFile, Concat(BUFFER_FADELENG, IntToStr(Option.dwFadeTime)));
     Writeln(fsFile, Concat(BUFFER_FONTNAME, Option.sFontName));
@@ -6033,9 +6035,7 @@ begin
     Writeln(fsFile, Concat(BUFFER_SCALE___, IntToStr(Option.dwScale)));
     Writeln(fsFile, Concat(BUFFER_SEEKBAR_, IntToStr(Option.dwSeekBar)));
     Writeln(fsFile, Concat(BUFFER_SEEKFAST, IntToStr(Option.dwSeekFast)));
-    Writeln(fsFile, Concat(BUFFER_SEEKINT_, IntToStr(Option.dwSeekInt)));
     Writeln(fsFile, Concat(BUFFER_SEEKMAX_, IntToStr(Option.dwSeekMax)));
-    Writeln(fsFile, Concat(BUFFER_SEEKNUM_, IntToStr(Option.dwSeekNum)));
     Writeln(fsFile, Concat(BUFFER_SHIFTKEY, IntToStr(Option.dwShiftKey)));
     Writeln(fsFile, Concat(BUFFER_SPEEDTUN, IntToStr(Option.dwSpeedTun)));
     Writeln(fsFile, Concat(BUFFER_VOLCOLOR, IntToStr(Option.dwVolumeColor)));
@@ -8452,7 +8452,7 @@ var
     SPCReg: ^TSPCREG;
 begin
     // キャッシュを使用しない場合は終了
-    if not longbool(Option.dwSeekNum) then exit;
+    if not longbool(Option.dwCacheNum) then exit;
     // 現在の状態をキャッシュ
     SPCCache := @Status.SPCCache[dwIndex];
     SPCBuf := @SPCCache.Spc;
@@ -8465,7 +8465,7 @@ begin
     SPCCache.SPCOutPort.dwPort := Apu.SPCOutPort.dwPort;
     SPCBuf.Hdr.dwSongLen := Apu.T64Count^;
     // 次のキャッシュ時間を取得
-    if dwIndex = Option.dwSeekNum - 1 then Status.dwNextCache := 0
+    if dwIndex = Option.dwCacheNum - 1 then Status.dwNextCache := 0
     else Status.dwNextCache := Status.SPCCache[dwIndex + 1].Spc.Hdr.dwFadeLen;
 end;
 
@@ -9046,11 +9046,11 @@ begin
         // 新しい SPC が読み込まれた場合
         if Status.bEmuDebug or Status.bSPCRefresh then begin
             // シークキャッシュを初期化
-            if longbool(Option.dwSeekNum) then begin
+            if longbool(Option.dwCacheNum) then begin
                 J := 0;
-                K := Option.dwSeekInt shl 6;
+                K := Option.dwCacheInt shl 6;
                 Status.dwNextCache := K;
-                for I := 0 to Option.dwSeekNum - 1 do begin
+                for I := 0 to Option.dwCacheNum - 1 do begin
                     Inc(J, K);
                     SPCHdr := @Status.SPCCache[I].Spc.Hdr;
                     SPCHdr.dwSongLen := $FFFFFFFF;
@@ -9204,7 +9204,7 @@ begin
     if dwTime = T64Count then exit;
     // シーク位置に最も近いキャッシュの場所を取得
     J := -1;
-    for I := 0 to Option.dwSeekNum - 1 do if dwTime >= Status.SPCCache[I].Spc.Hdr.dwSongLen then J := I;
+    for I := 0 to Option.dwCacheNum - 1 do if dwTime >= Status.SPCCache[I].Spc.Hdr.dwSongLen then J := I;
     if not bCache or (J = -1) then T64Cache := 0
     else T64Cache := Status.SPCCache[J].Spc.Hdr.dwSongLen;
     // 大まかな位置までシーク
@@ -9891,7 +9891,7 @@ begin
     if longbool(Status.dwNextCache) and (T64Cache >= Status.dwNextCache) then begin
         // キャッシュするバッファの位置を取得
         J := 0;
-        for I := 0 to Option.dwSeekNum - 1 do if T64Cache >= Status.SPCCache[I].Spc.Hdr.dwFadeLen then J := I;
+        for I := 0 to Option.dwCacheNum - 1 do if T64Cache >= Status.SPCCache[I].Spc.Hdr.dwFadeLen then J := I;
         // キャッシュを保存
         SaveSeekCache(J);
     end;
