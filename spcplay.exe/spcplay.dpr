@@ -2369,6 +2369,7 @@ const
     BUFFER_BMPFONT_: string = 'BMPFONT  0 : ';
     BUFFER_BUFNUM__: string = 'BUFNUM   2 : ';
     BUFFER_BUFTIME_: string = 'BUFTIME  2 : ';
+    BUFFER_CACHEDIF: string = 'CACHEDIF 0 : ';
     BUFFER_CACHEINT: string = 'CACHEINT 0 : ';
     BUFFER_CACHENUM: string = 'CACHENUM 0 : ';
     BUFFER_CHANNEL_: string = 'CHANNEL  0 : ';
@@ -3295,6 +3296,7 @@ var
         dwBmpFont: longword;                                    // 数値フォント
         dwBufferNum: longword;                                  // バッファ数
         dwBufferTime: longword;                                 // バッファ時間
+        dwCacheDiff: longword;                                  // シークキャッシュ適用差分
         dwCacheInt: longword;                                   // シークキャッシュ保存間隔
         dwCacheNum: longword;                                   // シークキャッシュ数
         dwChannel: longword;                                    // チャンネル
@@ -4039,7 +4041,7 @@ begin
                     if Msg.hWnd = cfMain.cwStaticMain.hWnd then begin
                         Status.DblClickPoint.x := Msg.lParam and $FFFF;
                         Status.DblClickPoint.y := Msg.lParam shr 16;
-                        if Status.bShiftButton then cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_START_TIME, Msg.lParam)
+                        if not Status.bCtrlButton and Status.bShiftButton then cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_START_TIME, Msg.lParam)
                         else cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_SEEK, Msg.lParam);
                     end else if Msg.hWnd = cfMain.cwPlayList.hWnd then begin
                         cfMain.DragFile(Msg.msg, Msg.wParam, Msg.lParam);
@@ -4049,7 +4051,7 @@ begin
                     if Msg.hWnd = cfMain.cwStaticMain.hWnd then begin
                         Status.DblClickPoint.x := Msg.lParam and $FFFF;
                         Status.DblClickPoint.y := Msg.lParam shr 16;
-                        if Status.bShiftButton then cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_LIMIT_TIME, Msg.lParam)
+                        if not Status.bCtrlButton and Status.bShiftButton then cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_LIMIT_TIME, Msg.lParam)
                         else cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_SEEK, Msg.lParam);
                     end else if Msg.hWnd = cfMain.cwPlayList.hWnd then begin
                         cfMain.DragFile(Msg.msg, Msg.wParam, Msg.lParam);
@@ -5391,6 +5393,7 @@ begin
     Option.dwBmpFont := 0;
     Option.dwBufferNum := 22;
     Option.dwBufferTime := 23;
+    Option.dwCacheDiff := 5000;
     Option.dwCacheInt := 10000;
     Option.dwCacheNum := 60;
     Option.dwChannel := CHANNEL_STEREO;
@@ -5452,6 +5455,7 @@ begin
             if sBuffer = BUFFER_BMPFONT_ then Option.dwBmpFont := GetINIValue(Option.dwBmpFont);
             if sBuffer = BUFFER_BUFNUM__ then Option.dwBufferNum := GetINIValue(Option.dwBufferNum);
             if sBuffer = BUFFER_BUFTIME_ then Option.dwBufferTime := GetINIValue(Option.dwBufferTime);
+            if sBuffer = BUFFER_CACHEDIF then Option.dwCacheDiff := GetINIValue(Option.dwCacheDiff);
             if sBuffer = BUFFER_CACHEINT then Option.dwCacheInt := GetINIValue(Option.dwCacheInt);
             if sBuffer = BUFFER_CACHENUM then Option.dwCacheNum := GetINIValue(Option.dwCacheNum);
             if sBuffer = BUFFER_CHANNEL_ then Option.dwChannel := GetINIValue(Option.dwChannel);
@@ -6032,6 +6036,7 @@ begin
     Writeln(fsFile, Concat(BUFFER_BMPFONT_, IntToStr(Option.dwBmpFont)));
     Writeln(fsFile, Concat(BUFFER_BUFNUM__, IntToStr(Option.dwBufferNum)));
     Writeln(fsFile, Concat(BUFFER_BUFTIME_, IntToStr(Option.dwBufferTime)));
+    Writeln(fsFile, Concat(BUFFER_CACHEDIF, IntToStr(Option.dwCacheDiff)));
     Writeln(fsFile, Concat(BUFFER_CACHEINT, IntToStr(Option.dwCacheInt)));
     Writeln(fsFile, Concat(BUFFER_CACHENUM, IntToStr(Option.dwCacheNum)));
     Writeln(fsFile, Concat(BUFFER_DRAWINFO, IntToStr(Option.dwDrawInfo)));
@@ -9188,6 +9193,8 @@ var
     J: longint;
     T64Count: longword;
     T64Cache: longword;
+    dwCacheDiff: longword;
+    dwTarget: longword;
 
 procedure CacheSeek();
 var
@@ -9217,12 +9224,16 @@ begin
     T64Count := Wave.Apu[Wave.dwLastIndex].T64Count;
     // 現在の場所に変更がない場合は終了
     if dwTime = T64Count then exit;
+    // キャッシュの基準位置を取得
+    dwCacheDiff := Option.dwCacheDiff shl 6;
+    dwTarget := dwTime;
+    if not longbool(Option.dwSeekFast) then if dwTarget > dwCacheDiff then Dec(dwTarget, dwCacheDiff) else dwTarget := 0;
     // シーク位置に最も近いキャッシュの場所を取得
     J := -1;
-    for I := 0 to Option.dwCacheNum - 1 do if dwTime >= Status.SPCCache[I].Spc.Hdr.dwSongLen then J := I;
+    for I := 0 to Option.dwCacheNum - 1 do if dwTarget >= Status.SPCCache[I].Spc.Hdr.dwSongLen then J := I;
     if not bCache or (J = -1) then T64Cache := 0
     else T64Cache := Status.SPCCache[J].Spc.Hdr.dwSongLen;
-    // 大まかな位置までシーク
+    // シーク位置が現在位置も後の場合は大まかな位置までシーク
     if dwTime > T64Count then begin
         // 現在位置よりキャッシュ位置の方が近い場合はキャッシュを読み込む
         if T64Cache > T64Count then CacheSeek();
@@ -9370,8 +9381,7 @@ begin
         // 前回終了時に選択していたデバイス名と一致するデバイスを優先する
         // 同名のデバイスが複数ある場合は、前回選択位置を優先する
         J := -1;
-        for I := 0 to Status.dwDeviceNum do
-            if Status.sDeviceName[I] = Option.sDeviceName then if J = -1 then J := I else J := -2;
+        for I := 0 to Status.dwDeviceNum do if Status.sDeviceName[I] = Option.sDeviceName then if J = -1 then J := I else J := -2;
         if J >= 0 then dwDeviceID := J - 1;
     end;
     // デバイスを再選択
@@ -9478,7 +9488,7 @@ begin
     end;
     // 情報を表示
     cwStaticMain.SetCaption(pchar(sInfo));
-    // 再描画を行う場合、インジケータをリセット
+    // 再描画を行う場合はインジケータをリセット
     if bRedraw then ResetInfo(true);
 end;
 
@@ -10584,7 +10594,7 @@ end;
 begin
     // 初期化
     result := 0;
-    // メニューを右クリックされた場合、メッセージをメニュークリックイベントに変換
+    // メニューを右クリックされた場合は、メッセージをメニュークリックイベントに変換
     if (msg = WM_MENURBUTTONUP) or ((msg = WM_MENUCHAR) and ((wParam and $FFFF) = $20)) then begin
         wParam := Status.dwMenuFlags and $FFFF;
         if not longbool(API_GetMenuState(lParam, wParam, MF_BYCOMMAND) and MF_GRAYED) then begin
