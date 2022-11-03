@@ -2371,6 +2371,7 @@ const
     BUFFER_BUFTIME_: string = 'BUFTIME  2 : ';
     BUFFER_CACHEDIF: string = 'CACHEDIF 0 : ';
     BUFFER_CACHEINT: string = 'CACHEINT 0 : ';
+    BUFFER_CACHEKON: string = 'CACHEKON 0 : ';
     BUFFER_CACHENUM: string = 'CACHENUM 0 : ';
     BUFFER_CHANNEL_: string = 'CHANNEL  0 : ';
     BUFFER_DEVICE__: string = 'DEVICE   0 : ';
@@ -3298,6 +3299,7 @@ var
         dwBufferTime: longword;                                 // バッファ時間
         dwCacheDiff: longword;                                  // シークキャッシュ適用差分
         dwCacheInt: longword;                                   // シークキャッシュ保存間隔
+        dwCacheKOn: longword;                                   // シークキャッシュ KON 閾値
         dwCacheNum: longword;                                   // シークキャッシュ数
         dwChannel: longword;                                    // チャンネル
         dwDeviceID: longint;                                    // デバイス ID
@@ -5395,6 +5397,7 @@ begin
     Option.dwBufferTime := 23;
     Option.dwCacheDiff := 5000;
     Option.dwCacheInt := 10000;
+    Option.dwCacheKOn := $40;
     Option.dwCacheNum := 60;
     Option.dwChannel := CHANNEL_STEREO;
     Option.dwDeviceID := -1;
@@ -5457,6 +5460,7 @@ begin
             if sBuffer = BUFFER_BUFTIME_ then Option.dwBufferTime := GetINIValue(Option.dwBufferTime);
             if sBuffer = BUFFER_CACHEDIF then Option.dwCacheDiff := GetINIValue(Option.dwCacheDiff);
             if sBuffer = BUFFER_CACHEINT then Option.dwCacheInt := GetINIValue(Option.dwCacheInt);
+            if sBuffer = BUFFER_CACHEKON then Option.dwCacheKOn := GetINIValue(Option.dwCacheKOn);
             if sBuffer = BUFFER_CACHENUM then Option.dwCacheNum := GetINIValue(Option.dwCacheNum);
             if sBuffer = BUFFER_CHANNEL_ then Option.dwChannel := GetINIValue(Option.dwChannel);
             if sBuffer = BUFFER_DEVICE__ then Option.dwDeviceID := GetINIValue(Option.dwDeviceID);
@@ -6038,6 +6042,7 @@ begin
     Writeln(fsFile, Concat(BUFFER_BUFTIME_, IntToStr(Option.dwBufferTime)));
     Writeln(fsFile, Concat(BUFFER_CACHEDIF, IntToStr(Option.dwCacheDiff)));
     Writeln(fsFile, Concat(BUFFER_CACHEINT, IntToStr(Option.dwCacheInt)));
+    Writeln(fsFile, Concat(BUFFER_CACHEKON, IntToStr(Option.dwCacheKOn)));
     Writeln(fsFile, Concat(BUFFER_CACHENUM, IntToStr(Option.dwCacheNum)));
     Writeln(fsFile, Concat(BUFFER_DRAWINFO, IntToStr(Option.dwDrawInfo)));
     Writeln(fsFile, Concat(BUFFER_EARSAFE_, GetBoolToInt(Option.bEarSafe)));
@@ -8464,9 +8469,12 @@ end;
 // ================================================================================
 procedure CWINDOWMAIN.SaveSeekCache(dwIndex: longword);
 var
+    I: longint;
     SPCCache: ^TSPCCACHE;
     SPCBuf: ^TSPC;
     SPCReg: ^TSPCREG;
+    DspVoice: ^TDSPVOICE;
+    dwEnvelope: longword;
 begin
     // キャッシュを使用しない場合は終了
     if not longbool(Option.dwCacheNum) then exit;
@@ -8481,6 +8489,14 @@ begin
     API_MoveMemory(@SPCCache.Script700, Status.Script700.Data, SizeOf(TSCRIPT700EX));
     SPCCache.SPCOutPort.dwPort := Apu.SPCOutPort.dwPort;
     SPCBuf.Hdr.dwSongLen := Apu.T64Count^;
+    // KON を復元
+    for I := 0 to 7 do begin
+        DspVoice := @Apu.DspReg.Voice[I];
+        dwEnvelope := $10;
+        // ADSR または Gain (Direct を除く) の場合は、エンベロープの基準値を上げる
+        if bytebool((DspVoice.EnvelopeADSR1 or DspVoice.EnvelopeGain) and $80) then dwEnvelope := Option.dwCacheKOn shl 4;
+        if Apu.Voices.Voice[I].EnvelopeRateValue >= dwEnvelope then SPCBuf.Dsp[$4C] := SPCBuf.Dsp[$4C] or (1 shl I);
+    end;
     // 次のキャッシュ時間を取得
     if dwIndex = Option.dwCacheNum - 1 then Status.dwNextCache := 0
     else Status.dwNextCache := Status.SPCCache[dwIndex + 1].Spc.Hdr.dwFadeLen;
