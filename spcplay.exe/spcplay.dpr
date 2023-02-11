@@ -1148,6 +1148,9 @@ const
     CBS_SORT = $100;
     CBS_UPPERCASE = $2000;
     CW_USEDEFAULT = -2147483648;
+    DEVICE_NOTIFY_CALLBACK = $2;
+    DEVICE_NOTIFY_SERVICE_HANDLE = $1;
+    DEVICE_NOTIFY_WINDOW_HANDLE = $0;
     DS_3DLOOK = $4;
     DS_ABSALIGN = $1;
     DS_CENTER = $800;
@@ -5118,6 +5121,7 @@ var
     hWndApp: longword;
     hFontApp: longword;
     Box: TBOX;
+    API_RegisterSuspendResumeNotification: function(hRecipient: longword; flags: longword): longword; stdcall;
     API_RtlGetVersion: function(lpVersionInfo: pointer): longbool; stdcall;
 {$IFDEF UACDROP}
     API_ChangeWindowMessageFilter: function(msg: longword; dwFlag: longword): longword; stdcall;
@@ -5657,19 +5661,24 @@ begin
     IID_ITaskbarList3.DataX[2] := $9F9EE990;
     IID_ITaskbarList3.DataX[3] := $AFEF5E8A;
 {$ENDIF}
-{$IFDEF UACDROP}
-    // 権限が低いアプリケーションからのドロップを有効に設定 (for Windows Vista, 7)
     dwBuffer := API_LoadLibrary(pchar('user32.dll'));
     if longbool(dwBuffer) then begin
+        // S0 (省電力) スリープのイベントを拾えるように設定 (for Windows 8, 8.1, 10, 11)
+        @API_RegisterSuspendResumeNotification := API_GetProcAddress(dwBuffer, pchar('RegisterSuspendResumeNotification'));
+        if longbool(@API_RegisterSuspendResumeNotification) then begin
+            API_RegisterSuspendResumeNotification(hWndApp, DEVICE_NOTIFY_WINDOW_HANDLE);
+        end;
+{$IFDEF UACDROP}
+        // 権限が低いアプリケーションからのドロップを有効に設定 (for Windows Vista, 7)
         @API_ChangeWindowMessageFilter := API_GetProcAddress(dwBuffer, pchar('ChangeWindowMessageFilter'));
         if longbool(@API_ChangeWindowMessageFilter) then begin
             API_ChangeWindowMessageFilter(WM_DROPFILES, MSGFLT_ADD);
             API_ChangeWindowMessageFilter(WM_COPYDATA, MSGFLT_ADD);
             API_ChangeWindowMessageFilter(WM_COPYGLOBALDATA, MSGFLT_ADD);
         end;
+{$ENDIF}
         API_FreeLibrary(dwBuffer);
     end;
-{$ENDIF}
     // システムのバージョン情報を取得
     Status.OsVersionInfo.dwOSVersionInfoSize := SizeOf(TOSVERSIONINFO);
     API_GetVersionEx(@Status.OsVersionInfo);
@@ -9215,6 +9224,7 @@ var
 procedure CacheSeek();
 var
     SPCCache: ^TSPCCACHE;
+    SPCOutPortCopy: ^TSPCPORT;
 begin
     if not longbool(T64Cache) then begin
         // キャッシュがない場合は最初のバッファを読み込む
@@ -9226,6 +9236,8 @@ begin
         Apu.LoadSPCFile(@SPCCache.Spc);
         API_MoveMemory(Status.Script700.Data, @SPCCache.Script700, SizeOf(TSCRIPT700EX));
         Apu.SPCOutPort.dwPort := SPCCache.SPCOutPort.dwPort;
+        SPCOutPortCopy := pointer(longword(Apu.SPCOutPort) + 8);
+        SPCOutPortCopy.dwPort := Apu.SPCOutPort.dwPort;
         Apu.T64Count^ := T64Cache;
         T64Count := T64Cache;
     end;
