@@ -24,9 +24,9 @@
 //  * GNU GPL v2.0 document is in LICENSE file.
 //
 //
-//  +++ このソース コードは GPL です +++
+//  +++ このソースコードは GPL です +++
 //
-//  このプログラムはフリー ソフトウェアです。 あなたはフリー ソフトウェア団体によって発行
+//  このプログラムはフリーソフトウェアです。 あなたはフリーソフトウェア団体によって発行
 //  されている GNU 一般公衆利用許諾契約書のバージョン 2、もしくは希望であればそれ以上の
 //  バージョンのうち、いずれかで定められた条件の下でこのプログラムを再配布、もしくは改変
 //  することができます。
@@ -37,7 +37,7 @@
 //  詳しくは GNU 一般公衆利用許諾契約書 (GNU General Public License) をご覧ください。
 //
 //  あなたはこのプログラムと一緒に GNU 一般公衆利用許諾契約書のコピーを受け取ったはずです。
-//  受け取っていない場合は、フリー ソフトウェア団体から取り寄せてください。
+//  受け取っていない場合は、フリーソフトウェア団体から取り寄せてください。
 //  宛先 : Free Software Foundation, Inc.
 //         59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
@@ -49,42 +49,42 @@
 // =================================================================================================
 program spccmd;
 
-{$APPTYPE CONSOLE}                                          // アプリケーション タイプ    : CONSOLE モード
-{$ASSERTIONS OFF}                                           // ソース コードのアサート    : 無効
-{$BOOLEVAL OFF}                                             // 完全論理式評価             : 無効
-{$DEBUGINFO OFF}                                            // デバッグ情報               : 無効
-{$DEFINITIONINFO OFF}                                       // シンボル宣言と参照情報     : 無効
-{$DENYPACKAGEUNIT OFF}                                      // UNIT 使用                  : 無効
-{$DESIGNONLY OFF}                                           // IDE 使用                   : 無効
-{$EXTENDEDSYNTAX ON}                                        // 関数の戻り値を無視可能     : 有効
-{$EXTENSION exe}                                            // 拡張子設定                 : EXE
-{$HINTS ON}                                                 // ヒント生成                 : 有効
-{$IMAGEBASE $00400000}                                      // イメージ ベース アドレス   : 0x00400000
-{$IMPLICITBUILD ON}                                         // ビルドのたびに再コンパイル : 有効
-{$IMPORTEDDATA OFF}                                         // 別パッケージのメモリ参照   : 無効
-{$IOCHECKS OFF}                                             // I/O チェック               : 無効
-{$LOCALSYMBOLS OFF}                                         // ローカル シンボル情報      : 無効
-{$LONGSTRINGS ON}                                           // AnsiString 使用            : 有効
-{$MAXSTACKSIZE $00100000}                                   // 最大スタック設定           : 0x00100000
-{$MINENUMSIZE 1}                                            // 列挙型の最大サイズ (x256)  : 1 (256)
-{$MINSTACKSIZE $00004000}                                   // 最小スタック設定           : 0x00004000
-{$OBJEXPORTALL OFF}                                         // シンボルのエクスポート     : 無効
-{$OPENSTRINGS OFF}                                          // オープン文字列パラメータ   : 無効
-{$OPTIMIZATION ON}                                          // 最適化コンパイル           : 有効
-{$OVERFLOWCHECKS OFF}                                       // オーバーフロー チェック    : 無効
-{$RANGECHECKS OFF}                                          // 範囲チェック               : 無効
-{$REALCOMPATIBILITY OFF}                                    // Real48 互換                : 無効
-{$REFERENCEINFO OFF}                                        // 完全な参照情報の生成       : 無効
-{$R 'spccmd.res' 'spccmd.rc'}                               // リソース                   : spccmd.res <- spccmd.rc
-{$RUNONLY OFF}                                              // 実行時のみコンパイル       : 無効
-{$SAFEDIVIDE OFF}                                           // 初期 Pentium FDIV バグ回避 : 無効
-{$STACKFRAMES OFF}                                          // 完全スタック フレーム生成  : 無効
-{$TYPEDADDRESS OFF}                                         // ポインタの型チェック       : 無効
-{$TYPEINFO OFF}                                             // 実行時型情報               : 無効
-{$VARSTRINGCHECKS OFF}                                      // 文字列チェック             : 無効
-{$WARNINGS ON}                                              // 警告生成                   : 有効
-{$WEAKPACKAGEUNIT OFF}                                      // 弱いパッケージ化           : 無効
-{$WRITEABLECONST OFF}                                       // 定数書き換え               : 無効
+{$APPTYPE CONSOLE}                                          // アプリケーションタイプ       : CONSOLE モード
+{$ASSERTIONS OFF}                                           // ソースコードのアサート       : 無効
+{$BOOLEVAL OFF}                                             // 完全論理式評価               : 無効
+{$DEBUGINFO OFF}                                            // デバッグ情報                 : 無効
+{$DEFINITIONINFO OFF}                                       // シンボル宣言と参照情報       : 無効
+{$DENYPACKAGEUNIT OFF}                                      // UNIT 使用                    : 無効
+{$DESIGNONLY OFF}                                           // IDE 使用                     : 無効
+{$EXTENDEDSYNTAX ON}                                        // 関数の戻り値を無視可能       : 有効
+{$EXTENSION exe}                                            // 拡張子設定                   : EXE
+{$HINTS ON}                                                 // ヒント生成                   : 有効
+{$IMAGEBASE $00400000}                                      // イメージベースアドレス       : 0x00400000
+{$IMPLICITBUILD ON}                                         // ビルドのたびに再コンパイル   : 有効
+{$IMPORTEDDATA OFF}                                         // 別パッケージのメモリ参照     : 無効
+{$IOCHECKS OFF}                                             // I/O チェック                 : 無効
+{$LOCALSYMBOLS OFF}                                         // ローカルシンボル情報         : 無効
+{$LONGSTRINGS ON}                                           // AnsiString 使用              : 有効
+{$MAXSTACKSIZE $00100000}                                   // 最大スタック設定             : 0x00100000
+{$MINENUMSIZE 1}                                            // 列挙型の最大サイズ (x256)    : 1 (256)
+{$MINSTACKSIZE $00004000}                                   // 最小スタック設定             : 0x00004000
+{$OBJEXPORTALL OFF}                                         // シンボルのエクスポート       : 無効
+{$OPENSTRINGS OFF}                                          // オープン文字列パラメータ     : 無効
+{$OPTIMIZATION ON}                                          // 最適化コンパイル             : 有効
+{$OVERFLOWCHECKS OFF}                                       // オーバーフローチェック       : 無効
+{$RANGECHECKS OFF}                                          // 範囲チェック                 : 無効
+{$REALCOMPATIBILITY OFF}                                    // Real48 互換                  : 無効
+{$REFERENCEINFO OFF}                                        // 完全な参照情報の生成         : 無効
+{$R 'spccmd.res' 'spccmd.rc'}                               // リソース                     : spccmd.res <- spccmd.rc
+{$RUNONLY OFF}                                              // 実行時のみコンパイル         : 無効
+{$SAFEDIVIDE OFF}                                           // 初期 Pentium FDIV バグ回避   : 無効
+{$STACKFRAMES OFF}                                          // 完全スタックフレーム生成     : 無効
+{$TYPEDADDRESS OFF}                                         // ポインタの型チェック         : 無効
+{$TYPEINFO OFF}                                             // 実行時型情報                 : 無効
+{$VARSTRINGCHECKS OFF}                                      // 文字列チェック               : 無効
+{$WARNINGS ON}                                              // 警告生成                     : 有効
+{$WEAKPACKAGEUNIT OFF}                                      // 弱いパッケージ化             : 無効
+{$WRITEABLECONST OFF}                                       // 定数書き換え                 : 無効
 
 
 // *************************************************************************************************************************************************************
@@ -111,7 +111,7 @@ type
 
     // SPC 構造体
     TSPC = record
-        Hdr: array[0..255] of byte;                         // SPC ファイル ヘッダ
+        Hdr: array[0..255] of byte;                         // SPC ファイルヘッダ
         Ram: array[0..65535] of byte;                       // SPC700 64KB RAM
         Dsp: array[0..127] of byte;                         // DSP レジスタ
         __r: array[0..63] of byte;                          // (未使用) = 0x00 or 拡張 RAM
@@ -145,7 +145,7 @@ const
     // Delphi 標準定数
     NULL = 0;                                               // ヌル
     NULLCHAR = #0;                                          // ヌル文字
-    NULLPOINTER = nil;                                      // ヌル ポインタ
+    NULLPOINTER = nil;                                      // ヌルポインタ
     CRLF = #13#10;                                          // 改行
 
     CLASS_NAME: string = 'SSDLabo_SPCPLAY';
@@ -244,8 +244,8 @@ const
     FILE_TYPE_NOTREAD = $2;                                 // 読み込み不可
     FILE_TYPE_UNKNOWN = $3;                                 // 不明な形式
     FILE_TYPE_SPC = $10;                                    // SPC ファイル
-    FILE_TYPE_LIST_A = $11;                                 // プレイリスト ファイル TYPE-A
-    FILE_TYPE_LIST_B = $12;                                 // プレイリスト ファイル TYPE-B
+    FILE_TYPE_LIST_A = $11;                                 // プレイリストファイル TYPE-A
+    FILE_TYPE_LIST_B = $12;                                 // プレイリストファイル TYPE-B
     FILE_TYPE_FOLDER = $13;                                 // フォルダ
     FILE_TYPE_WAVE = $20;                                   // WAVE ファイル
 
@@ -582,7 +582,7 @@ begin
 end;
 
 // ================================================================================
-// IsPathSeparator - ファイル パスの区切り文字を比較
+// IsPathSeparator - ファイルパスの区切り文字を比較
 // ================================================================================
 function IsPathSeparator(const S: string; X: longword): longbool;
 begin
@@ -687,11 +687,11 @@ end;
 
 
 // *************************************************************************************************************************************************************
-// メイン プロシージャ
+// メインプロシージャ
 // *************************************************************************************************************************************************************
 
 // ================================================================================
-// WinMain - ウィンドウ メイン関数
+// WinMain - ウィンドウメイン関数
 // ================================================================================
 function _WinMain(hThisInstance: longword): longword; stdcall;
 var
@@ -925,7 +925,7 @@ begin
     hOutFile := INVALID_HANDLE_VALUE;
     hDLL := NULL;
     try
-        // パラメータ チェック
+        // パラメータチェック
         if sOutFile = '' then begin
             result := 201;
             writeln(output, Concat(STR_ERROR_201[dwLanguage], ' (code 201)'));
@@ -1855,7 +1855,7 @@ begin
             dwSizeTitle := 32;
             case dwType of
                 FILE_TYPE_LIST_B: begin
-                    // データ サイズを取得
+                    // データサイズを取得
                     API_ReadFile(hFile, @dwSize, 2, @dwReadSize, NULLPOINTER);
                     // ファイルのロードに失敗した場合はループを抜ける
                     if not longbool(dwReadSize) then break;
@@ -1866,7 +1866,7 @@ begin
             end;
             // ファイルのロードに失敗した場合はループを抜ける
             if not longbool(dwReadSize) then break;
-            // ファイル パスを取得
+            // ファイルパスを取得
             API_ZeroMemory(lpListFile, 1024);
             API_ReadFile(hFile, lpListFile, dwSizeFile, @dwReadSize, NULLPOINTER);
             // ファイルのロードに失敗した場合はループを抜ける
@@ -1992,7 +1992,7 @@ begin
     dwParam2 := 0;
     // バッファを確保
     GetMem(lpBuffer, 1024);
-    // カレント パスを取得
+    // カレントパスを取得
     API_GetModuleFileName(hThisInstance, lpBuffer, 1024);
     dwBuffer := GetPosSeparator(string(lpBuffer));
     if dwBuffer > 1024 then dwBuffer := 1024;
