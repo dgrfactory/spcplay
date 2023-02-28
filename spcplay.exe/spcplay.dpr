@@ -9336,8 +9336,8 @@ begin
         Status.bNextDefault := not bytebool(Spc.Hdr.TagFormat) or not longbool(Spc.Hdr.dwSongLen) or (Option.dwPlayMax = PLAY_MAX_DEFAULT);
         if Option.dwPlayMax = PLAY_MAX_ENDLESS then begin
             if bDefault then begin
-                Status.dwAPUPlayTime := Option.dwPlayTime shl 6;
-                Status.dwAPUFadeTime := Option.dwFadeTime shl 6;
+                Status.dwAPUPlayTime := Spc.Hdr.dwSongLen * 64000;
+                Status.dwAPUFadeTime := Spc.Hdr.dwFadeLen shl 6;
             end else begin
                 Status.dwAPUPlayTime := $FFFFFFFF;
                 Status.dwAPUFadeTime := 0;
