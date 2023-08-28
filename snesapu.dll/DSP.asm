@@ -262,7 +262,7 @@ SECTION .bss ALIGN=64
 ;Don't touch!  All arrays are carefully aligned on large boundaries to facillitate easier indexing
 ;and better cache utilization.
 
-; ----- degrade-factory code [2022/09/03] -----
+; ----- degrade-factory code [2023/08/28] -----
     ;DSP Core ---------------------------- [0]
     mix         resb    1024                                                    ;<VoiceMix> Mixing settings for each voice
     dsp         resb    128                                                     ;<DSPRAM> DSP registers
@@ -422,11 +422,12 @@ SECTION .bss ALIGN=64
     mixBuf      resd    MIX_SIZE*4                                              ;Temporary mixing buffer (linear buffer)
     echoBuf     resd    ECHOBUF                                                 ;External echo memory, 240ms @ 192kHz (ring buffer)
     firBuf      resd    FIRBUF                                                  ;Unaltered echo samples fed into FIR filter (ring buffer)
+                resw    FIRBUF                                                  ;   Triple buffer
     lowBufL1    resd    LOWBUF1                                                 ;BASS-BOOST buffer (Left)
     lowBufL2    resd    LOWBUF2
     lowBufR1    resd    LOWBUF1                                                 ;BASS-BOOST buffer (Right)
     lowBufR2    resd    LOWBUF2
-; ----- degrade-factory code [END] #37 #45 #52 -----
+; ----- degrade-factory code [END] #37 #45 #52 #61 -----
 
 ; ----- degrade-factory code [2015/07/11] -----
     dspVarEP    resd    1                                                       ;Endpoint of DSP.asm variables
@@ -803,7 +804,7 @@ USES ECX,EDX,EBX,ESI,EDI
 ENDP
 
 
-; ----- degrade-factory code [2012/02/18] -----
+; ----- degrade-factory code [2023/08/28] -----
 ;===================================================================================================
 ;Erase echo filter memory
 
@@ -817,11 +818,14 @@ PROC ResetEcho
 
     Mov     EDI,firBuf
     Mov     ECX,FIRBUF
+    Add     ECX,FIRBUF/2
     Rep     StoSD
 
 ENDP
+; ----- degrade-factory code [END] #61 -----
 
 
+; ----- degrade-factory code [2012/02/18] -----
 ;===================================================================================================
 ;Erase BASS-BOOST memory
 
@@ -845,8 +849,10 @@ PROC ResetLow
     Rep     StoSD
 
 ENDP
+; ----- degrade-factory code [END] -----
 
 
+; ----- degrade-factory code [2012/02/18] -----
 ;===================================================================================================
 ;Reset master and echo volume
 
@@ -3734,6 +3740,43 @@ ENDP
 ; ----- degrade-factory code [END] #37 -----
 
 %macro FIRFilter 0
+; ----- degrade-factory code [2023/08/28] -----
+    Test    dword [dspOpts],DSP_ECHOFIR
+    JZ      short %%NoZero
+
+    Mov     EBX,mix
+    XOr     DX,DX
+    Inc     DH
+    Mov     CL,8
+
+    %%ChMute:
+        Test    byte [EBX+mFlg],MFLG_MUTE                                       ;Is voice muted by user?
+        SetZ    AL
+        Dec     AL
+        And     AL,DH
+        Or      DL,AL
+
+        Sub     EBX,-80h
+        Add     DH,DH
+
+    Dec     CL
+    JNZ     short %%ChMute
+
+    Test    DL,DL                                                               ;DL = Muted channels, are any channels muted?
+    JZ      short %%NoZero                                                      ;   No
+
+    Not     DL                                                                  ;DL = Not muted channels
+    Mov     DH,[dsp+eon]                                                        ;DH = Using echo channels
+    And     DH,DL                                                               ;Are all channels using echoes muted?
+    JNZ     short %%NoZero                                                      ;   No
+        FLd     dword [fpShR1]                                                  ;Force feedback in half, without echo. (If there is
+        FMul    ST1,ST                                                          ; a loud feedback that causes clipping, mute the
+        FMul    ST2,ST                                                          ; channel toprevent the sound from playing forever.)
+        FStP    ST                                                              ;
+
+    %%NoZero:
+; ----- degrade-factory code [END] #61 -----
+
     Sub     byte [firCur],4                                                     ;Move index back one sample. (Index will wrap around
     Mov     EBX,[firCur]                                                        ; after 64 samples, enough for up to 256kHz output.)
     LEA     EBX,[EBX*2+firBuf]                                                  ;EBX -> Current sample in filter buffer
@@ -3753,15 +3796,18 @@ ENDP
 ; ----- degrade-factory code [END] #37 -----
 
     FSt     dword [EBX]                                                         ;Store new samples in buffer
-    FStP    dword [FIRBUF*2+EBX]                                                ;                                   |FBR
+    FSt     dword [FIRBUF*2+EBX]
+    FStP    dword [FIRBUF*4+EBX]                                                ;                                   |FBR
     FSt     dword [4+EBX]
-    FStP    dword [FIRBUF*2+4+EBX]                                              ;                                   |(empty)
+    FSt     dword [FIRBUF*2+4+EBX]
+    FStP    dword [FIRBUF*4+4+EBX]                                              ;                                   |(empty)
 
     FLdZ                                                                        ;                                   |0
     FLdZ                                                                        ;                                   |0 0
-; ----- degrade-factory code [2021/10/31] -----
-    Mov     EDX,firTaps+28                                                      ;EDX -> Filter taps
-; ----- degrade-factory code [END] #37 -----
+; ----- degrade-factory code [2023/08/28] -----
+    Add     EBX,FIRBUF*2+56                                                     ;EBX -> Unfiltered sample
+    Mov     EDX,firTaps                                                         ;EDX -> Filter taps
+; ----- degrade-factory code [END] #37 #61 -----
     Mov     dword [ESP-8],0                                                     ;Reset decimal overflow, so filtering is consistant
     Mov     CL,8                                                                ;8-tap FIR filter
 
@@ -3782,8 +3828,8 @@ ENDP
         FAddP   ST2,ST                                                          ;                                   |0 ((S1-S2)*FD+S2)*FT FD
 
 ; ----- degrade-factory code [2021/10/31] -----
-        ZeroDN  4+EBX
         ZeroDN  12+EBX
+        ZeroDN  4+EBX
 ; ----- degrade-factory code [END] -----
 
         FLd     dword [12+EBX]                                                  ;Interpolate right sample           |0 FBL FD S1
@@ -3793,14 +3839,11 @@ ENDP
         FMul    dword [EDX]                                                     ;                                   |0 FBL ((S1-S2)*FD+S2)*FT
         FAddP   ST2,ST                                                          ;                                   |FBR FBL
 
-; ----- degrade-factory code [2021/11/27] -----
+; ----- degrade-factory code [2023/08/28] -----
         Test    dword [dspOpts],DSP_ECHOFIR
         JZ      %%ClampH
-
         Dec     CL                                                              ;Is calculate the oldest sample (n=0)?
         JZ      short %%ClampL                                                  ;   Yes
-        Test    dword [EDX],-1                                                  ;FIR coefficient is minus?
-        JS      short %%ClampL                                                  ;   Yes
             FLd     ST                                                          ;Cut high-order bits                |FBR FBL FBL
             FIRCut16    ST1
             FStP    ST                                                          ;                                   |FBR FBL
@@ -3834,17 +3877,17 @@ ENDP
             FStP    ST                                                          ;                                   |FBR FBL
 
         %%Next:
-; ----- degrade-factory code [END] #23 #37 -----
+; ----- degrade-factory code [END] #23 #37 #61 -----
 
         Mov     EAX,[ESP-8]                                                     ;Determine next sample to use in filter
         Add     EAX,[firRate]
         Mov     [ESP-8],AX
         ShR     EAX,16
-
-        LEA     EBX,[EAX*8+EBX]                                                 ;EBX -> Sample to use in filter
-; ----- degrade-factory code [2021/10/31] -----
-        Sub     EDX,4                                                           ;EDX -> Next filter tap
-; ----- degrade-factory code [END] #37 -----
+; ----- degrade-factory code [2023/08/28] -----
+        ShL     EAX,3                                                           ;Multiply upper 16-bit by 8, not use 'ShR EAX,13'
+        Sub     EBX,EAX                                                         ;EBX -> Sample to use in filter
+        Add     EDX,4                                                           ;EDX -> Next filter tap
+; ----- degrade-factory code [END] #37 #61 -----
 
     Dec     CL
     JNZ     %%Tap
@@ -3998,7 +4041,7 @@ USES ALL
     Mov     ESI,mix+mFlg
 
     .Noise:
-        Test    byte [ESI],MFLG_NOISE                                           ;Is channel muted?
+        Test    byte [ESI],MFLG_NOISE                                           ;Is noise enabled?
         SetZ    DL
         Dec     DL
         And     DL,BL
