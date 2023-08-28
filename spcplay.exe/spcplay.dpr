@@ -727,6 +727,13 @@ type
         Objects: array[0..15] of TDROPOBJECT;               // データオブジェクト情報
     end;
 
+    // POWERBROADCAST_SETTING 構造体
+    TPOWERBROADCAST_SETTING = record
+        PowerSetting: TGUID;                                // 電源設定
+        dwDataLength: longword;                             // データの長さ
+        Data: array of byte;                                // データ
+    end;
+
 {$IFDEF ITASKBARLIST3}
     // ITASKBARLIST3VTBL 構造体
     TITASKBARLIST3VTBL = record
@@ -1336,8 +1343,34 @@ const
     MONITORINFOF_PRIMARY = $1;
     MSGFLT_ADD = $1;
     MSGFLT_REMOVE = $2;
+    PBT_APMBATTERYLOW = $9;
+    PBT_APMPOWERSTATUSCHANGE = $A;
+    PBT_APMOEMEVENT = $B;
+    PBT_APMQUERYSUSPEND = $0;
+    PBT_APMQUERYSUSPENDFAILED = $2;
+    PBT_APMQUERYSTANDBY = $1;
+    PBT_APMQUERYSTANDBYFAILED = $3;
+    PBT_APMRESUMEAUTOMATIC = $12;
+    PBT_APMRESUMECRITICAL = $6;
+    PBT_APMRESUMESTANDBY = $8;
+    PBT_APMRESUMESUSPEND = $7;
+    PBT_APMSTANDBY = $5;
+    PBT_APMSUSPEND = $4;
+    PBT_POWERSETTINGCHANGE = $8013;
     PM_NOREMOVE = $0;
     PM_REMOVE = $1;
+    RDW_ALLCHILDREN = $80;
+    RDW_ERASE = $4;
+    RDW_ERASENOW = $200;
+    RDW_FRAME = $400;
+    RDW_INTERNALPAINT = $2;
+    RDW_INVALIDATE = $1;
+    RDW_NOCHILDREN = $40;
+    RDW_NOERASE = $20;
+    RDW_NOFRAME = $800;
+    RDW_NOINTERNALPAINT = $10;
+    RDW_UPDATENOW = $100;
+    RDW_VALIDATE = $8;
     SB_BOTH = $3;
     SB_BOTTOM = $7;
     SB_CTL = $2;
@@ -1879,6 +1912,7 @@ const
     WM_DESTROY = $2;
     WM_DESTROYCLIPBOARD = $307;
     WM_DEVMODECHANGE = $1B;
+    WM_DISPLAYCHANGE = $7E;
     WM_DRAWCLIPBOARD = $308;
     WM_DRAWITEM = $2B;
     WM_DROPFILES = $233;
@@ -2414,6 +2448,9 @@ const
     BUFFER_SPEEDTUN: string = 'SPEEDTUN 0 : ';
     BUFFER_TOP_____: string = 'TOP      0 : ';
     BUFFER_TOPMOST_: string = 'TOPMOST  0 : ';
+    BUFFER_TOPTDISP: string = 'TOPTDISP 0 : ';
+    BUFFER_TOPTLOCK: string = 'TOPTLOCK 0 : ';
+    BUFFER_TREDRAW_: string = 'TREDRAW  0 : ';
     BUFFER_VERSION_: string = 'VERSION  0 : ';
     BUFFER_VOLCOLOR: string = 'VOLCOLOR 0 : ';
     BUFFER_VOLRESET: string = 'VOLRESET 0 : ';
@@ -2558,6 +2595,10 @@ const
     LIST_NEXT_PLAY_SELECT = $10000;                         // プレイリストからアイテム選択
     LIST_NEXT_PLAY_CENTER = $20000;                         // プレイリスト中央選択
 
+    READY_INITIALIZE = $0;                                  // 初期化中
+    READY_ACTIVE = $1;                                      // 実行中
+    READY_INACTIVE = $2;                                    // 表示停止中
+
     TITLE_HIDE = $0;                                        // 非表示
     TITLE_NORMAL = $100;                                    // 標準
     TITLE_MINIMIZE = $200;                                  // 最小化
@@ -2568,10 +2609,14 @@ const
     TITLE_INFO_AMP = $4;                                    // 音量
     TITLE_INFO_SEEK = $5;                                   // シーク
 
-    TIMER_ID_TITLE_INFO = $1;                               // 一時オプション情報表示
-    TIMER_ID_OPTION_LOCK = $2;                              // オプション変更ロック
-    TIMER_INTERVAL_TITLE_INFO = 1000;                       // 一時オプション情報表示の時間
+    TIMER_ID_READY = $1;                                    // 準備完了
+    TIMER_ID_OPTION_DISPLAY = $2;                           // オプション情報表示
+    TIMER_ID_OPTION_LOCK = $3;                              // オプション変更ロック
+    TIMER_ID_REDRAW_RESUME = $4;                            // サスペンド復帰後のウィンドウ再描画
+    TIMER_INTERVAL_READY = 0;                               // 準備完了までの遅延時間
+    TIMER_INTERVAL_OPTION_DISPLAY = 1000;                   // オプション情報表示の時間
     TIMER_INTERVAL_OPTION_LOCK = 300;                       // オプション変更ロックの時間
+    TIMER_INTERVAL_REDRAW_RESUME = 1000;                    // サスペンド復帰後のウィンドウ再描画の時間
 
     REDRAW_OFF = $0;                                        // 再描画なし
     REDRAW_LOCK_CRITICAL = $1;                              // 描画ロック (強制)
@@ -3222,6 +3267,7 @@ var
         hBitmapVolume: longword;                                // インジケータのビットマップハンドル
         hDCStringBuffer: longword;                              // 文字画像のデバイスコンテキストハンドル
         hBitmapString: longword;                                // 文字画像のビットマップハンドル
+        hPowerNotify: longword;                                 // 電源設定通知イベントのハンドル
         lpStaticProc: pointer;                                  // 情報表示のウィンドウプロシージャのポインタ
         dwThreadHandle: longword;                               // スレッドハンドル
         dwThreadID: longword;                                   // スレッド ID
@@ -3258,6 +3304,7 @@ var
         bChangeShift: longbool;                                 // Shift キー変更フラグ
         bOptionLock: longbool;                                  // オプションロック
         bWaveWrite: longbool;                                   // WAVE 書き込みフラグ
+        dwReady: longword;                                      // 準備完了フラグ
         dwTitle: longword;                                      // タイトルフラグ
         dwInfo: longint;                                        // 情報フラグ
         dwRedrawInfo: longword;                                 // 再描画フラグ
@@ -3339,6 +3386,9 @@ var
         dwSpeedBas: longword;                                   // 演奏速度
         dwSpeedTun: longint;                                    // 演奏速度微調整
         bTopMost: longbool;                                     // 常に手前に表示
+        dwTimerOptionDisplay: longword;                         // オプション情報表示の時間
+        dwTimerOptionLock: longword;                            // オプション変更ロックの時間
+        dwTimerRedrawResume: longword;                          // サスペンド復帰後のウィンドウ再描画の時間
         dwVolumeColor: longword;                                // インジケータの色
         bVolumeReset: longbool;                                 // 無音チャンネル非表示
         dwVolumeSpeed: longword;                                // インジケータの減衰速度
@@ -3353,6 +3403,7 @@ var
     IID_IDropSource: TGUID;                                 // IID_IDropSource
     IID_IDataObject: TGUID;                                 // IID_IDataObject
     IID_IUnknown: TGUID;                                    // IID_IUnknown
+    GUID_CONSOLE_DISPLAY_STATE: TGUID;                      // GUID_CONSOLE_DISPLAY_STATE
 {$IFDEF ITASKBARLIST3}
     CLSID_TaskbarList: TGUID;                               // CLSID_TaskbarList
     IID_ITaskbarList3: TGUID;                               // IID_ITaskbarList3
@@ -3463,6 +3514,7 @@ function  API_PeekMessage(lpMsg: pointer; hWnd: longword; wMessageFilterMin: lon
 function  API_PostMessage(hWnd: longword; msg: longword; wParam: longword; lParam: longword): longbool; stdcall; external 'user32.dll' name 'PostMessageA';
 function  API_PostThreadMessage(idThread: longword; msg: longword; wParam: longword; lParam: longword): longbool; stdcall; external 'user32.dll' name 'PostThreadMessageA';
 function  API_ReadFile(hFile: longword; lpBuffer: pointer; nNumberOfBytesToRead: longword; lpNumberOfBytesRead: pointer; lpOverlapped: pointer): longbool; stdcall; external 'kernel32.dll' name 'ReadFile';
+function  API_RedrawWindow(hWnd: longword; lprcUpdate: pointer; hrgnUpdate: longword; flags: longword): longint; stdcall; external 'user32.dll' name 'RedrawWindow';
 function  API_RegisterClassEx(lpwcx: pointer): smallint; stdcall; external 'user32.dll' name 'RegisterClassExA';
 function  API_ReleaseDC(hWnd: longword; hDC: longword): longint; stdcall; external 'user32.dll' name 'ReleaseDC';
 procedure API_ReleaseStgMedium(lpStgMedium: pointer); stdcall; external 'ole32.dll' name 'ReleaseStgMedium';
@@ -5121,17 +5173,20 @@ var
     hWndApp: longword;
     hFontApp: longword;
     Box: TBOX;
+    API_RegisterPowerSettingNotification: function(hRecipient: longword; powerSettingGuid: pointer; flags: longword): longword; stdcall;
     API_RegisterSuspendResumeNotification: function(hRecipient: longword; flags: longword): longword; stdcall;
     API_RtlGetVersion: function(lpVersionInfo: pointer): longbool; stdcall;
 {$IFDEF UACDROP}
     API_ChangeWindowMessageFilter: function(msg: longword; dwFlag: longword): longword; stdcall;
 {$ENDIF}
 {$IFDEF WIN10DARK}
-    API_SetPreferredAppMode: function(dwMode: longword): longword; stdcall;
-    API_RefreshImmersiveColorPolicyState: function(): longword; stdcall;
+    wsData: widestring;
     API_AllowDarkModeForWindow: function(hWnd: longword; bAllow: longbool): longword; stdcall;
-    API_SetWindowTheme: function(hWnd: longword; pszSubAppName: pointer; pszSubIdList: pointer): longword; stdcall;
     API_DwmSetWindowAttribute: function(hWnd: longword; dwAttribute: longword; pvAttribute: pointer; cbAttribute: longword): longword; stdcall;
+    API_FlushMenuThemes: function(): longword; stdcall;
+    API_RefreshImmersiveColorPolicyState: function(): longword; stdcall;
+    API_SetPreferredAppMode: function(dwMode: longword): longword; stdcall;
+    API_SetWindowTheme: function(hWnd: longword; pszSubAppName: pointer; pszSubIdList: pointer): longword; stdcall;
 {$ENDIF}
 
 function GetParameter(var dwStart: longint; dwLength: longint; bLast: longbool): string;
@@ -5373,6 +5428,7 @@ begin
     Status.bChangePlay := false;
     Status.bChangeShift := false;
     Status.bOptionLock := false;
+    Status.dwReady := READY_INITIALIZE;
     Status.dwTitle := TITLE_HIDE;
     Status.dwInfo := NULL;
     Status.dwRedrawInfo := REDRAW_OFF;
@@ -5441,6 +5497,9 @@ begin
     Option.dwSpeedTun := 0;
     dwTop := 100;
     Option.bTopMost := false;
+    Option.dwTimerOptionDisplay := TIMER_INTERVAL_OPTION_DISPLAY;
+    Option.dwTimerOptionLock := TIMER_INTERVAL_OPTION_LOCK;
+    Option.dwTimerRedrawResume := TIMER_INTERVAL_REDRAW_RESUME;
     Option.dwVolumeColor := 0;
     Option.bVolumeReset := true;
     Option.dwVolumeSpeed := 1;
@@ -5504,6 +5563,9 @@ begin
             if sBuffer = BUFFER_SPEEDTUN then Option.dwSpeedTun := GetINIValue(Option.dwSpeedTun);
             if sBuffer = BUFFER_TOP_____ then dwTop := GetINIValue(dwTop);
             if sBuffer = BUFFER_TOPMOST_ then Option.bTopMost := longbool(GetINIValue(longint(Option.bTopMost)));
+            if sBuffer = BUFFER_TOPTDISP then Option.dwTimerOptionDisplay := GetINIValue(Option.dwTimerOptionDisplay);
+            if sBuffer = BUFFER_TOPTLOCK then Option.dwTimerOptionLock := GetINIValue(Option.dwTimerOptionLock);
+            if sBuffer = BUFFER_TREDRAW_ then Option.dwTimerRedrawResume := GetINIValue(Option.dwTimerRedrawResume);
             if sBuffer = BUFFER_VOLCOLOR then Option.dwVolumeColor := GetINIValue(Option.dwVolumeColor);
             if sBuffer = BUFFER_VOLRESET then Option.bVolumeReset := longbool(GetINIValue(longint(Option.bVolumeReset)));
             if sBuffer = BUFFER_VOLSPEED then Option.dwVolumeSpeed := GetINIValue(Option.dwVolumeSpeed);
@@ -5649,6 +5711,11 @@ begin
     IID_IUnknown.DataX[1] := $00000000;
     IID_IUnknown.DataX[2] := $000000C0;
     IID_IUnknown.DataX[3] := $46000000;
+    // GUID_CONSOLE_DISPLAY_STATE : 6FE69556-704A-47A0-8F24-C28D936FDA47
+    GUID_CONSOLE_DISPLAY_STATE.DataX[0] := $6FE69556;
+    GUID_CONSOLE_DISPLAY_STATE.DataX[1] := $47A0704A;
+    GUID_CONSOLE_DISPLAY_STATE.DataX[2] := $8DC2248F;
+    GUID_CONSOLE_DISPLAY_STATE.DataX[3] := $47DA6F93;
 {$IFDEF ITASKBARLIST3}
     // CLSID_TaskbarList : 56FDF344-FD6D-11D0-958A-006097C9A090
     CLSID_TaskbarList.DataX[0] := $56FDF344;
@@ -5661,8 +5728,14 @@ begin
     IID_ITaskbarList3.DataX[2] := $9F9EE990;
     IID_ITaskbarList3.DataX[3] := $AFEF5E8A;
 {$ENDIF}
+    Status.hPowerNotify := NULL;
     dwBuffer := API_LoadLibrary(pchar('user32.dll'));
     if longbool(dwBuffer) then begin
+        // ディスプレイの電源状態イベントを拾えるように設定 (for Windows 8, 8.1, 10, 11)
+        @API_RegisterPowerSettingNotification := API_GetProcAddress(dwBuffer, pchar('RegisterPowerSettingNotification'));
+        if longbool(@API_RegisterPowerSettingNotification) then begin
+            Status.hPowerNotify := API_RegisterPowerSettingNotification(hWndApp, @GUID_CONSOLE_DISPLAY_STATE, DEVICE_NOTIFY_WINDOW_HANDLE);
+        end;
         // S0 (省電力) スリープのイベントを拾えるように設定 (for Windows 8, 8.1, 10, 11)
         @API_RegisterSuspendResumeNotification := API_GetProcAddress(dwBuffer, pchar('RegisterSuspendResumeNotification'));
         if longbool(@API_RegisterSuspendResumeNotification) then begin
@@ -5995,20 +6068,32 @@ begin
     Apu.SetDSPDbg(@_DSPDebug);
 {$ENDIF}
 {$IFDEF WIN10DARK}
+    dwBuffer := API_LoadLibrary(pchar('dwmapi.dll'));
+    if longbool(dwBuffer) then begin
+        @API_DwmSetWindowAttribute := API_GetProcAddress(dwBuffer, pchar('DwmSetWindowAttribute'));
+        if longbool(@API_DwmSetWindowAttribute) then API_DwmSetWindowAttribute(hWndApp, 20, @dwBuffer, 4);
+        API_FreeLibrary(dwBuffer);
+    end;
     dwBuffer := API_LoadLibrary(pchar('uxtheme.dll'));
     if longbool(dwBuffer) then begin
         @API_SetPreferredAppMode := API_GetProcAddress(dwBuffer, pointer(longword(135)));
+        if longbool(@API_SetPreferredAppMode) then API_SetPreferredAppMode(0);  // Default Mode
         if longbool(@API_SetPreferredAppMode) then API_SetPreferredAppMode(1);  // Dark Mode
         @API_RefreshImmersiveColorPolicyState := API_GetProcAddress(dwBuffer, pointer(longword(104)));
         if longbool(@API_RefreshImmersiveColorPolicyState) then API_RefreshImmersiveColorPolicyState();
+        @API_FlushMenuThemes := API_GetProcAddress(dwBuffer, pointer(longword(136)));
+        if longbool(@API_FlushMenuThemes) then API_FlushMenuThemes();
         @API_AllowDarkModeForWindow := API_GetProcAddress(dwBuffer, pointer(longword(133)));
         if longbool(@API_AllowDarkModeForWindow) then API_AllowDarkModeForWindow(hWndApp, true);
         @API_SetWindowTheme := API_GetProcAddress(dwBuffer, pchar('SetWindowTheme'));
-        if longbool(@API_SetWindowTheme) then API_SetWindowTheme(hWndApp, pchar('DarkMode_Explorer'), NULLPOINTER);
-        API_SendMessage(hWndApp, WM_THEMECHANGED, NULL, NULL);
+        wsData := 'DarkMode_Explorer';
+        if longbool(@API_SetWindowTheme) then API_SetWindowTheme(hWndApp, pwidechar(wsData), NULLPOINTER);
+        // API_SendMessage(hWndApp, WM_THEMECHANGED, NULL, NULL);
         API_FreeLibrary(dwBuffer);
     end;
 {$ENDIF}
+    // 準備完了
+    API_SetTimer(cwWindowMain.hWnd, TIMER_ID_READY, TIMER_INTERVAL_READY, NULLPOINTER);
 end;
 
 // ================================================================================
@@ -6017,10 +6102,12 @@ end;
 procedure CWINDOWMAIN.DeleteWindow();
 var
     I: longint;
+    dwBuffer: longword;
     sChPath: string;
     NormalRect: TRECT;
     ScreenRect: TRECT;
     fsFile: textfile;
+    API_UnregisterPowerSettingNotification: function(handle: longword): longbool; stdcall;
 
 function GetBoolToInt(bValue: longbool): string;
 begin
@@ -6069,6 +6156,9 @@ begin
     Writeln(fsFile, Concat(BUFFER_SEEKMAX_, IntToStr(Option.dwSeekMax)));
     Writeln(fsFile, Concat(BUFFER_SHIFTKEY, IntToStr(Option.dwShiftKey)));
     Writeln(fsFile, Concat(BUFFER_SPEEDTUN, IntToStr(Option.dwSpeedTun)));
+    Writeln(fsFile, Concat(BUFFER_TOPTDISP, IntToStr(Option.dwTimerOptionDisplay)));
+    Writeln(fsFile, Concat(BUFFER_TOPTLOCK, IntToStr(Option.dwTimerOptionLock)));
+    Writeln(fsFile, Concat(BUFFER_TREDRAW_, IntToStr(Option.dwTimerRedrawResume)));
     Writeln(fsFile, Concat(BUFFER_VOLCOLOR, IntToStr(Option.dwVolumeColor)));
     Writeln(fsFile, Concat(BUFFER_VOLSPEED, IntToStr(Option.dwVolumeSpeed)));
     Writeln(fsFile, Concat(BUFFER_WAITLENG, IntToStr(Option.dwWaitTime)));
@@ -6120,6 +6210,16 @@ begin
     API_DeleteObject(API_SelectObject(Status.hDCStringBuffer, Status.hBitmapString));
     API_DeleteDC(Status.hDCStringBuffer);
     API_ReleaseDC(cwStaticMain.hWnd, Status.hDCStatic);
+    // 電源設定通知イベントのハンドルを解放
+    dwBuffer := API_LoadLibrary(pchar('user32.dll'));
+    if longbool(dwBuffer) then begin
+        // ディスプレイの電源状態イベントを解除 (for Windows 8, 8.1, 10, 11)
+        @API_UnregisterPowerSettingNotification := API_GetProcAddress(dwBuffer, pchar('UnregisterPowerSettingNotification'));
+        if longbool(@API_UnregisterPowerSettingNotification) then begin
+            if longbool(Status.hPowerNotify) then API_UnregisterPowerSettingNotification(Status.hPowerNotify);
+        end;
+        API_FreeLibrary(dwBuffer);
+    end;
     // バッファを解放
     FreeMem(Status.lpCurrentPath, 1024);
     FreeMem(Status.lpSPCFile, 1024);
@@ -8591,9 +8691,10 @@ begin
         result := dwValues[J];
         Status.dwInfo := STR_MENU_SETUP_PER_INTEGER[dwIdxs[J]];
         // 設定が中央の場合はオプションの設定をロック
-        if not longbool(dwType and FUNCTION_TYPE_NO_TIMER) and ((result = dwDef1) or (result = dwDef2) or (result = dwDef3)) then begin
+        if not longbool(dwType and FUNCTION_TYPE_NO_TIMER) and longbool(Option.dwTimerOptionLock)
+                and ((result = dwDef1) or (result = dwDef2) or (result = dwDef3)) then begin
             Status.bOptionLock := true;
-            API_SetTimer(cwWindowMain.hWnd, TIMER_ID_OPTION_LOCK, TIMER_INTERVAL_OPTION_LOCK, NULLPOINTER);
+            API_SetTimer(cwWindowMain.hWnd, TIMER_ID_OPTION_LOCK, Option.dwTimerOptionLock, NULLPOINTER);
         end;
     end;
 end;
@@ -9665,8 +9766,8 @@ begin
     // タイトルを更新しない場合は終了
     if not longbool(Status.dwTitle) then exit;
     // オプション操作のフラグを設定
-    if longbool(dwFlag) then begin
-        API_SetTimer(cwWindowMain.hWnd, TIMER_ID_TITLE_INFO, TIMER_INTERVAL_TITLE_INFO, NULLPOINTER);
+    if longbool(dwFlag) and longbool(Option.dwTimerOptionDisplay) then begin
+        API_SetTimer(cwWindowMain.hWnd, TIMER_ID_OPTION_DISPLAY, Option.dwTimerOptionDisplay, NULLPOINTER);
         Status.dwTitle := (Status.dwTitle and TITLE_ALWAYS_FLAG) or dwFlag;
     end;
     // タイトルを設定
@@ -9941,7 +10042,8 @@ begin
         // クリティカルセクションを開始
         API_EnterCriticalSection(@CriticalSectionStatic);
         // インジケータを描画
-        if not longbool(Status.dwRedrawInfo and REDRAW_LOCK_READY) then DrawInfo(ApuData, bWave);
+        if (longbool(Option.dwDrawInfo and DRAW_INFO_ALWAYS) or longbool(Status.dwReady and READY_ACTIVE))
+            and not longbool(Status.dwRedrawInfo and REDRAW_LOCK_READY) then DrawInfo(ApuData, bWave);
         // クリティカルセクションを終了
         API_LeaveCriticalSection(@CriticalSectionStatic);
     end;
@@ -10433,16 +10535,20 @@ begin
     Option.dwPriority := API_GetPriorityClass(API_GetCurrentProcess());
     // 常時手前を取得
     Option.bTopMost := longbool(cwWindowMain.GetWindowStyleEx() and WS_EX_TOPMOST);
+    // フラグを設定
+    Status.dwReady := READY_ACTIVE;
     // デバイスを更新
     UpdateDevice(Option.dwDeviceID, WAVE_DEVICE_UPDATE_LIST);
     // メニューを更新
     UpdateMenu();
 end;
 
-procedure RedrawInfo();
+procedure RedrawInfo(bWindow: boolean);
 begin
     // クリティカルセクションを開始
     API_EnterCriticalSection(@CriticalSectionStatic);
+    // ウィンドウ全体を再描画
+    if (bWindow) then API_RedrawWindow(cwWindowMain.hWnd, NULLPOINTER, NULL, RDW_INVALIDATE or RDW_ERASE or RDW_UPDATENOW or RDW_ALLCHILDREN);
     // 再描画がロックされていない場合
     if not longbool(Status.dwRedrawInfo and REDRAW_LOCK_CRITICAL) then begin
         // 再描画フラグを設定
@@ -10624,6 +10730,30 @@ begin
     end;
 end;
 
+procedure RedrawResume(lParam: longword);
+var
+    Setting: ^TPOWERBROADCAST_SETTING;
+    dwBuffer: longword;
+begin
+    // 起動準備ができていない場合は終了
+    if not longbool(Status.dwReady) or not longbool(Option.dwTimerRedrawResume) then exit;
+    // ディスプレイの電源状態を確認
+    if longbool(lParam) then begin
+        // ディスプレイの電源状態イベントでない場合は終了
+        Setting := pointer(lParam);
+        if not IsEqualsGUID(Setting.PowerSetting, GUID_CONSOLE_DISPLAY_STATE) then exit;
+        // ディスプレイの電源状態によって、準備完了フラグを設定
+        API_MoveMemory(@dwBuffer, @Setting.Data, 4);
+        if dwBuffer = $0 then Status.dwReady := READY_INACTIVE;
+        if dwBuffer = $1 then Status.dwReady := READY_ACTIVE;
+        // ディスプレイの電源がオンでない場合は終了
+        if dwBuffer <> $1 then exit;
+    end;
+    // ウィンドウの再描画を予約
+    API_KillTimer(cwWindowMain.hWnd, TIMER_ID_REDRAW_RESUME);
+    API_SetTimer(cwWindowMain.hWnd, TIMER_ID_REDRAW_RESUME, Option.dwTimerRedrawResume, NULLPOINTER);
+end;
+
 begin
     // 初期化
     result := 0;
@@ -10794,7 +10924,7 @@ begin
             case wParam and $FFFF0000 of
                 WM_APP_TRANSMIT: result := longword(TransmitFile(longbool(wParam and $1))); // ファイル名が転送されてきた
                 WM_APP_ACTIVATE: GetFocusWindowAfter(); // ウィンドウにフォーカスが移った
-                WM_APP_REDRAW: RedrawInfo(); // 再描画の必要が生じた
+                WM_APP_REDRAW: RedrawInfo(longbool(wParam and $1)); // 再描画の必要が生じた
                 WM_APP_SEEK, WM_APP_REPEAT_TIME: ClickSeekBar(); // シークの必要が生じた、リピート位置が変更された
                 WM_APP_NEXT_PLAY: SetNextPlay(); // 次の曲を演奏
                 WM_APP_MINIMIZE: MinimizeWindow(); // 最小化が要求された
@@ -10932,11 +11062,17 @@ begin
             end;
         end;
         WM_TIMER: case wParam of // タイマー
-            TIMER_ID_TITLE_INFO: begin // 情報表示解除
+            TIMER_ID_READY: begin // 準備完了
+                // フラグを設定
+                Status.dwReady := READY_ACTIVE;
+                // タイマーを解除
+                API_KillTimer(cwWindowMain.hWnd, TIMER_ID_READY);
+            end;
+            TIMER_ID_OPTION_DISPLAY: begin // 情報表示解除
                 // フラグを設定
                 Status.dwTitle := Status.dwTitle and TITLE_ALWAYS_FLAG;
                 // タイマーを解除
-                API_KillTimer(cwWindowMain.hWnd, TIMER_ID_TITLE_INFO);
+                API_KillTimer(cwWindowMain.hWnd, TIMER_ID_OPTION_DISPLAY);
                 // タイトルを更新
                 UpdateTitle(NULL);
             end;
@@ -10946,11 +11082,20 @@ begin
                 // オプション設定ロックを解除
                 Status.bOptionLock := false;
             end;
+            TIMER_ID_REDRAW_RESUME: begin // サスペンド復帰後のウィンドウ再描画
+                // タイマーを解除
+                API_KillTimer(cwWindowMain.hWnd, TIMER_ID_REDRAW_RESUME);
+                // ウィンドウ全体を再描画
+                cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW or $1, NULL);
+            end;
         end;
         WM_ENDSESSION: if longbool(wParam) then DeleteWindow(); // セッションが終了 (Windows がログオフ、再起動、シャットダウン) した
         WM_POWERBROADCAST: case wParam of // Windows の電源管理状態が変化した
-            $4, $5: SPCStop(false); // Windows がサスペンド、休止状態に入ろうとした
+            PBT_APMSUSPEND, PBT_APMSTANDBY: SPCStop(false); // Windows がサスペンド、休止状態に入った
+            PBT_APMRESUMESUSPEND, PBT_APMRESUMESTANDBY, PBT_APMRESUMEAUTOMATIC: RedrawResume(NULL); // Windows がサスペンドから復帰した
+            PBT_POWERSETTINGCHANGE: RedrawResume(lParam); // ディスプレイの電源状態が変化した
         end;
+        WM_DISPLAYCHANGE: RedrawResume(NULL); // ディスプレイの解像度が変化した
         WM_SYSCOLORCHANGE: begin // システムカラー設定が変化した
             // クリティカルセクションを開始
             API_EnterCriticalSection(@CriticalSectionStatic);
