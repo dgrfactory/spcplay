@@ -2526,7 +2526,7 @@ DSPDone:
 ENDP
 
 
-; ----- degrade-factory code [2021/06/04] -----
+; ----- degrade-factory code [2023/09/18] -----
 ;===================================================================================================
 ;Emulate the KON/KOFF delay processing of DSP
 ;
@@ -2664,7 +2664,11 @@ ENDP
 
             ;Set pitch -------------------------
             MovZX   EAX,word [ESI+pitch]
-            And     AH,3Fh
+            Test    dword [dspOpts],DSP_NOPLMT                                  ;If do not remove the pitch limit, the highest
+            SetZ    DL                                                          ; pitch value is 3FFF
+            Dec     DL
+            Or      DL,3Fh
+            And     AH,DL
             Mov     [EBX+mOrgP],EAX
             MovZX   EDX,byte [ESI+srcn]                                         ;EDX = Source
             Mov     [EBX+mSrc],DL                                               ;Save source number
@@ -2709,7 +2713,7 @@ ENDP
     %%Done:
     Mov     [konRsv],CH                                                         ;CH = 0
 %endmacro
-; ----- degrade-factory code [END] #25 #29 -----
+; ----- degrade-factory code [END] #25 #29 #64 -----
 
 
 ; ----- degrade-factory code [2021/10/31] -----
@@ -2867,13 +2871,17 @@ RVolR:
 ;Pitch
 
 RPitch:
-; ----- degrade-factory code [2009/01/31] -----
+; ----- degrade-factory code [2023/09/18] -----
     XOr     EAX,EAX
     Test    dword [dspOpts],DSP_NOPREAD                                         ;Is pitch read enabled?
     JNZ     short .NoRead                                                       ;   No
         ShR     EBX,3
         MovZX   EAX,word [EBX+dsp+pitch]
-        And     AH,3Fh
+        Test    dword [dspOpts],DSP_NOPLMT                                      ;If do not remove the pitch limit, the highest
+        SetZ    DL                                                              ; pitch value is 3FFF
+        Dec     DL
+        Or      DL,3Fh
+        And     AH,DL
         ShL     EBX,3
         Mov     [EBX+mix+mOrgP],EAX
 
@@ -2890,7 +2898,7 @@ RPitch:
 
     .NoRead:
     Ret
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #64 -----
 
 ;============================================
 ;Envelope
@@ -3380,15 +3388,34 @@ ENDP
     IMul    EAX,dword [EBX+mOrgP]                                               ;Apply sample height to pitch
     SAR     EAX,15
 
+; ----- degrade-factory code [2023/09/18] -----
+    Push    ECX
+    Test    dword [dspOpts],DSP_NOPLMT
+    SetNZ   CL
+    Add     CL,CL
+    Add     CL,14
+; ----- degrade-factory code [END] #64 -----
+
     ;Clamp pitch to 14-bits ---------------
     Mov     EDX,EAX
-    SAR     EDX,14
+; ----- degrade-factory code [2023/09/18] -----
+    SAR     EDX,CL
     JZ      short %%PitchOK
         SetS    AL
-        And     EAX,1
+        MovZX   EAX,AL
         Dec     EAX
-        And     EAX,3FFFh
+        Test    dword [dspOpts],DSP_NOPLMT                                      ;If do not remove the pitch limit, the highest
+        SetZ    DL                                                              ; pitch value is 3FFF
+        Dec     DL
+        Or      DL,3Fh
+        And     AH,DL
+        MovZX   EAX,AX
+; ----- degrade-factory code [END] #64 -----
+
     %%PitchOK:
+; ----- degrade-factory code [2023/09/18] -----
+    Pop     ECX
+; ----- degrade-factory code [END] #64 -----
 
     ;Convert pitch to sample rate ---------
 ; ----- degrade-factory code [2009/01/31] -----
