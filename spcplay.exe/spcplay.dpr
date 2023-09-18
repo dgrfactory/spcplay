@@ -9995,6 +9995,7 @@ begin
         // 新しいバッファを取得
 {$IFNDEF SPCCYCLE}
         if Status.bWaveWrite then Apu.EmuAPU(Wave.lpData[dwIndex], Wave.dwEmuSize, 1);
+        // if Status.bWaveWrite then Apu.EmuAPU(Wave.lpData[dwIndex], 24576 * 23, 0);
 {$ELSE}
         if Status.Script700.Data.dwWork[0] = 0 then begin
           Apu.EmuAPU(Wave.lpData[dwIndex], 768, 0);

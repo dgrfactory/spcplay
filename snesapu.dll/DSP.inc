@@ -194,11 +194,16 @@ PUBLIC  mix                                                     ;Mixing structur
 PUBLIC  dsp                                                     ;1 page of DSP RAM
 PUBLIC  vMMaxL                                                  ;Maximum absolute sample output
 PUBLIC  vMMaxR
-; ----- degrade-factory code [2022/05/01] -----
+; ----- degrade-factory code [2016/08/20] -----
 PUBLIC  envFlag                                                 ;Update envelope flags
 PUBLIC  dspVarEP                                                ;Endpoint of DSP.asm variables
+; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [2022/05/01] -----
 PUBLIC  adsrAdj                                                 ;Update envelope rate adjustment (16.16)
 ; ----- degrade-factory code [END] #45 -----
+; ----- degrade-factory code [2023/09/03] -----
+PUBLIC  smpSize                                                 ;Emulate sample size
+; ----- degrade-factory code [END] #6 -----
 
 
 ;===================================================================================================
