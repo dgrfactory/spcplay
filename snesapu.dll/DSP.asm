@@ -262,7 +262,7 @@ SECTION .bss ALIGN=64
 ;Don't touch!  All arrays are carefully aligned on large boundaries to facillitate easier indexing
 ;and better cache utilization.
 
-; ----- degrade-factory code [2023/08/28] -----
+; ----- degrade-factory code [2023/09/03] -----
     ;DSP Core ---------------------------- [0]
     mix         resb    1024                                                    ;<VoiceMix> Mixing settings for each voice
     dsp         resb    128                                                     ;<DSPRAM> DSP registers
@@ -289,7 +289,7 @@ SECTION .bss ALIGN=64
     dspSize     resb    1                                                       ;Size of samples in bytes
                 resb    1
 
-    dspRate     resd    1                                                       ;Output sample rate
+    dspRate     resd    1                                                       ;Sample rate (max 32kHz)
     dspOpts     resd    1                                                       ;Option flags passed to SetDSPOpt
     pitchBas    resd    1                                                       ;Base sample rate
     pitchAdj    resd    1                                                       ;Amount to adjust pitch rates [16.16]
@@ -418,7 +418,17 @@ SECTION .bss ALIGN=64
                 resb    3
                 resd    1
 
-    ;Storage buffers ------------------ [4700]
+    ;Sampling rate converter ---------- [4700]
+    smpBuf      resd    8                                                       ;Sample history buffer
+    smpRate     resd    1                                                       ;Sample rate (max 192kHz)
+    smpAdj      resd    1                                                       ;Sample rate adjustment
+    smpDec      resd    1                                                       ;Sample rate (decimal)
+    smpSize     resd    1                                                       ;Emulate sample size
+    smpCur      resd    1                                                       ;Ratio between samples
+    smpCnt      resd    1                                                       ;Ratio adjustment counter
+                resd    2
+
+    ;Storage buffers ------------------ [4740]
     mixBuf      resd    MIX_SIZE*4                                              ;Temporary mixing buffer (linear buffer)
     echoBuf     resd    ECHOBUF                                                 ;External echo memory, 240ms @ 192kHz (ring buffer)
     firBuf      resd    FIRBUF                                                  ;Unaltered echo samples fed into FIR filter (ring buffer)
@@ -427,7 +437,7 @@ SECTION .bss ALIGN=64
     lowBufL2    resd    LOWBUF2
     lowBufR1    resd    LOWBUF1                                                 ;BASS-BOOST buffer (Right)
     lowBufR2    resd    LOWBUF2
-; ----- degrade-factory code [END] #37 #45 #52 #61 -----
+; ----- degrade-factory code [END] #37 #45 #52 #61 #6 -----
 
 ; ----- degrade-factory code [2015/07/11] -----
     dspVarEP    resd    1                                                       ;Endpoint of DSP.asm variables
@@ -501,7 +511,7 @@ PROC InitDSP
 LOCALS ipD                                                                      ;Integer, positive, delta
 USES ECX,EDX,EBX,ESI,EDI
 
-; ----- degrade-factory code [2013/10/06] -----
+; ----- degrade-factory code [2023/09/03] -----
     XOr     EAX,EAX                                                             ;Reset values so SetDSPOpt will create new ones
     Mov     [dspOpts],EAX
     Mov     [volSepar],EAX
@@ -512,6 +522,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Mov     [dspSize],AL
     Mov     [dspInter],AL
     Mov     [dspRate],EAX
+    Mov     [smpRate],EAX
 
     Mov     EAX,10000h
     Mov     [efbct],EAX
@@ -523,7 +534,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Mov     EAX,5Fh                                                             ;Always envelope is 75% when DSP_NOENV is enabled
     ShL     EAX,E_SHIFT
     Mov     [envVal],EAX
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #6 -----
 
     Mov     EDI,mix                                                             ;Erase all mixer settings
     XOr     EAX,EAX
@@ -852,6 +863,27 @@ ENDP
 ; ----- degrade-factory code [END] -----
 
 
+; ----- degrade-factory code [2023/09/03] -----
+;===================================================================================================
+;Erase sampling rate converter memory
+;
+;In:
+;   EAX = 0
+
+PROC ResetResamp
+
+    Mov     [smpSize],EAX
+    Mov     [smpCur],EAX
+    Mov     [smpCnt],EAX
+
+    Mov     EDI,smpBuf
+    Mov     ECX,8
+    Rep     StoSD
+
+ENDP
+; ----- degrade-factory code [END] #6 -----
+
+
 ; ----- degrade-factory code [2012/02/18] -----
 ;===================================================================================================
 ;Reset master and echo volume
@@ -932,11 +964,12 @@ USES ECX,EBX,EDI
     Mov     [echoCurD],EAX
 ; ----- degrade-factory code [END] #52 -----
 
-; ----- degrade-factory code [2020/01/05] -----
+; ----- degrade-factory code [2023/09/03] -----
     Call    ResetVol
     Call    ResetEcho
     Call    ResetLow                                                            ;EAX is 0, after call ResetLow
-; ----- degrade-factory code [END] -----
+    Call    ResetResamp
+; ----- degrade-factory code [END] #6 -----
 
     Mov     EDI,firTaps                                                         ;Reset filter coefficients
 ; ----- degrade-factory code [2021/10/31] -----
@@ -1051,6 +1084,9 @@ USES ALL
     Mov     [bits],EAX
 
     ;rate ------------------------------------
+; ----- degrade-factory code [2023/09/03] -----
+    Mov     EAX,[smpRate]
+; ----- degrade-factory code [END] #6 -----
     Mov     EDX,[rate]
     Cmp     EDX,-1
     JE      short .DefRate
@@ -1108,7 +1144,7 @@ USES ALL
     ;=========================================
     ;Options
 
-; ----- degrade-factory code [2008/09/09] -----
+; ----- degrade-factory code [2023/09/03] -----
     Mov     EDX,[opts]
 
     ;Select ADPCM routine --------------------
@@ -1118,11 +1154,20 @@ USES ALL
         Mov     dword [pDecomp],UnpckSrcOld
     .NewSmp:
 
-    Mov     EAX,[dspOpts]
+    ;DSP option adjustment -------------------
+    Mov     EAX,[dspOpts]                                                       ;If the DSP_ECHOFIR flag changes, force sampling rate
+    XOr     EAX,EDX                                                             ; processing (smpRate = -1)
+    Test    EAX,DSP_ECHOFIR
+    SetZ    AL
+    MovZX   EAX,AL
+    Dec     EAX
+    Or      [smpRate],EAX
+
+    Mov     EAX,[dspOpts]                                                       ;If surround/reverse flag changes, reset volume settings
     XOr     EAX,EDX
     And     EAX,DSP_SURND+DSP_NOSURND+DSP_REVERSE
     SetNZ   AL
-    Or      [fixVol],AL                                                         ;If surround/reverse flag is change, reset volume settings
+    Or      [fixVol],AL
     Mov     [dspOpts],EDX                                                       ;Save option flags
 
     Cmp     byte [numChn],1                                                     ;If channel is 1, AH equals 1, else 0
@@ -1147,7 +1192,7 @@ USES ALL
     Test    EDX,DSP_BASS                                                        ;If BASS BOOST is disable, clear BASS-BOOST buffer
     SetZ    AL
     Or      [fixVol+2],AL
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #6 -----
 
     ;=========================================
     ;Interpolation method
@@ -1168,9 +1213,32 @@ USES ALL
     ;Calculate sample rate change
 
     Mov     EAX,[rate]
-    Cmp     EAX,[dspRate]                                                       ;Has sample rate changed?
+; ----- degrade-factory code [2023/09/03] -----
+    Cmp     EAX,[smpRate]                                                       ;Has sample rate changed?
     JE      .SameRate                                                           ;   No
-        Mov     [dspRate],EAX                                                   ;   Yes, Adjust a lot of items
+        Mov     [smpRate],EAX                                                   ;   Yes, Adjust a lot of items
+        XOr     EDX,EDX
+
+        Test    dword [dspOpts],DSP_ECHOFIR                                     ;Is actual emulation mode?
+        JZ      short .SMPROK                                                   ;   No, dspRate = smpRate, smpAdj = 0
+
+        Cmp     EAX,32000                                                       ;Is the sampling rate less than 32kHz?
+        JBE     short .SMPROK                                                   ;   Yes, smpAdj = 0
+            Mov     EDX,32000
+            Mov     ECX,EAX
+            XOr     EAX,EAX
+            Div     ECX
+            Mov     EDX,EAX                                                     ;smpAdj = 32000 * (2^32) / smpRate
+
+            Mov     EAX,32000                                                   ;dspRate = 32000
+            Mov     ECX,[smpRate]
+            Sub     ECX,EAX
+            Mov     [smpDec],ECX                                                ;smpDec = smpRate - 32000
+
+        .SMPROK:
+        Mov     [dspRate],EAX
+        Mov     [smpAdj],EDX
+; ----- degrade-factory code [END] #6 -----
 
         ;Calculate amount to adjust SPC pitch values
         XOr     EDX,EDX                                                         ;EDX:EAX = Base pitch << 20
@@ -1248,7 +1316,7 @@ USES ALL
         JNS     short .Voice
 ; ----- degrade-factory code [END] -----
 
-; ----- degrade-factory code [2009/03/08] -----
+; ----- degrade-factory code [2023/09/03] -----
         ;Adjust echo delay --------------------
         Call    REDl
 
@@ -1274,8 +1342,8 @@ USES ALL
         FIStP   dword [lowSize2]
         ShL     dword [lowSize2],2
 
-        Or      byte [fixVol+1],1
-; ----- degrade-factory code [END] -----
+        Or      dword [fixVol],-1                                               ;Force volumes to be recalculated
+; ----- degrade-factory code [END] #6 -----
 
 ; ----- degrade-factory code [2012/02/18] -----
         ;Anti-Alies filter 1st filter ---------
@@ -1363,7 +1431,7 @@ USES ALL
     ;=========================================
     ;Erase sample buffers
 
-; ----- degrade-factory code [2009/03/08] -----
+; ----- degrade-factory code [2023/09/03] -----
     Test    byte [fixVol+1],-1
     JZ      short .NoEraseBuf
         Call    ResetEcho
@@ -1373,7 +1441,12 @@ USES ALL
     JZ      short .NoEraseLow
         Call    ResetLow
     .NoEraseLow:
-; ----- degrade-factory code [END] -----
+
+    Test    byte [fixVol+3],-1
+    JZ      short .NoEraseResamp
+        Call    ResetResamp
+    .NoEraseResamp:
+; ----- degrade-factory code [END] #6 -----
 
     ;=========================================
     ;Fixup volume handlers
@@ -1574,10 +1647,11 @@ USES ECX,EDI
 ; ----- degrade-factory code [END] -----
     .NoReset:
 
-; ----- degrade-factory code [2009/03/08] -----
+; ----- degrade-factory code [2023/09/03] -----
     Call    ResetEcho
-    Call    ResetLow
-; ----- degrade-factory code [END] -----
+    Call    ResetLow                                                            ;EAX is 0, after call ResetLow
+    Call    ResetResamp
+; ----- degrade-factory code [END] #6 -----
     Call    SetFade
 
 ENDP
@@ -4075,7 +4149,6 @@ USES ALL
     .Next:
         ;Verify output buffer length ----------
         Mov     EDX,[num]
-
         Test    EDX,EDX                                                         ;Is num > 0?
         JLE     .Quit                                                           ;   No
 
@@ -4098,9 +4171,9 @@ USES ALL
     .Mute:
 ; ----- degrade-factory code [2013/06/15] -----
         ;Output silence -----------------------
-        Mov     EDI,EAX
+        Mov     EDI,EAX                                                         ;EDI-> Buffer to store output
 
-        Mov     ECX,EDX                                                         ;EDX = Size of output buffer in bytes
+        Mov     ECX,EDX                                                         ;ECX = Size of output buffer in samples
         XOr     EAX,EAX
         MovSX   AX,byte [dspSize]
         XOr     AL,AH
@@ -4108,7 +4181,7 @@ USES ALL
         XOr     AH,AH
         Mul     byte [dspChn]
         Mul     ECX
-        Mov     EDX,EAX
+        Mov     EDX,EAX                                                         ;EDX = Size of output buffer in bytes
 
         XOr     EAX,EAX                                                         ;EAX = 80h if samples are unsigned, 0 otherwise
         Cmp     byte [dspSize],1
@@ -4122,7 +4195,7 @@ USES ALL
         Rep     StoSD
         Mov     ECX,EDX
         Rep     StoSB
-        Mov     EAX,EDI
+        Mov     EAX,EDI                                                         ;EAX-> End of buffer
 
         Jmp     .Next
 ; ----- degrade-factory code [END] -----
@@ -4852,6 +4925,172 @@ ENDP
 %endmacro
 ; ----- degrade-factory code [END] -----
 
+; ----- degrade-factory code [2023/09/03] -----
+%macro InitSampling 0
+    XOr     EDX,EDX
+
+    Mov     EAX,[smpCnt]                                                        ;smpCnt = (smpCnt + smpDec) % smpRate
+    Add     EAX,[smpDec]
+    Cmp     EAX,[smpRate]
+    SetB    BL
+    MovZX   EBX,BL
+    Dec     EBX
+    And     EBX,[smpRate]
+    Sub     EAX,EBX                                                             ;If the number of times is the least common multiple of
+    SetZ    DL                                                                  ; smpRate and dspRate, DL = 1
+    Mov     [smpCnt],EAX
+
+    Mov     EAX,[smpCur]                                                        ;smpCur += smpAdj
+    Add     EAX,[smpAdj]
+    SetC    BL                                                                  ;If the next sample is reached, BL = 1
+    XOr     DL,BL                                                               ;If smpCur completes one cycle without error, DL = 0
+    Mov     EBX,[smpAdj]
+    Sub     EAX,EBX
+    Add     EBX,EDX
+    Add     EAX,EBX                                                             ;Add at once including error
+    SetNC   DL                                                                  ;If don't have enough samples, DL = 1
+    Mov     [smpCur],EAX
+
+    Cmp     dword [smpSize],-1                                                  ;Adjustment samples mode?
+    JE      short %%SkipSize                                                    ;   Yes
+
+    Add     EBP,EDX
+    Dec     dword [smpSize]                                                     ;Buffer overflow check
+    JNZ     short %%SkipSize                                                    ;If half-hearted sampling rate (ex. 44100Hz), it will be
+        XOr     EBP,EBP                                                         ; write a few over samples due to calculate errors.
+        Inc     EBP
+
+    %%SkipSize:                                                                 ;If the sample reference point has moved, DL = 0
+%endmacro
+; ----- degrade-factory code [END] #6 -----
+
+; ----- degrade-factory code [2023/09/03] -----
+%macro Resampling 0
+    Test    dword [smpAdj],-1
+    JZ      %%Direct
+
+    InitSampling
+
+    Mov     EBX,smpBuf
+    Dec     DL                                                                  ;Has the sample reference point moved?
+    JZ      short %%Filter                                                      ;   No, don't move sample history
+        Mov     DL,3
+
+        %%Tap:
+            Mov     EAX,[8+EBX]
+            Mov     [EBX],EAX
+            Mov     EAX,[12+EBX]
+            Mov     [4+EBX],EAX
+
+            Add     EBX,8
+
+        Dec     DL
+        JNZ     short %%Tap
+
+        Mov     EAX,[ESI]                                                       ;Store the latest sample to history
+        Mov     [EBX],EAX
+        Mov     EAX,[4+ESI]
+        Mov     [4+EBX],EAX
+
+        Add     EBX,-24
+        Add     ESI,16
+
+    %%Filter:
+        Mov     EAX,[smpCur]
+        ShR     EAX,2                                                           ;Shift right by 2 bits to prevent the sign from entering
+        Mov     [ESP-12],EAX                                                    ; (max = 40000000h)
+        FILd    dword [ESP-12]
+        Mov     dword [ESP-12],40000000h
+        FILd    dword [ESP-12]
+        FDivP   ST1,ST
+        FStP    dword [ESP-12]
+
+        FLd     dword [24+EBX]                                                  ;A                                  |s3
+        FSub    dword [16+EBX]                                                  ;                                   |s3-s2
+        FSub    dword [EBX]                                                     ;                                   |s3-s2-s0
+        FAdd    dword [8+EBX]                                                   ;                                   |s3-s2-s0+s1=A'
+        FMul    dword [ESP-12]                                                  ;                                   |A'*Frac
+        FMul    dword [ESP-12]                                                  ;                                   |A'*Frac^2
+        FMul    dword [ESP-12]                                                  ;                                   |A'*Frac^3=A
+        FLd     dword [EBX]                                                     ;B                                  |A s0
+        FSub    dword [8+EBX]                                                   ;                                   |A s0-s1
+        FSub    ST,ST1                                                          ;                                   |A s0-s1-A=B'
+        FMul    dword [ESP-12]                                                  ;                                   |A B'*Frac
+        FMul    dword [ESP-12]                                                  ;                                   |A B'*Frac^2=B
+        FLd     dword [16+EBX]                                                  ;C                                  |A B s2
+        FSub    dword [EBX]                                                     ;                                   |A B s2-s0=C'
+        FMul    dword [ESP-12]                                                  ;                                   |A B C'*Frac=C
+        FLd     dword [8+EBX]                                                   ;D                                  |A B C s1=D
+        FAddP   ST1,ST                                                          ;                                   |A B C+D
+        FAddP   ST1,ST                                                          ;                                   |A B+C+D
+        FAddP   ST1,ST                                                          ;                                   |A+B+C+D
+        FStP    dword [ESP-8]                                                   ;                                   |(empty)
+
+        FLd     dword [28+EBX]                                                  ;A                                  |s3
+        FSub    dword [20+EBX]                                                  ;                                   |s3-s2
+        FSub    dword [4+EBX]                                                   ;                                   |s3-s2-s0
+        FAdd    dword [12+EBX]                                                  ;                                   |s3-s2-s0+s1=A'
+        FMul    dword [ESP-12]                                                  ;                                   |A'*Frac
+        FMul    dword [ESP-12]                                                  ;                                   |A'*Frac^2
+        FMul    dword [ESP-12]                                                  ;                                   |A'*Frac^3=A
+        FLd     dword [4+EBX]                                                   ;B                                  |A s0
+        FSub    dword [12+EBX]                                                  ;                                   |A s0-s1
+        FSub    ST,ST1                                                          ;                                   |A s0-s1-A=B'
+        FMul    dword [ESP-12]                                                  ;                                   |A B'*Frac
+        FMul    dword [ESP-12]                                                  ;                                   |A B'*Frac^2=B
+        FLd     dword [20+EBX]                                                  ;C                                  |A B s2
+        FSub    dword [4+EBX]                                                   ;                                   |A B s2-s0=C'
+        FMul    dword [ESP-12]                                                  ;                                   |A B C'*Frac=C
+        FLd     dword [12+EBX]                                                  ;D                                  |A B C s1=D
+        FAddP   ST1,ST                                                          ;                                   |A B C+D
+        FAddP   ST1,ST                                                          ;                                   |A B+C+D
+        FAddP   ST1,ST                                                          ;                                   |A+B+C+D
+        FStP    dword [ESP-4]                                                   ;                                   |(empty)
+
+        Jmp     short %%Exit
+
+    %%Direct:
+        Mov     EAX,[ESI]
+        Mov     [ESP-8],EAX
+        Mov     EAX,[4+ESI]
+        Mov     [ESP-4],EAX
+
+        Add     ESI,16
+
+    %%Exit:
+%endmacro
+; ----- degrade-factory code [END] #6 -----
+
+; ----- degrade-factory code [2023/09/03] -----
+%macro MuteSampling 0
+    Test    dword [smpAdj],-1
+    JZ      %%Exit
+
+    InitSampling
+
+    Mov     EBX,smpBuf
+    Dec     DL                                                                  ;Has the sample reference point moved?
+    JZ      short %%Exit                                                        ;   No, don't move sample history
+        Mov     DL,3
+
+        %%Tap:
+            Mov     EAX,[8+EBX]
+            Mov     [EBX],EAX
+            Mov     EAX,[12+EBX]
+            Mov     [4+EBX],EAX
+
+            Add     EBX,8
+
+        Dec     DL
+        JNZ     short %%Tap
+
+        FSt     dword [EBX]                                                     ;Store the latest sample to history
+        FSt     dword [4+EBX]
+
+    %%Exit:
+%endmacro
+; ----- degrade-factory code [END] #6 -----
+
 
 ;===================================================================================================
 ;Run DSP emulation
@@ -4877,13 +5116,19 @@ ENDP
 
 PROC RunDSP
 
-; ----- degrade-factory code [2008/04/24] -----
+; ----- degrade-factory code [2023/09/03] -----
     Push    EBP,EBX,EAX,EDX                                                     ;Last register must be EAX,EDX
     FInit
 
+    Test    dword [smpAdj],-1                                                   ;Buffer overflow check
+    JZ      short .SkipSize                                                     ;If half-hearted sampling rate (ex. 44100Hz), it will be
+        Test    dword [smpSize],-1                                              ; write a few over samples due to calculate errors.
+        JZ      .Done
+    .SkipSize:
+
     Test    byte [disFlag],80h                                                  ;Is DSP reset or volume safe mode? (disFlag = [7])
     JNZ     .Mute                                                               ;   Yes
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #6 -----
 
     ;=========================================
     ; Mix voices
@@ -5012,7 +5257,7 @@ PROC RunDSP
     ;=========================================
     ; Store output
 
-; ----- degrade-factory code [2012/02/18] -----
+; ----- degrade-factory code [2023/09/03] -----
     Mov     ESI,mixBuf
     Mov     EDI,[ESP+4]
     Mov     EBP,[ESP]
@@ -5030,8 +5275,10 @@ PROC RunDSP
     Mov     ECX,4EFFFE00h                                                       ;ECX = 2147418112.0 (32767 << 16)
 
     .NextMonoInt:
+        Resampling
+
         ;Clamp samples ------------------------
-        Mov     EAX,[ESI]                                                       ;EAX = Sample
+        Mov     EAX,[ESP-8]                                                     ;EAX = Sample
         XOr     EDX,EDX
         XOr     EBX,EBX
         BTR     EAX,31                                                          ;EAX = Absolute value
@@ -5042,10 +5289,10 @@ PROC RunDSP
         And     EAX,EBX                                                         ;Clamp EAX
         Add     EAX,ECX
         Or      EAX,EDX                                                         ;Restore sign
-        Mov     [ESI],EAX
-        FLd     dword [ESI]
+        Mov     [ESP-8],EAX
+        FLd     dword [ESP-8]
 
-        Mov     EAX,[4+ESI]
+        Mov     EAX,[ESP-4]
         XOr     EDX,EDX
         XOr     EBX,EBX
         BTR     EAX,31
@@ -5056,8 +5303,8 @@ PROC RunDSP
         And     EAX,EBX
         Add     EAX,ECX
         Or      EAX,EDX
-        Mov     [4+ESI],EAX
-        FAdd    dword [4+ESI]
+        Mov     [ESP-4],EAX
+        FAdd    dword [ESP-4]
 
         FMul    dword [fp0_5]
 
@@ -5074,7 +5321,6 @@ PROC RunDSP
             FIStP   dword [EDI]
             Add     EDI,4
 
-            Add     ESI,16
             Dec     EBP
             JNZ     .NextMonoInt
             Jmp     .Done
@@ -5086,7 +5332,6 @@ PROC RunDSP
             Mov     [EDI],DL
             Inc     EDI
 
-            Add     ESI,16
             Dec     EBP
             JNZ     .NextMonoInt
             Jmp     .Done
@@ -5097,7 +5342,6 @@ PROC RunDSP
             Mov     [EDI],DX
             Add     EDI,2
 
-            Add     ESI,16
             Dec     EBP
             JNZ     .NextMonoInt
             Jmp     .Done
@@ -5110,23 +5354,23 @@ PROC RunDSP
             Mov     [2+EDI],AL
             Add     EDI,3
 
-            Add     ESI,16
             Dec     EBP
             JNZ     .NextMonoInt
             Jmp     .Done
 
     ;32-bit floating-point -------------------
     .OutMonoFloat:
-        FLd     dword [ESI]
-        FAdd    dword [4+ESI]
+        Resampling
+
+        FLd     dword [ESP-8]
+        FAdd    dword [ESP-4]
         FMul    dword [fp0_5]
         FMul    dword [fpShR31]
         FStP    dword [EDI]
-        Add     ESI,16
         Add     EDI,4
 
         Dec     EBP
-        JNZ     short .OutMonoFloat
+        JNZ     .OutMonoFloat
         Jmp     .Done
 
     .OutStereo:
@@ -5136,8 +5380,10 @@ PROC RunDSP
     Mov     ECX,4EFFFE00h                                                       ;ECX = 2147418112.0 (32767 << 16)
 
     .NextStereoInt:
+        Resampling
+
         ;Clamp samples ------------------------
-        Mov     EAX,[ESI]                                                       ;EAX = Sample
+        Mov     EAX,[ESP-8]                                                     ;EAX = Sample
         XOr     EDX,EDX
         XOr     EBX,EBX
         BTR     EAX,31                                                          ;EAX = Absolute value
@@ -5148,10 +5394,10 @@ PROC RunDSP
         And     EAX,EBX                                                         ;Clamp EAX
         Add     EAX,ECX
         Or      EAX,EDX                                                         ;Restore sign
-        Mov     [ESI],EAX
-        FLd     dword [ESI]
+        Mov     [ESP-8],EAX
+        FLd     dword [ESP-8]
 
-        Mov     EAX,[4+ESI]
+        Mov     EAX,[ESP-4]
         XOr     EDX,EDX
         XOr     EBX,EBX
         BTR     EAX,31
@@ -5162,8 +5408,8 @@ PROC RunDSP
         And     EAX,EBX
         Add     EAX,ECX
         Or      EAX,EDX
-        Mov     [4+ESI],EAX
-        FLd     dword [4+ESI]
+        Mov     [ESP-4],EAX
+        FLd     dword [ESP-4]
 
         ;Reduce to integer form ---------------
         Mov     AL,[dspSize]
@@ -5179,7 +5425,6 @@ PROC RunDSP
             FIStP   dword [EDI]
             Add     EDI,8
 
-            Add     ESI,16
             Dec     EBP
             JNZ     .NextStereoInt
             Jmp     .Done
@@ -5193,7 +5438,6 @@ PROC RunDSP
             Mov     [EDI],DX
             Add     EDI,2
 
-            Add     ESI,16
             Dec     EBP
             JNZ     .NextStereoInt
             Jmp     .Done
@@ -5205,7 +5449,6 @@ PROC RunDSP
             Mov     [EDI],EDX
             Add     EDI,4
 
-            Add     ESI,16
             Dec     EBP
             JNZ     .NextStereoInt
             Jmp     .Done
@@ -5219,24 +5462,24 @@ PROC RunDSP
             Mov     [2+EDI],EAX
             Add     EDI,6
 
-            Add     ESI,16
             Dec     EBP
             JNZ     .NextStereoInt
             Jmp     .Done
 
     ;32-bit floating-point -------------------
     .OutStereoFloat:
-        FLd     dword [ESI]
+        Resampling
+
+        FLd     dword [ESP-8]
         FMul    dword [fpShR31]
         FStP    dword [EDI]
-        FLd     dword [4+ESI]
+        FLd     dword [ESP-4]
         FMul    dword [fpShR31]
         FStP    dword [4+EDI]
-        Add     ESI,16
         Add     EDI,8
 
         Dec     EBP
-        JNZ     short .OutStereoFloat
+        JNZ     .OutStereoFloat
 
 .Done:
     Pop     EDX,EAX,EBX,EBP
@@ -5244,10 +5487,23 @@ PROC RunDSP
     RetN    EDI
 
 .Mute:
+    Mov     EBP,[ESP]
+    XOr     EDI,EDI
+
+    .MuteNext:
+        FLdZ
+        MuteSampling
+        FStP    ST
+        Inc     EDI
+
+    Dec     EBP
+    JNZ     .MuteNext
+
     Pop     EDX,EAX,EBX,EBP
+    Mov     EDX,EDI
     Mov     EDI,EAX
     Cmp     EAX,1                                                               ;Set carry if OutBuf is null, so EmuDSP doesn't crash
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #6 -----
 
 ENDP
 

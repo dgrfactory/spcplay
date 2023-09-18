@@ -67,7 +67,7 @@ SECTION .bss ALIGN=64
 ;Don't touch!  All arrays are carefully aligned on large boundaries to facillitate easier indexing
 ;and better cache utilization.
 
-; ----- degrade-factory code [2021/09/18] -----
+; ----- degrade-factory code [2023/09/03] -----
     apuRAMBuf   resb    APURAMSIZE*2+16                                         ;SNESAPU 64KB APU RAM buffer
     scrRAMBuf   resb    SCR700SIZE+8                                            ;Script700 RAM buffer
 
@@ -106,13 +106,17 @@ SECTION .bss ALIGN=64
     pSCRRAM     resd    1                                                       ;Pointer to Script700 RAM
     cycLeft     resd    1                                                       ;Clock cycles left to emulate in EmuAPU loop
     smpDec      resd    1                                                       ;Unused clocks from cycle to sample conversion
-    smpRate     resd    1                                                       ;Sample rate
+    smpRate     resd    1                                                       ;Sample rate (max 32kHz)
     smpRAdj     resd    1                                                       ;Sample rate adjustment (16.16)
     smpREmu     resd    1                                                       ;Number of emulated samples per second
 
+    rawRate     resd    1                                                       ;Sample rate (max 192kHz)
+    rawRDec     resd    1                                                       ;Sample rate (decimal)
+    dspOpts     resd    1                                                       ;DSP option
+
     apuCbMask   resd    1                                                       ;SNESAPU callback mask
     apuCbFunc   resd    1                                                       ;SNESAPU callback function
-; ----- degrade-factory code [END] -----
+; ----- degrade-factory code [END] #6 -----
 
 ; ----- degrade-factory code [2015/07/11] -----
     apuVarEP    resd    1                                                       ;Endpoint of APU.asm variable
@@ -129,7 +133,7 @@ SECTION .text ALIGN=16
 %endif
 
 
-; ----- degrade-factory code [2013/10/12] -----
+; ----- degrade-factory code [2023/09/03] -----
 ;===================================================================================================
 ;Initialize Audio Processing Unit
 
@@ -137,7 +141,7 @@ PROC InitAPU, reason
 
     Mov     EAX,[reason]
     Dec     EAX                                                                 ;reason = DLL_PROCESS_ATTACH (1)?
-    JNZ     short .Quit                                                         ;   No
+    JNZ     .Quit                                                               ;   No
 
     Mov     EAX,apuRAMBuf
     Add     EAX,0FFFFh
@@ -153,6 +157,7 @@ PROC InitAPU, reason
     Mov     [scr700inc],EAX
     Mov     [apuCbMask],EAX
     Mov     [apuCbFunc],EAX
+    Mov     [dspOpts],EAX
 
     Mov     EAX,scrRAMBuf
     Mov     [pSCRRAM],EAX
@@ -162,6 +167,7 @@ PROC InitAPU, reason
 
     Mov     dword [smpRate],32000
     Mov     dword [smpRAdj],10000h
+    Mov     dword [rawRate],32000
 
     Call    SetAPUSmpClk,[smpRAdj]
 
@@ -172,8 +178,10 @@ PROC InitAPU, reason
     Mov     EAX,1                                                               ;Return TRUE
 
 ENDP
+; ----- degrade-factory code [END] #6 -----
 
 
+; ----- degrade-factory code [2013/10/12] -----
 ;===================================================================================================
 ;Get SNESAPU.DLL Version Information
 
@@ -202,8 +210,10 @@ USES EBX
     .pOptNext:
 
 ENDP
+; ----- degrade-factory code [END] -----
 
 
+; ----- degrade-factory code [2013/10/12] -----
 ;===================================================================================================
 ;Set/Reset SNESAPU Callback Function
 
@@ -219,8 +229,10 @@ USES EBX
     Or      [apuCbMask],EBX                                                     ;OR method for chain call
 
 ENDP
+; ----- degrade-factory code [END] -----
 
 
+; ----- degrade-factory code [2013/10/12] -----
 ;===================================================================================================
 ;Get SNESAPU Data Pointers
 
@@ -284,8 +296,10 @@ USES EBX
     .ppVMMaxRNext:
 
 ENDP
+; ----- degrade-factory code [END] -----
 
 
+; ----- degrade-factory code [2013/10/12] -----
 ;===================================================================================================
 ;Get Script700 Data Pointers
 
@@ -344,8 +358,12 @@ PROC ResetAPU, amp
         Call    SetDSPAmp,[amp]
     .NoAmp:
 
-    Mov     dword [cycLeft],0
-    Mov     dword [smpDec],0
+; ----- degrade-factory code [2023/09/03] -----
+    XOr     EAX,EAX
+    Mov     [cycLeft],EAX
+    Mov     [smpDec],EAX
+    Mov     [rawRDec],EAX
+; ----- degrade-factory code [END] #6 -----
 
 ENDP
 
@@ -408,10 +426,41 @@ ENDP
 ;Set Audio Processor Options
 
 PROC SetAPUOpt, mixType, numChn, bits, rate, inter, opts
+USES EDX
 
-    Mov     EAX,[rate]                                                          ;Is a rate specified?
-    Cmp     EAX,-1                                                              ;If rate != -1
-    JE      short .KeepRate
+; ----- degrade-factory code [2023/09/03] -----
+    ;rate ------------------------------------
+    Mov     EAX,[rawRate]
+    Mov     EDX,[rate]
+    Cmp     EDX,-1
+    JE      short .DefRate
+        Mov     EAX,EDX
+    .DefRate:
+    Mov     [rate],EAX
+
+    ;opts ------------------------------------
+    Mov     EAX,[dspOpts]
+    Mov     EDX,[opts]
+    Cmp     EDX,-1
+    JE      short .DefOpts
+        Mov     EAX,EDX
+    .DefOpts:
+    Mov     [opts],EAX
+
+    ;DSP option adjustment -------------------
+    Mov     EDX,[dspOpts]                                                       ;If the DSP_ECHOFIR flag changes, force sampling rate
+    XOr     EDX,EAX                                                             ; processing (rawRate = -1)
+    Test    EDX,DSP_ECHOFIR
+    SetZ    DL
+    MovZX   EDX,DL
+    Dec     EDX
+    Or      [rawRate],EDX
+    Mov     [dspOpts],EAX
+
+    Mov     EAX,[rate]
+    Cmp     EAX,[rawRate]                                                       ;Has sample rate changed?
+    JE      short .KeepRate                                                     ;   No
+; ----- degrade-factory code [END] #6 -----
 
         Cmp     EAX,8000                                                        ;If rate < 8000, rate = 8000
         JAE     short .OKL
@@ -422,6 +471,18 @@ PROC SetAPUOpt, mixType, numChn, bits, rate, inter, opts
         JBE     short .OKH
             Mov     EAX,192000
         .OKH:
+
+; ----- degrade-factory code [2023/09/03] -----
+        Mov     [rawRate],EAX
+
+        Test    dword [dspOpts],DSP_ECHOFIR                                     ;Is actual emulation mode?
+        JZ      short .OKA                                                      ;   No, smpRate = rawRate
+
+        Cmp     EAX,32000                                                       ;If rate > 32000, rate = 32000
+        JBE     short .OKA
+            Mov     EAX,32000
+        .OKA:
+; ----- degrade-factory code [END] #6 -----
 
         Mov     [smpRate],EAX
         Call    SetAPUSmpClk,[smpRAdj]                                          ;Calculate the number of clock cycles per sample
@@ -481,16 +542,42 @@ ENDP
 PROC EmuAPU, pBuf, len, type
 USES ECX,EDX,EBX,EDI
 
-    Mov     ECX,APU_CLK
-
 %if DSPINTEG
-; ----- degrade-factory code [2021/11/26] -----
+; ----- degrade-factory code [2023/09/03] -----
     Mov     EDI,[pBuf]
-    Mov     EBX,[len]
+    Mov     EAX,[len]
+    XOr     EDX,EDX
+    Mov     [smpSize],EDX
+
+    Test    byte [type],-1                                                      ;Is the unit of len sample?
+    JZ      short .NextSec                                                      ;   No, skip
+
+    Test    dword [dspOpts],DSP_ECHOFIR                                         ;Is actual emulation mode?
+    JZ      short .NextSec                                                      ;   No, skip
+
+    Mov     EDX,[rawRate]
+    Cmp     EDX,32000                                                           ;Is the sampling rate same or less than 32kHz?
+    JBE     short .NextSec                                                      ;   Yes, skip
+
+    Mov     [smpSize],EAX
+    XOr     EDX,EDX                                                             ;EAX = Emulation time (based on below 32kHz)
+    Mov     ECX,[smpRate]                                                       ;   EAX * smpRate / rawRate
+    Mul     ECX
+    Mov     ECX,[rawRate]
+    Div     ECX
+
+    Sub     [rawRDec],EDX                                                       ;rawRDec -= smpRate % rawRate
+    SetNC   DL
+    MovZX   EDX,DL
+    Dec     EDX
+    Sub     EAX,EDX                                                             ;If rawRDec < 0, EAX++
+    And     EDX,ECX                                                             ;If rawRDec < 0, rawRDec += rawRate
+    Add     [rawRDec],EDX
 
     .NextSec:
+    Mov     ECX,APU_CLK
     XOr     EDX,EDX
-    Mov     EAX,EBX
+    Mov     EBX,EAX
 
     ;Fixup samples/cycles --------------------
     Test    byte [type],-1
@@ -520,11 +607,12 @@ USES ECX,EDX,EBX,EDI
         Add     EAX,APU_CLK
 
         Sub     EBX,EAX                                                         ;len -= emulate cycles
+        Mov     EDX,EAX
         Add     EAX,[cycLeft]
         JLE     short .NoCycles
 
         Push    EAX
-        Mov     EDX,EAX
+        Mov     EAX,EDX
         Mul     dword [smpREmu]                                                 ;samples = ((smpREmu * len) + smpDec) / APU_CLK
         Add     EAX,[smpDec]
         AdC     EDX,0
@@ -548,11 +636,25 @@ USES ECX,EDX,EBX,EDI
     Mov     EDI,EAX                                                             ;EAX = end of buffer
     Test    EBX,EBX                                                             ;Is emulation complete?
     JNZ     .NextSec                                                            ;   No, continue
-; ----- degrade-factory code [END] #17 #39 -----
+
+    Cmp     EAX,[pBuf]                                                          ;Had emulate more than one sample?
+    JE      short .Done                                                         ;   No, done
+
+    Mov     ECX,[smpSize]
+    Test    ECX,ECX                                                             ;Had emulated all the samples?
+    JZ      short .Done                                                         ;   Yes, done
+        Mov     dword [smpSize],-1                                              ;No adjustment samples
+        Call    EmuDSP,EAX,ECX                                                  ;Force emulate DSP only
+        Mov     dword [smpSize],0
+
+    .Done:
+; ----- degrade-factory code [END] #17 #39 #6 -----
 %else
     ;Note: Setting DSPINTEG to 0, causes a minor bug here.
     ;If 'len' parameter is given a value greater than about 87 seconds, will be occurred overflow.
     ;If you want DSPINTEG to be 0, you must specify a small value for 'len' parameter.
+
+    Mov     ECX,APU_CLK
 
     ;If samples were passed, convert to clock cycles
     Mov     EAX,[len]
