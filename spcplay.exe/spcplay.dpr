@@ -2852,10 +2852,11 @@ const
     OPTION_NOFIR = $80;                                     // FIR フィルタ無効
     OPTION_BASSBOOST = $100;                                // BASS BOOST (低音強調)
     OPTION_NOENV = $200;                                    // エンベロープ無効
-    OPTION_NONOISE = $400;                                  // ノイズ無効
+    OPTION_NONOISE = $400;                                  // ノイズ発音指定無効
     OPTION_ECHOFIR = $800;                                  // 実機に近いエコー/FIR 処理
     OPTION_NOSURROUND = $1000;                              // サラウンド無効
     OPTION_ENVSPEED = $2000;                                // エンベロープ速度を同期
+    OPTION_NOPLIMIT = $4000;                                // ピッチ制限無効
     OPTION_FLOATOUT = $40000000;                            // 32 ビット (float) で出力レベルを設定
     OPTION_NOEARSAFE = $80000000;                           // イヤーセーフ無効
 
@@ -2950,11 +2951,12 @@ const
     MENU_SETUP_MUTE_NOISE_SIZE = 8;
     MENU_SETUP_MUTE_NOISE_ALL_SIZE = 3;
     MENU_SETUP_OPTION = 50;
-    MENU_SETUP_OPTION_SIZE = 16;
+    MENU_SETUP_OPTION_SIZE = 17;
     MENU_SETUP_OPTION_BASE = 500; // +10
     MENU_SETUP_OPTION_VALUE: array[0..MENU_SETUP_OPTION_SIZE - 1] of longword =
         (OPTION_LOWPASS, OPTION_ECHOFIR, NULL, OPTION_BASSBOOST, OPTION_OLDSMP, OPTION_SURROUND, OPTION_REVERSE, OPTION_ENVSPEED,
-         NULL, OPTION_NOSURROUND, OPTION_NOECHO, OPTION_NOPMOD, OPTION_NOPREAD, OPTION_NOFIR, OPTION_NOENV, OPTION_NONOISE);
+         NULL, OPTION_NOSURROUND, OPTION_NOECHO, OPTION_NOFIR, OPTION_NOPMOD, OPTION_NOPREAD, OPTION_NOPLIMIT, OPTION_NOENV,
+         OPTION_NONOISE);
     MENU_SETUP_TIME = 60;
     MENU_SETUP_TIME_DISABLE = 600;
     MENU_SETUP_TIME_ID666 = 601;
@@ -3174,11 +3176,11 @@ const
         ('&Normal', 'OLD &Sound Blaster Card', 'OLD &ZSNES, Snes9x'));
     STR_MENU_SETUP_OPTION_SUB: array[0..1] of array[0..MENU_SETUP_OPTION_SIZE - 1] of pchar = (
         ('実機ローパス フィルタ(&L)', '実機エコー/FIR 処理(&M)', NULLPOINTER, '&BASS BOOST', '過去の &ADPCM デコーダ', '逆位相サラウンド強制(&S)',
-         '左右反転(&R)', 'エンベロープ速度を同期(&Y)', NULLPOINTER, 'サラウンド無効(&U)', 'エコー無効(&E)',
-         'ピッチ モジュレーション無効(&P)', 'ピッチ ベンド無効(&I)', '&FIR フィルタ無効', 'エンベロープ無効(&V)', 'ノイズ発音指定無効(&N)'),
+         '左右反転(&R)', 'エンベロープ速度を同期(&Y)', NULLPOINTER, 'サラウンド無効(&U)', 'エコー無効(&E)', '&FIR フィルタ無効',
+         'ピッチ モジュレーション無効(&P)', 'ピッチ ベンド無効(&I)', 'ピッチ リミット無効(&T)', 'エンベロープ無効(&V)', 'ノイズ発音指定無効(&N)'),
         ('SNES &Low-Pass Filter', 'SNES Echo/FIR &Method', NULLPOINTER, '&BASS BOOST', 'Old &ADPCM Decoder', 'Opposite-Phase &Surround',
-         '&Reverse Stereo', 'S&ynchronize Envelope with Speed', NULLPOINTER, 'Disable S&urround', 'Disable &Echo',
-         'Disable &Pitch Modulation', 'Disable P&itch Bend', 'Disable &FIR Filter', 'Disable En&velope', 'Disable &Noise Flags'));
+         '&Reverse Stereo', 'S&ynchronize Envelope with Speed', NULLPOINTER, 'Disable S&urround', 'Disable &Echo', 'Disable &FIR Filter',
+         'Disable &Pitch Modulation', 'Disable P&itch Bend', 'Disable Pi&tch Limit', 'Disable En&velope', 'Disable &Noise Flags'));
     STR_MENU_SETUP_ORDER_SUB: array[0..1] of array[0..MENU_SETUP_ORDER_SIZE - 1] of pchar = (
         ('演奏停止(&S)', '次へ(&N)', '前へ(&P)', 'ランダム(&M)', 'シャッフル(&H)', 'リピート(&R)'),
         ('&Stop', '&Next Item', '&Previous Item', 'Rando&m', 'S&huffle', '&Repeat'));
