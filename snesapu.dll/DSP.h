@@ -19,7 +19,10 @@
 * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                                        *
 *                                                                                                  *
 *                                                 Copyright (C) 1999-2006 Alpha-II Productions     *
-*                                                 Copyright (C) 2003-2022 degrade-factory          *
+*                                                 Copyright (C) 2003-2023 degrade-factory          *
+*                                                                                                  *
+* List of users and dates who/when modified this file:                                             *
+*    - degrade-factory in 2023-09-18                                                               *
 ***************************************************************************************************/
 
 #ifndef __INC_DSP
@@ -28,15 +31,24 @@
 //**************************************************************************************************
 // Defines
 
+//CPU capability (for GetProcType) -------------
+#define CPU_MMX     1                           //Multi-Media eXtensions
+#define CPU_3DNOW   2                           //3DNow! extensions
+#define CPU_SSE     4                           //Streaming SIMD Extensions
+
+//Mixing routines (see DSP.ASM for details of each routine)
+#define MIX_NONE    0                           //No mixing
+#define MIX_INT     1                           //Use integer math (unused)
+#define MIX_MMX     2                           //Use MMX (unused)
+#define MIX_FLOAT   3                           //Use floating-point math
+
 //Interpolation routines -----------------------
 #define INT_NONE    0                           //None
 #define INT_LINEAR  1                           //Linear
 #define INT_CUBIC   2                           //Cubic Spline
 #define INT_GAUSS   3                           //SNES Gaussian
-// ----- degrade-factory code [2004/08/16] -----
 #define INT_SINC    4                           //8-point Sinc
 #define INT_GAUSS4  7                           //4-point Gaussian
-// ----- degrade-factory code [END] -----
 
 //DSP options ----------------------------------
 #define DSP_ANALOG  0x01                        //Simulate analog anomalies (low-pass filter)
@@ -44,7 +56,6 @@
 #define DSP_SURND   0x04                        //Surround sound
 #define DSP_REVERSE 0x08                        //Reverse stereo samples
 #define DSP_NOECHO  0x10                        //Disable echo
-// ----- degrade-factory code [2022/05/01] -----
 #define DSP_NOPMOD  0x20                        //Disable pitch modulation
 #define DSP_NOPREAD 0x40                        //Disable pitch read
 #define DSP_NOFIR   0x80                        //Disable FIR filter
@@ -54,9 +65,9 @@
 #define DSP_ECHOFIR 0x800                       //Simulate SNES echo/FIR method
 #define DSP_NOSURND 0x1000                      //Disable surround sound
 #define DSP_ENVSPD  0x2000                      //Synchronize envelope updates with speed
+#define DSP_NOPLMT  0x2000                      //Disable the maximum pitch limit
 #define DSP_FLOAT   0x40000000                  //32bit floating-point volume output
 #define DSP_NOSAFE  0x80000000                  //Disable volume safe
-// ----- degrade-factory code [END] #37 #45 -----
 
 //PackWave options -----------------------------
 #define BRR_LINEAR  0x01                        //Use linear compression for all blocks
@@ -72,19 +83,17 @@
 #define MFLG_OFF    0x08                        //Voice is currently inactive
 #define MFLG_END    0x10                        //End block was just played
 
-// ----- degrade-factory code [2013/10/06] -----
-//Script700 DSP flags
+//Script700 DSP flags --------------------------
 #define S700_MUTE   0x01                        //Mute voice
 #define S700_CHANGE 0x02                        //Change sound source (note change)
 #define S700_DETUNE 0x04                        //Detune sound pitch rate
 #define S700_VOLUME 0x08                        //Change sound volume
 
-//Script700 DSP master parameters
+//Script700 DSP master parameters --------------
 #define S700_MVOL_L 0x00                        //Master volume (left)
 #define S700_MVOL_R 0x01                        //Master volume (right)
 #define S700_ECHO_L 0x02                        //Echo volume (left)
 #define S700_ECHO_R 0x03                        //Echo volume (right)
-// ----- degrade-factory code [END] -----
 
 
 //**************************************************************************************************
@@ -171,7 +180,6 @@ typedef union DSPReg
 } DSPReg;
 
 //Internal mixing data -------------------------
-// ----- degrade-factory code [2009/07/11] -----
 typedef struct MixF
 {
     b8  mute:1;                                 //Voice is muted (set by user)
@@ -181,7 +189,6 @@ typedef struct MixF
     b8  keyEnd:1;                               //End block was just played
     u8  __r2:3;
 } MixF;
-// ----- degrade-factory code [END] -----
 
 typedef enum EnvM
 {
@@ -199,7 +206,6 @@ typedef enum EnvM
 #define ENVM_IDLE   0x80                        //Envelope is marked as idle, or not changing
 #define ENVM_MODE   0xF                         //Envelope mode is stored in lower four bits
 
-// ----- degrade-factory code [2009/03/11] -----
 typedef struct Voice
 {
     //Voice -----------08
@@ -241,7 +247,6 @@ typedef struct Voice
     u32     mOrgP;                              //Original pitch rate converted from the DSP (16.16)
     s32     mOut;                               //Last sample output before chn vol (used for pitch mod)
 } Voice;
-// ----- degrade-factory code [END] -----
 
 
 //**************************************************************************************************
@@ -308,7 +313,6 @@ extern  u32     vMMaxL,vMMaxR;
 extern  "C" {
 #endif
 
-// ----- degrade-factory code [2006/10/20] -----
 //**************************************************************************************************
 // Initialize DSP
 //
@@ -328,7 +332,6 @@ extern  "C" {
 //    ST0-7
 
 void InitDSP();
-// ----- degrade-factory code [END] -----
 
 
 //**************************************************************************************************

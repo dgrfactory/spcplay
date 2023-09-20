@@ -19,7 +19,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 2003-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2022 degrade-factory
+;                                                   Copyright (C) 2003-2023 degrade-factory
+;
+;List of users and dates who/when modified this file:
+;   - degrade-factory in 2023-09-03
 ;===================================================================================================
 
 CPU     386
@@ -45,14 +48,12 @@ SECTION .data ALIGN=256
 SECTION .data ALIGN=32
 %endif
 
-; ----- degrade-factory code [2022/07/04] -----
     apuOpt      DD  (CPU_CYC << 24) | (DEBUG << 16) | (DSPINTEG << 17) | (VMETERM << 8) | (VMETERV << 9) | (1 << 10) | (STEREO << 11) \
                     | (HALFC << 1) | (CNTBK << 2) | (SPEED << 3) | (IPLW << 4) | (DSPBK << 5) | (INTBK << 6)
     apuDllVer   DD  20000h                                                      ;SNESAPU.DLL Current Version
     apuCmpVer   DD  11000h                                                      ;SNESAPU.DLL Backwards Compatible Version
     apuVerStr   DD  "$CAP_FILE_VER"                                             ;SNESAPU.DLL Current Version (32byte String)
                 DD  8
-; ----- degrade-factory code [END] -----
 
 
 ;===================================================================================================
@@ -67,7 +68,6 @@ SECTION .bss ALIGN=64
 ;Don't touch!  All arrays are carefully aligned on large boundaries to facillitate easier indexing
 ;and better cache utilization.
 
-; ----- degrade-factory code [2023/09/03] -----
     apuRAMBuf   resb    APURAMSIZE*2+16                                         ;SNESAPU 64KB APU RAM buffer
     scrRAMBuf   resb    SCR700SIZE+8                                            ;Script700 RAM buffer
 
@@ -116,11 +116,8 @@ SECTION .bss ALIGN=64
 
     apuCbMask   resd    1                                                       ;SNESAPU callback mask
     apuCbFunc   resd    1                                                       ;SNESAPU callback function
-; ----- degrade-factory code [END] #6 -----
 
-; ----- degrade-factory code [2015/07/11] -----
     apuVarEP    resd    1                                                       ;Endpoint of APU.asm variable
-; ----- degrade-factory code [END] -----
 
 
 ;===================================================================================================
@@ -133,7 +130,6 @@ SECTION .text ALIGN=16
 %endif
 
 
-; ----- degrade-factory code [2023/09/03] -----
 ;===================================================================================================
 ;Initialize Audio Processing Unit
 
@@ -178,10 +174,8 @@ PROC InitAPU, reason
     Mov     EAX,1                                                               ;Return TRUE
 
 ENDP
-; ----- degrade-factory code [END] #6 -----
 
 
-; ----- degrade-factory code [2013/10/12] -----
 ;===================================================================================================
 ;Get SNESAPU.DLL Version Information
 
@@ -210,10 +204,8 @@ USES EBX
     .pOptNext:
 
 ENDP
-; ----- degrade-factory code [END] -----
 
 
-; ----- degrade-factory code [2013/10/12] -----
 ;===================================================================================================
 ;Set/Reset SNESAPU Callback Function
 
@@ -229,10 +221,8 @@ USES EBX
     Or      [apuCbMask],EBX                                                     ;OR method for chain call
 
 ENDP
-; ----- degrade-factory code [END] -----
 
 
-; ----- degrade-factory code [2013/10/12] -----
 ;===================================================================================================
 ;Get SNESAPU Data Pointers
 
@@ -296,10 +286,8 @@ USES EBX
     .ppVMMaxRNext:
 
 ENDP
-; ----- degrade-factory code [END] -----
 
 
-; ----- degrade-factory code [2013/10/12] -----
 ;===================================================================================================
 ;Get Script700 Data Pointers
 
@@ -342,7 +330,6 @@ USES EBX
     .ppScript700Next:
 
 ENDP
-; ----- degrade-factory code [END] -----
 
 
 ;===================================================================================================
@@ -358,12 +345,10 @@ PROC ResetAPU, amp
         Call    SetDSPAmp,[amp]
     .NoAmp:
 
-; ----- degrade-factory code [2023/09/03] -----
     XOr     EAX,EAX
     Mov     [cycLeft],EAX
     Mov     [smpDec],EAX
     Mov     [rawRDec],EAX
-; ----- degrade-factory code [END] #6 -----
 
 ENDP
 
@@ -428,13 +413,13 @@ ENDP
 PROC SetAPUOpt, mixType, numChn, bits, rate, inter, opts
 USES EDX
 
-; ----- degrade-factory code [2023/09/03] -----
     ;rate ------------------------------------
     Mov     EAX,[rawRate]
     Mov     EDX,[rate]
     Cmp     EDX,-1
     JE      short .DefRate
         Mov     EAX,EDX
+
     .DefRate:
     Mov     [rate],EAX
 
@@ -444,6 +429,7 @@ USES EDX
     Cmp     EDX,-1
     JE      short .DefOpts
         Mov     EAX,EDX
+
     .DefOpts:
     Mov     [opts],EAX
 
@@ -460,19 +446,16 @@ USES EDX
     Mov     EAX,[rate]
     Cmp     EAX,[rawRate]                                                       ;Has sample rate changed?
     JE      short .KeepRate                                                     ;   No
-; ----- degrade-factory code [END] #6 -----
-
         Cmp     EAX,8000                                                        ;If rate < 8000, rate = 8000
         JAE     short .OKL
             Mov     EAX,8000
-        .OKL:
 
+        .OKL:
         Cmp     EAX,192000                                                      ;If rate > 192000, rate = 192000
         JBE     short .OKH
             Mov     EAX,192000
-        .OKH:
 
-; ----- degrade-factory code [2023/09/03] -----
+        .OKH:
         Mov     [rawRate],EAX
 
         Test    dword [dspOpts],DSP_ECHOFIR                                     ;Is actual emulation mode?
@@ -481,9 +464,8 @@ USES EDX
         Cmp     EAX,32000                                                       ;If rate > 32000, rate = 32000
         JBE     short .OKA
             Mov     EAX,32000
-        .OKA:
-; ----- degrade-factory code [END] #6 -----
 
+        .OKA:
         Mov     [smpRate],EAX
         Call    SetAPUSmpClk,[smpRAdj]                                          ;Calculate the number of clock cycles per sample
 
@@ -499,23 +481,19 @@ ENDP
 PROC SetAPUSmpClk, speed
 USES EDX
 
-; ----- degrade-factory code [2021/05/21] -----
     Mov     EAX,[speed]
     Cmp     EAX,64                                                              ;If speed < 64, speed = 64
     JAE     short .OKL
         Mov     EAX,64
-    .OKL:
-; ----- degrade-factory code [END] -----
 
+    .OKL:
     Cmp     EAX,1048576                                                         ;If speed > 1048576, speed = 1048576
     JBE     short .OKH
         Mov     EAX,1048576
-    .OKH:
 
+    .OKH:
     Mov     [smpRAdj],EAX
-; ----- degrade-factory code [2022/05/01] -----
     Mov     [adsrAdj],EAX
-; ----- degrade-factory code [END] #45 -----
 
     Mov     EAX,[smpRate]                                                       ;smpREmu = (smpRate << 16) / smpRAdj;
     MovZX   EDX,word [2+smpRate]
@@ -543,7 +521,6 @@ PROC EmuAPU, pBuf, len, type
 USES ECX,EDX,EBX,EDI
 
 %if DSPINTEG
-; ----- degrade-factory code [2023/09/03] -----
     Mov     EDI,[pBuf]
     Mov     EAX,[len]
     XOr     EDX,EDX
@@ -648,7 +625,6 @@ USES ECX,EDX,EBX,EDI
         Mov     dword [smpSize],0
 
     .Done:
-; ----- degrade-factory code [END] #17 #39 #6 -----
 %else
     ;Note: Setting DSPINTEG to 0, causes a minor bug here.
     ;If 'len' parameter is given a value greater than about 87 seconds, will be occurred overflow.
@@ -662,6 +638,7 @@ USES ECX,EDX,EBX,EDI
     JZ      short .Cycles
         Mul     ECX                                                             ;cycles = (APU_CLK * len) / smpREmu
         Div     dword [smpREmu]
+
     .Cycles:
     Add     [cycLeft],EAX
 
@@ -685,8 +662,8 @@ USES ECX,EDX,EBX,EDI
         Mul     dword [smpREmu]
         Add     EAX,[smpDec]
         AdC     EDX,0
-        Div     ECX                                                             ;samples = (((cycles - cycLeft) * smpREmu) + smpDec) / APU_CLK
-        Mov     [smpDec],EDX
+        Div     ECX                                                             ;samples = (((cycles - cycLeft) * smpREmu) + smpDec)
+        Mov     [smpDec],EDX                                                    ; / APU_CLK
 
         Add     EBX,EAX                                                         ;size += samples
         Cmp     EBX,[len]                                                       ;Sometimes sample count will go over by one
@@ -694,8 +671,8 @@ USES ECX,EDX,EBX,EDI
             Add     EAX,[len]
             Sub     EAX,EBX
             Mov     EBX,[len]
-        .LenOK:
 
+        .LenOK:
         Call    EmuDSP,EDI,EAX                                                  ;pBuf = EmuDSP(pBuf,samples)
         Mov     EDI,EAX
         Jmp     short .Next
@@ -734,7 +711,6 @@ USES ECX,EDX
 
     Test    byte [fast],-1                                                      ;Fast mode completely bypasses the DSP emulation
     JZ      short .Slow
-; ----- degrade-factory code [2006/03/21] -----
         Call    SetSPCDbg,-1,SPC_NODSP                                          ;Disable writes to the DSP registers
 
         Test    EDX,EDX
@@ -745,14 +721,13 @@ USES ECX,EDX
         JZ      short .DoneSeek
 
         .EmuSPC:
-            Call    EmuSPC,APU_CLK
+        Call    EmuSPC,APU_CLK
         Dec     ECX
         JNZ     short .EmuSPC
 
         .DoneSeek:
         Call    SetSPCDbg,-1,0                                                  ;Re-enable writes to the DSP registers
         Jmp     short .Done
-; ----- degrade-factory code [END] -----
 
     .Slow:
         Test    EDX,EDX
@@ -763,7 +738,7 @@ USES ECX,EDX
         JZ      short .Done
 
         .EmuAPU:
-            Call    EmuAPU,0,APU_CLK,0
+        Call    EmuAPU,0,APU_CLK,0
         Dec     ECX
         JNZ     short .EmuAPU
 
@@ -773,7 +748,6 @@ USES ECX,EDX
 ENDP
 
 
-; ----- degrade-factory code [2022/04/02] -----
 ;===================================================================================================
 ;Set/Reset TimerTrick Compatible Function
 
@@ -2260,8 +2234,8 @@ PROC SetScript700Data, addr, pData, size
     And     ECX,3                                                               ;ECX &= 3
     Rep     MovSB                                                               ;memcpy(EDI, ESI, ECX)
 
-    Mov     EAX,EDI                                                             ;EAX = EDI (EAX = Script RAM Pointer + DataOffset + addr + size)
-    Sub     EAX,[pSCRRAM]                                                       ;EAX -= Script RAM Pointer (EAX = DataOffset + addr + size)
+    Mov     EAX,EDI                                                             ;EAX = EDI (RAM Pointer + DataOffset + addr + size)
+    Sub     EAX,[pSCRRAM]                                                       ;EAX -= Script RAM Pointer
 
     Pop     ECX,ESI,EDI
     Jmp     short .FINALIZE
@@ -2274,10 +2248,8 @@ PROC SetScript700Data, addr, pData, size
     Mov     [scr700inc+08h],EAX
 
 ENDP
-; ----- degrade-factory code [END] #34 #35 #43 -----
 
 
-; ----- degrade-factory code [2015/07/11] -----
 ;===================================================================================================
 ;Get SNESAPU Context Buffer Size Function
 
@@ -2382,4 +2354,3 @@ USES ECX,ESI,EDI
     XOr     EAX,EAX
 
 ENDP
-; ----- degrade-factory code [END] -----

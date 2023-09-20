@@ -19,7 +19,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 2003-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2021 degrade-factory
+;                                                   Copyright (C) 2022-2022 degrade-factory
+;
+;List of users and dates who/when modified this file:
+;   - degrade-factory in 2022-09-03
 ;===================================================================================================
 
 %define APU_INC
@@ -27,7 +30,6 @@
 ;===================================================================================================
 ;Options
 
-; ----- degrade-factory code [2022/09/03] -----
 CPU_CYC     EQU 24                                              ;CPU clock divisor
                                                                 ;10 = 2.457MHz
                                                                 ;12 = 2.048MHz
@@ -57,26 +59,23 @@ VMETERV     EQU 1                                               ;Monitor levels 
 
 STEREO      EQU 1                                               ;Enable stereo controls (separation and EFBCT)
 
+;SNESAPU buffer size
 APURAMSIZE  EQU 10000h                                          ;APU RAM Memory Size
 SCR700SIZE  EQU 100000h                                         ;Script700 Program Area Size
 SCR700MASK  EQU SCR700SIZE - 1                                  ;Script700 Program Area Mask
-; ----- degrade-factory code [END] #52 -----
 
-; ----- degrade-factory code [2021/09/19] -----
 ;SNESAPU callback effect
 CBE_DSPREG  EQU 01h                                             ;Write DSP value event
 CBE_S700FCH EQU 02h                                             ;Write SPC700 fetch event
 CBE_INCS700 EQU 40000000h                                       ;Include Script700 text file
 CBE_INCDATA EQU 20000000h                                       ;Include Script700 binary file
 CBE_REQBP   EQU 10000000h                                       ;Request break point
-; ----- degrade-factory code [END] #35 -----
 
 
 ;===================================================================================================
 ;Public Variables
 
 PUBLIC  apuOpt                                                  ;Build options
-; ----- degrade-factory code [2021/09/18] -----
 PUBLIC  scr700lbl                                               ;Script700 Label pointer
 PUBLIC  scr700stk                                               ;Script700 Stack area
 PUBLIC  scr700dsp                                               ;Script700 DSP enable flags (Channel)
@@ -97,13 +96,11 @@ PUBLIC  pAPURAM                                                 ;Pointer to SNES
 PUBLIC  pSCRRAM                                                 ;Pointer to Script700 RAM
 PUBLIC  apuCbMask                                               ;SNESAPU callback mask
 PUBLIC  apuCbFunc                                               ;SNESAPU callback function
-; ----- degrade-factory code [END] #34 -----
 
 
 ;===================================================================================================
 ;Exported Functions
 
-; ----- degrade-factory code [2013/10/12] -----
 ;===================================================================================================
 ;Initialize Audio Processing Unit
 ;
@@ -170,7 +167,6 @@ PUBLIC GetAPUData, ppRAM:ptr, ppXRAM:ptr, ppOutPort:ptr, ppT64Cnt:ptr, ppDSP:ptr
 ;   ppScript700 -> Pointer of Script700 work memory
 
 PUBLIC GetScript700Data, pDLLVer:ptr, ppSPCReg:ptr, ppScript700:ptr
-; ----- degrade-factory code [END] -----
 
 
 ;===================================================================================================
@@ -286,7 +282,6 @@ PUBLIC EmuAPU, pBuf:ptr, len:dword, type:byte
 PUBLIC SeekAPU, time:dword, fast:bool
 
 
-; ----- degrade-factory code [2013/10/12] -----
 ;===================================================================================================
 ;Set/Reset TimerTrick Compatible Function
 ;
@@ -333,10 +328,8 @@ PUBLIC SetScript700, pSource:ptr
 ;         -1  : Error occurred by binary-converting Script700.  Script700 is disabled.
 
 PUBLIC SetScript700Data, addr:dword, pData:ptr, size:dword
-; ----- degrade-factory code [END] -----
 
 
-; ----- degrade-factory code [2015/07/11] -----
 ;===================================================================================================
 ;Get SNESAPU Context Buffer Size Function
 ;
@@ -377,4 +370,3 @@ PUBLIC GetSNESAPUContext, pCtxOut:ptr
 ;   EAX = Reserved
 
 PUBLIC SetSNESAPUContext, pCtxIn:ptr
-; ----- degrade-factory code [END] -----

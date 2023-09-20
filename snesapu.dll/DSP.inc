@@ -19,7 +19,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2022 degrade-factory
+;                                                   Copyright (C) 2003-2023 degrade-factory
+;
+;List of users and dates who/when modified this file:
+;   - degrade-factory in 2023-09-18
 ;===================================================================================================
 
 %define DSP_INC
@@ -27,15 +30,24 @@
 ;===================================================================================================
 ;Equates
 
+;CPU types (for GetProcType)
+CPU_MMX     EQU 1
+CPU_3DNOW   EQU 2
+CPU_SIMD    EQU 4
+
+;Mixing routines (see source for additional notes)
+MIX_NONE    EQU	0                                               ;No mixing
+MIX_INT     EQU	1                                               ;Use integer instructions (unused)
+MIX_MMX     EQU	2                                               ;Use MMX (unused)
+MIX_FLOAT   EQU	3                                               ;Use floating-point instructions
+
 ;Interpolation routines
-INT_NON     EQU 0                                               ;None
+INT_NONE    EQU 0                                               ;None
 INT_LINEAR  EQU 1                                               ;Linear
 INT_CUBIC   EQU 2                                               ;Cubic Spline
 INT_GAUSS   EQU 3                                               ;SNES Gaussian
-; ----- degrade-factory code [2004/08/16] -----
 INT_SINC    EQU 4                                               ;8-point Sinc
 INT_GAUSS4  EQU 7                                               ;4-point Gaussian
-; ----- degrade-factory code [END] -----
 
 ;DSP options
 DSP_ANALOG  EQU 01h                                             ;Simulate analog anomalies (low-pass filter)
@@ -43,7 +55,6 @@ DSP_OLDSMP  EQU 02h                                             ;Traditional ADP
 DSP_SURND   EQU 04h                                             ;Surround sound
 DSP_REVERSE EQU 08h                                             ;Reverse stereo samples
 DSP_NOECHO  EQU 10h                                             ;Disable echo (must not be bit 0 or 5, see disEcho)
-; ----- degrade-factory code [2023/09/18] -----
 DSP_NOPMOD  EQU 20h                                             ;Disable pitch modulation
 DSP_NOPREAD EQU 40h                                             ;Disable pitch read
 DSP_NOFIR   EQU 80h                                             ;Disable FIR Filter
@@ -53,10 +64,9 @@ DSP_NONOISE EQU 400h                                            ;Disable noise
 DSP_ECHOFIR EQU 800h                                            ;Simulate SNES echo/FIR method
 DSP_NOSURND EQU 1000h                                           ;Disable surround sound
 DSP_ENVSPD  EQU 2000h                                           ;Synchronize envelope updates with speed
-DSP_NOPLMT  EQU 4000h                                           ;Remove the maximum pitch limit
+DSP_NOPLMT  EQU 4000h                                           ;Disable the maximum pitch limit
 DSP_FLOAT   EQU 40000000h                                       ;32bit floating-point volume output
 DSP_NOSAFE  EQU 80000000h                                       ;Disable volume safe
-; ----- degrade-factory code [END] #37 #45 #64 -----
 
 ;PackWave options (unused)
 BRR_LINEAR  EQU 01h                                             ;Use linear compression for all blocks
@@ -72,7 +82,6 @@ MFLG_KOFF   EQU 04h                                             ;Voice is in the
 MFLG_OFF    EQU 08h                                             ;Voice is currently inactive
 MFLG_END    EQU 10h                                             ;End block was just played
 
-; ----- degrade-factory code [2021/05/04] -----
 ;Script700 DSP flags
 S700_MUTE   EQU 01h                                             ;Mute voice
 S700_CHANGE EQU 02h                                             ;Change sound source (note change)
@@ -89,7 +98,6 @@ S700_ECHO_R EQU 03h                                             ;Echo volume (ri
 KON_DELAY   EQU 19                                              ;Delay time from writing KON to output (40Ts / 2 - 1)
 KON_CHKKOFF EQU 13                                              ;Delay time from checking KOFF, if DSPBK or INTBK is 1
 KON_SAVEENV EQU KON_DELAY                                       ;Delay time from writing save envelope to output
-; ----- degrade-factory code [END] #25 -----
 
 
 ;===================================================================================================
@@ -143,7 +151,6 @@ STRUC DSPRAM
             resb    2
 ENDSTRUC
 
-; ----- degrade-factory code [2009/03/11] -----
 ;Internal mixing settings -------------------
 STRUC VoiceMix
     ;Voice ------------08
@@ -185,7 +192,6 @@ STRUC VoiceMix
     mOrgP   resd    1                                           ;Original pitch rate converted from the DSP [16.16]
     mOut    resd    1                                           ;Last sample output before chn vol (used for pitch mod)
 ENDSTRUC
-; ----- degrade-factory code [END] -----
 
 
 ;===================================================================================================
@@ -195,22 +201,15 @@ PUBLIC  mix                                                     ;Mixing structur
 PUBLIC  dsp                                                     ;1 page of DSP RAM
 PUBLIC  vMMaxL                                                  ;Maximum absolute sample output
 PUBLIC  vMMaxR
-; ----- degrade-factory code [2016/08/20] -----
 PUBLIC  envFlag                                                 ;Update envelope flags
-PUBLIC  dspVarEP                                                ;Endpoint of DSP.asm variables
-; ----- degrade-factory code [END] -----
-; ----- degrade-factory code [2022/05/01] -----
 PUBLIC  adsrAdj                                                 ;Update envelope rate adjustment (16.16)
-; ----- degrade-factory code [END] #45 -----
-; ----- degrade-factory code [2023/09/03] -----
 PUBLIC  smpSize                                                 ;Emulate sample size
-; ----- degrade-factory code [END] #6 -----
+PUBLIC  dspVarEP                                                ;Endpoint of DSP.asm variables
 
 
 ;===================================================================================================
 ;Exported Functions
 
-; ----- degrade-factory code [2006/10/20] -----
 ;===================================================================================================
 ;Initialize DSP
 ;
@@ -227,7 +226,6 @@ PUBLIC  smpSize                                                 ;Emulate sample 
 ;   ST0-7
 
 PUBLIC InitDSP, NULL
-; ----- degrade-factory code [END] -----
 
 
 ;===================================================================================================
