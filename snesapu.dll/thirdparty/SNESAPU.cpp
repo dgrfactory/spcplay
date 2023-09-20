@@ -20,9 +20,11 @@
 *                                                                                                  *
 *                                                 Copyright (C) 2001-2004 Alpha-II Productions     *
 *                                                 Copyright (C) 2003-2021 degrade-factory          *
+*                                                                                                  *
+* List of users and dates who/when modified this file:                                             *
+*    - degrade-factory in 2021-09-18                                                               *
 ***************************************************************************************************/
 
-// ----- degrade-factory code [2015/02/28] -----
 #define WIN32_LEAN_AND_MEAN                                     //Leave out unnecessary grunt in windows.h
 #include    <conio.h>
 #include    <stdlib.h>
@@ -158,7 +160,6 @@ typedef struct TRANSMITSPCEXCALLBACK
     CallbackPortReadP   pCallbackRead;
     CallbackPortWriteP  pCallbackWrite;
 } TRANSFERSPCEXCALLBACK;
-// ----- degrade-factory code [END] -----
 
 
 //**************************************************************************************************
@@ -167,7 +168,6 @@ typedef struct TRANSMITSPCEXCALLBACK
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Functions
 
-// ----- degrade-factory code [2021/09/18] -----
 #ifdef  __cplusplus
 extern  "C" {
 #endif
@@ -1269,4 +1269,3 @@ u32 DllMain(u32 hinst, u32 fwdReason, u32 lpReserved) {
 #ifdef  __cplusplus
 }
 #endif
-// ----- degrade-factory code [END] #34 -----

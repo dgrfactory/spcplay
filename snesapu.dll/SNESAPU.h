@@ -20,6 +20,9 @@
 *                                                                                                  *
 *                                                 Copyright (C) 2001-2004 Alpha-II Productions     *
 *                                                 Copyright (C) 2003-2015 degrade-factory          *
+*                                                                                                  *
+* List of users and dates who/when modified this file:                                             *
+*    - degrade-factory in 2015-07-11                                                               *
 ***************************************************************************************************/
 
 #ifndef __INC_SNESAPU
@@ -31,7 +34,6 @@
 #include    "APU.h"
 #include    "DSP.h"
 
-// ----- degrade-factory code [2015/07/11] -----
 //**************************************************************************************************
 // Function pointers to SNESAPU
 
@@ -141,6 +143,5 @@ import  void        __stdcall SNESAPUInfo(u32 *pVer, u32 *pMin, u32 *pOpt);
 #ifdef  __cplusplus
 }
 #endif
-// ----- degrade-factory code [END] -----
 
 #endif  //__INC_SNESAPU

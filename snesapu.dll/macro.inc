@@ -17,6 +17,9 @@
 ;
 ;                                                   Copyright (C) 2003 Alpha-II Productions
 ;                                                   Copyright (C) 2012 degrade-factory
+;
+;List of users and dates who/when modified this file:
+;   - degrade-factory in 2012-11-24
 ;===================================================================================================
 
 ;The following defines affect the way some macros work:
@@ -165,7 +168,6 @@
 
 %macro PUBLIC 1-*
     %ifdef  STDCALL
-; ----- degrade-factory code [2012/11/24] -----
         %if %0==1
             %xdefine    PUBNAME _%1
         %elif %0==2
@@ -197,7 +199,6 @@
             EXTERN  PUBNAME
         %endif
         %xdefine    %1  PUBNAME
-; ----- degrade-factory code [END] -----
     %elifdef    CDECL
         %ifdef  INTERNAL
             GLOBAL  _%1

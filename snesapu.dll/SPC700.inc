@@ -23,6 +23,9 @@
 ;
 ;                                                   Copyright (C) 1999-2008 Alpha-II Productions
 ;                                                   Copyright (C) 2003-2021 degrade-factory
+;
+;List of users and dates who/when modified this file:
+;   - degrade-factory in 2021-09-18
 ;===================================================================================================
 
 %define SPC700_INC
@@ -38,25 +41,19 @@ SPC_HALT    EQU 02h                                             ;Halt emulation
 DSP_HALT    EQU 04h                                             ;Internal flag used for syncing SPC_HALT with EmuDSP
 SPC_NODSP   EQU 08h                                             ;Disable calls to the DSP emu from the SPC700
 SPC_TRACE   EQU 10h                                             ;Trace next instruction
-; ----- degrade-factory code [2016/08/20] -----
 DSP_PAUSE   EQU 20h                                             ;Disable update envelope
-; ----- degrade-factory code [END] -----
 
-; ----- degrade-factory code [2016/08/20] -----
 ;SPC700 fetch options -----------------------
 FCH_HALT    EQU 01h
 FCH_NOP     EQU 02h
 FCH_PAUSE   EQU 03h
-; ----- degrade-factory code [END] -----
 
-; ----- degrade-factory code [2021/09/18] -----
 %ifdef SHVC_SOUND_SUPPORT
 ;Extend function pointer address ------------
 EXT_WRPORT  EQU 10014h                                          ;Callback function to write port
 EXT_RDPORT  EQU 10018h                                          ;Callback function to read port
 EXT_RESET   EQU 1001Ch                                          ;Callback function to reset
 %endif
-; ----- degrade-factory code [END] -----
 
 
 ;===================================================================================================
@@ -70,18 +67,13 @@ PUBLIC  extraRAM                                                ;RAM used for st
 PUBLIC  outPort                                                 ;Four out ports
 PUBLIC  t64Cnt                                                  ;Counter increased every 64kHz
 PUBLIC  dbgOpt                                                  ;SPC700 debugging options
-; ----- degrade-factory code [2006/08/01] -----
 PUBLIC  pSPCReg                                                 ;Pointer to SPC700 Register Buffer
-; ----- degrade-factory code [END] -----
-; ----- degrade-factory code [2015/07/11] -----
 PUBLIC  spcVarEP                                                ;Endpoint of SPC700.asm variables
-; ----- degrade-factory code [END] -----
 
 
 ;===================================================================================================
 ;Exported Functions
 
-; ----- degrade-factory code [2006/10/20] -----
 ;===================================================================================================
 ;Initialize SPC700
 ;
@@ -92,7 +84,6 @@ PUBLIC  spcVarEP                                                ;Endpoint of SPC
 ;   EAX
 
 PUBLIC InitSPC, NULL
-; ----- degrade-factory code [END] -----
 
 
 ;===================================================================================================

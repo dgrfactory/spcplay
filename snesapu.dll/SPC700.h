@@ -23,6 +23,9 @@
 *                                                                                                  *
 *                                                 Copyright (C) 1999-2008 Alpha-II Productions     *
 *                                                 Copyright (C) 2003-2016 degrade-factory          *
+*                                                                                                  *
+* List of users and dates who/when modified this file:                                             *
+*    - degrade-factory in 2016-08-20                                                               *
 ***************************************************************************************************/
 
 #ifndef __INC_SPC700
@@ -70,7 +73,6 @@
 
 #define SPC_HALT    0x2
 
-// ----- degrade-factory code [2016/08/20] -----
 //Pause DSP Emulation:
 //
 //Writes to the DSP envelope will have no update.
@@ -79,7 +81,6 @@
 // and DSP.  Therefore it's appropriate to use this flag with SPC_HALT.
 
 #define DSP_PAUSE   0x20
-// ----- degrade-factory code [END] -----
 
 
 //**************************************************************************************************
@@ -132,16 +133,12 @@ typedef void SPCDebug(volatile u8 *pc, volatile u16 ya, volatile u8 x, volatile 
 extern  "C" u8  extraRAM[64];                   //RAM used for storage if ROM reading is enabled
 extern  "C" u8  outPort[4];                     //Four out ports
 extern  "C" u32 t64Cnt;                         //Counter increased every 64kHz
-// ----- degrade-factory code [2006/08/01] -----
 extern  "C" u32 pSPCReg;                        //Pointer to SPC700 Register Buffer
-// ----- degrade-factory code [END] -----
 #else
 extern  u8  extraRAM[64];
 extern  u8  outPort[4];
 extern  u32 t64Cnt;
-// ----- degrade-factory code [2006/08/01] -----
 extern  u32 pSPCReg;
-// ----- degrade-factory code [END] -----
 #endif
 
 
@@ -152,7 +149,6 @@ extern  u32 pSPCReg;
 extern  "C" {
 #endif
 
-// ----- degrade-factory code [2008/01/08] -----
 //**************************************************************************************************
 // Initialize SPC700
 //
@@ -166,10 +162,8 @@ extern  "C" {
 //    EAX
 
 void InitSPC();
-// ----- degrade-factory code [END] -----
 
 
-// ----- degrade-factory code [2008/01/08] -----
 //**************************************************************************************************
 // Reset SPC700
 //
@@ -183,7 +177,6 @@ void InitSPC();
 //    EAX
 
 void ResetSPC();
-// ----- degrade-factory code [END] -----
 
 
 //**************************************************************************************************
@@ -206,7 +199,6 @@ void ResetSPC();
 SPCDebug* SetSPCDbg(SPCDebug *pTrace, u32 opts);
 
 
-// ----- degrade-factory code [2008/01/08] -----
 //**************************************************************************************************
 // Fix SPC700 After Loading SPC File
 //
@@ -223,7 +215,6 @@ SPCDebug* SetSPCDbg(SPCDebug *pTrace, u32 opts);
 //    EAX
 
 void FixSPC(u16 pc, u8 a, u8 y, u8 x, u8 psw, u8 sp);
-// ----- degrade-factory code [END] -----
 
 
 //**************************************************************************************************
@@ -271,7 +262,6 @@ void SetAPURAM(u32 addr, u8 val);
 void InPort(u8 port, u8 val);
 
 
-// ----- degrade-factory code [2008/01/08] -----
 //**************************************************************************************************
 // Emulate SPC700
 //
@@ -292,7 +282,6 @@ void InPort(u8 port, u8 val);
 //    nothing
 
 s32 EmuSPC(s32 cyc);
-// ----- degrade-factory code [END] -----
 
 
 #ifdef  __cplusplus
