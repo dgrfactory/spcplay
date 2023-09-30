@@ -44,7 +44,7 @@
 //  ※ GNU 一般公衆利用許諾契約書バージョン 2 のドキュメントは、付属の LICENSE にあります。
 //
 //
-//  Copyright (C) 2003-2022 degrade-factory. All rights reserved.
+//  Copyright (C) 2003-2023 degrade-factory. All rights reserved.
 //
 // =================================================================================================
 program spccmd;
@@ -254,7 +254,7 @@ const
     STATUS_PAUSE = $4;                                      // Pause フラグ
 
     STR_VERSION_1: array[0..1] of string = ('SNES SPC700 Player 外部拡張コマンド ツール', 'SNES SPC700 Player external command tool');
-    STR_VERSION_2: array[0..1] of string = ('サポートしている SPCPLAY.EXE のバージョン： v2.19.4 以降', 'Supported SPCPLAY.EXE version: v2.19.4 or later');
+    STR_VERSION_2: array[0..1] of string = ('サポートしている SPCPLAY.EXE のバージョン： v2.20.0 以降', 'Supported SPCPLAY.EXE version: v2.20.0 or later');
 
     STR_USAGE_TITLE: array[0..1] of string = ('<< 構文 >>', '<< USAGE >>');
     STR_USAGE_NEXT: array[0..1] of string = ('Enter キーで続きを表示します...', 'Press Enter key to continue...');
