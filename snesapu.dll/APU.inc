@@ -19,10 +19,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 2003-2006 Alpha-II Productions
-;                                                   Copyright (C) 2022-2022 degrade-factory
+;                                                   Copyright (C) 2003-2023 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2022-09-03
+;   - degrade-factory in 2023-09-26
 ;===================================================================================================
 
 %define APU_INC
@@ -35,36 +35,38 @@ CPU_CYC     EQU 24                                              ;CPU clock divis
                                                                 ;12 = 2.048MHz
                                                                 ;24 = 1.024MHz
 
+;Standard Flags ------------------------
 DEBUG       EQU 1                                               ;Enable debugging ability
 DSPINTEG    EQU 1                                               ;Integrate DSP emulation with SPC700
-
 HALFC       EQU 1                                               ;Enable half-carry flag emulation for decimal adjusts
-SPEED       EQU 0                                               ;Enable speed hacks for counter reads and SLEEP
-                                                                ;   Notes:  If speed hacks enabled, will stop Script700 when sleeping SPC700.
-                                                                ;           If unused Script700, set the flag to "1" in order to run faster emulation.
 IPLW        EQU 1                                               ;Enables the IPL Writable flag in register F1
-
-CNTBK       EQU 0                                               ;Break SPC700/Update DSP if a counter increases
-DSPBK       EQU 0                                               ;Break SPC700/Update DSP if register F3 is read
-INTBK       EQU 1                                               ;Break SPC700/Update DSP if emulated 1Ts with SPC700
-                                                                ;   Notes:  If all of CNTBK, DSPBK and INTBK are set to 0, sound will be not output.
-                                                                ;           If you want the behavior closest to the SNES, set only INTBK to "1".
-
-ECHOMEM     EQU 0                                               ;Processing related to echo memory is made closer to the actual device
-                                                                ;   Notes:  If set to 1 and the playing speed is set to anything other than 100%,
-                                                                ;           playing may stop.  See REDl in DSP.asm
-
+STEREO      EQU 1                                               ;Enable stereo controls (separation and EFBCT)
 VMETERM     EQU 1                                               ;Monitor main output level (for APR)
 VMETERV     EQU 1                                               ;Monitor levels of each voice (for visualization)
 
-STEREO      EQU 1                                               ;Enable stereo controls (separation and EFBCT)
+;Speed Hack ----------------------------
+;   Note: If speed hacks enabled, will stop Script700 when sleeping SPC700.
+;    If unused Script700, set the flag to '1' in order to run faster emulation.
+SPEED       EQU 0                                               ;Enable speed hacks for counter reads and SLEEP
 
-;SNESAPU buffer size
+;Interrupt Timing to DSP ---------------
+;   Note: If all of CNTBK, DSPBK and INTBK are set to '0', sound will be not output.
+;    If you want the behavior closest to the actual device, set only INTBK to '1'.
+CNTBK       EQU 0                                               ;Break SPC700/Update DSP if a counter increases
+DSPBK       EQU 0                                               ;Break SPC700/Update DSP if register F3 is read
+INTBK       EQU 1                                               ;Break SPC700/Update DSP if emulated 1Ts with SPC700
+
+;Echo Memory Writer --------------------
+;   Notes: If set to '1' and the playing speed is set to anything other than 100%,
+;    playing may stop.  See REDl in DSP.asm
+ECHOMEM     EQU 0                                               ;Processing echo memory is made closer to the actual device
+
+;SNESAPU buffer size -------------------
 APURAMSIZE  EQU 10000h                                          ;APU RAM Memory Size
 SCR700SIZE  EQU 100000h                                         ;Script700 Program Area Size
 SCR700MASK  EQU SCR700SIZE - 1                                  ;Script700 Program Area Mask
 
-;SNESAPU callback effect
+;SNESAPU callback effect ---------------
 CBE_DSPREG  EQU 01h                                             ;Write DSP value event
 CBE_S700FCH EQU 02h                                             ;Write SPC700 fetch event
 CBE_INCS700 EQU 40000000h                                       ;Include Script700 text file

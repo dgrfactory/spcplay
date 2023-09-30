@@ -22,10 +22,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2008 Alpha-II Productions
-;                                                   Copyright (C) 2003-2022 degrade-factory
+;                                                   Copyright (C) 2003-2023 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2022-04-02
+;   - degrade-factory in 2023-10-01
 ;===================================================================================================
 
 CPU     386
@@ -78,8 +78,8 @@ BITS    32
 ;Structures
 
 ;The flags are split up into eight dwords, with the flag being stored in the second byte.  The high
-;word of P is loaded with the pointer to RAM, so the 32-bit value of [P-1] is a literal pointer to
-;the current Direct Page.
+; word of P is loaded with the pointer to RAM, so the 32-bit value of [P-1] is a literal pointer to
+; the current Direct Page.
 
 STRUC SPCFlags
         resb    1
@@ -119,7 +119,7 @@ STRUC MemMap
 ENDSTRUC
 
 ;===================================================================================================
-; Data
+;Data
 
 %ifndef WIN32
 SECTION .data ALIGN=256
@@ -169,7 +169,7 @@ SECTION .data ALIGN=32
 
 
 ;===================================================================================================
-; Variables
+;Variables
 
 %ifndef WIN32
 SECTION .bss ALIGN=256
@@ -226,7 +226,7 @@ SECTION .bss ALIGN=64
 
 
 ;===================================================================================================
-; Code
+;Code
 
 %ifndef WIN32
 SECTION .text ALIGN=256
@@ -682,10 +682,9 @@ PROC RunScript700, interrupt
     PushAD                                                                      ;Push all registers
     Mov     EBX,[scr700ptr]                                                     ;EBX = Program pointer
 
+    ;Note: Since the argument cannot be obtained when EBP is changed, the argument is judged before
+    ; assignment of EBP.
     Test    byte [interrupt],-1                                                 ;Is called in interrupt mode?
-                                                                                ;   Note: Since the argument cannot be obtained
-                                                                                ;   when EBP is changed, the argument is judged
-                                                                                ;   before assignment of EBP.
     Mov     EBP,[pSCRRAM]                                                       ;EBP = Script RAM Pointer
     JZ      short .700RETURN                                                    ;   No
 
@@ -1797,6 +1796,9 @@ SPCTimers:
 
         .No700:
 %if INTBK && DSPINTEG
+        Test    byte [dbgOpt],SPC_NODSP
+        JNZ     short .NoDSP
+
         Call    CatchUp                                                         ;Emulate DSP
 %endif
 
