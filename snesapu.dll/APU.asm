@@ -22,7 +22,7 @@
 ;                                                   Copyright (C) 2003-2023 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2023-09-03
+;   - degrade-factory in 2023-10-01
 ;===================================================================================================
 
 CPU     386
@@ -40,7 +40,7 @@ BITS    32
 
 
 ;===================================================================================================
-; Data
+;Data
 
 %ifndef WIN32
 SECTION .data ALIGN=256
@@ -57,16 +57,13 @@ SECTION .data ALIGN=32
 
 
 ;===================================================================================================
-; Variables
+;Variables
 
 %ifndef WIN32
 SECTION .bss ALIGN=256
 %else
 SECTION .bss ALIGN=64
 %endif
-
-;Don't touch!  All arrays are carefully aligned on large boundaries to facillitate easier indexing
-;and better cache utilization.
 
     apuRAMBuf   resb    APURAMSIZE*2+16                                         ;SNESAPU 64KB APU RAM buffer
     scrRAMBuf   resb    SCR700SIZE+8                                            ;Script700 RAM buffer
@@ -106,7 +103,7 @@ SECTION .bss ALIGN=64
     pSCRRAM     resd    1                                                       ;Pointer to Script700 RAM
     cycLeft     resd    1                                                       ;Clock cycles left to emulate in EmuAPU loop
     smpDec      resd    1                                                       ;Unused clocks from cycle to sample conversion
-    smpRate     resd    1                                                       ;Sample rate (max 32kHz)
+    smpRate     resd    1                                                       ;Sample rate (max 32kHz in actual emulation mode)
     smpRAdj     resd    1                                                       ;Sample rate adjustment (16.16)
     smpREmu     resd    1                                                       ;Number of emulated samples per second
 
@@ -121,7 +118,7 @@ SECTION .bss ALIGN=64
 
 
 ;===================================================================================================
-; Code
+;Code
 
 %ifndef WIN32
 SECTION .text ALIGN=256
@@ -166,7 +163,6 @@ PROC InitAPU, reason
     Mov     dword [rawRate],32000
 
     Call    SetAPUSmpClk,[smpRAdj]
-
     Call    ResetAPU,10000h                                                     ;Reset APU
     Call    SetScript700,0                                                      ;Reset Script700
 
@@ -434,14 +430,15 @@ USES EDX
     Mov     [opts],EAX
 
     ;DSP option adjustment -------------------
-    Mov     EDX,[dspOpts]                                                       ;If the DSP_ECHOFIR flag changes, force sampling rate
-    XOr     EDX,EAX                                                             ; processing (rawRate = -1)
-    Test    EDX,DSP_ECHOFIR
-    SetZ    DL
-    MovZX   EDX,DL
-    Dec     EDX
-    Or      [rawRate],EDX
+    Mov     EDX,[dspOpts]
+    XOr     EDX,EAX
     Mov     [dspOpts],EAX
+
+    Test    EDX,DSP_ECHOFIR                                                     ;If the DSP_ECHOFIR flag changes,
+    SetZ    AL                                                                  ; force sampling rate processing (rawRate = -1)
+    MovZX   EAX,AL
+    Dec     EAX
+    Or      [rawRate],EAX
 
     Mov     EAX,[rate]
     Cmp     EAX,[rawRate]                                                       ;Has sample rate changed?
@@ -458,6 +455,7 @@ USES EDX
         .OKH:
         Mov     [rawRate],EAX
 
+%if INTBK
         Test    dword [dspOpts],DSP_ECHOFIR                                     ;Is actual emulation mode?
         JZ      short .OKA                                                      ;   No, smpRate = rawRate
 
@@ -466,7 +464,10 @@ USES EDX
             Mov     EAX,32000
 
         .OKA:
+%endif
+
         Mov     [smpRate],EAX
+        Mov     dword [rawRDec],0
         Call    SetAPUSmpClk,[smpRAdj]                                          ;Calculate the number of clock cycles per sample
 
     .KeepRate:
@@ -522,39 +523,39 @@ USES ECX,EDX,EBX,EDI
 
 %if DSPINTEG
     Mov     EDI,[pBuf]
-    Mov     EAX,[len]
-    XOr     EDX,EDX
-    Mov     [smpSize],EDX
+    Mov     EBX,[len]
+    Mov     dword [smpSize],0
 
+%if INTBK
     Test    byte [type],-1                                                      ;Is the unit of len sample?
-    JZ      short .NextSec                                                      ;   No, skip
+    JZ      short .NextSec                                                      ;   No
 
-    Test    dword [dspOpts],DSP_ECHOFIR                                         ;Is actual emulation mode?
-    JZ      short .NextSec                                                      ;   No, skip
+    Mov     EDX,[smpRate]
+    Cmp     EDX,[rawRate]                                                       ;Is actual emulation mode?
+    JE      short .NextSec                                                      ;   No
 
-    Mov     EDX,[rawRate]
-    Cmp     EDX,32000                                                           ;Is the sampling rate same or less than 32kHz?
-    JBE     short .NextSec                                                      ;   Yes, skip
-
-    Mov     [smpSize],EAX
-    XOr     EDX,EDX                                                             ;EAX = Emulation time (based on below 32kHz)
-    Mov     ECX,[smpRate]                                                       ;   EAX * smpRate / rawRate
+    Mov     [smpSize],EBX
+    Mov     EAX,EBX
+    XOr     EDX,EDX                                                             ;EBX = Emulation time (based on below 32kHz)
+    Mov     ECX,[smpRate]                                                       ;   EBX * smpRate / rawRate
     Mul     ECX
     Mov     ECX,[rawRate]
     Div     ECX
+    Mov     EBX,EAX
 
     Sub     [rawRDec],EDX                                                       ;rawRDec -= smpRate % rawRate
     SetNC   DL
     MovZX   EDX,DL
     Dec     EDX
-    Sub     EAX,EDX                                                             ;If rawRDec < 0, EAX++
+    Sub     EBX,EDX                                                             ;If rawRDec < 0, EBX++
     And     EDX,ECX                                                             ;If rawRDec < 0, rawRDec += rawRate
     Add     [rawRDec],EDX
+%endif
 
     .NextSec:
     Mov     ECX,APU_CLK
     XOr     EDX,EDX
-    Mov     EBX,EAX
+    Mov     EAX,EBX
 
     ;Fixup samples/cycles --------------------
     Test    byte [type],-1
@@ -601,34 +602,47 @@ USES ECX,EDX,EBX,EDI
     .Samples:
 
     ;Emulate APU -----------------------------
-    ;For more accurate emulation, instead of waiting for cycles after doing all the processing,
-    ;running opcode should be processed internally every cycle.
-    ;However, this requires complex logic and sophisticated analysis.
+    ;Note: For more accurate emulation, instead of waiting for cycles after doing all the processing,
+    ; running opcode should be processed internally every cycle.
+    ; However, this requires complex logic and sophisticated analysis.
     Call    EmuSPC,EAX
 
     .NoCycles:
     Mov     [cycLeft],EAX
     Call    SetEmuDSP,0,0,0                                                     ;Create any remaining samples
+    Mov     EDI,EAX                                                             ;EAX = End of buffer
 
-    Mov     EDI,EAX                                                             ;EAX = end of buffer
     Test    EBX,EBX                                                             ;Is emulation complete?
     JNZ     .NextSec                                                            ;   No, continue
 
-    Cmp     EAX,[pBuf]                                                          ;Had emulate more than one sample?
-    JE      short .Done                                                         ;   No, done
-
-    Mov     ECX,[smpSize]
-    Test    ECX,ECX                                                             ;Had emulated all the samples?
+    Mov     EBX,[smpSize]
+    Test    EBX,EBX                                                             ;Had emulated all the samples?
     JZ      short .Done                                                         ;   Yes, done
-        Mov     dword [smpSize],-1                                              ;No adjustment samples
-        Call    EmuDSP,EAX,ECX                                                  ;Force emulate DSP only
-        Mov     dword [smpSize],0
+        XOr     EDX,EDX
+        Mov     [smpSize],EDX
+
+        Mov     EAX,[rawRate]                                                   ;EAX = rawRate / smpRate
+        Mov     ECX,[smpRate]                                                   ;EDX = rawRate % smpRate
+        Div     ECX
+
+        Test    EDX,EDX                                                         ;If EDX = 0 and EAX = EBX,
+        SetZ    DH                                                              ; then EDX = 1, else EDX = 0
+        Cmp     EAX,EBX
+        SetE    DL
+        And     DL,DH
+        MovZX   EDX,DL
+        Sub     EBX,EDX
+
+        Call    EmuDSP,EDI,EDX                                                  ;Force emulate DSP with UpdateEnv,UpdateSrc
+        Dec     dword [smpSize]
+        Call    EmuDSP,EAX,EBX                                                  ;Force emulate DSP without UpdateEnv,UpdateSrc
+        Inc     dword [smpSize]
 
     .Done:
 %else
-    ;Note: Setting DSPINTEG to 0, causes a minor bug here.
-    ;If 'len' parameter is given a value greater than about 87 seconds, will be occurred overflow.
-    ;If you want DSPINTEG to be 0, you must specify a small value for 'len' parameter.
+    ;Note: Setting DSPINTEG to '0', causes a minor bug here.
+    ; If 'len' parameter is given a value greater than about 87 seconds, will be occurred overflow.
+    ; If you want DSPINTEG to be '0', you must specify a small value for 'len' parameter.
 
     Mov     ECX,APU_CLK
 
@@ -658,7 +672,7 @@ USES ECX,EDX,EBX,EDI
 
         ;DSP ----------------------------------
         Sub     EDX,EAX                                                         ;Calculate number of samples to create
-        Mov     EAX,EDX                                                         ;EAX = number of cycles emulated
+        Mov     EAX,EDX                                                         ;EAX = Number of cycles emulated
         Mul     dword [smpREmu]
         Add     EAX,[smpDec]
         AdC     EDX,0
