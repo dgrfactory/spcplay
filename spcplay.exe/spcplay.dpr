@@ -2553,6 +2553,8 @@ const
     WM_APP_EMU_APU = $FFFE0000;                             // 強制エミュレート   ($FFFE????)
     WM_APP_EMU_DEBUG = $FFFF0000;                           // SPC700 転送テスト  ($FFFF???X, X:Flag)
 
+    DRAW_INFO_ALWAYS = $1;                                  // 常に描画
+
     FILE_TYPE_NOTEXIST = $1;                                // 存在しない
     FILE_TYPE_NOTREAD = $2;                                 // 読み込み不可
     FILE_TYPE_UNKNOWN = $3;                                 // 不明な形式
@@ -2562,9 +2564,12 @@ const
     FILE_TYPE_FOLDER = $13;                                 // フォルダ
     FILE_TYPE_SCRIPT700 = $14;                              // Script700
 
-    STATUS_OPEN = $1;                                       // Open フラグ
-    STATUS_PLAY = $2;                                       // Play フラグ
-    STATUS_PAUSE = $4;                                      // Pause フラグ
+    FUNCTION_TYPE_SEPARATE = $1;                            // 左右拡散度
+    FUNCTION_TYPE_FEEDBACK = $2;                            // フィードバック反転度
+    FUNCTION_TYPE_SPEED = $3;                               // 演奏速度
+    FUNCTION_TYPE_AMP = $4;                                 // 音量
+    FUNCTION_TYPE_SEEK = $5;                                // シーク
+    FUNCTION_TYPE_NO_TIMER = $80000000;                     // タイマー設定なし
 
     ID666_UNKNOWN = $0;                                     // 不明
     ID666_TEXT = $1;                                        // ID666 テキストフォーマット
@@ -2579,6 +2584,11 @@ const
     INFO_SPC_1 = $6;                                        // SPC 情報 1
     INFO_SPC_2 = $7;                                        // SPC 情報 2
     INFO_SCRIPT700 = $8;                                    // Script700 デバッグ
+
+    LIST_PLAY_INDEX_SELECTED = -1;                          // プレイリスト選択済みアイテム
+    LIST_PLAY_INDEX_RANDOM = -2;                            // プレイリストからランダム選択
+    LIST_NEXT_PLAY_SELECT = $10000;                         // プレイリストからアイテム選択
+    LIST_NEXT_PLAY_CENTER = $20000;                         // プレイリスト中央選択
 
     PLAY_TYPE_AUTO = $0;                                    // 演奏自動選択
     PLAY_TYPE_PLAY = $1;                                    // 演奏開始
@@ -2599,31 +2609,21 @@ const
     PLAY_ORDER_FIRST = $6;                                  // 最初から
     PLAY_ORDER_LAST = $7;                                   // 最後から
 
-    FUNCTION_TYPE_SEPARATE = $1;                            // 左右拡散度
-    FUNCTION_TYPE_FEEDBACK = $2;                            // フィードバック反転度
-    FUNCTION_TYPE_SPEED = $3;                               // 演奏速度
-    FUNCTION_TYPE_AMP = $4;                                 // 音量
-    FUNCTION_TYPE_SEEK = $5;                                // シーク
-    FUNCTION_TYPE_NO_TIMER = $80000000;                     // タイマー設定なし
-
-    LIST_PLAY_INDEX_SELECTED = -1;                          // プレイリスト選択済みアイテム
-    LIST_PLAY_INDEX_RANDOM = -2;                            // プレイリストからランダム選択
-    LIST_NEXT_PLAY_SELECT = $10000;                         // プレイリストからアイテム選択
-    LIST_NEXT_PLAY_CENTER = $20000;                         // プレイリスト中央選択
-
     READY_INITIALIZE = $0;                                  // 初期化中
     READY_ACTIVE = $1;                                      // 実行中
     READY_INACTIVE = $2;                                    // 表示停止中
 
-    TITLE_HIDE = $0;                                        // 非表示
-    TITLE_NORMAL = $100;                                    // 標準
-    TITLE_MINIMIZE = $200;                                  // 最小化
-    TITLE_ALWAYS_FLAG = $FF00;                              // 標準 + 最小化
-    TITLE_INFO_SEPARATE = $1;                               // 左右拡散度
-    TITLE_INFO_FEEDBACK = $2;                               // フィードバック反転度
-    TITLE_INFO_SPEED = $3;                                  // 演奏速度
-    TITLE_INFO_AMP = $4;                                    // 音量
-    TITLE_INFO_SEEK = $5;                                   // シーク
+    REDRAW_OFF = $0;                                        // 再描画なし
+    REDRAW_LOCK_CRITICAL = $1;                              // 描画ロック (強制)
+    REDRAW_LOCK_READY = $2;                                 // 描画ロック (次回描画許可)
+    REDRAW_ON = $4;                                         // 再描画あり
+
+    STATIC_SEEKBAR_TOP = 24;                                // シークバー検出位置 (上)
+    STATIC_SEEKBAR_BOTTOM = 35;                             // シークバー検出位置 (下)
+
+    STATUS_OPEN = $1;                                       // Open フラグ
+    STATUS_PLAY = $2;                                       // Play フラグ
+    STATUS_PAUSE = $4;                                      // Pause フラグ
 
     TIMER_ID_READY = $1;                                    // 準備完了
     TIMER_ID_OPTION_DISPLAY = $2;                           // オプション情報表示
@@ -2634,24 +2634,15 @@ const
     TIMER_INTERVAL_OPTION_LOCK = 300;                       // オプション変更ロックの時間
     TIMER_INTERVAL_REDRAW_RESUME = 1000;                    // サスペンド復帰後のウィンドウ再描画の時間
 
-    REDRAW_OFF = $0;                                        // 再描画なし
-    REDRAW_LOCK_CRITICAL = $1;                              // 描画ロック (強制)
-    REDRAW_LOCK_READY = $2;                                 // 描画ロック (次回描画許可)
-    REDRAW_ON = $4;                                         // 再描画あり
-
-    DRAW_INFO_ALWAYS = $1;                                  // 常に描画
-
-    WAVE_PROC_GRAPH_ONLY = $0;                              // インジケータのみ描画
-    WAVE_PROC_NO_GRAPH = $FFFF;                             // インジケータを描画しない
-    WAVE_PROC_WRITE_WAVE = $10000;                          // サウンドバッファ書き込み
-    WAVE_PROC_WRITE_INIT = $20000;                          // 再生時の初期化
-
-    WAVE_MESSAGE_MAX_COUNT = 1;                             // WAVE メッセージ最大送信数
-
-    WAVE_THREAD_SUSPEND = $0;                               // 停止状態
-    WAVE_THREAD_RUNNING = $1;                               // 実行状態
-    WAVE_THREAD_DEVICE_OPENED = $2;                         // デバイスのオープン完了
-    WAVE_THREAD_DEVICE_CLOSED = $4;                         // デバイスのクローズ完了
+    TITLE_HIDE = $0;                                        // 非表示
+    TITLE_NORMAL = $100;                                    // 標準
+    TITLE_MINIMIZE = $200;                                  // 最小化
+    TITLE_ALWAYS_FLAG = $FF00;                              // 標準 + 最小化
+    TITLE_INFO_SEPARATE = $1;                               // 左右拡散度
+    TITLE_INFO_FEEDBACK = $2;                               // フィードバック反転度
+    TITLE_INFO_SPEED = $3;                                  // 演奏速度
+    TITLE_INFO_AMP = $4;                                    // 音量
+    TITLE_INFO_SEEK = $5;                                   // シーク
 
     WAVE_DEVICE_SET_ONLY = $0;                              // デバイス ID 選択のみ
     WAVE_DEVICE_UPDATE_LIST = $1;                           // デバイス一覧を更新
@@ -2664,6 +2655,18 @@ const
     WAVE_FORMAT_TAG_ARRAY: array[0..WAVE_FORMAT_TAG_SIZE - 1] of word = (WAVE_FORMAT_EXTENSIBLE, WAVE_FORMAT_PCM);
     WAVE_FORMAT_INDEX_EXTENSIBLE = 0;
     WAVE_FORMAT_INDEX_PCM = 1;
+
+    WAVE_PROC_GRAPH_ONLY = $0;                              // インジケータのみ描画
+    WAVE_PROC_NO_GRAPH = $FFFF;                             // インジケータを描画しない
+    WAVE_PROC_WRITE_WAVE = $10000;                          // サウンドバッファ書き込み
+    WAVE_PROC_WRITE_INIT = $20000;                          // 再生時の初期化
+
+    WAVE_MESSAGE_MAX_COUNT = 1;                             // WAVE メッセージ最大送信数
+
+    WAVE_THREAD_SUSPEND = $0;                               // 停止状態
+    WAVE_THREAD_RUNNING = $1;                               // 実行状態
+    WAVE_THREAD_DEVICE_OPENED = $2;                         // デバイスのオープン完了
+    WAVE_THREAD_DEVICE_CLOSED = $4;                         // デバイスのクローズ完了
 
     COLOR_BAR_NUM = 6;                                      // インジケータバーの数
     COLOR_BAR_NUM_X3 = 18;
@@ -10534,7 +10537,7 @@ begin
         Y := Trunc(longint(Y shl 1) / Status.dwScale);
     end;
     // シークバー上でダブルクリックされた場合は終了
-    if not ((X < 140) or (X > 280) or (Y < 27) or (Y >= 32)) then begin
+    if not ((X < 140) or (X > 280) or (Y < STATIC_SEEKBAR_TOP) or (Y >= STATIC_SEEKBAR_BOTTOM)) then begin
         if longbool(Option.dwSeekBar) or (Option.dwPlayMax > PLAY_MAX_ENDLESS) then exit;
     end;
     // 情報表示切替
@@ -10649,7 +10652,7 @@ begin
         Y := Trunc(longint(Y shl 1) / Status.dwScale);
     end;
     // クリック位置が範囲外の場合は終了
-    if (X < 140) or (X > 280) or (Y < 27) or (Y >= 32) then exit;
+    if (X < 140) or (X > 280) or (Y < STATIC_SEEKBAR_TOP) or (Y >= STATIC_SEEKBAR_BOTTOM) then exit;
     // クリック位置の割合を取得
     Y := Trunc((X - 139) / 141 * Status.dwDefaultTimeout) + 1;
     if X = 140 then X := 0 else X := Trunc((X - 140) / 141 * Status.dwDefaultTimeout) + 1;

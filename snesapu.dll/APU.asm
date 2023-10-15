@@ -22,7 +22,7 @@
 ;                                                   Copyright (C) 2003-2023 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2023-10-01
+;   - degrade-factory in 2023-10-15
 ;===================================================================================================
 
 CPU     386
@@ -720,7 +720,7 @@ USES ECX,EDX
     RetZF
     Mov     ECX,64000
     Div     ECX
-    Mov     ECX,EAX
+    Mov     ECX,EAX                                                             ;ECX = time / 64000
     IMul    EDX,APU_CLK/64000                                                   ;EDX = (time % 64000) * (APU_CLK / 64000)
 
     Test    byte [fast],-1                                                      ;Fast mode completely bypasses the DSP emulation
@@ -741,20 +741,47 @@ USES ECX,EDX
 
         .DoneSeek:
         Call    SetSPCDbg,-1,0                                                  ;Re-enable writes to the DSP registers
-        Jmp     short .Done
+        Jmp     .Done
 
     .Slow:
+        Mov     EAX,[dspOpts]
+        Push    EAX                                                             ;Save APU options
+        Or      EAX,DSP_ENVSPD+DSP_NOSAFE
+        Call    SetAPUOpt,-1,-1,-1,-1,-1,EAX
+        Mov     EAX,[smpRAdj]
+        Push    EAX                                                             ;Save APU speed
+
+        Push    EDI
+        Mov     EAX,EDI
+        ShR     EAX,16
+        JNZ     short .MinSpeed                                                 ;When APU speed is less than 100%, temporarily increase
+            Mov     EDI,10000h                                                  ; it to 100% to speed up processing
+
+        .MinSpeed:
         Test    EDX,EDX
         JZ      short .EmuAPU
 
+        Call    SetAPUSmpClk,EDI
         Call    EmuAPU,0,EDX,0
         Test    ECX,ECX
-        JZ      short .Done
+        JZ      short .DoneSlow
 
         .EmuAPU:
+        XOr     EAX,EAX
+        Test    ECX,ECX
+        SetZ    AL
+        Dec     EAX
+        Or      EAX,EDI
+        Call    SetAPUSmpClk,EAX
         Call    EmuAPU,0,APU_CLK,0
         Dec     ECX
         JNZ     short .EmuAPU
+
+        .DoneSlow:
+        Pop     EDI,EAX
+        Call    SetAPUSmpClk,EAX                                                ;Restore APU speed
+        Pop     EAX
+        Call    SetAPUOpt,-1,-1,-1,-1,-1,EAX                                    ;Restore APU options
 
     .Done:
     Call    FixSeek,[fast]                                                      ;Fixup DSP after seeking
