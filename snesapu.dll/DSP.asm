@@ -22,7 +22,7 @@
 ;                                                   Copyright (C) 2003-2023 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2023-10-01
+;   - degrade-factory in 2023-10-15
 ;===================================================================================================
 
 CPU     386
@@ -902,7 +902,7 @@ USES ECX,EBX,EDI
 
     .ClrMix:
         Mov     BL,[EDI+mFlg]
-        And     BL,MFLG_USER                                                    ;Leave voice muted, noise
+        And     BL,MFLG_USER                                                    ;Leave user voice flags (mute and noise)
         Or      BL,MFLG_OFF                                                     ;Set voice to inactive
 
         Mov     CL,32
@@ -1566,7 +1566,7 @@ USES ECX,EDI
         .ResetMix:
             Mov     [EDI+eVal],EAX
             Mov     [EDI+mOut],EAX
-            And     byte [EDI+mFlg],MFLG_USER                                   ;Leave voice muted, noise
+            And     byte [EDI+mFlg],MFLG_USER                                   ;Leave user voice flags (mute and noise)
             Or      byte [EDI+mFlg],MFLG_OFF                                    ;Set voice to inactive
             Sub     EDI,-80h
 
@@ -2033,12 +2033,14 @@ PROC StartEnv
 USES ESI
 
     XOr     EAX,EAX
-;   Mov     [EBX+eVal],EAX                                                      ;Envelope starts at 0
+    Mov     [EBX+eVal],EAX                                                      ;Envelope starts at 0
+    Mov     [EBX+mOut],EAX
     Mov     [EBX+eRIdx],AL                                                      ;Reset envelope counter
     Mov     EDX,[rateTab]
     Mov     [EBX+eRate],EDX                                                     ;Reset rate of adjustment
     Mov     [EBX+eCnt],EDX
-;   Mov     [ESI+envx],AL                                                       ;Reset envelope height
+    Mov     [ESI+envx],AL                                                       ;Reset envelope height
+    Mov     [ESI+outx],AL
     Mov     byte [EBX+eMode],E_ATT << 4                                         ;If envelope gets switched out of gain mode, start ADSR
 
     Test    byte [ESI+adsr],80h                                                 ;Is the envelope in ADSR mode?
@@ -2496,19 +2498,17 @@ ENDP
             JZ      %%Skip
 
             XOr     EDX,EDX
-            And     byte [EBX+mFlg],MFLG_USER                                   ;Leave voice muted, noise
+            And     byte [EBX+mFlg],MFLG_USER                                   ;Leave user voice flags (mute and noise)
             Mov     byte [EBX+mKOn],KON_DELAY                                   ;Set delay time from writing KON to output
-            Mov     [EBX+eVal],EDX                                              ;Reset envelope and wave height
-            Mov     [EBX+mOut],EDX
-            Mov     [ESI+envx],DL
+            Mov     [EBX+eVal],EDX                                              ;Reset envelope and wave height, because noise may be
+            Mov     [EBX+mOut],EDX                                              ; mixed in when the channel volume is changed immediately
+            Mov     [ESI+envx],DL                                               ; after KON.
             Mov     [ESI+outx],DL
 
             Or      [konRun],CH                                                 ;Start KON working
-
             Not     CH
             And     [dsp+endx],CH                                               ;Clear ENDX register if started KON
             Not     CH
-
             Jmp     %%Skip
 
         %%CheckKOff:
@@ -2526,7 +2526,6 @@ ENDP
             Not     CH
             And     [konRun],CH                                                 ;Cancel KON working
             Not     CH
-
             Jmp     %%Skip
 
         %%CheckEnv:
@@ -2541,7 +2540,7 @@ ENDP
         %%StartKON:
         Dec     byte [EBX+mKOn]                                                 ;Did time for enabled voice pass after KON had been
         JNZ     %%Skip                                                          ; written?  No, do nothing
-            And     byte [EBX+mFlg],MFLG_USER                                   ;Leave voice muted, noise
+            And     byte [EBX+mFlg],MFLG_USER                                   ;Leave user voice flags (mute and noise)
 
             ;Set voice volume ------------------
 %if STEREO
@@ -2594,8 +2593,8 @@ ENDP
             Pop     EDX,EAX                                                     ;Restore ADSR/Gain parameters
             Mov     [ESI+adsr],AX
             Mov     [ESI+gain],DL
-            Or      [voiceMix],CH                                               ;Mark voice as being on internally
 
+            Or      [voiceMix],CH                                               ;Mark voice as being on internally
             Not     CH
             And     [konRun],CH                                                 ;KON working was finished
             Not     CH
@@ -3063,7 +3062,7 @@ RFlg:
         Mov     AL,8
 
         .MFlg:
-            And     byte [EBX],MFLG_USER                                        ;Leave voice muted, noise
+            And     byte [EBX],MFLG_USER                                        ;Leave user voice flags (mute and noise)
             Or      byte [EBX],MFLG_OFF                                         ;Set voice to inactive
             Sub     EBX,-80h
 
@@ -3325,6 +3324,7 @@ ENDP
             Not     CH
             And     [voiceMix],CH                                               ;Don't include voice in mixing process
             Not     CH
+
             Mov     dword [EBX+eVal],0                                          ;Reset envelope and wave height
             Mov     dword [EBX+mOut],0
             Or      byte [EBX+mFlg],MFLG_OFF                                    ;Set voice to inactive
@@ -3493,8 +3493,7 @@ ENDP
     Test    byte [ESI+adsr],80h                                                 ;Is envelope flag in ADSR?
     JZ      %%EnvDone                                                           ;   No
 
-    Mov     byte [EBX+vRsv],0
-
+    Mov     [EBX+vRsv],AL                                                       ;Reset ADSR/Gain changed flag
     Test    CL,E_DEST                                                           ;Switch to next mode
     JNZ     short %%EnvSust
 
@@ -4772,13 +4771,13 @@ ENDP
 %endmacro
 
 %macro InitSampling 0
+    XOr     EBX,EBX
     XOr     EDX,EDX
 
     Mov     EAX,[smpCnt]                                                        ;smpCnt = (smpCnt + smpDec) % smpRate
     Add     EAX,[smpDec]
     Cmp     EAX,[smpRate]
     SetB    BL
-    MovZX   EBX,BL
     Dec     EBX
     And     EBX,[smpRate]
     Sub     EAX,EBX                                                             ;If the number of times is the least common multiple of
