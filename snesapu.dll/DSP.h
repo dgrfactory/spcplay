@@ -65,7 +65,7 @@
 #define DSP_ECHOFIR 0x800                       //Simulate SNES echo/FIR method
 #define DSP_NOSURND 0x1000                      //Disable surround sound
 #define DSP_ENVSPD  0x2000                      //Synchronize envelope updates with speed
-#define DSP_NOPLMT  0x2000                      //Disable the maximum pitch limit
+#define DSP_NOPLMT  0x4000                      //Disable the maximum pitch limit
 #define DSP_FLOAT   0x40000000                  //32bit floating-point volume output
 #define DSP_NOSAFE  0x80000000                  //Disable volume safe
 
