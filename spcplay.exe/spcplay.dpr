@@ -44,7 +44,7 @@
 //  ※ GNU 一般公衆利用許諾契約書バージョン 2 のドキュメントは、付属の LICENSE にあります。
 //
 //
-//  Copyright (C) 2003-2022 degrade-factory. All rights reserved.
+//  Copyright (C) 2003-2023 degrade-factory. All rights reserved.
 //
 // =================================================================================================
 program spcplay;
@@ -727,6 +727,13 @@ type
         Objects: array[0..15] of TDROPOBJECT;               // データオブジェクト情報
     end;
 
+    // POWERBROADCAST_SETTING 構造体
+    TPOWERBROADCAST_SETTING = record
+        PowerSetting: TGUID;                                // 電源設定
+        dwDataLength: longword;                             // データの長さ
+        Data: array of byte;                                // データ
+    end;
+
 {$IFDEF ITASKBARLIST3}
     // ITASKBARLIST3VTBL 構造体
     TITASKBARLIST3VTBL = record
@@ -899,7 +906,7 @@ type
         function  GetFileType(lpFile: pointer; bShowMsg: longbool; bScript700: longbool): longword;
         procedure GetID666Format(var Hdr: TSPCHDR);
         function  GetSize(lpBuffer: pointer; dwMax: longword): longword;
-        function  IsExt(lpFile: pointer; sExt: string): longbool;
+        function  IsExt(lpFile: pointer; const sExt: string): longbool;
         function  IsSafePath(lpFile: pointer): longbool;
         procedure ListAdd(dwAuto: longword);
         procedure ListClear();
@@ -1336,8 +1343,34 @@ const
     MONITORINFOF_PRIMARY = $1;
     MSGFLT_ADD = $1;
     MSGFLT_REMOVE = $2;
+    PBT_APMBATTERYLOW = $9;
+    PBT_APMPOWERSTATUSCHANGE = $A;
+    PBT_APMOEMEVENT = $B;
+    PBT_APMQUERYSUSPEND = $0;
+    PBT_APMQUERYSUSPENDFAILED = $2;
+    PBT_APMQUERYSTANDBY = $1;
+    PBT_APMQUERYSTANDBYFAILED = $3;
+    PBT_APMRESUMEAUTOMATIC = $12;
+    PBT_APMRESUMECRITICAL = $6;
+    PBT_APMRESUMESTANDBY = $8;
+    PBT_APMRESUMESUSPEND = $7;
+    PBT_APMSTANDBY = $5;
+    PBT_APMSUSPEND = $4;
+    PBT_POWERSETTINGCHANGE = $8013;
     PM_NOREMOVE = $0;
     PM_REMOVE = $1;
+    RDW_ALLCHILDREN = $80;
+    RDW_ERASE = $4;
+    RDW_ERASENOW = $200;
+    RDW_FRAME = $400;
+    RDW_INTERNALPAINT = $2;
+    RDW_INVALIDATE = $1;
+    RDW_NOCHILDREN = $40;
+    RDW_NOERASE = $20;
+    RDW_NOFRAME = $800;
+    RDW_NOINTERNALPAINT = $10;
+    RDW_UPDATENOW = $100;
+    RDW_VALIDATE = $8;
     SB_BOTH = $3;
     SB_BOTTOM = $7;
     SB_CTL = $2;
@@ -1879,6 +1912,7 @@ const
     WM_DESTROY = $2;
     WM_DESTROYCLIPBOARD = $307;
     WM_DEVMODECHANGE = $1B;
+    WM_DISPLAYCHANGE = $7E;
     WM_DRAWCLIPBOARD = $308;
     WM_DRAWITEM = $2B;
     WM_DROPFILES = $233;
@@ -2153,6 +2187,24 @@ const
     CALLBACK_TYPEMASK = $00070000;
     CALLBACK_WINDOW = $00010000;
 
+    CF_BITMAP = 2;
+    CF_DIB = 8;
+    CF_DIF = 5;
+    CF_ENHMETAFILE = 14;
+    CF_HDROP = 15;
+    CF_LOCALE = 16;
+    CF_MAX = 17;
+    CF_METAFILEPICT = 3;
+    CF_OEMTEXT = 7;
+    CF_PALETTE = 9;
+    CF_PENDATA = 10;
+    CF_RIFF = 11;
+    CF_SYLK = 4;
+    CF_TEXT = 1;
+    CF_TIFF = 6;
+    CF_UNICODETEXT = 13;
+    CF_WAVE = 12;
+
     CHECKSUM_MAP_FAILURE = 2;
     CHECKSUM_MAPVIEW_FAILURE = 3;
     CHECKSUM_OPEN_FAILURE = 1;
@@ -2166,6 +2218,50 @@ const
     CP_THREAD_ACP = 3;
     CP_UTF7 = 65000;
     CP_UTF8 = 65001;
+
+    DATA_S_SAMEFORMATETC = $00040130;
+    DRAGDROP_S_DROP = $00040100;
+    DRAGDROP_S_CANCEL = $00040101;
+    DRAGDROP_S_USEDEFAULTCURSORS = $00040102;
+    DRAGDROP_E_NOTREGISTERED = $80040100;
+    DRAGDROP_E_ALREADYREGISTERED = $80040101;
+    DRAGDROP_E_INVALIDHWND = $80040102;
+    DROPEFFECT_COPY = $1;
+    DROPEFFECT_LINK = $4;
+    DROPEFFECT_MOVE = $2;
+    DROPEFFECT_NONE = $0;
+    DROPEFFECT_SCROLL = $80000000;
+
+    DV_E_CLIPFORMAT = $8004006A;
+    DV_E_DVASPECT = $8004006B;
+    DV_E_DVTARGETDEVICE = $80040065;
+    DV_E_DVTARGETDEVICE_SIZE = $8004006C;
+    DV_E_FORMATETC = $80040064;
+    DV_E_LINDEX = $80040068;
+    DV_E_STATDATA = $80040067;
+    DV_E_STGMEDIUM = $80040066;
+    DV_E_TYMED = $80040069;
+    DVASPECT_CONTENT = $1;
+    DVASPECT_DOCPRINT = $8;
+    DVASPECT_ICON = $4;
+    DVASPECT_THUMBNAIL = $2;
+
+    E_ABORT = $80004004;
+    E_ACCESSDENIED = $80070005;
+    E_FAIL = $80004005;
+    E_HANDLE = $80070006;
+    E_INVALIDARG = $80070057;
+    E_NOINTERFACE = $80004002;
+    E_NOTIMPL = $80004001;
+    E_OUTOFMEMORY = $8007000E;
+    E_POINTER = $80004003;
+    E_UNEXPECTED = $8000FFFF;
+
+    ES_AWAYMODE_REQUIRED = $40;
+    ES_CONTINUOUS = $80000000;
+    ES_DISPLAY_REQUIRED = $2;
+    ES_SYSTEM_REQUIRED = $1;
+    ES_USER_PRESENT = $4;
 
     FILE_ATTRIBUTE_ARCHIVE = $00000020;
     FILE_ATTRIBUTE_COMPRESSED = $00000800;
@@ -2187,8 +2283,15 @@ const
     FILE_SHARE_DELETE = $4;
     FILE_SHARE_READ = $1;
     FILE_SHARE_WRITE = $2;
+
     GENERIC_READ = $80000000;
     GENERIC_WRITE = $40000000;
+
+    GMEM_FIXED = $0;
+    GMEM_MOVEABLE = $2;
+    GMEM_ZEROINIT = $40;
+    GHND = GMEM_MOVEABLE or GMEM_ZEROINIT;
+    GPTR = GMEM_FIXED or GMEM_ZEROINIT;
     INVALID_HANDLE_VALUE = $FFFFFFFF;
 
     CREATE_NEW = $1;
@@ -2197,89 +2300,6 @@ const
     OPEN_ALWAYS = $4;
     TRUNCATE_EXISTING = $5;
 
-    PROCESS_DUP_HANDLE = $0040;
-    PROCESS_CREATE_PROCESS = $0080;
-    PROCESS_CREATE_THREAD = $0002;
-    PROCESS_SET_QUOTA = $0100;
-    PROCESS_SET_INFORMATION = $0200;
-    PROCESS_SET_SESSIONID = $0004;
-    PROCESS_QUERY_INFORMATION = $0400;
-    PROCESS_TERMINATE = $0001;
-    PROCESS_VM_OPERATION = $0008;
-    PROCESS_VM_READ = $0010;
-    PROCESS_VM_WRITE = $0020;
-
-    VER_PLATFORM_WIN32s = 0;
-    VER_PLATFORM_WIN32_WINDOWS = 1;
-    VER_PLATFORM_WIN32_NT = 2;
-
-    WAVE_FORMAT_DIRECT = $8;
-    WAVE_FORMAT_EXTENSIBLE = $FFFE;
-    WAVE_FORMAT_IEEE_FLOAT = $3;
-    WAVE_FORMAT_PCM = $1;
-    WAVE_FORMAT_QUERY = $1;
-    MM_WOM_CLOSE = $3BC;
-    MM_WOM_DONE = $3BD;
-    MM_WOM_OPEN = $3BB;
-
-    GMEM_FIXED = $0;
-    GMEM_MOVEABLE = $2;
-    GMEM_ZEROINIT = $40;
-    GHND = GMEM_MOVEABLE or GMEM_ZEROINIT;
-    GPTR = GMEM_FIXED or GMEM_ZEROINIT;
-
-    CF_BITMAP = 2;
-    CF_DIB = 8;
-    CF_DIF = 5;
-    CF_ENHMETAFILE = 14;
-    CF_HDROP = 15;
-    CF_LOCALE = 16;
-    CF_MAX = 17;
-    CF_METAFILEPICT = 3;
-    CF_OEMTEXT = 7;
-    CF_PALETTE = 9;
-    CF_PENDATA = 10;
-    CF_RIFF = 11;
-    CF_SYLK = 4;
-    CF_TEXT = 1;
-    CF_TIFF = 6;
-    CF_UNICODETEXT = 13;
-    CF_WAVE = 12;
-    DATA_S_SAMEFORMATETC = $00040130;
-    DRAGDROP_S_DROP = $00040100;
-    DRAGDROP_S_CANCEL = $00040101;
-    DRAGDROP_S_USEDEFAULTCURSORS = $00040102;
-    DRAGDROP_E_NOTREGISTERED = $80040100;
-    DRAGDROP_E_ALREADYREGISTERED = $80040101;
-    DRAGDROP_E_INVALIDHWND = $80040102;
-    DROPEFFECT_COPY = $1;
-    DROPEFFECT_LINK = $4;
-    DROPEFFECT_MOVE = $2;
-    DROPEFFECT_NONE = $0;
-    DROPEFFECT_SCROLL = $80000000;
-    DV_E_CLIPFORMAT = $8004006A;
-    DV_E_DVASPECT = $8004006B;
-    DV_E_DVTARGETDEVICE = $80040065;
-    DV_E_DVTARGETDEVICE_SIZE = $8004006C;
-    DV_E_FORMATETC = $80040064;
-    DV_E_LINDEX = $80040068;
-    DV_E_STATDATA = $80040067;
-    DV_E_STGMEDIUM = $80040066;
-    DV_E_TYMED = $80040069;
-    DVASPECT_CONTENT = $1;
-    DVASPECT_DOCPRINT = $8;
-    DVASPECT_ICON = $4;
-    DVASPECT_THUMBNAIL = $2;
-    E_ABORT = $80004004;
-    E_ACCESSDENIED = $80070005;
-    E_FAIL = $80004005;
-    E_HANDLE = $80070006;
-    E_INVALIDARG = $80070057;
-    E_NOINTERFACE = $80004002;
-    E_NOTIMPL = $80004001;
-    E_OUTOFMEMORY = $8007000E;
-    E_POINTER = $80004003;
-    E_UNEXPECTED = $8000FFFF;
     OLE_E_ADVF = $80040001;
     OLE_E_ADVISENOTSUPPORTED = $80040003;
     OLE_E_BLANK = $80040007;
@@ -2299,6 +2319,19 @@ const
     OLE_E_PROMPTSAVECANCELLED = $8004000C;
     OLE_E_STATIC = $8004000B;
     OLE_E_WRONGCOMPOBJ = $8004000E;
+
+    PROCESS_DUP_HANDLE = $0040;
+    PROCESS_CREATE_PROCESS = $0080;
+    PROCESS_CREATE_THREAD = $0002;
+    PROCESS_SET_QUOTA = $0100;
+    PROCESS_SET_INFORMATION = $0200;
+    PROCESS_SET_SESSIONID = $0004;
+    PROCESS_QUERY_INFORMATION = $0400;
+    PROCESS_TERMINATE = $0001;
+    PROCESS_VM_OPERATION = $0008;
+    PROCESS_VM_READ = $0010;
+    PROCESS_VM_WRITE = $0020;
+
     TYMED_ENHMF = $40;
     TYMED_FILE = $2;
     TYMED_HGLOBAL = $1;
@@ -2307,6 +2340,19 @@ const
     TYMED_ISTREAM = $4;
     TYMED_MFPICT = $20;
     TYMED_NULL = $0;
+
+    VER_PLATFORM_WIN32s = 0;
+    VER_PLATFORM_WIN32_WINDOWS = 1;
+    VER_PLATFORM_WIN32_NT = 2;
+
+    WAVE_FORMAT_DIRECT = $8;
+    WAVE_FORMAT_EXTENSIBLE = $FFFE;
+    WAVE_FORMAT_IEEE_FLOAT = $3;
+    WAVE_FORMAT_PCM = $1;
+    WAVE_FORMAT_QUERY = $1;
+    MM_WOM_CLOSE = $3BC;
+    MM_WOM_DONE = $3BD;
+    MM_WOM_OPEN = $3BB;
 
 {$IFDEF ITASKBARLIST3}
     CLSCTX_INPROC_SERVER = $1;
@@ -2394,6 +2440,7 @@ const
     BUFFER_MUTE____: string = 'MUTE     0 : ';
     BUFFER_NEXTLENG: string = 'NEXTLENG 0 : ';
     BUFFER_NOISE___: string = 'NOISE    0 : ';
+    BUFFER_NOSLEEP_: string = 'NOSLEEP  0 : ';
     BUFFER_OPTION__: string = 'OPTION   0 : ';
     BUFFER_PITCH___: string = 'PITCH    0 : ';
     BUFFER_PITCHSNC: string = 'PITCHSNC 0 : ';
@@ -2407,6 +2454,7 @@ const
     BUFFER_SEEKBAR_: string = 'SEEKBAR  0 : ';
     BUFFER_SEEKFAST: string = 'SEEKFAST 2 : ';
     BUFFER_SEEKMAX_: string = 'SEEKMAX  1 : ';
+    BUFFER_SEEKSNC_: string = 'SEEKSNC  0 : ';
     BUFFER_SEEKTIME: string = 'SEEKTIME 1 : ';
     BUFFER_SEPARATE: string = 'SEPARATE 0 : ';
     BUFFER_SHIFTKEY: string = 'SHIFTKEY 0 : ';
@@ -2414,6 +2462,9 @@ const
     BUFFER_SPEEDTUN: string = 'SPEEDTUN 0 : ';
     BUFFER_TOP_____: string = 'TOP      0 : ';
     BUFFER_TOPMOST_: string = 'TOPMOST  0 : ';
+    BUFFER_TOPTDISP: string = 'TOPTDISP 0 : ';
+    BUFFER_TOPTLOCK: string = 'TOPTLOCK 0 : ';
+    BUFFER_TREDRAW_: string = 'TREDRAW  0 : ';
     BUFFER_VERSION_: string = 'VERSION  0 : ';
     BUFFER_VOLCOLOR: string = 'VOLCOLOR 0 : ';
     BUFFER_VOLRESET: string = 'VOLRESET 0 : ';
@@ -2436,13 +2487,15 @@ const
     SCRIPT7SETXT_FILENAME = '65816.7SE.TXT';
     SCRIPT700TXT_FILETYPE = '700.TXT';
     SCRIPT7SETXT_FILETYPE = '7SE.TXT';
-    ICON_NAME = 'MAINICON';
+
     BITMAP_NAME = 'MAINBMP';
+    ICON_NAME = 'MAINICON';
     FILE_DEFAULT: string = 'FILE TRANSMIT WINDOW';
-    MIN_WAVE_LEVEL = 65535;
-    LIST_ADD_THRESHOLD = 297;
     DRAG_START_THRESHOLD = 5;
     DRAG_LIMIT_THRESHOLD = 2;
+    LIST_ADD_THRESHOLD = 297;
+    MIN_WAVE_LEVEL = 65535;
+    NO_SLEEP_INTERVAL = 30000;
     WINDOW_MOVE_THRESHOLD = 10;
     WINDOW_WIDTH = 521;
     WINDOW_HEIGHT = 152;
@@ -2500,6 +2553,8 @@ const
     WM_APP_EMU_APU = $FFFE0000;                             // 強制エミュレート   ($FFFE????)
     WM_APP_EMU_DEBUG = $FFFF0000;                           // SPC700 転送テスト  ($FFFF???X, X:Flag)
 
+    DRAW_INFO_ALWAYS = $1;                                  // 常に描画
+
     FILE_TYPE_NOTEXIST = $1;                                // 存在しない
     FILE_TYPE_NOTREAD = $2;                                 // 読み込み不可
     FILE_TYPE_UNKNOWN = $3;                                 // 不明な形式
@@ -2509,9 +2564,12 @@ const
     FILE_TYPE_FOLDER = $13;                                 // フォルダ
     FILE_TYPE_SCRIPT700 = $14;                              // Script700
 
-    STATUS_OPEN = $1;                                       // Open フラグ
-    STATUS_PLAY = $2;                                       // Play フラグ
-    STATUS_PAUSE = $4;                                      // Pause フラグ
+    FUNCTION_TYPE_SEPARATE = $1;                            // 左右拡散度
+    FUNCTION_TYPE_FEEDBACK = $2;                            // フィードバック反転度
+    FUNCTION_TYPE_SPEED = $3;                               // 演奏速度
+    FUNCTION_TYPE_AMP = $4;                                 // 音量
+    FUNCTION_TYPE_SEEK = $5;                                // シーク
+    FUNCTION_TYPE_NO_TIMER = $80000000;                     // タイマー設定なし
 
     ID666_UNKNOWN = $0;                                     // 不明
     ID666_TEXT = $1;                                        // ID666 テキストフォーマット
@@ -2526,6 +2584,11 @@ const
     INFO_SPC_1 = $6;                                        // SPC 情報 1
     INFO_SPC_2 = $7;                                        // SPC 情報 2
     INFO_SCRIPT700 = $8;                                    // Script700 デバッグ
+
+    LIST_PLAY_INDEX_SELECTED = -1;                          // プレイリスト選択済みアイテム
+    LIST_PLAY_INDEX_RANDOM = -2;                            // プレイリストからランダム選択
+    LIST_NEXT_PLAY_SELECT = $10000;                         // プレイリストからアイテム選択
+    LIST_NEXT_PLAY_CENTER = $20000;                         // プレイリスト中央選択
 
     PLAY_TYPE_AUTO = $0;                                    // 演奏自動選択
     PLAY_TYPE_PLAY = $1;                                    // 演奏開始
@@ -2546,17 +2609,30 @@ const
     PLAY_ORDER_FIRST = $6;                                  // 最初から
     PLAY_ORDER_LAST = $7;                                   // 最後から
 
-    FUNCTION_TYPE_SEPARATE = $1;                            // 左右拡散度
-    FUNCTION_TYPE_FEEDBACK = $2;                            // フィードバック反転度
-    FUNCTION_TYPE_SPEED = $3;                               // 演奏速度
-    FUNCTION_TYPE_AMP = $4;                                 // 音量
-    FUNCTION_TYPE_SEEK = $5;                                // シーク
-    FUNCTION_TYPE_NO_TIMER = $80000000;                     // タイマー設定なし
+    READY_INITIALIZE = $0;                                  // 初期化中
+    READY_ACTIVE = $1;                                      // 実行中
+    READY_INACTIVE = $2;                                    // 表示停止中
 
-    LIST_PLAY_INDEX_SELECTED = -1;                          // プレイリスト選択済みアイテム
-    LIST_PLAY_INDEX_RANDOM = -2;                            // プレイリストからランダム選択
-    LIST_NEXT_PLAY_SELECT = $10000;                         // プレイリストからアイテム選択
-    LIST_NEXT_PLAY_CENTER = $20000;                         // プレイリスト中央選択
+    REDRAW_OFF = $0;                                        // 再描画なし
+    REDRAW_LOCK_CRITICAL = $1;                              // 描画ロック (強制)
+    REDRAW_LOCK_READY = $2;                                 // 描画ロック (次回描画許可)
+    REDRAW_ON = $4;                                         // 再描画あり
+
+    STATIC_SEEKBAR_TOP = 24;                                // シークバー検出位置 (上)
+    STATIC_SEEKBAR_BOTTOM = 35;                             // シークバー検出位置 (下)
+
+    STATUS_OPEN = $1;                                       // Open フラグ
+    STATUS_PLAY = $2;                                       // Play フラグ
+    STATUS_PAUSE = $4;                                      // Pause フラグ
+
+    TIMER_ID_READY = $1;                                    // 準備完了
+    TIMER_ID_OPTION_DISPLAY = $2;                           // オプション情報表示
+    TIMER_ID_OPTION_LOCK = $3;                              // オプション変更ロック
+    TIMER_ID_REDRAW_RESUME = $4;                            // サスペンド復帰後のウィンドウ再描画
+    TIMER_INTERVAL_READY = 0;                               // 準備完了までの遅延時間
+    TIMER_INTERVAL_OPTION_DISPLAY = 1000;                   // オプション情報表示の時間
+    TIMER_INTERVAL_OPTION_LOCK = 300;                       // オプション変更ロックの時間
+    TIMER_INTERVAL_REDRAW_RESUME = 1000;                    // サスペンド復帰後のウィンドウ再描画の時間
 
     TITLE_HIDE = $0;                                        // 非表示
     TITLE_NORMAL = $100;                                    // 標準
@@ -2567,30 +2643,6 @@ const
     TITLE_INFO_SPEED = $3;                                  // 演奏速度
     TITLE_INFO_AMP = $4;                                    // 音量
     TITLE_INFO_SEEK = $5;                                   // シーク
-
-    TIMER_ID_TITLE_INFO = $1;                               // 一時オプション情報表示
-    TIMER_ID_OPTION_LOCK = $2;                              // オプション変更ロック
-    TIMER_INTERVAL_TITLE_INFO = 1000;                       // 一時オプション情報表示の時間
-    TIMER_INTERVAL_OPTION_LOCK = 300;                       // オプション変更ロックの時間
-
-    REDRAW_OFF = $0;                                        // 再描画なし
-    REDRAW_LOCK_CRITICAL = $1;                              // 描画ロック (強制)
-    REDRAW_LOCK_READY = $2;                                 // 描画ロック (次回描画許可)
-    REDRAW_ON = $4;                                         // 再描画あり
-
-    DRAW_INFO_ALWAYS = $1;                                  // 常に描画
-
-    WAVE_PROC_GRAPH_ONLY = $0;                              // インジケータのみ描画
-    WAVE_PROC_NO_GRAPH = $FFFF;                             // インジケータを描画しない
-    WAVE_PROC_WRITE_WAVE = $10000;                          // サウンドバッファ書き込み
-    WAVE_PROC_WRITE_INIT = $20000;                          // 再生時の初期化
-
-    WAVE_MESSAGE_MAX_COUNT = 1;                             // WAVE メッセージ最大送信数
-
-    WAVE_THREAD_SUSPEND = $0;                               // 停止状態
-    WAVE_THREAD_RUNNING = $1;                               // 実行状態
-    WAVE_THREAD_DEVICE_OPENED = $2;                         // デバイスのオープン完了
-    WAVE_THREAD_DEVICE_CLOSED = $4;                         // デバイスのクローズ完了
 
     WAVE_DEVICE_SET_ONLY = $0;                              // デバイス ID 選択のみ
     WAVE_DEVICE_UPDATE_LIST = $1;                           // デバイス一覧を更新
@@ -2603,6 +2655,18 @@ const
     WAVE_FORMAT_TAG_ARRAY: array[0..WAVE_FORMAT_TAG_SIZE - 1] of word = (WAVE_FORMAT_EXTENSIBLE, WAVE_FORMAT_PCM);
     WAVE_FORMAT_INDEX_EXTENSIBLE = 0;
     WAVE_FORMAT_INDEX_PCM = 1;
+
+    WAVE_PROC_GRAPH_ONLY = $0;                              // インジケータのみ描画
+    WAVE_PROC_NO_GRAPH = $FFFF;                             // インジケータを描画しない
+    WAVE_PROC_WRITE_WAVE = $10000;                          // サウンドバッファ書き込み
+    WAVE_PROC_WRITE_INIT = $20000;                          // 再生時の初期化
+
+    WAVE_MESSAGE_MAX_COUNT = 1;                             // WAVE メッセージ最大送信数
+
+    WAVE_THREAD_SUSPEND = $0;                               // 停止状態
+    WAVE_THREAD_RUNNING = $1;                               // 実行状態
+    WAVE_THREAD_DEVICE_OPENED = $2;                         // デバイスのオープン完了
+    WAVE_THREAD_DEVICE_CLOSED = $4;                         // デバイスのクローズ完了
 
     COLOR_BAR_NUM = 6;                                      // インジケータバーの数
     COLOR_BAR_NUM_X3 = 18;
@@ -2807,10 +2871,11 @@ const
     OPTION_NOFIR = $80;                                     // FIR フィルタ無効
     OPTION_BASSBOOST = $100;                                // BASS BOOST (低音強調)
     OPTION_NOENV = $200;                                    // エンベロープ無効
-    OPTION_NONOISE = $400;                                  // ノイズ無効
+    OPTION_NONOISE = $400;                                  // ノイズ発音指定無効
     OPTION_ECHOFIR = $800;                                  // 実機に近いエコー/FIR 処理
     OPTION_NOSURROUND = $1000;                              // サラウンド無効
     OPTION_ENVSPEED = $2000;                                // エンベロープ速度を同期
+    OPTION_NOPLIMIT = $4000;                                // ピッチ制限無効
     OPTION_FLOATOUT = $40000000;                            // 32 ビット (float) で出力レベルを設定
     OPTION_NOEARSAFE = $80000000;                           // イヤーセーフ無効
 
@@ -2905,11 +2970,12 @@ const
     MENU_SETUP_MUTE_NOISE_SIZE = 8;
     MENU_SETUP_MUTE_NOISE_ALL_SIZE = 3;
     MENU_SETUP_OPTION = 50;
-    MENU_SETUP_OPTION_SIZE = 16;
+    MENU_SETUP_OPTION_SIZE = 17;
     MENU_SETUP_OPTION_BASE = 500; // +10
     MENU_SETUP_OPTION_VALUE: array[0..MENU_SETUP_OPTION_SIZE - 1] of longword =
         (OPTION_LOWPASS, OPTION_ECHOFIR, NULL, OPTION_BASSBOOST, OPTION_OLDSMP, OPTION_SURROUND, OPTION_REVERSE, OPTION_ENVSPEED,
-         NULL, OPTION_NOSURROUND, OPTION_NOECHO, OPTION_NOPMOD, OPTION_NOPREAD, OPTION_NOFIR, OPTION_NOENV, OPTION_NONOISE);
+         NULL, OPTION_NOSURROUND, OPTION_NOECHO, OPTION_NOFIR, OPTION_NOPMOD, OPTION_NOPREAD, OPTION_NOPLIMIT, OPTION_NOENV,
+         OPTION_NONOISE);
     MENU_SETUP_TIME = 60;
     MENU_SETUP_TIME_DISABLE = 600;
     MENU_SETUP_TIME_ID666 = 601;
@@ -2921,13 +2987,15 @@ const
     MENU_SETUP_ORDER_SIZE = 6;
     MENU_SETUP_ORDER_BASE = 610;
     MENU_SETUP_SEEK = 62;
-    MENU_SETUP_SEEK_SIZE = 5;
+    MENU_SETUP_SEEK_SIZE = 6;
     MENU_SETUP_SEEK_BASE = 620; // +10
-    MENU_SETUP_SEEK_VALUE: array[0..MENU_SETUP_SEEK_SIZE - 1] of longword = (1000, 2000, 3000, 4000, 5000);
+    MENU_SETUP_SEEK_VALUE: array[0..MENU_SETUP_SEEK_SIZE - 1] of longword = (1000, 2000, 3000, 4000, 5000, 10000);
+    MENU_SETUP_SEEK_FAST = 652;
+    MENU_SETUP_SEEK_ASYNC = 653;
     MENU_SETUP_INFO = 63;
     MENU_SETUP_INFO_SIZE = 9;
     MENU_SETUP_INFO_BASE = 630;
-    MENU_SETUP_INFO_RESET = 629;
+    MENU_SETUP_INFO_RESET = 651;
     MENU_SETUP_PRIORITY = 64;
     MENU_SETUP_PRIORITY_SIZE = 6;
     MENU_SETUP_PRIORITY_BASE = 640;
@@ -3066,7 +3134,7 @@ const
     STR_MENU_SETUP_PITCH_PLUS: array[0..1] of string = ('＋&', '+ &');
     STR_MENU_SETUP_PITCH_MINUS: array[0..1] of string = ('－&', '- &');
     STR_MENU_SETUP_PITCH_ZERO: pchar = ' &0 ';
-    STR_MENU_SETUP_PITCH_ASYNC: array[0..1] of pchar = ('演奏速度と同期(&Y)', 'S&ynchronize with Speed');
+    STR_MENU_SETUP_PITCH_ASYNC: array[0..1] of pchar = ('演奏速度比と同期(&M)', '&Multiply by &Speed');
     STR_MENU_SETUP_SEPARATE: array[0..1] of pchar = ('左右拡散度(&E)', 'Stereo S&eparator');
     STR_MENU_SETUP_FEEDBACK: array[0..1] of pchar = ('フィードバック反転度(&F)', 'Echo &Feedback');
     STR_MENU_SETUP_SPEED: array[0..1] of pchar = ('演奏速度(&S)', '&Speed');
@@ -3086,6 +3154,8 @@ const
     STR_MENU_SETUP_INFO: array[0..1] of pchar = ('情報表示(&A)', 'I&nformation Viewer');
     STR_MENU_SETUP_INFO_RESET: array[0..1] of pchar = ('無音チャンネル非表示(&H)', '&Hide Muted Channels');
     STR_MENU_SETUP_SEEK: array[0..1] of pchar = ('シーク時間(&K)', 'See&k Time');
+    STR_MENU_SETUP_SEEK_FAST: array[0..1] of pchar = ('高速シーク(&F)', '&Fast Seek');
+    STR_MENU_SETUP_SEEK_ASYNC: array[0..1] of pchar = ('演奏速度比と同期(&M)', '&Multiply by Speed');
     STR_MENU_SETUP_PRIORITY: array[0..1] of pchar = ('処理優先度(&U)', 'CP&U Priority');
     STR_MENU_SETUP_TOPMOST: array[0..1] of pchar = ('常に手前に表示(&W)', 'Al&ways on Top');
     STR_MENU_LIST_PLAY: array[0..1] of pchar = ('演奏開始(&P)', '&Play');
@@ -3116,9 +3186,11 @@ const
         ('&8-Bit', Concat('&16-Bit', #9, '[Normal]'), '&24-Bit', '&32-Bit  (int)', Concat('&32-Bit  (float)', #9, '[HQ]')));
     STR_MENU_SETUP_RATE_SUB: array[0..1] of array[0..MENU_SETUP_RATE_SIZE - 1] of pchar = (
         ('&8,000 Hz', '&10,000 Hz', '&11,025 Hz', '&12,000 Hz', '&16,000 Hz', '&20,000 Hz', '&22,050 Hz', '&24,000 Hz',
-         Concat('&32,000 Hz', #9, '[推奨]'), '&40,000 Hz', '&44,100 Hz', '&48,000 Hz', '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz'),
+         Concat('&32,000 Hz', #9, '[標準]'), '&40,000 Hz', Concat('&44,100 Hz', #9, '[CD]'), Concat('&48,000 Hz', #9, '[DVD]'),
+         '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz'),
         ('&8,000 Hz', '&10,000 Hz', '&11,025 Hz', '&12,000 Hz', '&16,000 Hz', '&20,000 Hz', '&22,050 Hz', '&24,000 Hz',
-         Concat('&32,000 Hz', #9, '[Recommend]'), '&40,000 Hz', '&44,100 Hz', '&48,000 Hz', '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz'));
+         Concat('&32,000 Hz', #9, '[Normal]'), '&40,000 Hz', Concat('&44,100 Hz', #9, '[CD]'), Concat('&48,000 Hz', #9, '[DVD]'),
+         '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz'));
     STR_MENU_SETUP_INTER_SUB: array[0..1] of array[0..MENU_SETUP_INTER_SIZE - 1] of pchar = (
         ('無効(&D)', '線形補間(&L)', '三次スプライン補間(&C)', Concat('実機ガウス分布補間(&G)', #9, '[標準]'),
          Concat('シンク関数補間(&S)', #9, '[高音質]'), 'ガウス関数補間(&A)'),
@@ -3129,11 +3201,11 @@ const
         ('&Normal', 'OLD &Sound Blaster Card', 'OLD &ZSNES, Snes9x'));
     STR_MENU_SETUP_OPTION_SUB: array[0..1] of array[0..MENU_SETUP_OPTION_SIZE - 1] of pchar = (
         ('実機ローパス フィルタ(&L)', '実機エコー/FIR 処理(&M)', NULLPOINTER, '&BASS BOOST', '過去の &ADPCM デコーダ', '逆位相サラウンド強制(&S)',
-         '左右反転(&R)', 'エンベロープ速度を同期(&Y)', NULLPOINTER, 'サラウンド無効(&U)', 'エコー無効(&E)',
-         'ピッチ モジュレーション無効(&P)', 'ピッチ ベンド無効(&I)', '&FIR フィルタ無効', 'エンベロープ無効(&V)', 'ノイズ発音指定無効(&N)'),
+         '左右反転(&R)', 'エンベロープ速度を同期(&Y)', NULLPOINTER, 'サラウンド無効(&U)', 'エコー無効(&E)', '&FIR フィルタ無効',
+         'ピッチ モジュレーション無効(&P)', 'ピッチ ベンド無効(&I)', 'ピッチ リミット無効(&T)', 'エンベロープ無効(&V)', 'ノイズ発音指定無効(&N)'),
         ('SNES &Low-Pass Filter', 'SNES Echo/FIR &Method', NULLPOINTER, '&BASS BOOST', 'Old &ADPCM Decoder', 'Opposite-Phase &Surround',
-         '&Reverse Stereo', 'S&ynchronize Envelope with Speed', NULLPOINTER, 'Disable S&urround', 'Disable &Echo',
-         'Disable &Pitch Modulation', 'Disable P&itch Bend', 'Disable &FIR Filter', 'Disable En&velope', 'Disable &Noise Flags'));
+         '&Reverse Stereo', 'S&ynchronize Envelope with Speed', NULLPOINTER, 'Disable S&urround', 'Disable &Echo', 'Disable &FIR Filter',
+         'Disable &Pitch Modulation', 'Disable P&itch Bend', 'Disable Pi&tch Limit', 'Disable En&velope', 'Disable &Noise Flags'));
     STR_MENU_SETUP_ORDER_SUB: array[0..1] of array[0..MENU_SETUP_ORDER_SIZE - 1] of pchar = (
         ('演奏停止(&S)', '次へ(&N)', '前へ(&P)', 'ランダム(&M)', 'シャッフル(&H)', 'リピート(&R)'),
         ('&Stop', '&Next Item', '&Previous Item', 'Rando&m', 'S&huffle', '&Repeat'));
@@ -3143,18 +3215,18 @@ const
         ('&Graphic Indicator', '&DSP', '&Channel 1', 'Ch&annel 2', 'Cha&nnel 3',
          'Chann&el 4', '&SPC Tags 1', 'S&PC Tags 2', 'Script&700 Debug'));
     STR_MENU_SETUP_SEEK_SUB: array[0..1] of array[0..MENU_SETUP_SEEK_SIZE - 1] of pchar = (
-        ('&1 秒', '&2 秒', '&3 秒', '&4 秒', '&5 秒'),
-        ('&1 s', '&2 s', '&3 s', '&4 s', '&5 s'));
+        ('&1 秒', '&2 秒', '&3 秒', '&4 秒', '&5 秒', '1&0 秒'),
+        ('&1 s', '&2 s', '&3 s', '&4 s', '&5 s', '&10 s'));
     STR_MENU_SETUP_PRIORITY_SUB: array[0..1] of array[0..MENU_SETUP_PRIORITY_SIZE - 1] of pchar = (
         ('リアルタイム(&R)', '高(&H)', '標準以上(&A)', '標準(&N)', '標準以下(&B)', '低(&L)'),
         ('&Realtime', '&High', '&Above Normal', '&Normal', '&Below Normal', '&Low'));
     STR_MENU_LIST_PLAY_SUB: array[0..1] of array[0..MENU_LIST_PLAY_SIZE - 1] of pchar = (
         ('次へ(&N)', '前へ(&P)', 'ランダム(&M)', 'シャッフル(&H)', '最初から(&F)', '最後から(&L)'),
         ('&Next Item', '&Previous Item', 'Rando&m', 'S&huffle', '&First Item', '&Last Item'));
-    STR_MENU_SETUP_PERCENT: array[0..1] of string = ('％', '%');
-    STR_MENU_SETUP_SEC1: array[0..1] of string = ('秒', 's');
-    STR_MENU_SETUP_SEC2: array[0..1] of string = ('sec', 's  ');
-    STR_MENU_SETUP_MSEC: array[0..1] of string = ('ms', 'ms');
+    STR_MENU_SETUP_PERCENT: array[0..1] of string = (' ％', ' %');
+    STR_MENU_SETUP_SEC1: array[0..1] of string = (' 秒', ' s');
+    STR_MENU_SETUP_SEC2: array[0..1] of string = (' sec', ' s  ');
+    STR_MENU_SETUP_MSEC: array[0..1] of string = (' ms', ' ms');
     STR_BUTTON_OPEN = 'OPEN';
     STR_BUTTON_SAVE = 'SAVE';
     STR_BUTTON_PLAY = 'PLAY';
@@ -3187,9 +3259,11 @@ const
     TITLE_INFO_SEEK_HEADER: array[0..1] of string = ('シーク ', 'Seek ');
     TITLE_INFO_PLUS: array[0..1] of string = ('＋', '+');
     TITLE_INFO_MINUS: array[0..1] of string = ('－', '-');
+    TITLE_INFO_MULTIPLE: array[0..1] of string = (' × ', '  x');
+    TITLE_INFO_PERCENT: array[0..1] of string = (' ％', ' %');
     TITLE_INFO_FILE_APPEND: array[0..1] of string = ('ファイル読込中... ', 'Loading... ');
     TITLE_INFO_FILE_HEADER: array[0..1] of string = ('ファイル作成中... ', 'Storing... ');
-    TITLE_INFO_FILE_PROC: array[0..1] of string = (' ％完了', '% completed');
+    TITLE_INFO_FILE_PROC: array[0..1] of string = (' ％完了', ' % completed');
 
 
 // *************************************************************************************************************************************************************
@@ -3222,6 +3296,7 @@ var
         hBitmapVolume: longword;                                // インジケータのビットマップハンドル
         hDCStringBuffer: longword;                              // 文字画像のデバイスコンテキストハンドル
         hBitmapString: longword;                                // 文字画像のビットマップハンドル
+        hPowerNotify: longword;                                 // 電源設定通知イベントのハンドル
         lpStaticProc: pointer;                                  // 情報表示のウィンドウプロシージャのポインタ
         dwThreadHandle: longword;                               // スレッドハンドル
         dwThreadID: longword;                                   // スレッド ID
@@ -3258,6 +3333,7 @@ var
         bChangeShift: longbool;                                 // Shift キー変更フラグ
         bOptionLock: longbool;                                  // オプションロック
         bWaveWrite: longbool;                                   // WAVE 書き込みフラグ
+        dwReady: longword;                                      // 準備完了フラグ
         dwTitle: longword;                                      // タイトルフラグ
         dwInfo: longint;                                        // 情報フラグ
         dwRedrawInfo: longword;                                 // 再描画フラグ
@@ -3281,6 +3357,7 @@ var
         dwNextTick: longword;                                   // 次の命令実行スイッチ
         DSPCheat: array[0..127] of word;                        // DSP チート
         bEmuDebug: longbool;                                    // 転送テストモード
+        dwNoSleepTime: longword;                                // スリープ解除時間
         NowLevel: TLEVEL;                                       // 現在のレベル
         LastLevel: TLEVEL;                                      // 最後のレベル
         NumCache: array[0..287] of byte;                        // デジタル文字キャッシュ (48x6)
@@ -3321,9 +3398,10 @@ var
         dwMute: longword;                                       // チャンネルマスク
         dwNextTime: longword;                                   // デフォルト切り替え時間
         dwNoise: longword;                                      // チャンネルノイズ
+        dwNoSleep: longword;                                    // スリープ解除
         dwOption: longword;                                     // 拡張設定
         dwPitch: longword;                                      // ピッチ
-        bPitchAsync: longbool;                                  // 常に演奏速度と同期
+        bPitchAsync: longbool;                                  // ピッチ：演奏速度と同期
         dwPlayTime: longword;                                   // デフォルト演奏時間
         dwPlayMax: longint;                                     // 最大演奏時間
         dwPlayOrder: longword;                                  // 演奏順序
@@ -3331,14 +3409,18 @@ var
         dwRate: longword;                                       // サンプリングレート
         dwScale: longint;                                       // 表示倍率
         dwSeekBar: longword;                                    // エンドレス時シークバー時間
-        dwSeekFast: longword;                                   // 高速シーク
+        bSeekFast: longbool;                                    // 高速シーク
         dwSeekMax: longword;                                    // シーク可能時間
+        bSeekAsync: longbool;                                   // シーク時間：演奏速度と同期
         dwSeekTime: longword;                                   // シーク時間
         dwSeparate: longword;                                   // 左右拡散度
         dwShiftKey: longword;                                   // シフトキー動作
         dwSpeedBas: longword;                                   // 演奏速度
         dwSpeedTun: longint;                                    // 演奏速度微調整
         bTopMost: longbool;                                     // 常に手前に表示
+        dwTimerOptionDisplay: longword;                         // オプション情報表示の時間
+        dwTimerOptionLock: longword;                            // オプション変更ロックの時間
+        dwTimerRedrawResume: longword;                          // サスペンド復帰後のウィンドウ再描画の時間
         dwVolumeColor: longword;                                // インジケータの色
         bVolumeReset: longbool;                                 // 無音チャンネル非表示
         dwVolumeSpeed: longword;                                // インジケータの減衰速度
@@ -3353,6 +3435,7 @@ var
     IID_IDropSource: TGUID;                                 // IID_IDropSource
     IID_IDataObject: TGUID;                                 // IID_IDataObject
     IID_IUnknown: TGUID;                                    // IID_IUnknown
+    GUID_CONSOLE_DISPLAY_STATE: TGUID;                      // GUID_CONSOLE_DISPLAY_STATE
 {$IFDEF ITASKBARLIST3}
     CLSID_TaskbarList: TGUID;                               // CLSID_TaskbarList
     IID_ITaskbarList3: TGUID;                               // IID_ITaskbarList3
@@ -3463,6 +3546,7 @@ function  API_PeekMessage(lpMsg: pointer; hWnd: longword; wMessageFilterMin: lon
 function  API_PostMessage(hWnd: longword; msg: longword; wParam: longword; lParam: longword): longbool; stdcall; external 'user32.dll' name 'PostMessageA';
 function  API_PostThreadMessage(idThread: longword; msg: longword; wParam: longword; lParam: longword): longbool; stdcall; external 'user32.dll' name 'PostThreadMessageA';
 function  API_ReadFile(hFile: longword; lpBuffer: pointer; nNumberOfBytesToRead: longword; lpNumberOfBytesRead: pointer; lpOverlapped: pointer): longbool; stdcall; external 'kernel32.dll' name 'ReadFile';
+function  API_RedrawWindow(hWnd: longword; lprcUpdate: pointer; hrgnUpdate: longword; flags: longword): longint; stdcall; external 'user32.dll' name 'RedrawWindow';
 function  API_RegisterClassEx(lpwcx: pointer): smallint; stdcall; external 'user32.dll' name 'RegisterClassExA';
 function  API_ReleaseDC(hWnd: longword; hDC: longword): longint; stdcall; external 'user32.dll' name 'ReleaseDC';
 procedure API_ReleaseStgMedium(lpStgMedium: pointer); stdcall; external 'ole32.dll' name 'ReleaseStgMedium';
@@ -3476,6 +3560,7 @@ function  API_SetForegroundWindow(hWnd: longword): longbool; stdcall; external '
 function  API_SetMenu(hWnd: longword; hMenu: longword): longbool; stdcall; external 'user32.dll' name 'SetMenu';
 function  API_SetPixel(hDC: longword; x: longint; y: longint; crColor: longword): longword; stdcall; external 'gdi32.dll' name 'SetPixel';
 function  API_SetPriorityClass(hProcess: longword; dwPriorityClass: longword): longbool; stdcall; external 'kernel32.dll' name 'SetPriorityClass';
+function  API_SetThreadExecutionState(esFlags: longword): longword; stdcall; external 'kernel32.dll' name 'SetThreadExecutionState';
 function  API_SetTimer(hWnd: longword; uIDEvent: longword; uElapse: longword; lpTimerFunc: pointer): longword; stdcall; external 'user32.dll' name 'SetTimer';
 function  API_SetWindowLong(hWnd: longword; nIndex: longint; dwNewLong: longword): longword; stdcall; external 'user32.dll' name 'SetWindowLongA';
 function  API_SetWindowPlacement(hWnd: longword; lpwndpl: pointer): longbool; stdcall; external 'user32.dll' name 'SetWindowPlacement';
@@ -3712,7 +3797,7 @@ end;
 // ================================================================================
 // StrToInt - 文字列を数値に変換
 // ================================================================================
-function StrToInt(const S: string; Default: longint): longint; overload;
+function StrToInt(const S: string; Def: longint): longint; overload;
 var
     I: longword;
     Sign: longbool;
@@ -3729,7 +3814,7 @@ begin
         if (byte(C) >= $30) and (byte(C) <= $39) then begin
             result := result * 10 + byte(C) - $30;
         end else begin
-            result := Default;
+            result := Def;
             exit;
         end;
     end;
@@ -3739,7 +3824,7 @@ end;
 // ================================================================================
 // StrToInt - 文字列を数値に変換
 // ================================================================================
-function StrToInt(const S: string; Default: longword): longword; overload;
+function StrToInt(const S: string; Def: longword): longword; overload;
 var
     I: longword;
     Size: longword;
@@ -3752,7 +3837,7 @@ begin
         if (byte(C) >= $30) and (byte(C) <= $39) then begin
             result := result * 10 + byte(C) - $30;
         end else begin
-            result := Default;
+            result := Def;
             exit;
         end;
     end;
@@ -3785,7 +3870,7 @@ end;
 // WriteLog - デバッグログ出力
 // ================================================================================
 {$IFDEF DEBUGLOG}
-procedure _WriteLog(S: string);
+procedure _WriteLog(const S: string);
 var
     tf: textfile;
 begin
@@ -4063,6 +4148,13 @@ begin
                     end;
                     cfMain.SetChangeFunction(true);
                 end;
+                WM_MBUTTONDOWN, WM_MBUTTONDBLCLK: begin // 中央ボタン
+                    if Msg.hWnd = cfMain.cwStaticMain.hWnd then begin
+                        Status.DblClickPoint.x := Msg.lParam and $FFFF;
+                        Status.DblClickPoint.y := Msg.lParam shr 16;
+                        cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_RESET_TIME, Msg.lParam);
+                    end;
+                end;
                 WM_RBUTTONUP: cfMain.SetChangeFunction(true); // 右ボタン
                 WM_XBUTTONDOWN, WM_XBUTTONDBLCLK: if Status.bShiftButton xor longbool(Msg.wParam and $40) then cfMain.SetChangeInfo(false, -1)
                     else cfMain.SetChangeInfo(false, 1); // 拡張ボタン
@@ -4147,11 +4239,18 @@ begin
             API_EnterCriticalSection(@CriticalSectionThread);
             // デバイスプロシージャを呼び出す
             if Status.bPlay then begin
+                // 次の音声データを作成してデバイスに転送
                 cfMain.WaveProc(WAVE_PROC_WRITE_WAVE);
+                // リフレッシュ用の空メッセージを送信 (for wine)
                 if longbool(Status.dwWaveMessage) then begin
-                    // リフレッシュ用の空メッセージを送信 (for wine)
                     cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_WAVE_PROC, NULL);
                     Dec(Status.dwWaveMessage);
+                end;
+                // スリープ抑制メッセージを送信
+                if longbool(Option.dwNoSleep) then begin
+                    Inc(Status.dwNoSleepTime, Option.dwBufferTime);
+                    if Status.dwNoSleepTime >= NO_SLEEP_INTERVAL then API_SetThreadExecutionState(Option.dwNoSleep and $FFFF);
+                    while Status.dwNoSleepTime >= NO_SLEEP_INTERVAL do Dec(Status.dwNoSleepTime, NO_SLEEP_INTERVAL);
                 end;
             end else Dec(Status.dwThreadIdle);
             // クリティカルセクションを終了
@@ -5121,17 +5220,20 @@ var
     hWndApp: longword;
     hFontApp: longword;
     Box: TBOX;
+    API_RegisterPowerSettingNotification: function(hRecipient: longword; powerSettingGuid: pointer; flags: longword): longword; stdcall;
     API_RegisterSuspendResumeNotification: function(hRecipient: longword; flags: longword): longword; stdcall;
     API_RtlGetVersion: function(lpVersionInfo: pointer): longbool; stdcall;
 {$IFDEF UACDROP}
     API_ChangeWindowMessageFilter: function(msg: longword; dwFlag: longword): longword; stdcall;
 {$ENDIF}
 {$IFDEF WIN10DARK}
-    API_SetPreferredAppMode: function(dwMode: longword): longword; stdcall;
-    API_RefreshImmersiveColorPolicyState: function(): longword; stdcall;
+    wsData: widestring;
     API_AllowDarkModeForWindow: function(hWnd: longword; bAllow: longbool): longword; stdcall;
-    API_SetWindowTheme: function(hWnd: longword; pszSubAppName: pointer; pszSubIdList: pointer): longword; stdcall;
     API_DwmSetWindowAttribute: function(hWnd: longword; dwAttribute: longword; pvAttribute: pointer; cbAttribute: longword): longword; stdcall;
+    API_FlushMenuThemes: function(): longword; stdcall;
+    API_RefreshImmersiveColorPolicyState: function(): longword; stdcall;
+    API_SetPreferredAppMode: function(dwMode: longword): longword; stdcall;
+    API_SetWindowTheme: function(hWnd: longword; pszSubAppName: pointer; pszSubIdList: pointer): longword; stdcall;
 {$ENDIF}
 
 function GetParameter(var dwStart: longint; dwLength: longint; bLast: longbool): string;
@@ -5201,7 +5303,7 @@ begin
     result := Box;
 end;
 
-function CheckImageHash(sPath: string; dwBase: longword): longword;
+function CheckImageHash(const sPath: string; dwBase: longword): longword;
 var
     dwResult: longword;
     dwHeaderSum: longword;
@@ -5244,7 +5346,7 @@ begin
     // メニューテキストを設定
     for I := 0 to nSize - 1 do begin
         if longbool(PerIndex[I]) then begin
-            sBuffer := Concat('&', IntToStr(STR_MENU_SETUP_PER_INTEGER[PerIndex[I]]), ' ', STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
+            sBuffer := Concat('&', IntToStr(STR_MENU_SETUP_PER_INTEGER[PerIndex[I]]), STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
             if longbool(TipIndex[I]) then sBuffer := Concat(sBuffer, #9, STR_MENU_SETUP_TIP[Status.dwLanguage][TipIndex[I]]);
             cmMenu.AppendMenu(dwBase + I, pchar(sBuffer), true);
         end else begin
@@ -5373,6 +5475,7 @@ begin
     Status.bChangePlay := false;
     Status.bChangeShift := false;
     Status.bOptionLock := false;
+    Status.dwReady := READY_INITIALIZE;
     Status.dwTitle := TITLE_HIDE;
     Status.dwInfo := NULL;
     Status.dwRedrawInfo := REDRAW_OFF;
@@ -5389,6 +5492,7 @@ begin
     Status.dwNextTick := 0;
     API_ZeroMemory(@Status.DSPCheat, 256);
     Status.bEmuDebug := false;
+    Status.dwNoSleepTime := 0;
 {$IFDEF CONTEXT}
     Status.dwContextSize := 0;
     Status.lpContext := NULLPOINTER;
@@ -5421,6 +5525,7 @@ begin
     Option.dwMute := 0;
     Option.dwNextTime := 5000;
     Option.dwNoise := 0;
+    Option.dwNoSleep := 0;
     Option.dwOption := OPTION_LOWPASS + OPTION_ECHOFIR;
     Option.dwPitch := PITCH_NORMAL;
     Option.bPitchAsync := false;
@@ -5432,8 +5537,9 @@ begin
     Option.dwRate := 32000;
     Option.dwScale := 100;
     Option.dwSeekBar := 180000;
-    Option.dwSeekFast := 0;
+    Option.bSeekFast := false;
     Option.dwSeekMax := 600000;
+    Option.bSeekAsync := false;
     Option.dwSeekTime := 5000;
     Option.dwSeparate := SEPARATE_050;
     Option.dwShiftKey := 0;
@@ -5441,6 +5547,9 @@ begin
     Option.dwSpeedTun := 0;
     dwTop := 100;
     Option.bTopMost := false;
+    Option.dwTimerOptionDisplay := TIMER_INTERVAL_OPTION_DISPLAY;
+    Option.dwTimerOptionLock := TIMER_INTERVAL_OPTION_LOCK;
+    Option.dwTimerRedrawResume := TIMER_INTERVAL_REDRAW_RESUME;
     Option.dwVolumeColor := 0;
     Option.bVolumeReset := true;
     Option.dwVolumeSpeed := 1;
@@ -5484,6 +5593,7 @@ begin
             if sBuffer = BUFFER_MUTE____ then Option.dwMute := GetINIValue(Option.dwMute);
             if sBuffer = BUFFER_NEXTLENG then Option.dwNextTime := GetINIValue(Option.dwNextTime);
             if sBuffer = BUFFER_NOISE___ then Option.dwNoise := GetINIValue(Option.dwNoise);
+            if sBuffer = BUFFER_NOSLEEP_ then Option.dwNoSleep := GetINIValue(Option.dwNoSleep);
             if sBuffer = BUFFER_OPTION__ then Option.dwOption := GetINIValue(Option.dwOption);
             if sBuffer = BUFFER_PITCH___ then Option.dwPitch := GetINIValue(Option.dwPitch);
             if sBuffer = BUFFER_PITCHSNC then Option.bPitchAsync := longbool(GetINIValue(longint(Option.bPitchAsync)));
@@ -5495,8 +5605,9 @@ begin
             if sBuffer = BUFFER_RATE____ then Option.dwRate := GetINIValue(Option.dwRate);
             if sBuffer = BUFFER_SCALE___ then Option.dwScale := GetINIValue(Option.dwScale);
             if sBuffer = BUFFER_SEEKBAR_ then Option.dwSeekBar := GetINIValue(Option.dwSeekBar);
-            if sBuffer = BUFFER_SEEKFAST then Option.dwSeekFast := GetINIValue(Option.dwSeekFast);
+            if sBuffer = BUFFER_SEEKFAST then Option.bSeekFast := longbool(GetINIValue(longint(Option.bSeekFast)));
             if sBuffer = BUFFER_SEEKMAX_ then Option.dwSeekMax := GetINIValue(Option.dwSeekMax);
+            if sBuffer = BUFFER_SEEKSNC_ then Option.bSeekAsync := longbool(GetINIValue(longint(Option.bSeekAsync)));
             if sBuffer = BUFFER_SEEKTIME then Option.dwSeekTime := GetINIValue(Option.dwSeekTime);
             if sBuffer = BUFFER_SEPARATE then Option.dwSeparate := GetINIValue(Option.dwSeparate);
             if sBuffer = BUFFER_SHIFTKEY then Option.dwShiftKey := GetINIValue(Option.dwShiftKey);
@@ -5504,6 +5615,9 @@ begin
             if sBuffer = BUFFER_SPEEDTUN then Option.dwSpeedTun := GetINIValue(Option.dwSpeedTun);
             if sBuffer = BUFFER_TOP_____ then dwTop := GetINIValue(dwTop);
             if sBuffer = BUFFER_TOPMOST_ then Option.bTopMost := longbool(GetINIValue(longint(Option.bTopMost)));
+            if sBuffer = BUFFER_TOPTDISP then Option.dwTimerOptionDisplay := GetINIValue(Option.dwTimerOptionDisplay);
+            if sBuffer = BUFFER_TOPTLOCK then Option.dwTimerOptionLock := GetINIValue(Option.dwTimerOptionLock);
+            if sBuffer = BUFFER_TREDRAW_ then Option.dwTimerRedrawResume := GetINIValue(Option.dwTimerRedrawResume);
             if sBuffer = BUFFER_VOLCOLOR then Option.dwVolumeColor := GetINIValue(Option.dwVolumeColor);
             if sBuffer = BUFFER_VOLRESET then Option.bVolumeReset := longbool(GetINIValue(longint(Option.bVolumeReset)));
             if sBuffer = BUFFER_VOLSPEED then Option.dwVolumeSpeed := GetINIValue(Option.dwVolumeSpeed);
@@ -5649,6 +5763,11 @@ begin
     IID_IUnknown.DataX[1] := $00000000;
     IID_IUnknown.DataX[2] := $000000C0;
     IID_IUnknown.DataX[3] := $46000000;
+    // GUID_CONSOLE_DISPLAY_STATE : 6FE69556-704A-47A0-8F24-C28D936FDA47
+    GUID_CONSOLE_DISPLAY_STATE.DataX[0] := $6FE69556;
+    GUID_CONSOLE_DISPLAY_STATE.DataX[1] := $47A0704A;
+    GUID_CONSOLE_DISPLAY_STATE.DataX[2] := $8DC2248F;
+    GUID_CONSOLE_DISPLAY_STATE.DataX[3] := $47DA6F93;
 {$IFDEF ITASKBARLIST3}
     // CLSID_TaskbarList : 56FDF344-FD6D-11D0-958A-006097C9A090
     CLSID_TaskbarList.DataX[0] := $56FDF344;
@@ -5661,8 +5780,14 @@ begin
     IID_ITaskbarList3.DataX[2] := $9F9EE990;
     IID_ITaskbarList3.DataX[3] := $AFEF5E8A;
 {$ENDIF}
+    Status.hPowerNotify := NULL;
     dwBuffer := API_LoadLibrary(pchar('user32.dll'));
     if longbool(dwBuffer) then begin
+        // ディスプレイの電源状態イベントを拾えるように設定 (for Windows 8, 8.1, 10, 11)
+        @API_RegisterPowerSettingNotification := API_GetProcAddress(dwBuffer, pchar('RegisterPowerSettingNotification'));
+        if longbool(@API_RegisterPowerSettingNotification) then begin
+            Status.hPowerNotify := API_RegisterPowerSettingNotification(hWndApp, @GUID_CONSOLE_DISPLAY_STATE, DEVICE_NOTIFY_WINDOW_HANDLE);
+        end;
         // S0 (省電力) スリープのイベントを拾えるように設定 (for Windows 8, 8.1, 10, 11)
         @API_RegisterSuspendResumeNotification := API_GetProcAddress(dwBuffer, pchar('RegisterSuspendResumeNotification'));
         if longbool(@API_RegisterSuspendResumeNotification) then begin
@@ -5783,6 +5908,9 @@ begin
     SetMenuTextAndTip(cmSetupOrder, MENU_SETUP_ORDER_SIZE, MENU_SETUP_ORDER_BASE, STR_MENU_SETUP_ORDER_SUB[Status.dwLanguage], true);
     // シーク時間メニューを作成
     SetMenuTextAndTip(cmSetupSeek, MENU_SETUP_SEEK_SIZE, MENU_SETUP_SEEK_BASE, STR_MENU_SETUP_SEEK_SUB[Status.dwLanguage], true);
+    cmSetupSeek.AppendSeparator();
+    cmSetupSeek.AppendMenu(MENU_SETUP_SEEK_FAST, STR_MENU_SETUP_SEEK_FAST[Status.dwLanguage]);
+    cmSetupSeek.AppendMenu(MENU_SETUP_SEEK_ASYNC, STR_MENU_SETUP_SEEK_ASYNC[Status.dwLanguage]);
     // 情報表示メニューを作成
     SetMenuTextAndTip(cmSetupInfo, MENU_SETUP_INFO_SIZE, MENU_SETUP_INFO_BASE, STR_MENU_SETUP_INFO_SUB[Status.dwLanguage], true);
     cmSetupInfo.AppendSeparator();
@@ -5995,20 +6123,32 @@ begin
     Apu.SetDSPDbg(@_DSPDebug);
 {$ENDIF}
 {$IFDEF WIN10DARK}
+    dwBuffer := API_LoadLibrary(pchar('dwmapi.dll'));
+    if longbool(dwBuffer) then begin
+        @API_DwmSetWindowAttribute := API_GetProcAddress(dwBuffer, pchar('DwmSetWindowAttribute'));
+        if longbool(@API_DwmSetWindowAttribute) then API_DwmSetWindowAttribute(hWndApp, 20, @dwBuffer, 4);
+        API_FreeLibrary(dwBuffer);
+    end;
     dwBuffer := API_LoadLibrary(pchar('uxtheme.dll'));
     if longbool(dwBuffer) then begin
         @API_SetPreferredAppMode := API_GetProcAddress(dwBuffer, pointer(longword(135)));
+        if longbool(@API_SetPreferredAppMode) then API_SetPreferredAppMode(0);  // Default Mode
         if longbool(@API_SetPreferredAppMode) then API_SetPreferredAppMode(1);  // Dark Mode
         @API_RefreshImmersiveColorPolicyState := API_GetProcAddress(dwBuffer, pointer(longword(104)));
         if longbool(@API_RefreshImmersiveColorPolicyState) then API_RefreshImmersiveColorPolicyState();
+        @API_FlushMenuThemes := API_GetProcAddress(dwBuffer, pointer(longword(136)));
+        if longbool(@API_FlushMenuThemes) then API_FlushMenuThemes();
         @API_AllowDarkModeForWindow := API_GetProcAddress(dwBuffer, pointer(longword(133)));
         if longbool(@API_AllowDarkModeForWindow) then API_AllowDarkModeForWindow(hWndApp, true);
         @API_SetWindowTheme := API_GetProcAddress(dwBuffer, pchar('SetWindowTheme'));
-        if longbool(@API_SetWindowTheme) then API_SetWindowTheme(hWndApp, pchar('DarkMode_Explorer'), NULLPOINTER);
-        API_SendMessage(hWndApp, WM_THEMECHANGED, NULL, NULL);
+        wsData := 'DarkMode_Explorer';
+        if longbool(@API_SetWindowTheme) then API_SetWindowTheme(hWndApp, pwidechar(wsData), NULLPOINTER);
+        // API_SendMessage(hWndApp, WM_THEMECHANGED, NULL, NULL);
         API_FreeLibrary(dwBuffer);
     end;
 {$ENDIF}
+    // 準備完了
+    API_SetTimer(cwWindowMain.hWnd, TIMER_ID_READY, TIMER_INTERVAL_READY, NULLPOINTER);
 end;
 
 // ================================================================================
@@ -6017,10 +6157,12 @@ end;
 procedure CWINDOWMAIN.DeleteWindow();
 var
     I: longint;
+    dwBuffer: longword;
     sChPath: string;
     NormalRect: TRECT;
     ScreenRect: TRECT;
     fsFile: textfile;
+    API_UnregisterPowerSettingNotification: function(handle: longword): longbool; stdcall;
 
 function GetBoolToInt(bValue: longbool): string;
 begin
@@ -6062,13 +6204,16 @@ begin
     Writeln(fsFile, Concat(BUFFER_LISTHGT_, IntToStr(Option.dwListHeight)));
     Writeln(fsFile, Concat(BUFFER_LISTMAX_, IntToStr(Option.dwListMax)));
     Writeln(fsFile, Concat(BUFFER_NEXTLENG, IntToStr(Option.dwNextTime)));
+    Writeln(fsFile, Concat(BUFFER_NOSLEEP_, IntToStr(Option.dwNoSleep)));
     Writeln(fsFile, Concat(BUFFER_PLAYLENG, IntToStr(Option.dwPlayTime)));
     Writeln(fsFile, Concat(BUFFER_SCALE___, IntToStr(Option.dwScale)));
     Writeln(fsFile, Concat(BUFFER_SEEKBAR_, IntToStr(Option.dwSeekBar)));
-    Writeln(fsFile, Concat(BUFFER_SEEKFAST, IntToStr(Option.dwSeekFast)));
     Writeln(fsFile, Concat(BUFFER_SEEKMAX_, IntToStr(Option.dwSeekMax)));
     Writeln(fsFile, Concat(BUFFER_SHIFTKEY, IntToStr(Option.dwShiftKey)));
     Writeln(fsFile, Concat(BUFFER_SPEEDTUN, IntToStr(Option.dwSpeedTun)));
+    Writeln(fsFile, Concat(BUFFER_TOPTDISP, IntToStr(Option.dwTimerOptionDisplay)));
+    Writeln(fsFile, Concat(BUFFER_TOPTLOCK, IntToStr(Option.dwTimerOptionLock)));
+    Writeln(fsFile, Concat(BUFFER_TREDRAW_, IntToStr(Option.dwTimerRedrawResume)));
     Writeln(fsFile, Concat(BUFFER_VOLCOLOR, IntToStr(Option.dwVolumeColor)));
     Writeln(fsFile, Concat(BUFFER_VOLSPEED, IntToStr(Option.dwVolumeSpeed)));
     Writeln(fsFile, Concat(BUFFER_WAITLENG, IntToStr(Option.dwWaitTime)));
@@ -6094,6 +6239,8 @@ begin
     Writeln(fsFile, Concat(BUFFER_PLAYTYPE, IntToStr(Option.dwPlayOrder)));
     Writeln(fsFile, Concat(BUFFER_PRIORITY, IntToStr(Option.dwPriority)));
     Writeln(fsFile, Concat(BUFFER_RATE____, IntToStr(Option.dwRate)));
+    Writeln(fsFile, Concat(BUFFER_SEEKFAST, GetBoolToInt(Option.bSeekFast)));
+    Writeln(fsFile, Concat(BUFFER_SEEKSNC_, GetBoolToInt(Option.bSeekAsync)));
     Writeln(fsFile, Concat(BUFFER_SEEKTIME, IntToStr(Option.dwSeekTime)));
     Writeln(fsFile, Concat(BUFFER_SEPARATE, IntToStr(Option.dwSeparate)));
     Writeln(fsFile, Concat(BUFFER_SPEED___, IntToStr(Option.dwSpeedBas)));
@@ -6120,6 +6267,16 @@ begin
     API_DeleteObject(API_SelectObject(Status.hDCStringBuffer, Status.hBitmapString));
     API_DeleteDC(Status.hDCStringBuffer);
     API_ReleaseDC(cwStaticMain.hWnd, Status.hDCStatic);
+    // 電源設定通知イベントのハンドルを解放
+    dwBuffer := API_LoadLibrary(pchar('user32.dll'));
+    if longbool(dwBuffer) then begin
+        // ディスプレイの電源状態イベントを解除 (for Windows 8, 8.1, 10, 11)
+        @API_UnregisterPowerSettingNotification := API_GetProcAddress(dwBuffer, pchar('UnregisterPowerSettingNotification'));
+        if longbool(@API_UnregisterPowerSettingNotification) then begin
+            if longbool(Status.hPowerNotify) then API_UnregisterPowerSettingNotification(Status.hPowerNotify);
+        end;
+        API_FreeLibrary(dwBuffer);
+    end;
     // バッファを解放
     FreeMem(Status.lpCurrentPath, 1024);
     FreeMem(Status.lpSPCFile, 1024);
@@ -7405,7 +7562,7 @@ end;
 // ================================================================================
 // IsExt - パスの拡張子を確認
 // ================================================================================
-function CWINDOWMAIN.IsExt(lpFile: pointer; sExt: string): longbool;
+function CWINDOWMAIN.IsExt(lpFile: pointer; const sExt: string): longbool;
 var
     I: longint;
     dwSize: longword;
@@ -8591,9 +8748,10 @@ begin
         result := dwValues[J];
         Status.dwInfo := STR_MENU_SETUP_PER_INTEGER[dwIdxs[J]];
         // 設定が中央の場合はオプションの設定をロック
-        if not longbool(dwType and FUNCTION_TYPE_NO_TIMER) and ((result = dwDef1) or (result = dwDef2) or (result = dwDef3)) then begin
+        if not longbool(dwType and FUNCTION_TYPE_NO_TIMER) and longbool(Option.dwTimerOptionLock)
+                and ((result = dwDef1) or (result = dwDef2) or (result = dwDef3)) then begin
             Status.bOptionLock := true;
-            API_SetTimer(cwWindowMain.hWnd, TIMER_ID_OPTION_LOCK, TIMER_INTERVAL_OPTION_LOCK, NULLPOINTER);
+            API_SetTimer(cwWindowMain.hWnd, TIMER_ID_OPTION_LOCK, Option.dwTimerOptionLock, NULLPOINTER);
         end;
     end;
 end;
@@ -8652,6 +8810,7 @@ begin
             if not Status.bOpen or not Status.bPlay or Status.bPause then exit;
             // シーク位置を取得
             J := Option.dwSeekTime shl 6;
+            if Option.bSeekAsync then J := longword(int64(J) * Option.dwSpeedBas div 65536);
             T64Count := Wave.Apu[Wave.dwLastIndex].T64Count;
             if dwFlag < 0 then begin
                 I := T64Count;
@@ -8665,8 +8824,7 @@ begin
             // タイトルを更新
             UpdateTitle(TITLE_INFO_SEEK);
             // スレッドにシークを通知
-            API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE,
-                WM_APP_SPC_SEEK + (longword(Status.bCtrlButton and Status.bShiftButton) xor $1), I);
+            API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_SEEK + (longword(Status.bCtrlButton) and $1 xor $1), I);
         end;
     end;
 end;
@@ -8826,7 +8984,7 @@ var
     StrData: TSTRDATA;
     sData: string;
 
-function CheckPath(dwEnd: longword; sName: string): longbool;
+function CheckPath(dwEnd: longword; const sName: string): longbool;
 begin
     sData := Concat(Copy(string(lpFile), 1, dwEnd), sName);
     result := longbool(IsSafePath(pchar(sData)) and Exists(pchar(sData), $FFFFFFFF));
@@ -9039,6 +9197,8 @@ begin
     end;
     // SPC が開かれていない場合は終了
     if not Status.bOpen then exit;
+    // スリープ解除タイマーを初期化
+    Status.dwNoSleepTime := 0;
     // 一時停止中の場合
     if Status.bPause then begin
         // 一時停止指定の場合は終了
@@ -9255,7 +9415,7 @@ begin
     // キャッシュの基準位置を取得
     dwCacheDiff := Option.dwCacheDiff shl 6;
     dwTarget := dwTime;
-    if not longbool(Option.dwSeekFast) then if dwTarget > dwCacheDiff then Dec(dwTarget, dwCacheDiff) else dwTarget := 0;
+    if not Option.bSeekFast then if dwTarget > dwCacheDiff then Dec(dwTarget, dwCacheDiff) else dwTarget := 0;
     // シーク位置に最も近いキャッシュの場所を取得
     J := -1;
     for I := 0 to Option.dwCacheNum - 1 do if dwTarget >= Status.SPCCache[I].Spc.Hdr.dwSongLen then J := I;
@@ -9268,7 +9428,7 @@ begin
         // キャッシュ位置が経過するまでループ
         while longbool(Status.dwNextCache) and (Status.dwNextCache < dwTime) do begin
             // キャッシュする位置までシーク
-            if Status.dwNextCache > T64Count then Apu.SeekAPU(Status.dwNextCache - T64Count, byte(Option.dwSeekFast));
+            if Status.dwNextCache > T64Count then Apu.SeekAPU(Status.dwNextCache - T64Count, byte(bCache and Option.bSeekFast));
             // キャッシュを更新
             Inc(J);
             SaveSeekCache(J);
@@ -9280,7 +9440,7 @@ begin
         CacheSeek();
     end;
     // 最終的な位置までシーク
-    if dwTime > T64Count then Apu.SeekAPU(dwTime - T64Count, byte(Option.dwSeekFast));
+    if dwTime > T64Count then Apu.SeekAPU(dwTime - T64Count, byte(bCache and Option.bSeekFast));
     // 無音検出フラグをリセット
     Status.dwMuteTimeout := 0;
     Status.dwMuteCounter := Option.dwBufferNum;
@@ -9336,8 +9496,8 @@ begin
         Status.bNextDefault := not bytebool(Spc.Hdr.TagFormat) or not longbool(Spc.Hdr.dwSongLen) or (Option.dwPlayMax = PLAY_MAX_DEFAULT);
         if Option.dwPlayMax = PLAY_MAX_ENDLESS then begin
             if bDefault then begin
-                Status.dwAPUPlayTime := Option.dwPlayTime shl 6;
-                Status.dwAPUFadeTime := Option.dwFadeTime shl 6;
+                Status.dwAPUPlayTime := Spc.Hdr.dwSongLen * 64000;
+                Status.dwAPUFadeTime := Spc.Hdr.dwFadeLen shl 6;
             end else begin
                 Status.dwAPUPlayTime := $FFFFFFFF;
                 Status.dwAPUFadeTime := 0;
@@ -9457,7 +9617,7 @@ begin
             end;
             case Option.dwInfo of
                 INFO_MIXER: sInfo := Concat(sInfo, CRLF, 'MasterLv : L=    R=      EchoLv   : L=    R=', CRLF,
-                    'Delay    :    (    ms)   Feedback :    (    ', STR_MENU_SETUP_PERCENT[Status.dwLanguage], ')', CRLF,
+                    'Delay    :    (    ms)   Feedback :    (   ', STR_MENU_SETUP_PERCENT[Status.dwLanguage], ')', CRLF,
                     'SrcAddr  :     -   _     EchoAddr :     -', CRLF, 'DSPFlags : R=  M=  E=    NoiseClk :       Hz', CRLF, 'FIR      :');
                 INFO_CHANNEL_1, INFO_CHANNEL_2, INFO_CHANNEL_3, INFO_CHANNEL_4: sInfo := Concat(sInfo, CRLF, '1 :                      5 :',
                     CRLF, '2 :                      6 :', CRLF, '3 :                      7 :', CRLF, '4 :                      8 :');
@@ -9482,9 +9642,9 @@ begin
             if not bytebool(Spc.Hdr.TagFormat) or not longbool(Spc.Hdr.dwSongLen) then sInfo := Concat(sInfo, '(Unknown)')
             else begin
                 sBuffer := IntToStr(Spc.Hdr.dwSongLen);
-                sInfo := Concat(sInfo, sBuffer, ' ', STR_MENU_SETUP_SEC2[Status.dwLanguage], StringOfChar(' ', 10 - Length(sBuffer)));
+                sInfo := Concat(sInfo, sBuffer, STR_MENU_SETUP_SEC2[Status.dwLanguage], StringOfChar(' ', 10 - Length(sBuffer)));
                 if not longbool(Spc.Hdr.dwFadeLen) then sInfo := Concat(sInfo, '(No Fadeout)')
-                else sInfo := Concat(sInfo, 'FadeTime : ', IntToStr(Spc.Hdr.dwFadeLen), ' ', STR_MENU_SETUP_MSEC[Status.dwLanguage]);
+                else sInfo := Concat(sInfo, 'FadeTime : ', IntToStr(Spc.Hdr.dwFadeLen), STR_MENU_SETUP_MSEC[Status.dwLanguage]);
             end;
         end;
         INFO_SPC_2: begin
@@ -9603,6 +9763,8 @@ begin
     cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_RESET, Status.bOpen and Status.bTimeRepeat);
     for I := 0 to MENU_SETUP_ORDER_SIZE - 1 do cmSetupOrder.SetMenuCheck(MENU_SETUP_ORDER_BASE + I, Option.dwPlayOrder = longword(I));
     for I := 0 to MENU_SETUP_SEEK_SIZE - 1 do cmSetupSeek.SetMenuCheck(MENU_SETUP_SEEK_BASE + I, Option.dwSeekTime = MENU_SETUP_SEEK_VALUE[I]);
+    cmSetupSeek.SetMenuCheck(MENU_SETUP_SEEK_FAST, Option.bSeekFast);
+    cmSetupSeek.SetMenuCheck(MENU_SETUP_SEEK_ASYNC, Option.bSeekAsync);
     for I := 0 to MENU_SETUP_INFO_SIZE - 1 do cmSetupInfo.SetMenuCheck(MENU_SETUP_INFO_BASE + I, Option.dwInfo = longword(I));
     cmSetupInfo.SetMenuCheck(MENU_SETUP_INFO_RESET, Option.bVolumeReset);
     for I := 0 to MENU_SETUP_PRIORITY_SIZE - 1 do begin
@@ -9658,6 +9820,18 @@ end;
 // UpdateTitle - タイトル表示
 // ================================================================================
 procedure CWINDOWMAIN.UpdateTitle(dwFlag: longword);
+
+function GetPercentOfSpeed(): longword;
+var
+    dwBase: longword;
+    dwDec: longword;
+begin
+    dwBase := Option.dwSpeedBas * 100;
+    result := dwBase div 65536;
+    dwDec := dwBase mod 65536;
+    if dwDec >= 32768 then Inc(result);
+end;
+
 var
     dwInfo: longword;
     sInfo: string;
@@ -9665,8 +9839,8 @@ begin
     // タイトルを更新しない場合は終了
     if not longbool(Status.dwTitle) then exit;
     // オプション操作のフラグを設定
-    if longbool(dwFlag) then begin
-        API_SetTimer(cwWindowMain.hWnd, TIMER_ID_TITLE_INFO, TIMER_INTERVAL_TITLE_INFO, NULLPOINTER);
+    if longbool(dwFlag) and longbool(Option.dwTimerOptionDisplay) then begin
+        API_SetTimer(cwWindowMain.hWnd, TIMER_ID_OPTION_DISPLAY, Option.dwTimerOptionDisplay, NULLPOINTER);
         Status.dwTitle := (Status.dwTitle and TITLE_ALWAYS_FLAG) or dwFlag;
     end;
     // タイトルを設定
@@ -9676,20 +9850,22 @@ begin
     if longbool(dwInfo) then begin
         sInfo := Concat(sInfo, TITLE_INFO_HEADER[Status.dwLanguage]);
         case dwInfo of
-            TITLE_INFO_SEPARATE: sInfo := Concat(sInfo, TITLE_INFO_SEPARATE_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ',
+            TITLE_INFO_SEPARATE: sInfo := Concat(sInfo, TITLE_INFO_SEPARATE_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo),
                 STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
-            TITLE_INFO_FEEDBACK: sInfo := Concat(sInfo, TITLE_INFO_FEEDBACK_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ',
+            TITLE_INFO_FEEDBACK: sInfo := Concat(sInfo, TITLE_INFO_FEEDBACK_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo),
                 STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
-            TITLE_INFO_SPEED: sInfo := Concat(sInfo, TITLE_INFO_SPEED_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ',
+            TITLE_INFO_SPEED: sInfo := Concat(sInfo, TITLE_INFO_SPEED_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo),
                 STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
-            TITLE_INFO_AMP: sInfo := Concat(sInfo, TITLE_INFO_AMP_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo), ' ',
+            TITLE_INFO_AMP: sInfo := Concat(sInfo, TITLE_INFO_AMP_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo),
                 STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
             TITLE_INFO_SEEK: begin
                 sInfo := Concat(sInfo, TITLE_INFO_SEEK_HEADER[Status.dwLanguage]);
                 if Status.dwInfo >= 0 then sInfo := Concat(sInfo, TITLE_INFO_PLUS[Status.dwLanguage])
                 else sInfo := Concat(sInfo, TITLE_INFO_MINUS[Status.dwLanguage]);
                 if longbool(Abs(Status.dwInfo) mod 1000) then sInfo := Concat(sInfo, IntToStr(Abs(Status.dwInfo)), STR_MENU_SETUP_MSEC[Status.dwLanguage])
-                else sInfo := Concat(sInfo, IntToStr(longword(Trunc(Abs(Status.dwInfo) / 1000))), ' ', STR_MENU_SETUP_SEC1[Status.dwLanguage]);
+                else sInfo := Concat(sInfo, IntToStr(longword(Trunc(Abs(Status.dwInfo) / 1000))), STR_MENU_SETUP_SEC1[Status.dwLanguage]);
+                if Option.bSeekAsync then sInfo := Concat(sInfo, TITLE_INFO_MULTIPLE[Status.dwLanguage], IntToStr(GetPercentOfSpeed()),
+                    TITLE_INFO_PERCENT[Status.dwLanguage]);
             end;
         end;
         sInfo := Concat(sInfo, TITLE_INFO_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage]);
@@ -9894,6 +10070,7 @@ begin
         // 新しいバッファを取得
 {$IFNDEF SPCCYCLE}
         if Status.bWaveWrite then Apu.EmuAPU(Wave.lpData[dwIndex], Wave.dwEmuSize, 1);
+        // if Status.bWaveWrite then Apu.EmuAPU(Wave.lpData[dwIndex], 24576 * 23, 0);
 {$ELSE}
         if Status.Script700.Data.dwWork[0] = 0 then begin
           Apu.EmuAPU(Wave.lpData[dwIndex], 768, 0);
@@ -9941,7 +10118,8 @@ begin
         // クリティカルセクションを開始
         API_EnterCriticalSection(@CriticalSectionStatic);
         // インジケータを描画
-        if not longbool(Status.dwRedrawInfo and REDRAW_LOCK_READY) then DrawInfo(ApuData, bWave);
+        if (longbool(Option.dwDrawInfo and DRAW_INFO_ALWAYS) or longbool(Status.dwReady and READY_ACTIVE))
+            and not longbool(Status.dwRedrawInfo and REDRAW_LOCK_READY) then DrawInfo(ApuData, bWave);
         // クリティカルセクションを終了
         API_LeaveCriticalSection(@CriticalSectionStatic);
     end;
@@ -10359,7 +10537,7 @@ begin
         Y := Trunc(longint(Y shl 1) / Status.dwScale);
     end;
     // シークバー上でダブルクリックされた場合は終了
-    if not ((X < 140) or (X > 280) or (Y < 27) or (Y >= 32)) then begin
+    if not ((X < 140) or (X > 280) or (Y < STATIC_SEEKBAR_TOP) or (Y >= STATIC_SEEKBAR_BOTTOM)) then begin
         if longbool(Option.dwSeekBar) or (Option.dwPlayMax > PLAY_MAX_ENDLESS) then exit;
     end;
     // 情報表示切替
@@ -10433,16 +10611,20 @@ begin
     Option.dwPriority := API_GetPriorityClass(API_GetCurrentProcess());
     // 常時手前を取得
     Option.bTopMost := longbool(cwWindowMain.GetWindowStyleEx() and WS_EX_TOPMOST);
+    // フラグを設定
+    Status.dwReady := READY_ACTIVE;
     // デバイスを更新
     UpdateDevice(Option.dwDeviceID, WAVE_DEVICE_UPDATE_LIST);
     // メニューを更新
     UpdateMenu();
 end;
 
-procedure RedrawInfo();
+procedure RedrawInfo(bWindow: boolean);
 begin
     // クリティカルセクションを開始
     API_EnterCriticalSection(@CriticalSectionStatic);
+    // ウィンドウ全体を再描画
+    if (bWindow) then API_RedrawWindow(cwWindowMain.hWnd, NULLPOINTER, NULL, RDW_INVALIDATE or RDW_ERASE or RDW_UPDATENOW or RDW_ALLCHILDREN);
     // 再描画がロックされていない場合
     if not longbool(Status.dwRedrawInfo and REDRAW_LOCK_CRITICAL) then begin
         // 再描画フラグを設定
@@ -10470,7 +10652,7 @@ begin
         Y := Trunc(longint(Y shl 1) / Status.dwScale);
     end;
     // クリック位置が範囲外の場合は終了
-    if (X < 140) or (X > 280) or (Y < 27) or (Y >= 32) then exit;
+    if (X < 140) or (X > 280) or (Y < STATIC_SEEKBAR_TOP) or (Y >= STATIC_SEEKBAR_BOTTOM) then exit;
     // クリック位置の割合を取得
     Y := Trunc((X - 139) / 141 * Status.dwDefaultTimeout) + 1;
     if X = 140 then X := 0 else X := Trunc((X - 140) / 141 * Status.dwDefaultTimeout) + 1;
@@ -10480,8 +10662,7 @@ begin
     case wParam and $FFFFF000 of
         WM_APP_SEEK: begin
             // スレッドにシークを通知
-            API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE,
-                WM_APP_SPC_SEEK + (longword(Status.bCtrlButton and Status.bShiftButton) xor $1), X);
+            API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_SEEK + (longword(Status.bCtrlButton) and $1 xor $1), X);
         end;
         WM_APP_START_TIME: begin
             // リピート開始位置を設定
@@ -10624,6 +10805,30 @@ begin
     end;
 end;
 
+procedure RedrawResume(lParam: longword);
+var
+    Setting: ^TPOWERBROADCAST_SETTING;
+    dwBuffer: longword;
+begin
+    // 起動準備ができていない場合は終了
+    if not longbool(Status.dwReady) or not longbool(Option.dwTimerRedrawResume) then exit;
+    // ディスプレイの電源状態を確認
+    if longbool(lParam) then begin
+        // ディスプレイの電源状態イベントでない場合は終了
+        Setting := pointer(lParam);
+        if not IsEqualsGUID(Setting.PowerSetting, GUID_CONSOLE_DISPLAY_STATE) then exit;
+        // ディスプレイの電源状態によって、準備完了フラグを設定
+        API_MoveMemory(@dwBuffer, @Setting.Data, 4);
+        if dwBuffer = $0 then Status.dwReady := READY_INACTIVE;
+        if dwBuffer = $1 then Status.dwReady := READY_ACTIVE;
+        // ディスプレイの電源がオンでない場合は終了
+        if dwBuffer <> $1 then exit;
+    end;
+    // ウィンドウの再描画を予約
+    API_KillTimer(cwWindowMain.hWnd, TIMER_ID_REDRAW_RESUME);
+    API_SetTimer(cwWindowMain.hWnd, TIMER_ID_REDRAW_RESUME, Option.dwTimerRedrawResume, NULLPOINTER);
+end;
+
 begin
     // 初期化
     result := 0;
@@ -10649,6 +10854,8 @@ begin
                     MENU_FILE_STOP: SPCStop(false);
                     MENU_FILE_EXIT: cwWindowMain.PostMessage(WM_QUIT, NULL, NULL);
                     MENU_SETUP_PITCH_ASYNC: Option.bPitchAsync := not Option.bPitchAsync;
+                    MENU_SETUP_SEEK_FAST: Option.bSeekFast := not Option.bSeekFast;
+                    MENU_SETUP_SEEK_ASYNC: Option.bSeekAsync := not Option.bSeekAsync;
                     MENU_SETUP_MUTE_ALL_ENABLE: Option.dwMute := $FF;
                     MENU_SETUP_MUTE_ALL_DISABLE: Option.dwMute := $0;
                     MENU_SETUP_MUTE_ALL_XOR: Option.dwMute := Option.dwMute xor $FF;
@@ -10794,7 +11001,7 @@ begin
             case wParam and $FFFF0000 of
                 WM_APP_TRANSMIT: result := longword(TransmitFile(longbool(wParam and $1))); // ファイル名が転送されてきた
                 WM_APP_ACTIVATE: GetFocusWindowAfter(); // ウィンドウにフォーカスが移った
-                WM_APP_REDRAW: RedrawInfo(); // 再描画の必要が生じた
+                WM_APP_REDRAW: RedrawInfo(longbool(wParam and $1)); // 再描画の必要が生じた
                 WM_APP_SEEK, WM_APP_REPEAT_TIME: ClickSeekBar(); // シークの必要が生じた、リピート位置が変更された
                 WM_APP_NEXT_PLAY: SetNextPlay(); // 次の曲を演奏
                 WM_APP_MINIMIZE: MinimizeWindow(); // 最小化が要求された
@@ -10932,11 +11139,17 @@ begin
             end;
         end;
         WM_TIMER: case wParam of // タイマー
-            TIMER_ID_TITLE_INFO: begin // 情報表示解除
+            TIMER_ID_READY: begin // 準備完了
+                // フラグを設定
+                Status.dwReady := READY_ACTIVE;
+                // タイマーを解除
+                API_KillTimer(cwWindowMain.hWnd, TIMER_ID_READY);
+            end;
+            TIMER_ID_OPTION_DISPLAY: begin // 情報表示解除
                 // フラグを設定
                 Status.dwTitle := Status.dwTitle and TITLE_ALWAYS_FLAG;
                 // タイマーを解除
-                API_KillTimer(cwWindowMain.hWnd, TIMER_ID_TITLE_INFO);
+                API_KillTimer(cwWindowMain.hWnd, TIMER_ID_OPTION_DISPLAY);
                 // タイトルを更新
                 UpdateTitle(NULL);
             end;
@@ -10946,11 +11159,20 @@ begin
                 // オプション設定ロックを解除
                 Status.bOptionLock := false;
             end;
+            TIMER_ID_REDRAW_RESUME: begin // サスペンド復帰後のウィンドウ再描画
+                // タイマーを解除
+                API_KillTimer(cwWindowMain.hWnd, TIMER_ID_REDRAW_RESUME);
+                // ウィンドウ全体を再描画
+                cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW or $1, NULL);
+            end;
         end;
         WM_ENDSESSION: if longbool(wParam) then DeleteWindow(); // セッションが終了 (Windows がログオフ、再起動、シャットダウン) した
         WM_POWERBROADCAST: case wParam of // Windows の電源管理状態が変化した
-            $4, $5: SPCStop(false); // Windows がサスペンド、休止状態に入ろうとした
+            PBT_APMSUSPEND, PBT_APMSTANDBY: SPCStop(false); // Windows がサスペンド、休止状態に入った
+            PBT_APMRESUMESUSPEND, PBT_APMRESUMESTANDBY, PBT_APMRESUMEAUTOMATIC: RedrawResume(NULL); // Windows がサスペンドから復帰した
+            PBT_POWERSETTINGCHANGE: RedrawResume(lParam); // ディスプレイの電源状態が変化した
         end;
+        WM_DISPLAYCHANGE: RedrawResume(NULL); // ディスプレイの解像度が変化した
         WM_SYSCOLORCHANGE: begin // システムカラー設定が変化した
             // クリティカルセクションを開始
             API_EnterCriticalSection(@CriticalSectionStatic);

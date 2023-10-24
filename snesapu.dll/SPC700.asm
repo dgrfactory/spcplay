@@ -22,7 +22,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2008 Alpha-II Productions
-;                                                   Copyright (C) 2003-2021 degrade-factory
+;                                                   Copyright (C) 2003-2023 degrade-factory
+;
+;List of users and dates who/when modified this file:
+;   - degrade-factory in 2023-10-01
 ;===================================================================================================
 
 CPU     386
@@ -75,8 +78,8 @@ BITS    32
 ;Structures
 
 ;The flags are split up into eight dwords, with the flag being stored in the second byte.  The high
-;word of P is loaded with the pointer to RAM, so the 32-bit value of [P-1] is a literal pointer to
-;the current Direct Page.
+; word of P is loaded with the pointer to RAM, so the 32-bit value of [P-1] is a literal pointer to
+; the current Direct Page.
 
 STRUC SPCFlags
         resb    1
@@ -116,7 +119,7 @@ STRUC MemMap
 ENDSTRUC
 
 ;===================================================================================================
-; Data
+;Data
 
 %ifndef WIN32
 SECTION .data ALIGN=256
@@ -130,7 +133,6 @@ SECTION .data ALIGN=32
                 DB 0CBh,0F4h,0D7h,000h,0FCh,0D0h,0F3h,0ABh,001h,010h,0EFh,07Eh,0F4h,010h,0EBh,0BAh
                 DB 0F6h,0DAh,000h,0BAh,0F4h,0C4h,0F4h,0DDh,05Dh,0D0h,0DBh,01Fh,000h,000h,0C0h,0FFh
 
-; ----- degrade-factory code [2007/10/07] -----
     opcOfs      DD Opc00,Opc01,Opc02,Opc03,Opc04,Opc05,Opc06,Opc07,Opc08,Opc09,Opc0A,Opc0B,Opc0C,Opc0D,Opc0E,Opc0F
                 DD Opc10,Opc11,Opc12,Opc13,Opc14,Opc15,Opc16,Opc17,Opc18,Opc19,Opc1A,Opc1B,Opc1C,Opc1D,Opc1E,Opc1F
                 DD Opc20,Opc21,Opc22,Opc23,Opc24,Opc25,Opc26,Opc27,Opc28,Opc29,Opc2A,Opc2B,Opc2C,Opc2D,Opc2E,Opc2F
@@ -149,9 +151,7 @@ SECTION .data ALIGN=32
                 DD OpcF0,OpcF1,OpcF2,OpcF3,OpcF4,OpcF5,OpcF6,OpcF7,OpcF8,OpcF9,OpcFA,OpcFB,OpcFC,OpcFD,OpcFE,OpcFF
     fncOfs      DD Func0,Func1,Func2,Func3,Func4,Func5,Func6,Func7,Func8,Func9,FuncA,FuncB,FuncC,FuncD,FuncE,FuncF
                 DD FuncZ
-; ----- degrade-factory code [END] -----
 
-; ----- degrade-factory code [2013/10/06] -----
     scrAsmSkip  DD 4    ; #[NUM]
                 DD 1    ; [PORT]
                 DD 1    ; i[PORT]
@@ -166,11 +166,10 @@ SECTION .data ALIGN=32
                 DD 4    ; dd[DATA]
                 DD 2    ; l[LABEL]
                 DD 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-; ----- degrade-factory code [END] -----
 
 
 ;===================================================================================================
-; Variables
+;Variables
 
 %ifndef WIN32
 SECTION .bss ALIGN=256
@@ -178,7 +177,6 @@ SECTION .bss ALIGN=256
 SECTION .bss ALIGN=64
 %endif
 
-; ----- degrade-factory code [2016/08/20] -----
     extraRAM    resb    64                                                      ;Memory used for writes when ROM reading is enabled
 
     outPort     resb    4                                                       ;Out port values
@@ -221,16 +219,14 @@ SECTION .bss ALIGN=64
 %if SPEED
     oldT64      resd    1                                                       ;Value of 't64Cnt' at the last counter read
 %endif
-; ----- degrade-factory code [END] -----
 
-; ----- degrade-factory code [2019/07/07] -----
     t64DSP      resd    1                                                       ;Last cycles of DSP emulation
+
     spcVarEP    resd    1                                                       ;Endpoint of SPC700.asm variable
-; ----- degrade-factory code [END] -----
 
 
 ;===================================================================================================
-; Code
+;Code
 
 %ifndef WIN32
 SECTION .text ALIGN=256
@@ -272,7 +268,6 @@ SECTION .text ALIGN=16
 ;===================================================================================================
 ;Initialize SPC700
 
-; ----- degrade-factory code [2010/04/03] -----
 PROC InitSPC
 
     Mov     EAX,[pAPURAM]
@@ -307,7 +302,6 @@ PROC InitSPC
     Call    SetSPCDbg,0,0                                                       ;Set fetch pointer to default if debugging is enabled
 
 ENDP
-; ----- degrade-factory code [END] -----
 
 
 ;===================================================================================================
@@ -323,7 +317,6 @@ USES ECX,EDX,ESI,EDI
     Rep     StoSD
 
     ;Reset Function Registers ----------------
-; ----- degrade-factory code [2021/09/18] -----
     Mov     EAX,[pAPURAM]
     Mov     AX,0F0h
     Mov     byte [EAX+0],0Ah                                                    ;Test gets set to 0Ah
@@ -365,21 +358,18 @@ USES ECX,EDX,ESI,EDI
 
     Mov     EDI,scr700wrk
     Inc     EAX                                                                 ;Fill 0
-    Mov     ECX,13                                                              ;scr700wrk(8) + scr700cmp(2) + scr700cnt(1) + scr700ptr(1)
-    Rep     StoSD                                                               ;  + scr700stf/scr700int(1)
+    Mov     ECX,13                                                              ;scr700wrk(8) + scr700cmp(2) + scr700cnt(1)
+    Rep     StoSD                                                               ; + scr700ptr(1) + scr700stf/scr700int(1)
     Mov     dword [scr700cnt],32
     Mov     byte [scr700stf],03h                                                ;Enable stacking address, and flashing ports
-; ----- degrade-factory code [END] #31 #34 -----
 
     Call    FixSPC,0FFC0h,0,0,0,0,0
 
-; ----- degrade-factory code [2010/04/03] -----
 %ifdef SHVC_SOUND_SUPPORT
     Mov     EAX,[pAPURAM]                                                       ;Reset event callback function
     Add     EAX,EXT_RESET
     Mov     [cbReset],EAX
 %endif
-; ----- degrade-factory code [END] -----
 
 ENDP
 
@@ -391,15 +381,13 @@ PROC SetSPCDbg, pTrace, opts
 USES EDX
 
     Mov     EDX,[pDebug]
-
     Mov     EAX,[pTrace]
     Cmp     EAX,-1
     JE      short .NoFunc
         Mov     [pDebug],EAX
+
     .NoFunc:
-
     Mov     dword [pOpFetch],SPCFetch                                           ;Disable instruction tracing
-
     Cmp     byte [opts],-1
     JE      short .NoOpts                                                       ;Leave options as they are
 
@@ -408,16 +396,14 @@ USES EDX
     Test    EAX,EAX                                                             ;Make sure function pointer isn't null
     JZ      short .TraceOff
         Mov     dword [pOpFetch],SPCTrace
-    .TraceOff:
 
-; ----- degrade-factory code [2016/08/20] -----
+    .TraceOff:
     Mov     AL,[opts]                                                           ;Update disable envelope flags
     And     AL,DSP_PAUSE
     Mov     AH,[envFlag]
     And     AH,~DSP_PAUSE
     Or      AH,AL
     Mov     [envFlag],AH
-; ----- degrade-factory code [END] -----
 
     Mov     EAX,[opts]                                                          ;Save options
     Mov     [dbgOpt],EAX
@@ -436,9 +422,7 @@ USES ECX,EDX,EBX,ESI,EDI
 
     ;Load registers --------------------------
     XOr     EAX,EAX
-; ----- degrade-factory code [2011/02/05] -----
     Mov     [outPort],EAX                                                       ;Initialize outPort
-; ----- degrade-factory code [END] -----
 
     Mov     AX,[inPC]
     Mov     [regPC],AX
@@ -477,12 +461,10 @@ USES ECX,EDX,EBX,ESI,EDI
     Mov     [t2Step],AL
     Mov     byte [3+t0Step],0
 
-; ----- degrade-factory code [2015/02/28] -----
     Mov     EAX,[RAM+port0]                                                     ;Copy port values to inPortCp, outPortCp, flushPort
     Mov     [inPortCp],EAX
     Mov     [outPortCp],EAX
     Mov     [flushPort],EAX
-; ----- degrade-factory code [END] -----
 
     Mov     AL,[RAM+control]                                                    ;Copy control register for comparisons
     And     AL,87h
@@ -490,7 +472,6 @@ USES ECX,EDX,EBX,ESI,EDI
     Mov     [RAM+control],AL
 
     ;Copy the correct extra RAM --------------
-; ----- degrade-factory code [2021/02/18] -----
     LEA     ESI,[RAM+ipl]                                                       ;Setup registers to move data from Extra RAM to
     Mov     EDI,extraRAM                                                        ; IPL region
     Mov     ECX,10h
@@ -504,7 +485,6 @@ USES ECX,EDX,EBX,ESI,EDI
 %endif
 
     Rep     MovSD
-; ----- degrade-factory code [END] #24 -----
 
 ENDP
 
@@ -575,12 +555,10 @@ USES EBX
     Mov     EDI,[pAPURAM]
     Mov     EBP,.Return
 
-; ----- degrade-factory code [2007/10/07] -----
     And     BL,0Fh
     MovZX   EBX,BL
     Mov     EBX,[fncOfs+EBX*4]
     Jmp     EBX
-; ----- degrade-factory code [END] -----
 
     .Return:
     Pop     EBP,EDI,ECX
@@ -589,6 +567,7 @@ USES EBX
     ;Handle IPL ROM --------------------------
     .WROM:
     XOr     BX,BX
+
 %if IPLW
     Test    byte [tControl],80h
     RetZ
@@ -597,6 +576,7 @@ USES EBX
     Push    ECX
     MovZX   ECX,word [addr]
     Sub     ECX,ipl
+
 %if IPLW
     Mov     AL,[EBX+ECX+ipl]
     Mov     [ECX+extraRAM],AL
@@ -604,6 +584,7 @@ USES EBX
 %else
     Mov     AL,[ECX+extraRAM]
 %endif
+
     Mov     [EBX+ECX+ipl],AL
     Pop     ECX
 
@@ -615,7 +596,6 @@ ENDP
 ;===================================================================================================
 ;Write to SPC700 Port(s)
 
-; ----- degrade-factory code [2011/02/11] -----
 %ifdef SHVC_SOUND_SUPPORT
 PROC ReadPort
 
@@ -655,7 +635,6 @@ PROC WritePort
 
 ENDP
 %endif
-; ----- degrade-factory code [END] -----
 
 
 PROC InPort, portb, valb
@@ -669,15 +648,12 @@ USES ECX
     Or      [portMod],AL
 
     ;Write value to port ---------------------
-; ----- degrade-factory code [2015/02/28] -----
     Mov     AL,[valb]
     Mov     [inPortCp+ECX],AL
     Mov     [flushPort+ECX],AL
     Add     ECX,[pAPURAM]
     Mov     [ECX+0F4h],AL
-; ----- degrade-factory code [END] -----
 
-; ----- degrade-factory code [2011/02/11] -----
 %ifdef SHVC_SOUND_SUPPORT
     Push    EDX,ESI
     Mov     ESI,ECX
@@ -685,12 +661,10 @@ USES ECX
     Call    WritePort
     Pop     ESI,EDX
 %endif
-; ----- degrade-factory code [END] -----
 
 ENDP
 
 
-; ----- degrade-factory code [2022/04/02] -----
 ;===================================================================================================
 ;Run Script700 emulation
 ;   EAX = Free / (AL) Calculate option of N command
@@ -708,9 +682,9 @@ PROC RunScript700, interrupt
     PushAD                                                                      ;Push all registers
     Mov     EBX,[scr700ptr]                                                     ;EBX = Program pointer
 
+    ;Note: Since the argument cannot be obtained when EBP is changed, the argument is judged before
+    ; assignment of EBP.
     Test    byte [interrupt],-1                                                 ;Is called in interrupt mode?
-                                                                                ;   Note: Since the argument cannot be obtained when EBP is changed,
-                                                                                ;   the argument is judged before assignment of EBP.
     Mov     EBP,[pSCRRAM]                                                       ;EBP = Script RAM Pointer
     JZ      short .700RETURN                                                    ;   No
 
@@ -1513,7 +1487,6 @@ PROC RunScript700, interrupt
     PopAD                                                                       ;Pop all registers
 
 ENDP
-; ----- degrade-factory code [END] #34 #35 #43 -----
 
 
 ;===================================================================================================
@@ -1523,12 +1496,10 @@ PROC EmuSPC, cyc
 
     Test    byte [dbgOpt],SPC_HALT
     JZ      short .NoHalt
-; ----- degrade-factory code [2013/05/25] -----
         XOr     EAX,EAX
         RetN
-; ----- degrade-factory code [END] -----
-    .NoHalt:
 
+    .NoHalt:
     PushAD                                                                      ;Save all registers and load EAX with the number of
     Mov     EAX,[cyc]                                                           ; clock cycles to execute
 
@@ -1589,10 +1560,8 @@ ENDP
 ;In the debug build, before the fetcher handles the next opcode a user defined function is called.
 
 SPCTrace:
-; ----- degrade-factory code [2020/10/20] -----
     Cmp     dword [clkLeft],0                                                   ;Have we executed all clock cycles?
     JLE     SPCTimers                                                           ;   Yes, Update timers
-; ----- degrade-factory code [END] #18 -----
 
 SPCBreak:
     ;Call SPCTrace ---------------------------
@@ -1646,7 +1615,6 @@ SPCBreak:
     ;to jump directly to the handler without needing to use a jump table.
 
 SPCFetch:                                                                       ;(All opcode handlers return to this point)
-; ----- degrade-factory code [2021/09/18] -----
     Test    byte [scr700stf],20h
     JZ      .No700
 
@@ -1656,9 +1624,7 @@ SPCFetch:                                                                       
     .No700:
     Cmp     dword [clkLeft],0                                                   ;Have we executed all clock cycles?
     JLE     SPCTimers                                                           ;   Yes, Update timers
-; ----- degrade-factory code [END] #18 #34 -----
 
-; ----- degrade-factory code [2021/09/19] -----
     Test    dword [apuCbMask],CBE_S700FCH
     JZ      short .NoCallback
 
@@ -1701,21 +1667,16 @@ SPCFetch:                                                                       
         Jmp     EDX
 
     .NoCallback:
-; ----- degrade-factory code [END] #19 #27 #35 -----
-
-; ----- degrade-factory code [2007/10/07] -----
     MovZX   EDX,byte [ESI]                                                      ;Get next opcode
     Mov     EDX,[opcOfs+EDX*4]                                                  ;Add the base of the emulation table to the opcode
     Inc     PC                                                                  ;Move PC to first operand or next instruction
     Jmp     EDX                                                                 ;Jump to handler
-; ----- degrade-factory code [END] -----
 
     ;clkExec contains the number of clock cycles we wanted to emulate this round.  By subtracting
     ;clkLeft (which will be a number <= 0) we get the actual number of cycles emulated, which will
     ;be subtracted from the total number to be emulated (clkTotal) and used to update the timers.
 
 SPCTimers:
-; ----- degrade-factory code [2021/09/18] -----
     Mov     EDX,[clkExec]                                                       ;EDX = Actual number of clock cycles emulated
     Sub     EDX,[clkLeft]
 
@@ -1734,6 +1695,7 @@ SPCTimers:
             Mov     [t2Step],BH
             Inc     byte [RAM+c2]                                               ;Increase counter 2
             And     byte [RAM+c2],0Fh                                           ;Only lower 4-bits are operable
+
 %if CNTBK
 %if DSPINTEG
             Call    CatchUp                                                     ;Emulate DSP
@@ -1741,6 +1703,7 @@ SPCTimers:
             Mov     EBP,SPCExit                                                 ;Signal the emu to exit so the DSP can catch up
 %endif
 %endif
+
         .NoC2Inc:
     .NoT64Inc:
     Sub     [t8kHz],EDX
@@ -1756,6 +1719,7 @@ SPCTimers:
             Mov     [t1Step],BH
             Inc     byte [RAM+c1]
             And     byte [RAM+c1],0Fh
+
 %if CNTBK
 %if DSPINTEG
             Call    CatchUp
@@ -1763,6 +1727,7 @@ SPCTimers:
             Mov     EBP,SPCExit
 %endif
 %endif
+
         .NoC1Inc:
         Add     BL,BL
         SbB     byte [t0Step],0
@@ -1772,6 +1737,7 @@ SPCTimers:
             Mov     [t0Step],BH
             Inc     byte [RAM+c0]
             And     byte [RAM+c0],0Fh
+
 %if CNTBK
 %if DSPINTEG
             Call    CatchUp
@@ -1779,6 +1745,7 @@ SPCTimers:
             Mov     EBP,SPCExit
 %endif
 %endif
+
         .NoC0Inc:
     .NoT8Inc:
 
@@ -1829,6 +1796,9 @@ SPCTimers:
 
         .No700:
 %if INTBK && DSPINTEG
+        Test    byte [dbgOpt],SPC_NODSP
+        JNZ     short .NoDSP
+
         Call    CatchUp                                                         ;Emulate DSP
 %endif
 
@@ -1854,7 +1824,6 @@ SPCTimers:
 
     Mov     AX,BX                                                               ;Restore SPC.A, SPC.Y
     Jmp     EBP                                                                 ;Return to fetcher
-; ----- degrade-factory code [END] #19 #34 -----
 
 
 ;===================================================================================================
@@ -1980,9 +1949,7 @@ CntHack:
 
         Add     [t64Cnt],EAX                                                    ;Add pulses to 64kHz counter
         Sub     [t2Step],AL                                                     ;Subtract pulses from up counter 2
-; ----- degrade-factory code [2019/07/07] -----
         Mov     dword [t64DSP],-1
-; ----- degrade-factory code [END] -----
 
         Mov     EDX,EAX
         Mov     ECX,EAX
@@ -2049,8 +2016,8 @@ SleepHack:
     JNS     short .No8Inc
         Add     dword [t8kHz],T8_CYC
         Inc     EAX
-    .No8Inc:
 
+    .No8Inc:
     Push    EAX
     MovZX   EDX,byte [t0Step]
     Inc     EDX
@@ -2061,19 +2028,17 @@ SleepHack:
 
         MovZX   ECX,byte [RAM+t0]
         Dec     CL
-
-; ----- degrade-factory code [2015/11/23] -----
         JZ      short .SkipT0
             Div     ECX
-        .SkipT0:
-; ----- degrade-factory code [END] -----
 
+        .SkipT0:
         Add     [RAM+c0],AL
         And     byte [RAM+c0],0Fh
 
         Mov     CL,DL
         Mov     DL,[RAM+t0]
         Sub     DL,CL
+
     .NoC0Inc:
     Mov     [t0Step],DL
 
@@ -2087,19 +2052,17 @@ SleepHack:
 
         MovZX   ECX,byte [RAM+t1]
         Dec     CL
-
-; ----- degrade-factory code [2015/11/23] -----
         JZ      short .SkipT1
             Div     ECX
-        .SkipT1:
-; ----- degrade-factory code [END] -----
 
+        .SkipT1:
         Add     [RAM+c1],AL
         And     byte [RAM+c1],0Fh
 
         Mov     CL,DL
         Mov     DL,[RAM+t1]
         Sub     DL,CL
+
     .NoC1Inc:
     Mov     [t1Step],DL
 
@@ -2113,8 +2076,8 @@ SleepHack:
     JNS     short .No64Inc
         Add     dword [t64kHz],T64_CYC
         Inc     EAX
-    .No64Inc:
 
+    .No64Inc:
     MovZX   EDX,byte [t2Step]
     Inc     EDX
     Sub     EDX,EAX
@@ -2124,19 +2087,17 @@ SleepHack:
 
         MovZX   ECX,byte [RAM+t2]
         Dec     CL
-
-; ----- degrade-factory code [2015/11/23] -----
         JZ      short .SkipT2
             Div     ECX
-        .SkipT2:
-; ----- degrade-factory code [END] -----
 
+        .SkipT2:
         Add     [RAM+c2],AL
         And     byte [RAM+c2],0Fh
 
         Mov     CL,DL
         Mov     DL,[RAM+t2]
         Sub     DL,CL
+
     .NoC2Inc:
     Mov     [t2Step],DL
 
@@ -2191,7 +2152,6 @@ Ret
     Add     BL,Y
 %endmacro
 
-; ----- degrade-factory code [2021/05/22] -----
 ;abs+?
 ;   Because an overflow occurs when a 16bit value is obtained from address $FFFF,
 ;   and an unexpected value is obtained, copy value of address $0000 to $10000
@@ -2201,35 +2161,27 @@ Ret
     Mov     CL,[EBX]
     Mov     [EBX+APURAMSIZE],CL
 %endmacro
-; ----- degrade-factory code [END] #27 -----
 
 ;abs - Load ABSL with the 16-bit immediate value
 %macro Labs 0
-; ----- degrade-factory code [2021/05/22] -----
     LRAM
-; ----- degrade-factory code [END] #27 -----
     Mov     BX,[OP1]
 %endmacro
 
 ;abs+X - Load ABSL with the 16-bit immediate value + X
 %macro LabsX 0
-; ----- degrade-factory code [2021/05/22] -----
     LRAM
-; ----- degrade-factory code [END] #27 -----
     Mov     BL,X
     Add     BX,[OP1]
 %endmacro
 
 ;abs+Y - Load ABSL with the 16-bit immediate value + Y
 %macro LabsY 0
-; ----- degrade-factory code [2021/05/22] -----
     LRAM
-; ----- degrade-factory code [END] #27 -----
     Mov     BL,Y
     Add     BX,[OP1]
 %endmacro
 
-; ----- degrade-factory code [2021/06/15] -----
 ;[dp+?] - (dp+?+1)(dp+?)
 ;   Do not obtain 16bit values beyond the address of direct page.
 %macro Ladp 0
@@ -2239,31 +2191,24 @@ Ret
     Mov     BH,[DPI]
     Mov     BL,CL
 %endmacro
-; ----- degrade-factory code [END] #30 -----
 
 ;[dp+X] - Load ABSL with the 16-bit value at [dp+X]
 %macro LadpX 0
     LdpX
-; ----- degrade-factory code [2021/06/15] -----
     Ladp
-; ----- degrade-factory code [END] #30 -----
 %endmacro
 
 ;[dp]+Y - Load ABSL with the 16-bit value at [dp] + Y
 %macro LadpY 0
     Ldp
-; ----- degrade-factory code [2021/06/15] -----
     Ladp
-; ----- degrade-factory code [END] #30 -----
     Add     BL,Y
     AdC     BH,0
 %endmacro
 
 ;[abs+X] - Load ABSL with the 16-bit value at [abs+X]
 %macro LaabsX 0
-; ----- degrade-factory code [2021/05/22] -----
     LRAM
-; ----- degrade-factory code [END] #27 -----
     Mov     BL,X
     Add     BX,[OP1]
 %endmacro
@@ -2322,6 +2267,7 @@ Ret
 %macro GetNVHZC 0
     GetC
     GetNVZ
+
 %if HALFC
     Mov     DH,AH
     LAHF
@@ -2335,6 +2281,7 @@ Ret
 %macro GetNVHZCs 0
     GetCs
     GetNVZ
+
 %if HALFC
     Mov     DH,AH
     LAHF
@@ -2363,6 +2310,7 @@ Ret
 
     Dec     BH
     Cmp     BX,0FFF0h                                                           ;Was a function register written to?
+
 %if DEBUG
     JAE     short %%WReg                                                        ;   Yes, Jump to handler
         Jmp     EBP                                                             ;   No, Jump to next opcode
@@ -2370,21 +2318,20 @@ Ret
 %else
     JB      SPCFetch
 %endif
-; ----- degrade-factory code [2007/10/07] -----
+
         Mov     CL,BL                                                           ;EBX->Function register handler
         And     CL,0Fh
         MovZX   EBX,CL
         Mov     EBX,[fncOfs+EBX*4]
-; ----- degrade-factory code [END] -----
-%if %1 & 1
-; ----- degrade-factory code [2007/10/07] -----
+
+    %if %1 & 1
         Push    EBX                                                             ;Save low function register handler
         Inc     CL                                                              ;Jump to next function register
         MovZX   EBX,CL
         Mov     EBX,[fncOfs+EBX*4]
         Mov     EBP,Func0+10h
-; ----- degrade-factory code [END] -----
-%endif
+    %endif
+
         Jmp     EBX
 
 %if %1 & 80h
@@ -2397,8 +2344,10 @@ Ret
         JZ      SPCFetch
 %endif
 %endif
+
             Sub     BX,ipl                                                      ;Convert BX to index within IPL ROM region
             MovZX   EBX,BX
+
 %if IPLW
             Mov     CL,[EBX+RAM+ipl]                                            ;Get the byte written
             Mov     [EBX+extraRAM],CL
@@ -2406,7 +2355,9 @@ Ret
 %else
             Mov     CL,[EBX+extraRAM]
 %endif
+
             Mov     [EBX+RAM+ipl],CL
+
 %if DEBUG
         %%WNext:
         Jmp     EBP
@@ -2434,11 +2385,11 @@ Ret
     Cmp     BX,0F3h
     JNE     short %%NotF3
         Call    CatchUp
+
     %%NotF3:
 %endif
 %endmacro
 
-; ----- degrade-factory code [2021/09/18] -----
 PROC CatchPort
 
     Push    EBX
@@ -2481,11 +2432,13 @@ ENDP
     JZ      short %%NoInt                                                       ;   No
 
     Push    EBX
+
     %if %1 & 4                                                                  ;16 bits from direct page
         Inc     BL
     %else                                                                       ;Absolute address
         Inc     BX
     %endif
+
     Call    CatchPort
     Pop     EBX
 
@@ -2503,7 +2456,6 @@ ENDP
     %endif
 %endif
 %endmacro
-; ----- degrade-factory code [END] #34 -----
 
 %macro BreakDSP 0
 %if DSPBK && (DSPINTEG == 0)
@@ -2515,6 +2467,7 @@ ENDP
         Add     [clkExec],EAX
         Sub     [clkLeft],EAX
         Pop     EAX
+
     %%NotF3:
 %endif
 %endmacro
@@ -2564,9 +2517,7 @@ ENDP
         Get%4                                                                   ;   Yes, Get modified flags
     %endif
 
-; ----- degrade-factory code [2008/01/11] -----
     Sub     dword [clkLeft],%1*CPU_CYC                                          ;Subtract cycles instruction takes to execute
-; ----- degrade-factory code [END] -----
 
     %if %2 > 1                                                                  ;Is number of instruction bytes greater than 1?
         %rep %2-1                                                               ;   Yes, Increase PC for each operand byte
@@ -2617,17 +2568,14 @@ ENDP
 
 ;Pop byte off stack
 ;   Val - r/m to pop
-; ----- degrade-factory code [2011/04/10] -----
 %macro PopB 1
     Inc     byte [regSP]                                                        ;Increase SP
     Mov     EBX,[regSP]                                                         ;EBX -> Current stack position
     Mov     %1,[EBX]                                                            ;Get value from stack
 %endmacro
-; ----- degrade-factory code [END] -----
 
 ;Pop word off stack
 ;   Val - r/m to pop
-; ----- degrade-factory code [2007/09/01] -----
 %macro PopW 1
     Mov     EBX,[regSP]                                                         ;EBX -> Current stack position
     Inc     BL                                                                  ;Increase SP
@@ -2637,21 +2585,17 @@ ENDP
     Mov     [regSP],EBX
     Mov     %1,DX
 %endmacro
-; ----- degrade-factory code [END] -----
 
 ;Push byte onto stack
 ;   Val - r/m to push
-; ----- degrade-factory code [2011/04/10] -----
 %macro PushB 1
     Mov     EBX,[regSP]                                                         ;EBX -> Current stack position
     Dec     byte [regSP]                                                        ;Decrease SP
     Mov     [EBX],%1                                                            ;Put value in stack
 %endmacro
-; ----- degrade-factory code [END] -----
 
 ;Push word onto stack
 ;   Val - r/m to push
-; ----- degrade-factory code [2007/09/01] -----
 %macro PushW 1
     Mov     DX,%1
     Mov     EBX,[regSP]                                                         ;EBX -> Current stack position
@@ -2661,7 +2605,6 @@ ENDP
     Dec     BL                                                                  ;Decrease SP
     Mov     [regSP],EBX
 %endmacro
-; ----- degrade-factory code [END] -----
 
 
 ;===================================================================================================
@@ -2763,9 +2706,7 @@ ENDP
 ;AdC A,dp
 %macro Opc84 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [PSW+CF],1
     AdC     A,[DPI]
     CleanUp 3,2,RD,NVHZC
@@ -2774,9 +2715,7 @@ ENDP
 ;AdC A,dp+X
 %macro Opc94 0
     LdpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [PSW+CF],1
     AdC     A,[DPI]
     CleanUp 4,2,RD,NVHZC
@@ -2785,9 +2724,7 @@ ENDP
 ;AdC A,abs
 %macro Opc85 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [PSW+CF],1
     AdC     A,[ABSL]
     CleanUp 4,3,RA,NVHZC
@@ -2796,9 +2733,7 @@ ENDP
 ;AdC A,abs+X
 %macro Opc95 0
     LabsX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [PSW+CF],1
     AdC     A,[ABSL]
     CleanUp 5,3,RA,NVHZC
@@ -2807,9 +2742,7 @@ ENDP
 ;AdC A,abs+Y
 %macro Opc96 0
     LabsY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [PSW+CF],1
     AdC     A,[ABSL]
     CleanUp 5,3,RA,NVHZC
@@ -2818,9 +2751,7 @@ ENDP
 ;AdC A,(X)
 %macro Opc86 0
     LX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [PSW+CF],1
     AdC     A,[DPI]
     CleanUp 3,1,RD,NVHZC
@@ -2829,9 +2760,7 @@ ENDP
 ;AdC A,[dp+X]
 %macro Opc87 0
     LadpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [PSW+CF],1
     AdC     A,[ABSL]
     CleanUp 6,2,RA,NVHZC
@@ -2840,9 +2769,7 @@ ENDP
 ;AdC A,[dp]+Y
 %macro Opc97 0
     LadpY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [PSW+CF],1
     AdC     A,[ABSL]
     CleanUp 6,2,RA,NVHZC
@@ -2852,10 +2779,8 @@ ENDP
 %macro Opc98 0
     Mov     DH,[OP1]
     Ldp2
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [PSW+CF],1
     AdC     [DPI],DH
     CleanUp 5,3,WD,NVHZC
@@ -2864,15 +2789,11 @@ ENDP
 ;AdC dp,dp
 %macro Opc89 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[DPI]
     RdPost  0
     Ldp2
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [PSW+CF],1
     AdC     [DPI],DH
     CleanUp 6,3,WD,NVHZC
@@ -2881,15 +2802,11 @@ ENDP
 ;AdC (X),(Y)
 %macro Opc99 0
     LY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[DPI]
     RdPost  0
     LX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [PSW+CF],1
     AdC     [DPI],DH
     CleanUp 5,1,WD,NVHZC
@@ -2903,14 +2820,12 @@ ENDP
 ;AddW YA,dp
 %macro Opc7A 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD16
     Mov     DL,[DPI]
     Inc     BL
     Mov     DH,[DPI]
     Dec     BL
     Add     YA,DX
-; ----- degrade-factory code [END] #27 #34 -----
     CleanUp 5,2,RD16,NVHZC
 %endmacro
 
@@ -2928,9 +2843,7 @@ ENDP
 ;And A,dp
 %macro Opc24 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     And     A,[DPI]
     CleanUp 3,2,RD,NZ
 %endmacro
@@ -2938,9 +2851,7 @@ ENDP
 ;And A,dp+X
 %macro Opc34 0
     LdpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     And     A,[DPI]
     CleanUp 4,2,RD,NZ
 %endmacro
@@ -2948,9 +2859,7 @@ ENDP
 ;And A,abs
 %macro Opc25 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     And     A,[ABSL]
     CleanUp 4,3,RA,NZ
 %endmacro
@@ -2958,9 +2867,7 @@ ENDP
 ;And A,abs+X
 %macro Opc35 0
     LabsX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     And     A,[ABSL]
     CleanUp 5,3,RA,NZ
 %endmacro
@@ -2968,9 +2875,7 @@ ENDP
 ;And A,abs+Y
 %macro Opc36 0
     LabsY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     And     A,[ABSL]
     CleanUp 5,3,RA,NZ
 %endmacro
@@ -2978,9 +2883,7 @@ ENDP
 ;And A,(X)
 %macro Opc26 0
     LX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     And     A,[DPI]
     CleanUp 3,1,RD,NZ
 %endmacro
@@ -2988,9 +2891,7 @@ ENDP
 ;And A,[dp+X]
 %macro Opc27 0
     LadpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     And     A,[ABSL]
     CleanUp 6,2,RA,NZ
 %endmacro
@@ -2998,9 +2899,7 @@ ENDP
 ;And A,[dp]+Y
 %macro Opc37 0
     LadpY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     And     A,[ABSL]
     CleanUp 6,2,RA,NZ
 %endmacro
@@ -3008,10 +2907,8 @@ ENDP
 ;And dp,#imm
 %macro Opc38 0
     Ldp2
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[OP1]
     And     [DPI],DH
     CleanUp 5,3,WD,NZ
@@ -3020,15 +2917,11 @@ ENDP
 ;And dp,dp
 %macro Opc29 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[DPI]
     RdPost  0
     Ldp2
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     And     [DPI],DH
     CleanUp 6,3,WD,NZ
 %endmacro
@@ -3036,15 +2929,11 @@ ENDP
 ;And (X),(Y)
 %macro Opc39 0
     LY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[DPI]
     RdPost  0
     LX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     And     [DPI],DH
     CleanUp 5,1,WD,NZ
 %endmacro
@@ -3059,12 +2948,11 @@ ENDP
     Cmp     byte [PSW+CF],0                                                     ;Is carry zero?
     JZ      short %%Nc                                                          ;   Yes, Result will be zero anyway so quit
         Lmbit
-; ----- degrade-factory code [2021/09/18] -----
         CheckIO RA
-; ----- degrade-factory code [END] #34 -----
         Mov     BL,[ABSL]
         BT      EBX,EDX                                                         ;(Bit Test only uses the first five bits of EDX)
         CleanUp 4,3,na,C
+
     %%Nc:
     CleanUp 4,3
 %endmacro
@@ -3074,12 +2962,11 @@ ENDP
     Cmp     byte [PSW+CF],0
     JZ      short %%Ncn
         Lmbit
-; ----- degrade-factory code [2021/09/18] -----
         CheckIO RA
-; ----- degrade-factory code [END] #34 -----
         Mov     BL,[ABSL]
         BT      EBX,EDX
         CleanUp 4,3,na,Cs
+
     %%Ncn:
     CleanUp 4,3
 %endmacro
@@ -3098,10 +2985,8 @@ ENDP
 ;ASL dp
 %macro Opc0B 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     ShL     byte [DPI],1
     CleanUp 4,2,WD,NZC
 %endmacro
@@ -3109,10 +2994,8 @@ ENDP
 ;ASL dp+X
 %macro Opc1B 0
     LdpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     ShL     byte [DPI],1
     CleanUp 5,2,WD,NZC
 %endmacro
@@ -3120,10 +3003,8 @@ ENDP
 ;ASL abs
 %macro Opc0C 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
     CheckIO WA
-; ----- degrade-factory code [END] #34 -----
     ShL     byte [ABSL],1
     CleanUp 5,3,WA,NZC
 %endmacro
@@ -3139,14 +3020,13 @@ ENDP
 
     %macro BBC 1
         Ldp                                                                     ;Load DP pointer
-; ----- degrade-factory code [2021/09/18] -----
         CheckIO RD
-; ----- degrade-factory code [END] #34 -----
         Test    byte [DPI],1 << %1                                              ;Test requested bit, is it clear?
         JNZ     short %%BCDone                                                  ;   No, Clean up
             MovSX   EDX,byte [OP2]                                              ;EDX = Relative adjustment
             Add     PC,DX                                                       ;Adjust PC
             CleanUp 7,3,RD
+
         %%BCDone:
         CleanUp 5,3,RD
     %endmacro
@@ -3202,14 +3082,13 @@ ENDP
 
     %macro BBS 1
         Ldp
-; ----- degrade-factory code [2021/09/18] -----
         CheckIO RD
-; ----- degrade-factory code [END] #34 -----
         Test    byte [DPI],1 << %1                                              ;Test the requested bit, is it set?
         JZ      short %%BSDone                                                  ;   No, Clean up
             MovSX   EDX,byte [OP2]                                              ;DX = Relative adjustment
             Add     PC,DX                                                       ;Add relative displacement to PC
             CleanUp 7,3,RD
+
         %%BSDone:
         CleanUp 5,3,RD
     %endmacro
@@ -3266,14 +3145,17 @@ ENDP
 
     %macro Bxx 2
         Test    byte [PSW+%1],1
+
         %if %2 == 1
             JZ      short %%BxDone
         %else
             JNZ     short %%BxDone
         %endif
+
             MovSX   EBX,byte [OP1]
             Add     PC,BX
             CleanUp 4,2
+
         %%BxDone:
         CleanUp 2,2
     %endmacro
@@ -3341,10 +3223,8 @@ ENDP
     CmpPSW
     PushB   PS
     Mov     PC,[0FFDEh+RAM]
-; ----- degrade-factory code [2020/10/20] -----
     Mov     byte [PSW+B],1
     Mov     byte [PSW+I],0
-; ----- degrade-factory code [END] #20 -----
     CleanUp 8,1
 %endmacro
 
@@ -3357,13 +3237,11 @@ ENDP
 %macro Opc3F 0
     Add     PC,2
     PushW   PC
-; ----- degrade-factory code [2021/09/18] -----
     LRAM
     Mov     BX,[OP1]
     CheckIO RA
     Sub     PC,2
     Mov     PC,[OP1]
-; ----- degrade-factory code [END] #27 #34 -----
     CleanUp 8,na
 %endmacro
 
@@ -3375,14 +3253,13 @@ ENDP
 ;CBNE dp,rel
 %macro Opc2E 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Cmp     A,[DPI]
     JE      short %%NCBdp
         MovSX   EDX,byte [OP2]
         Add     PC,DX
         CleanUp 7,3,RD
+
     %%NCBdp:
     CleanUp 5,3,RD
 %endmacro
@@ -3390,14 +3267,13 @@ ENDP
 ;CBNE dp+X,rel
 %macro OpcDE 0
     LdpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Cmp     A,[DPI]
     JE      short %%NCBdpx
         MovSX   EDX,byte [OP2]
         Add     PC,DX
         CleanUp 8,3,RD
+
     %%NCBdpx:
     CleanUp 6,3,RD
 %endmacro
@@ -3413,10 +3289,8 @@ ENDP
 
     %macro Clr 1
         Ldp
-; ----- degrade-factory code [2021/09/18] -----
         CheckIO RD
         CheckIO WD
-; ----- degrade-factory code [END] #34 -----
         And     byte [DPI],~(1 << %1)
         CleanUp 4,2,WD
     %endmacro
@@ -3521,9 +3395,7 @@ ENDP
 ;Cmp A,dp
 %macro Opc64 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Cmp     A,[DPI]
     CleanUp 3,2,RD,NZCs
 %endmacro
@@ -3531,9 +3403,7 @@ ENDP
 ;Cmp X,dp
 %macro Opc3E 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Cmp     X,[DPI]
     CleanUp 3,2,RD,NZCs
 %endmacro
@@ -3541,9 +3411,7 @@ ENDP
 ;Cmp Y,dp
 %macro Opc7E 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Cmp     Y,[DPI]
     CleanUp 3,2,RD,NZCs
 %endmacro
@@ -3551,9 +3419,7 @@ ENDP
 ;Cmp A,dp+X
 %macro Opc74 0
     LdpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Cmp     A,[DPI]
     CleanUp 4,2,RD,NZCs
 %endmacro
@@ -3561,9 +3427,7 @@ ENDP
 ;Cmp A,abs
 %macro Opc65 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Cmp     A,[ABSL]
     CleanUp 4,3,RA,NZCs
 %endmacro
@@ -3571,9 +3435,7 @@ ENDP
 ;Cmp X,abs
 %macro Opc1E 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Cmp     X,[ABSL]
     CleanUp 4,3,RA,NZCs
 %endmacro
@@ -3581,9 +3443,7 @@ ENDP
 ;Cmp Y,abs
 %macro Opc5E 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Cmp     Y,[ABSL]
     CleanUp 4,3,RA,NZCs
 %endmacro
@@ -3591,9 +3451,7 @@ ENDP
 ;Cmp A,abs+X
 %macro Opc75 0
     LabsX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Cmp     A,[ABSL]
     CleanUp 5,3,RA,NZCs
 %endmacro
@@ -3601,9 +3459,7 @@ ENDP
 ;Cmp A,abs+Y
 %macro Opc76 0
     LabsY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Cmp     A,[ABSL]
     CleanUp 5,3,RA,NZCs
 %endmacro
@@ -3611,9 +3467,7 @@ ENDP
 ;Cmp A,(X)
 %macro Opc66 0
     LX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Cmp     A,[DPI]
     CleanUp 3,1,RD,NZCs
 %endmacro
@@ -3621,9 +3475,7 @@ ENDP
 ;Cmp A,[dp+X]
 %macro Opc67 0
     LadpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Cmp     A,[ABSL]
     CleanUp 6,2,RA,NZCs
 %endmacro
@@ -3631,9 +3483,7 @@ ENDP
 ;Cmp A,[dp]+Y
 %macro Opc77 0
     LadpY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Cmp     A,[ABSL]
     CleanUp 6,2,RA,NZCs
 %endmacro
@@ -3641,9 +3491,7 @@ ENDP
 ;Cmp dp,#imm
 %macro Opc78 0
     Ldp2
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[OP1]
     Cmp     [DPI],DH
     CleanUp 5,3,RD,NZCs
@@ -3652,15 +3500,11 @@ ENDP
 ;Cmp dp,dp
 %macro Opc69 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[DPI]
     RdPost  0
     Ldp2
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Cmp     [DPI],DH
     CleanUp 6,3,RD,NZCs
 %endmacro
@@ -3668,15 +3512,11 @@ ENDP
 ;Cmp (X),(Y)
 %macro Opc79 0
     LY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[DPI]
     RdPost  0
     LX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Cmp     [DPI],DH
     CleanUp 5,1,RD,NZCs
 %endmacro
@@ -3689,14 +3529,12 @@ ENDP
 ;CmpW YA,dp
 %macro Opc5A 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD16
     Mov     DL,[DPI]
     Inc     BL
     Mov     DH,[DPI]
     Dec     BL
     Cmp     YA,DX
-; ----- degrade-factory code [END] #27 #34 -----
     CleanUp 4,2,RD16,NZCs
 %endmacro
 
@@ -3747,6 +3585,7 @@ ENDP
         MovSX   EBX,byte [OP1]
         Add     PC,BX
         CleanUp 6,2
+
     %%NDBy:
     CleanUp 4,2
 %endmacro
@@ -3754,15 +3593,14 @@ ENDP
 ;DBNZ dp,rel
 %macro Opc6E 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Dec     byte [DPI]
     JZ      short %%NDBdp
         MovSX   EDX,byte [OP2]
         Add     PC,DX
         CleanUp 7,3,WD
+
     %%NDBdp:
     CleanUp 5,3,WD
 %endmacro
@@ -3793,10 +3631,8 @@ ENDP
 ;Dec dp
 %macro Opc8B 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Dec     byte [DPI]
     CleanUp 4,2,WD,NZ
 %endmacro
@@ -3804,10 +3640,8 @@ ENDP
 ;Dec dp+X
 %macro Opc9B 0
     LdpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Dec     byte [DPI]
     CleanUp 5,2,WD,NZ
 %endmacro
@@ -3815,10 +3649,8 @@ ENDP
 ;Dec abs
 %macro Opc8C 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
     CheckIO WA
-; ----- degrade-factory code [END] #34 -----
     Dec     byte [ABSL]
     CleanUp 5,3,WA,NZ
 %endmacro
@@ -3831,7 +3663,6 @@ ENDP
 ;DecW dp
 %macro Opc1A 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD16
     CheckIO WD16
     Mov     DL,[DPI]
@@ -3842,7 +3673,6 @@ ENDP
     Dec     BL
     Mov     [DPI],DL
     Test    DX,DX
-; ----- degrade-factory code [END] #27 #34 -----
     CleanUp 6,2,WD16,NZ
 %endmacro
 
@@ -3864,7 +3694,6 @@ ENDP
 ; * *     *   *
 ;Div YA,X
 %macro Opc9E 0
-; ----- degrade-factory code [2010/09/25] -----
     MovZX   EDX,Y                                                               ;EDX = Y
     MovZX   EBX,X                                                               ;EBX = X
     Cmp     DL,BL
@@ -3917,7 +3746,6 @@ ENDP
         Mov     Y,DL
         Test    A,A
         CleanUp 12,1,na,NZ
-; ----- degrade-factory code [END] -----
 %endmacro
 
 
@@ -3945,9 +3773,7 @@ ENDP
 ;EOr A,dp
 %macro Opc44 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     XOr     A,[DPI]
     CleanUp 3,2,RD,NZ
 %endmacro
@@ -3955,9 +3781,7 @@ ENDP
 ;EOr A,dp+X
 %macro Opc54 0
     LdpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     XOr     A,[DPI]
     CleanUp 4,2,RD,NZ
 %endmacro
@@ -3965,9 +3789,7 @@ ENDP
 ;EOr A,abs
 %macro Opc45 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     XOr     A,[ABSL]
     CleanUp 4,3,RA,NZ
 %endmacro
@@ -3975,9 +3797,7 @@ ENDP
 ;EOr A,abs+X
 %macro Opc55 0
     LabsX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     XOr     A,[ABSL]
     CleanUp 5,3,RA,NZ
 %endmacro
@@ -3985,9 +3805,7 @@ ENDP
 ;EOr A,abs+Y
 %macro Opc56 0
     LabsY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     XOr     A,[ABSL]
     CleanUp 5,3,RA,NZ
 %endmacro
@@ -3995,9 +3813,7 @@ ENDP
 ;EOr A,(X)
 %macro Opc46 0
     LX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     XOr     A,[DPI]
     CleanUp 3,1,RD,NZ
 %endmacro
@@ -4005,9 +3821,7 @@ ENDP
 ;EOr A,[dp+X]
 %macro Opc47 0
     LadpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     XOr     A,[ABSL]
     CleanUp 6,2,RA,NZ
 %endmacro
@@ -4015,9 +3829,7 @@ ENDP
 ;EOr A,[dp]+Y
 %macro Opc57 0
     LadpY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     XOr     A,[ABSL]
     CleanUp 6,2,RA,NZ
 %endmacro
@@ -4025,10 +3837,8 @@ ENDP
 ;EOr dp,#imm
 %macro Opc58 0
     Ldp2
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[OP1]
     XOr     [DPI],DH
     CleanUp 5,3,WD,NZ
@@ -4037,15 +3847,11 @@ ENDP
 ;EOr dp,dp
 %macro Opc49 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[DPI]
     RdPost  0
     Ldp2
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     XOr     [DPI],DH
     CleanUp 6,3,WD,NZ
 %endmacro
@@ -4053,15 +3859,11 @@ ENDP
 ;EOr (X),(Y)
 %macro Opc59 0
     LY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[DPI]
     RdPost  0
     LX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     XOr     [DPI],DH
     CleanUp 5,1,WD,NZ
 %endmacro
@@ -4074,9 +3876,7 @@ ENDP
 ;EOr1 C,mem.bit
 %macro Opc8A 0
     Lmbit
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Push    EBX
     Mov     BL,[ABSL]
     BT      EBX,EDX
@@ -4112,10 +3912,8 @@ ENDP
 ;Inc dp
 %macro OpcAB 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Inc     byte [DPI]
     CleanUp 4,2,WD,NZ
 %endmacro
@@ -4123,10 +3921,8 @@ ENDP
 ;Inc dp+X
 %macro OpcBB 0
     LdpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Inc     byte [DPI]
     CleanUp 5,2,WD,NZ
 %endmacro
@@ -4134,10 +3930,8 @@ ENDP
 ;Inc abs
 %macro OpcAC 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
     CheckIO WA
-; ----- degrade-factory code [END] #34 -----
     Inc     byte [ABSL]
     CleanUp 5,3,WA,NZ
 %endmacro
@@ -4150,7 +3944,6 @@ ENDP
 ;IncW dp
 %macro Opc3A 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD16
     CheckIO WD16
     Mov     DL,[DPI]
@@ -4161,7 +3954,6 @@ ENDP
     Dec     BL
     Mov     [DPI],DL
     Test    DX,DX
-; ----- degrade-factory code [END] #27 #34 -----
     CleanUp 6,2,WD16,NZ
 %endmacro
 
@@ -4172,11 +3964,9 @@ ENDP
 ;
 ;Jmp abs
 %macro Opc5F 0
-; ----- degrade-factory code [2021/09/18] -----
     LRAM
     Mov     BX,[OP1]
     CheckIO RA
-; ----- degrade-factory code [END] #27 #34 -----
     Mov     PC,[OP1]
     CleanUp 3,na
 %endmacro
@@ -4184,9 +3974,7 @@ ENDP
 ;Jmp [abs+X]
 %macro Opc1F 0
     LaabsX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Mov     PC,[ABSL]
     CleanUp 6,na
 %endmacro
@@ -4205,10 +3993,8 @@ ENDP
 ;LSR dp
 %macro Opc4B 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [DPI],1
     CleanUp 4,2,WD,NZC
 %endmacro
@@ -4216,10 +4002,8 @@ ENDP
 ;LSR dp+X
 %macro Opc5B 0
     LdpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [DPI],1
     CleanUp 5,2,WD,NZC
 %endmacro
@@ -4227,10 +4011,8 @@ ENDP
 ;LSR abs
 %macro Opc4C 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
     CheckIO WA
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [ABSL],1
     CleanUp 5,3,WA,NZC
 %endmacro
@@ -4315,9 +4097,7 @@ ENDP
 ;Mov A,dp
 %macro OpcE4 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     A,[DPI]
     Test    A,A
     CleanUp 3,2,RD,NZ
@@ -4326,9 +4106,7 @@ ENDP
 ;Mov X,dp
 %macro OpcF8 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     X,[DPI]
     Test    X,X
     CleanUp 3,2,RD,NZ
@@ -4337,9 +4115,7 @@ ENDP
 ;Mov Y,dp
 %macro OpcEB 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     Y,[DPI]
     Test    Y,Y
     CleanUp 3,2,RD,NZ
@@ -4348,9 +4124,7 @@ ENDP
 ;Mov A,dp+X
 %macro OpcF4 0
     LdpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     A,[DPI]
     Test    A,A
     CleanUp 4,2,RD,NZ
@@ -4359,9 +4133,7 @@ ENDP
 ;Mov X,dp+Y
 %macro OpcF9 0
     LdpY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     X,[DPI]
     Test    X,X
     CleanUp 4,2,RD,NZ
@@ -4370,9 +4142,7 @@ ENDP
 ;Mov Y,dp+X
 %macro OpcFB 0
     LdpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     Y,[DPI]
     Test    Y,Y
     CleanUp 4,2,RD,NZ
@@ -4381,9 +4151,7 @@ ENDP
 ;Mov A,abs
 %macro OpcE5 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Mov     A,[ABSL]
     Test    A,A
     CleanUp 4,3,RA,NZ
@@ -4392,9 +4160,7 @@ ENDP
 ;Mov X,abs
 %macro OpcE9 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Mov     X,[ABSL]
     Test    X,X
     CleanUp 4,3,RA,NZ
@@ -4403,9 +4169,7 @@ ENDP
 ;Mov Y,abs
 %macro OpcEC 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Mov     Y,[ABSL]
     Test    Y,Y
     CleanUp 4,3,RA,NZ
@@ -4414,9 +4178,7 @@ ENDP
 ;Mov A,abs+X
 %macro OpcF5 0
     LabsX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Mov     A,[ABSL]
     Test    A,A
     CleanUp 5,3,RA,NZ
@@ -4425,9 +4187,7 @@ ENDP
 ;Mov A,abs+Y
 %macro OpcF6 0
     LabsY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Mov     A,[ABSL]
     Test    A,A
     CleanUp 5,3,RA,NZ
@@ -4436,9 +4196,7 @@ ENDP
 ;Mov A,(X)
 %macro OpcE6 0
     LX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     A,[DPI]
     Test    A,A
     CleanUp 3,1,RD,NZ
@@ -4447,9 +4205,7 @@ ENDP
 ;Mov A,[dp+X]
 %macro OpcE7 0
     LadpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Mov     A,[ABSL]
     Test    A,A
     CleanUp 6,2,RA,NZ
@@ -4458,9 +4214,7 @@ ENDP
 ;Mov A,[dp]+Y
 %macro OpcF7 0
     LadpY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Mov     A,[ABSL]
     Test    A,A
     CleanUp 6,2,RA,NZ
@@ -4474,9 +4228,7 @@ ENDP
 ;Mov dp,A
 %macro OpcC4 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Mov     [DPI],A
     CleanUp 4,2,WD
 %endmacro
@@ -4484,9 +4236,7 @@ ENDP
 ;Mov dp,X
 %macro OpcD8 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Mov     [DPI],X
     CleanUp 4,2,WD
 %endmacro
@@ -4494,9 +4244,7 @@ ENDP
 ;Mov dp,Y
 %macro OpcCB 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Mov     [DPI],Y
     CleanUp 4,2,WD
 %endmacro
@@ -4504,9 +4252,7 @@ ENDP
 ;Mov dp+X,A
 %macro OpcD4 0
     LdpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Mov     [DPI],A
     CleanUp 5,2,WD
 %endmacro
@@ -4514,9 +4260,7 @@ ENDP
 ;Mov dp+Y,X
 %macro OpcD9 0
     LdpY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Mov     [DPI],X
     CleanUp 5,2,WD
 %endmacro
@@ -4524,9 +4268,7 @@ ENDP
 ;Mov dp+X,Y
 %macro OpcDB 0
     LdpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Mov     [DPI],Y
     CleanUp 5,2,WD
 %endmacro
@@ -4534,9 +4276,7 @@ ENDP
 ;Mov abs,A
 %macro OpcC5 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WA
-; ----- degrade-factory code [END] #34 -----
     Mov     [ABSL],A
     CleanUp 5,3,WA
 %endmacro
@@ -4544,9 +4284,7 @@ ENDP
 ;Mov abs,X
 %macro OpcC9 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WA
-; ----- degrade-factory code [END] #34 -----
     Mov     [ABSL],X
     CleanUp 5,3,WA
 %endmacro
@@ -4554,9 +4292,7 @@ ENDP
 ;Mov abs,Y
 %macro OpcCC 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WA
-; ----- degrade-factory code [END] #34 -----
     Mov     [ABSL],Y
     CleanUp 5,3,WA
 %endmacro
@@ -4564,9 +4300,7 @@ ENDP
 ;Mov abs+X,A
 %macro OpcD5 0
     LabsX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WA
-; ----- degrade-factory code [END] #34 -----
     Mov     [ABSL],A
     CleanUp 6,3,WA
 %endmacro
@@ -4574,9 +4308,7 @@ ENDP
 ;Mov abs+Y,A
 %macro OpcD6 0
     LabsY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WA
-; ----- degrade-factory code [END] #34 -----
     Mov     [ABSL],A
     CleanUp 6,3,WA
 %endmacro
@@ -4584,9 +4316,7 @@ ENDP
 ;Mov [dp+X],A
 %macro OpcC7 0
     LadpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WA
-; ----- degrade-factory code [END] #34 -----
     Mov     [ABSL],A
     CleanUp 7,2,WA
 %endmacro
@@ -4594,9 +4324,7 @@ ENDP
 ;Mov [dp]+Y,A
 %macro OpcD7 0
     LadpY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WA
-; ----- degrade-factory code [END] #34 -----
     Mov     [ABSL],A
     CleanUp 7,2,WA
 %endmacro
@@ -4604,9 +4332,7 @@ ENDP
 ;Mov (X),A
 %macro OpcC6 0
     LX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Mov     [DPI],A
     CleanUp 4,1,WD
 %endmacro
@@ -4619,9 +4345,7 @@ ENDP
 ;Mov dp,#imm
 %macro Opc8F 0
     Ldp2
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[OP1]
     Mov     [DPI],DH
     CleanUp 5,3,WD
@@ -4630,15 +4354,11 @@ ENDP
 ;Mov dp,dp
 %macro OpcFA 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[DPI]
     RdPost  0
     Ldp2
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Mov     [DPI],DH
     CleanUp 5,3,WD
 %endmacro
@@ -4651,9 +4371,7 @@ ENDP
 ;Mov A,(X)+
 %macro OpcBF 0
     LX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Inc     X
     Mov     A,[DPI]
     Test    A,A
@@ -4668,9 +4386,7 @@ ENDP
 ;Mov (X)+,A
 %macro OpcAF 0
     LX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Inc     X
     Mov     [DPI],A
     CleanUp 4,1,WD
@@ -4684,9 +4400,7 @@ ENDP
 ;Mov1 C,mem.bit
 %macro OpcAA 0
     Lmbit
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Push    EBX
     Mov     BL,[ABSL]
     BT      EBX,EDX
@@ -4703,9 +4417,7 @@ ENDP
 ;Mov1 mem.bit,C
 %macro OpcCA 0
     Lmbit
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WA
-; ----- degrade-factory code [END] #34 -----
     Mov     CL,DL
     Mov     DL,[PSW+CF]
     ShL     DL,CL
@@ -4725,13 +4437,11 @@ ENDP
 ;MovW YA,dp
 %macro OpcBA 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD16
     Mov     A,[DPI]
     Inc     BL
     Mov     Y,[DPI]
     Dec     BL
-; ----- degrade-factory code [END] #27 #34 -----
     Test    YA,YA
     CleanUp 5,2,RD16,NZ
 %endmacro
@@ -4739,16 +4449,12 @@ ENDP
 ;MovW dp,YA (flags not affected)
 %macro OpcDA 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD16
     Mov     [DPI],A
     Inc     BL
     Mov     [DPI],Y
     Dec     BL
-; ----- degrade-factory code [END] #27 #34 -----
-; ----- degrade-factory code [2010/09/25] -----
     CleanUp 5,2,WD16
-; ----- degrade-factory code [END] -----
 %endmacro
 
 
@@ -4759,9 +4465,7 @@ ENDP
 ;Mul YA
 %macro OpcCF 0
     Mul     Y
-; ----- degrade-factory code [2012/12/15] -----
     Test    Y,Y                                                                 ;Result is set based on y (high-byte) only
-; ----- degrade-factory code [END] -----
     CleanUp 9,1,na,NZ
 %endmacro
 
@@ -4773,10 +4477,8 @@ ENDP
 ;Not1 mem.bit
 %macro OpcEA 0
     Lmbit
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
     CheckIO WA
-; ----- degrade-factory code [END] #34 -----
     Mov     CL,DL
     Mov     DH,1
     ShL     DH,CL
@@ -4809,9 +4511,7 @@ ENDP
 ;Or A,dp
 %macro Opc04 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Or      A,[DPI]
     CleanUp 3,2,RD,NZ
 %endmacro
@@ -4819,9 +4519,7 @@ ENDP
 ;Or A,dp+X
 %macro Opc14 0
     LdpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Or      A,[DPI]
     CleanUp 4,2,RD,NZ
 %endmacro
@@ -4829,9 +4527,7 @@ ENDP
 ;Or A,abs
 %macro Opc05 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Or      A,[ABSL]
     CleanUp 4,3,RA,NZ
 %endmacro
@@ -4839,9 +4535,7 @@ ENDP
 ;Or A,abs+X
 %macro Opc15 0
     LabsX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Or      A,[ABSL]
     CleanUp 5,3,RA,NZ
 %endmacro
@@ -4849,9 +4543,7 @@ ENDP
 ;Or A,abs+Y
 %macro Opc16 0
     LabsY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Or      A,[ABSL]
     CleanUp 5,3,RA,NZ
 %endmacro
@@ -4859,9 +4551,7 @@ ENDP
 ;Or A,(X)
 %macro Opc06 0
     LX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Or      A,[DPI]
     CleanUp 3,1,RD,NZ
 %endmacro
@@ -4869,9 +4559,7 @@ ENDP
 ;Or A,[dp+X]
 %macro Opc07 0
     LadpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Or      A,[ABSL]
     CleanUp 6,2,RA,NZ
 %endmacro
@@ -4879,9 +4567,7 @@ ENDP
 ;Or A,[dp]+Y
 %macro Opc17 0
     LadpY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Or      A,[ABSL]
     CleanUp 6,2,RA,NZ
 %endmacro
@@ -4889,10 +4575,8 @@ ENDP
 ;Or dp,#imm
 %macro Opc18 0
     Ldp2
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[OP1]
     Or      [DPI],DH
     CleanUp 5,3,WD,NZ
@@ -4901,15 +4585,11 @@ ENDP
 ;Or dp,dp
 %macro Opc09 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[DPI]
     RdPost  0
     Ldp2
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Or      [DPI],DH
     CleanUp 6,3,WD,NZ
 %endmacro
@@ -4917,15 +4597,11 @@ ENDP
 ;Or (X),(Y)
 %macro Opc19 0
     LY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[DPI]
     RdPost  0
     LX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Or      [DPI],DH
     CleanUp 5,1,WD,NZ
 %endmacro
@@ -4938,9 +4614,7 @@ ENDP
 ;Or1 C,mem.bit
 %macro Opc0A 0
     Lmbit
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Mov     CL,[ABSL]
     BT      ECX,EDX
     SetC    DL
@@ -4951,9 +4625,7 @@ ENDP
 ;Or1 C,/mem.bit
 %macro Opc2A 0
     Lmbit
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Mov     CL,[ABSL]
     BT      ECX,EDX
     SetNC   DL
@@ -4967,7 +4639,6 @@ ENDP
 ; N V P B H I Z C
 ;
 ;PCall up
-; ----- degrade-factory code [2011/04/10] -----
 %macro Opc4F 0
     LEA     EBX,[RAM+up]
     Mov     BL,[OP1]
@@ -4977,7 +4648,6 @@ ENDP
     Pop     OP1
     CleanUp 6,na
 %endmacro
-; ----- degrade-factory code [END] -----
 
 
 ;===================================================================================================
@@ -5085,10 +4755,8 @@ ENDP
 ;RoL dp
 %macro Opc2B 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [PSW+CF],1
     RCL     byte [DPI],1
     GetC
@@ -5099,10 +4767,8 @@ ENDP
 ;RoL dp+X
 %macro Opc3B 0
     LdpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [PSW+CF],1
     RCL     byte [DPI],1
     GetC
@@ -5113,10 +4779,8 @@ ENDP
 ;RoL abs
 %macro Opc2C 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
     CheckIO WA
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [PSW+CF],1
     RCL     byte [ABSL],1
     GetC
@@ -5141,10 +4805,8 @@ ENDP
 ;RoR dp
 %macro Opc6B 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [PSW+CF],1
     RCR     byte [DPI],1
     GetC
@@ -5155,10 +4817,8 @@ ENDP
 ;RoR dp+X
 %macro Opc7B 0
     LdpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [PSW+CF],1
     RCR     byte [DPI],1
     GetC
@@ -5169,10 +4829,8 @@ ENDP
 ;RoR abs
 %macro Opc6C 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
     CheckIO WA
-; ----- degrade-factory code [END] #34 -----
     ShR     byte [PSW+CF],1
     RCR     byte [ABSL],1
     GetC
@@ -5195,9 +4853,7 @@ ENDP
 ;SbC A,dp
 %macro OpcA4 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Cmp     byte [PSW+CF],1
     SbB     A,[DPI]
     CleanUp 3,2,RD,NVHZCs
@@ -5206,9 +4862,7 @@ ENDP
 ;SbC A,dp+X
 %macro OpcB4 0
     LdpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Cmp     byte [PSW+CF],1
     SbB     A,[DPI]
     CleanUp 4,2,RD,NVHZCs
@@ -5217,9 +4871,7 @@ ENDP
 ;SbC A,abs
 %macro OpcA5 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Cmp     byte [PSW+CF],1
     SbB     A,[ABSL]
     CleanUp 4,3,RA,NVHZCs
@@ -5228,9 +4880,7 @@ ENDP
 ;SbC A,abs+X
 %macro OpcB5 0
     LabsX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Cmp     byte [PSW+CF],1
     SbB     A,[ABSL]
     CleanUp 5,3,RA,NVHZCs
@@ -5239,9 +4889,7 @@ ENDP
 ;SbC A,abs+Y
 %macro OpcB6 0
     LabsY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Cmp     byte [PSW+CF],1
     SbB     A,[ABSL]
     CleanUp 5,3,RA,NVHZCs
@@ -5250,9 +4898,7 @@ ENDP
 ;SbC A,(X)
 %macro OpcA6 0
     LX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Cmp     byte [PSW+CF],1
     SbB     A,[DPI]
     CleanUp 3,1,RD,NVHZCs
@@ -5261,9 +4907,7 @@ ENDP
 ;SbC A,[dp+X]
 %macro OpcA7 0
     LadpX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Cmp     byte [PSW+CF],1
     SbB     A,[ABSL]
     CleanUp 6,2,RA,NVHZCs
@@ -5272,9 +4916,7 @@ ENDP
 ;SbC A,[dp]+Y
 %macro OpcB7 0
     LadpY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
-; ----- degrade-factory code [END] #34 -----
     Cmp     byte [PSW+CF],1
     SbB     A,[ABSL]
     CleanUp 6,2,RA,NVHZCs
@@ -5283,10 +4925,8 @@ ENDP
 ;SbC dp,#imm
 %macro OpcB8 0
     Ldp2
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[OP1]
     Cmp     byte [PSW+CF],1
     SbB     [DPI],DH
@@ -5296,15 +4936,11 @@ ENDP
 ;SbC dp,dp
 %macro OpcA9 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[DPI]
     RdPost  0
     Ldp2
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Cmp     byte [PSW+CF],1
     SbB     [DPI],DH
     CleanUp 6,3,WD,NVHZCs
@@ -5313,15 +4949,11 @@ ENDP
 ;SbC (X),(Y)
 %macro OpcB9 0
     LY
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[DPI]
     RdPost  0
     LX
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO WD
-; ----- degrade-factory code [END] #34 -----
     Cmp     byte [PSW+CF],1
     SbB     [DPI],DH
     CleanUp 5,1,WD,NVHZCs
@@ -5338,10 +4970,8 @@ ENDP
 
     %macro Set 1
         Ldp
-; ----- degrade-factory code [2021/09/18] -----
         CheckIO RD
         CheckIO WD
-; ----- degrade-factory code [END] #34 -----
         Or      byte [DPI],1 << %1
         CleanUp 4,2,WD
     %endmacro
@@ -5424,10 +5054,13 @@ ENDP
     JNZ     %%WakeUp                                                            ;   Yes, Wake up
         Or      byte [portMod],80h                                              ;SPC700 is in sleep mode
         Dec     PC                                                              ;Sleep by repeating the instruction
+
 %if SPEED
         Call    SleepHack
 %endif
+
         CleanUp 3,1
+
     %%WakeUp:
     Mov     byte [portMod],0
     CleanUp 3,1
@@ -5441,15 +5074,18 @@ ENDP
 ;Stop
 %macro OpcFF 0
     Dec     PC                                                                  ;Stop execution by repeating the instruction
+
 %if DEBUG
     Test    byte [dbgOpt],SPC_TRACE
     JNZ     short %%NoDbg
 %endif
+
     Mov     EBX,[pDebug]
     Test    EBX,EBX
     JZ      short %%NoDbg
         Sub     dword [clkLeft],3*CPU_CYC
         Jmp     SPCBreak
+
     %%NoDbg:
     CleanUp 3,1
 %endmacro
@@ -5462,14 +5098,12 @@ ENDP
 ;SubW YA,dp
 %macro Opc9A 0
     Ldp
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RD16
     Mov     DL,[DPI]
     Inc     BL
     Mov     DH,[DPI]
     Dec     BL
     Sub     YA,DX
-; ----- degrade-factory code [END] #27 #34 -----
     CleanUp 5,2,RD16,NVHZCs
 %endmacro
 
@@ -5576,18 +5210,14 @@ ENDP
 ;TClr1 abs
 %macro Opc4E 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
     CheckIO WA
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[ABSL]
     Not     A
     And     [ABSL],A
     Not     A
-; ----- degrade-factory code [2010/09/25] -----
 ;   Test    A,DH                                                                ;Perhaps, bug of SPC700's opecode
     Cmp     A,DH
-; ----- degrade-factory code [END] -----
     CleanUp 6,3,WA,NZ
 %endmacro
 
@@ -5599,16 +5229,12 @@ ENDP
 ;TSet1 abs
 %macro Opc0E 0
     Labs
-; ----- degrade-factory code [2021/09/18] -----
     CheckIO RA
     CheckIO WA
-; ----- degrade-factory code [END] #34 -----
     Mov     DH,[ABSL]
     Or      [ABSL],A
-; ----- degrade-factory code [2010/09/25] -----
 ;   Test    A,DH                                                                ;Perhaps, bug of SPC700's opecode
     Cmp     A,DH
-; ----- degrade-factory code [END] -----
     CleanUp 6,3,WA,NZ
 %endmacro
 
@@ -5651,6 +5277,7 @@ ALIGN 16
 %else
     Mov     EBP,SPCFetch
 %endif
+
     Ret
 
 %endmacro
@@ -5665,7 +5292,6 @@ ALIGN 16
     Mov     BL,[RAM+control]
 
     ;ROM access ------------------------------
-; ----- degrade-factory code [2008/01/11] -----
     Mov     AL,[tControl]
     XOr     AL,BL                                                               ;Did ROM access change?
     JNS     short %%NoRA                                                        ;   No
@@ -5689,7 +5315,6 @@ ALIGN 16
         Pop     EDI,ESI,ECX
 
     %%NoRA:
-; ----- degrade-factory code [END] -----
 
     ;Clear ports -----------------------------
     Test    BL,30h                                                              ;Was a clear ports command written?
@@ -5701,9 +5326,8 @@ ALIGN 16
         SAR     AX,15
         And     dword [RAM+port0],EAX                                           ;Reset in-ports
         And     dword [inPortCp],EAX
-; ----- degrade-factory code [2015/02/28] -----
         And     dword [flushPort],EAX
-; ----- degrade-factory code [END] -----
+
     %%NoCP:
 
     ;Timer control ---------------------------
@@ -5723,22 +5347,23 @@ ALIGN 16
             Dec     AL
             Mov     [t0Step],AL                                                 ;Reset timer step
             Mov     byte [RAM+c0],0                                             ;Reset counter
-        %%NoRT0:
 
+        %%NoRT0:
         ShR     BL,1
         JNC     short %%NoRT1
             Mov     AL,[RAM+t1]
             Dec     AL
             Mov     [t1Step],AL
             Mov     byte [RAM+c1],0
-        %%NoRT1:
 
+        %%NoRT1:
         ShR     BL,1
         JNC     short %%NoRT2
             Mov     AL,[RAM+t2]
             Dec     AL
             Mov     [t2Step],AL
             Mov     byte [RAM+c2],0
+
         %%NoRT2:
     %%NoTR:
     Pop     EAX
@@ -5753,12 +5378,10 @@ ALIGN 16
 ;   registers 00-7F.
 
 %macro Func2 0
-; ----- degrade-factory code [2008/01/11] -----
     Mov     BL,[RAM+dspAddr]                                                    ;BL = DSP register
     And     EBX,7Fh                                                             ;The MSB of the addr is ignored when getting data
     Mov     CL,[EBX+dsp]                                                        ;Get byte from DSP RAM
     Mov     [RAM+dspData],CL                                                    ;Store byte in DSP data reg
-; ----- degrade-factory code [END] -----
     Jmp     EBP
 %endmacro
 
@@ -5780,12 +5403,10 @@ ALIGN 16
     Jmp     EBP
 
     %%NoDSP:
-; ----- degrade-factory code [2008/01/11] -----
     Mov     BL,[RAM+dspAddr]
     And     EBX,7Fh
     Mov     CL,[RAM+dspData]
     Mov     [EBX+dsp],CL
-; ----- degrade-factory code [END] -----
     Jmp     EBP
 %endmacro
 
@@ -5794,7 +5415,6 @@ ALIGN 16
 ;Out Ports 0-3
 ;   Moves data to out port memory, and replaces register with in port value
 
-; ----- degrade-factory code [2021/09/18] -----
 %macro Func4 0
     Mov     CL,[RAM+port0]                                                      ;Get value written
     Mov     BL,[inPortCp+0]                                                     ;Get value to be read from in port memory (from console)
@@ -5874,7 +5494,6 @@ ALIGN 16
     %%NoInt:
     Jmp     EBP
 %endmacro
-; ----- degrade-factory code [END] #34 -----
 
 
 ;===================================================================================================
@@ -5933,7 +5552,6 @@ ALIGN 16
 ;
 ;Arrange all the opcoder emulators in order.  (This was a lot easier with MASM's FORC macro.)
 
-; ----- degrade-factory code [2016/05/15] -----
 ALIGN 16
 Opc00:  Opc00
 ALIGN 16
@@ -6481,4 +6099,3 @@ ALIGN 16
 FuncF:  FuncF
 ALIGN 16
 FuncZ:  Jmp EBP
-; ----- degrade-factory code [END] -----

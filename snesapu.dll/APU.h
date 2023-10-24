@@ -20,6 +20,9 @@
 *                                                                                                  *
 *                                                 Copyright (C) 2003-2006 Alpha-II Productions     *
 *                                                 Copyright (C) 2003-2021 degrade-factory          *
+*                                                                                                  *
+* List of users and dates who/when modified this file:                                             *
+*    - degrade-factory in 2021-11-27                                                               *
 ***************************************************************************************************/
 
 #ifndef __INC_APU
@@ -36,9 +39,7 @@
 #define SA_SPEED    0x08                        //Enable speed hacks for counter reads and SLEEP
 #define SA_IPLW     0x10                        //Enables the IPL Writable flag in register F1
 #define SA_DSPBK    0x20                        //Break SPC700/Update DSP if register F3 is read
-// ----- degrade-factory code [2019/07/15] -----
 #define SA_INTBK    0x40                        //Break SPC700/Update DSP if emulated 1Ts with SPC700
-// ----- degrade-factory code [END] -----
 
 //DSP build options bits 15-8 ------------------
 #define SA_VMETERM  0x100                       //Volume metering on main output (for APR)
@@ -50,22 +51,19 @@
 #define SA_DEBUG    0x10000                     //Debugging ability
 #define SA_DSPINTEG 0x20000                     //DSP emulation is integrated with the SPC700
 
-// ----- degrade-factory code [2006/10/20] -----
+//SNESAPU Buffer size --------------------------
 #define APURAMSIZE  0x10000                     //APU RAM Memory Size
 #define SCR700SIZE  0x100000                    //Script700 Program Area Size
 #define SCR700MASK  SCR700SIZE - 1              //Script700 Program Area Mask
-// ----- degrade-factory code [END] -----
 
-// ----- degrade-factory code [2021/09/19] -----
-//SNESAPU callback effect
+//SNESAPU callback effect ----------------------
 #define CBE_DSPREG  0x01                        //Write DSP value event
 #define CBE_S700FCH 0x02                        //Write SPC700 fetch event
 #define CBE_INCS700 0x40000000                  //Include Script700 text file
 #define CBE_INCDATA 0x20000000                  //Include Script700 binary file
 #define CBE_REQBP   0x10000000                  //Request break point
-// ----- degrade-factory code [END] #35 -----
 
-// ----- degrade-factory code [2016/05/09] -----
+
 //**************************************************************************************************
 // Pointer of SNESAPU callback function
 //
@@ -85,7 +83,6 @@
 //    EAX = Usually, same value as 'value' argument
 
 typedef u32 (__stdcall *CBFUNC)(u32 effect, u32 addr, u32 value, void *pData);
-// ----- degrade-factory code [END] -----
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95,7 +92,6 @@ typedef u32 (__stdcall *CBFUNC)(u32 effect, u32 addr, u32 value, void *pData);
 
 #ifdef  __cplusplus
 extern  "C" u32 apuOpt;                         //Build options
-// ----- degrade-factory code [2021/09/18] -----
 extern  "C" u8  scr700dsp[256];                 //Script700 DSP enable flags (Channel)
 extern  "C" u8  scr700mds[32];                  //Script700 DSP enable flags (Master)
 extern  "C" u8  scr700chg[256];                 //Script700 DSP note change
@@ -110,10 +106,8 @@ extern  "C" u8  scr700stf;                      //Script700 Status flags
 extern  "C" u32 scr700dat;                      //Script700 Data area offset
 extern  "C" u32 pAPURAM;                        //Pointer to SNESAPU 64KB RAM
 extern  "C" u32 pSCRRAM;                        //Pointer to Script700 RAM
-// ----- degrade-factory code [END] #34 -----
 #else
 extern  u32 apuOpt;
-// ----- degrade-factory code [2021/09/18] -----
 extern  u8  scr700dsp[256];
 extern  u8  scr700mds[32];
 extern  u8  scr700chg[256];
@@ -128,7 +122,6 @@ extern  u8  scr700stf;
 extern  u32 scr700dat;
 extern  u32 pAPURAM;
 extern  u32 pSCRRAM;
-// ----- degrade-factory code [END] #34 -----
 #endif
 
 
@@ -139,7 +132,6 @@ extern  u32 pSCRRAM;
 extern  "C" {
 #endif
 
-// ----- degrade-factory code [2013/10/12] -----
 //**************************************************************************************************
 // Initialize Audio Processing Unit
 //
@@ -204,7 +196,6 @@ void GetAPUData(u8 **ppRAM, u8 **ppXRAM, u8 **ppOutPort, u32 **ppT64Cnt, DSPReg 
 //    ppScript700 -> Pointer of Script700 work memory
 
 void GetScript700Data(char *pDLLVer, u32 **ppSPCReg, u8 **ppScript700);
-// ----- degrade-factory code [END] -----
 
 
 //**************************************************************************************************
@@ -320,7 +311,6 @@ void* EmuAPU(void *pBuf, u32 len, u8 type);
 void SeekAPU(u32 time, b8 fast);
 
 
-// ----- degrade-factory code [2021/11/27] -----
 //**************************************************************************************************
 // Set/Reset TimerTrick Compatible Function
 //
@@ -367,10 +357,8 @@ s32 SetScript700(void *pSource);
 //      -1  : Error occurred by binary-converting Script700.  Script700 is disabled.
 
 s32 SetScript700Data(u32 addr, void *pData, u32 size);
-// ----- degrade-factory code [END] -----
 
 
-// ----- degrade-factory code [2015/07/11] -----
 //**************************************************************************************************
 // Get SNESAPU Context Buffer Size Function
 //
@@ -411,7 +399,6 @@ u32 GetSNESAPUContext(void *pCtxOut);
 //    = Reserved
 
 u32 SetSNESAPUContext(void *pCtxIn);
-// ----- degrade-factory code [END] -----
 
 #ifdef  __cplusplus
 }
