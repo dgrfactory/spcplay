@@ -19,7 +19,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 2003-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2021 degrade-factory
+;                                                   Copyright (C) 2003-2023 degrade-factory
+;
+;List of users and dates who/when modified this file:
+;   - degrade-factory in 2023-09-26
 ;===================================================================================================
 
 %define APU_INC
@@ -27,56 +30,54 @@
 ;===================================================================================================
 ;Options
 
-; ----- degrade-factory code [2022/09/03] -----
 CPU_CYC     EQU 24                                              ;CPU clock divisor
                                                                 ;10 = 2.457MHz
                                                                 ;12 = 2.048MHz
                                                                 ;24 = 1.024MHz
 
+;Standard Flags ------------------------
 DEBUG       EQU 1                                               ;Enable debugging ability
 DSPINTEG    EQU 1                                               ;Integrate DSP emulation with SPC700
-
 HALFC       EQU 1                                               ;Enable half-carry flag emulation for decimal adjusts
-SPEED       EQU 0                                               ;Enable speed hacks for counter reads and SLEEP
-                                                                ;   Notes:  If speed hacks enabled, will stop Script700 when sleeping SPC700.
-                                                                ;           If unused Script700, set the flag to "1" in order to run faster emulation.
 IPLW        EQU 1                                               ;Enables the IPL Writable flag in register F1
-
-CNTBK       EQU 0                                               ;Break SPC700/Update DSP if a counter increases
-DSPBK       EQU 0                                               ;Break SPC700/Update DSP if register F3 is read
-INTBK       EQU 1                                               ;Break SPC700/Update DSP if emulated 1Ts with SPC700
-                                                                ;   Notes:  If all of CNTBK, DSPBK and INTBK are set to 0, sound will be not output.
-                                                                ;           If you want the behavior closest to the SNES, set only INTBK to "1".
-
-ECHOMEM     EQU 0                                               ;Processing related to echo memory is made closer to the actual device
-                                                                ;   Notes:  If set to 1 and the playing speed is set to anything other than 100%,
-                                                                ;           playing may stop.  See REDl in DSP.asm
-
+STEREO      EQU 1                                               ;Enable stereo controls (separation and EFBCT)
 VMETERM     EQU 1                                               ;Monitor main output level (for APR)
 VMETERV     EQU 1                                               ;Monitor levels of each voice (for visualization)
 
-STEREO      EQU 1                                               ;Enable stereo controls (separation and EFBCT)
+;Speed Hack ----------------------------
+;   Note: If speed hacks enabled, will stop Script700 when sleeping SPC700.
+;    If unused Script700, set the flag to '1' in order to run faster emulation.
+SPEED       EQU 0                                               ;Enable speed hacks for counter reads and SLEEP
 
+;Interrupt Timing to DSP ---------------
+;   Note: If all of CNTBK, DSPBK and INTBK are set to '0', sound will be not output.
+;    If you want the behavior closest to the actual device, set only INTBK to '1'.
+CNTBK       EQU 0                                               ;Break SPC700/Update DSP if a counter increases
+DSPBK       EQU 0                                               ;Break SPC700/Update DSP if register F3 is read
+INTBK       EQU 1                                               ;Break SPC700/Update DSP if emulated 1Ts with SPC700
+
+;Echo Memory Writer --------------------
+;   Notes: If set to '1' and the playing speed is set to anything other than 100%,
+;    playing may stop.  See REDl in DSP.asm
+ECHOMEM     EQU 0                                               ;Processing echo memory is made closer to the actual device
+
+;SNESAPU buffer size -------------------
 APURAMSIZE  EQU 10000h                                          ;APU RAM Memory Size
 SCR700SIZE  EQU 100000h                                         ;Script700 Program Area Size
 SCR700MASK  EQU SCR700SIZE - 1                                  ;Script700 Program Area Mask
-; ----- degrade-factory code [END] #52 -----
 
-; ----- degrade-factory code [2021/09/19] -----
-;SNESAPU callback effect
+;SNESAPU callback effect ---------------
 CBE_DSPREG  EQU 01h                                             ;Write DSP value event
 CBE_S700FCH EQU 02h                                             ;Write SPC700 fetch event
 CBE_INCS700 EQU 40000000h                                       ;Include Script700 text file
 CBE_INCDATA EQU 20000000h                                       ;Include Script700 binary file
 CBE_REQBP   EQU 10000000h                                       ;Request break point
-; ----- degrade-factory code [END] #35 -----
 
 
 ;===================================================================================================
 ;Public Variables
 
 PUBLIC  apuOpt                                                  ;Build options
-; ----- degrade-factory code [2021/09/18] -----
 PUBLIC  scr700lbl                                               ;Script700 Label pointer
 PUBLIC  scr700stk                                               ;Script700 Stack area
 PUBLIC  scr700dsp                                               ;Script700 DSP enable flags (Channel)
@@ -97,13 +98,11 @@ PUBLIC  pAPURAM                                                 ;Pointer to SNES
 PUBLIC  pSCRRAM                                                 ;Pointer to Script700 RAM
 PUBLIC  apuCbMask                                               ;SNESAPU callback mask
 PUBLIC  apuCbFunc                                               ;SNESAPU callback function
-; ----- degrade-factory code [END] #34 -----
 
 
 ;===================================================================================================
 ;Exported Functions
 
-; ----- degrade-factory code [2013/10/12] -----
 ;===================================================================================================
 ;Initialize Audio Processing Unit
 ;
@@ -170,7 +169,6 @@ PUBLIC GetAPUData, ppRAM:ptr, ppXRAM:ptr, ppOutPort:ptr, ppT64Cnt:ptr, ppDSP:ptr
 ;   ppScript700 -> Pointer of Script700 work memory
 
 PUBLIC GetScript700Data, pDLLVer:ptr, ppSPCReg:ptr, ppScript700:ptr
-; ----- degrade-factory code [END] -----
 
 
 ;===================================================================================================
@@ -286,7 +284,6 @@ PUBLIC EmuAPU, pBuf:ptr, len:dword, type:byte
 PUBLIC SeekAPU, time:dword, fast:bool
 
 
-; ----- degrade-factory code [2013/10/12] -----
 ;===================================================================================================
 ;Set/Reset TimerTrick Compatible Function
 ;
@@ -333,10 +330,8 @@ PUBLIC SetScript700, pSource:ptr
 ;         -1  : Error occurred by binary-converting Script700.  Script700 is disabled.
 
 PUBLIC SetScript700Data, addr:dword, pData:ptr, size:dword
-; ----- degrade-factory code [END] -----
 
 
-; ----- degrade-factory code [2015/07/11] -----
 ;===================================================================================================
 ;Get SNESAPU Context Buffer Size Function
 ;
@@ -377,4 +372,3 @@ PUBLIC GetSNESAPUContext, pCtxOut:ptr
 ;   EAX = Reserved
 
 PUBLIC SetSNESAPUContext, pCtxIn:ptr
-; ----- degrade-factory code [END] -----
