@@ -22,7 +22,7 @@
 ;                                                   Copyright (C) 2003-2023 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2023-10-15
+;   - degrade-factory in 2023-10-25
 ;===================================================================================================
 
 CPU     386
@@ -767,9 +767,10 @@ USES ECX,EDX
         JZ      short .DoneSlow
 
         .EmuAPU:
-        XOr     EAX,EAX
-        Test    ECX,ECX
+        XOr     EAX,EAX                                                         ;If last second then emulate at current speed
+        Dec     ECX                                                             ; else at maximum speed for faster
         SetZ    AL
+        Inc     ECX
         Dec     EAX
         Or      EAX,EDI
         Call    SetAPUSmpClk,EAX
