@@ -1,6 +1,6 @@
 1 VERSIONINFO
-    FILEVERSION $RES_FILE_VER
-    PRODUCTVERSION $RES_PRODUCT_VER
+    FILEVERSION 1,0,0,0
+    PRODUCTVERSION 1,0,0,0
     FILEFLAGSMASK 0x3fL
     FILEFLAGS 0x8L
     FILEOS 0x10004L
@@ -18,7 +18,6 @@ BEGIN
             VALUE "OriginalFilename", "spccmd.exe\0"
             VALUE "ProductName", "SPCCMD\0"
             VALUE "ProductVersion", "$CAP_PRODUCT_VER\0"
-            VALUE "URL", "http://dgrfactory.jp/\0"
         END
     END
     BLOCK "VarFileInfo"
