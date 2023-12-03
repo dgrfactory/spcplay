@@ -22,7 +22,7 @@
 ;                                                   Copyright (C) 2003-2023 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2023-10-15
+;   - degrade-factory in 2023-10-25
 ;===================================================================================================
 
 CPU     386
@@ -234,6 +234,7 @@ SECTION .data ALIGN=32
     Scale32 fpShR10,-10                                                         ;Gaussian interpolation
     Scale32 fpShR15,-15                                                         ;Cubic interpolation
     Scale32 fpShR16,-16
+    Scale32 fpShR19,-19                                                         ;Denormalized number check for echo feedback
     Scale32 fpShR23,-23                                                         ;EFBCT(16), EFB(7)
     Scale32 fpShR31,-31                                                         ;32bit-float (IEEE754) output
     Scale32 fpEShR,-(E_SHIFT+7)
@@ -2616,19 +2617,28 @@ ENDP
 ;===================================================================================================
 ;Set the Denormalized Numbers to 0
 ;
-;If using a CPU that does not support denormalized numbers, you will experience significant
-;performance degradation.  In many cases, if the value is a denormalized number, it is
-;exceedingly close to 0, therefore can be treated as 0.
+;Calculating denormalized numbers requires a many number of CPU clocks.  If the CPU does not support
+;denormalized numbers, will take more processing time more because using software emulation.
+;
+;However, when it comes to audio data, denormalized numbers have very small outputs that are
+;inaudible, so they can be treated as 0.
 ;
 ;Destroys:
 ;   EAX
 %macro ZeroDN 1
     Mov     EAX,[%1]
-    And     EAX,7E000000h
-    JNZ     short %%Normal
+    And     EAX,7F800000h                                                       ;Is the exponent part zero (denormalized)?
+    JNZ     short %%Normal                                                      ;   No
         Mov     [%1],EAX                                                        ;EAX = 0
 
     %%Normal:
+%endmacro
+
+%macro ZeroDNEFB 1
+    FLd     dword [%1]
+    FMul    dword [fpShR19]
+    FStP    dword [ESP-4]
+    ZeroDN  ESP-4
 %endmacro
 
 
@@ -2793,7 +2803,6 @@ RADSR:
     Or      [EBX+mix+vRsv],AL
     Test    AL,AL                                                               ;Has time passed since KON was written?
     JNZ     short .NoChg                                                        ;   No, update ADSR parameters later
-
         Mov     AL,[EBX+mix+eMode]                                              ;AL = ADSR or Gain mode
         ShR     EBX,3
         And     AL,E_ADSR
@@ -2949,18 +2958,15 @@ REFB:
     FIMul   dword [efbct]
     FMul    dword [fpShR23]                                                     ;Convert from fixed to floating-point
     FStP    dword [echoFB]                                                      ;7-bits (efb) + 16-bits (efbct) = 23-bits
-    ZeroDN  echoFB
 
     FLd     dword [fp64k]
     FISub   dword [efbct]
     FMulP   ST1,ST
     FMul    dword [fpShR23]
     FStP    dword [echoFBCT]
-    ZeroDN  echoFBCT
 %else
     FMul    dword [fpShR7]
     FStP    dword [echoFB]
-    ZeroDN  echoFB
 %endif
 
     XOr     EAX,EAX
@@ -3700,7 +3706,7 @@ ENDP
         FLd     dword [fpShR1]                                                  ;Force feedback in half, without echo. (If there is
         FMul    ST1,ST                                                          ; a loud feedback that causes clipping, mute the
         FMul    ST2,ST                                                          ; channel toprevent the sound from playing forever.)
-        FStP    ST                                                              ;
+        FStP    ST
 
     %%NoZero:
     Sub     byte [firCur],4                                                     ;Move index back one sample. (Index will wrap around
@@ -3748,18 +3754,12 @@ ENDP
         FILd    dword [ESP-8]                                                   ;                                   |0 0 firDec
         FMul    dword [fpShR16]                                                 ;                                   |0 0 firDec>>16=FD
 
-        ZeroDN  8+EBX
-        ZeroDN  EBX
-
         FLd     dword [8+EBX]                                                   ;Interpolate left sample            |0 0 FD S1
         FSub    dword [EBX]                                                     ;                                   |0 0 FD S1-S2
         FMul    ST1                                                             ;                                   |0 0 FD (S1-S2)*FD
         FAdd    dword [EBX]                                                     ;                                   |0 0 FD (S1-S2)*FD+S2
         FMul    dword [EDX]                                                     ;                                   |0 0 FD ((S1-S2)*FD+S2)*FT
         FAddP   ST2,ST                                                          ;                                   |0 ((S1-S2)*FD+S2)*FT FD
-
-        ZeroDN  12+EBX
-        ZeroDN  4+EBX
 
         FLd     dword [12+EBX]                                                  ;Interpolate right sample           |0 FBL FD S1
         FSub    dword [4+EBX]                                                   ;                                   |0 FBL FD S1-S2
@@ -4395,8 +4395,6 @@ ENDP
     Sub     EDI,[echoCurD]
     Add     EDI,echoBuf
 
-    ZeroDN  4+EDI
-    ZeroDN  EDI
     FLd     dword [4+EDI]                                                       ;                                   |FBR
     FLd     dword [EDI]                                                         ;                                   |FBR FBL
 
@@ -4404,8 +4402,8 @@ ENDP
     Test    dword [dspOpts],DSP_NOFIR                                           ;Is FIR filter disabled?
     JNZ     %%NoFilter                                                          ;   Yes
         FIRFilter
-
     %%NoFilter:
+
     FLd     ST1                                                                 ;                                   |FBR FBL FBR
     FLd     ST1                                                                 ;                                   |FBR FBL FBR FBL
 
@@ -4434,7 +4432,6 @@ ENDP
     %%NoEchoL:
     FAdd    dword [ESI]                                                         ;                                   |FBR FBL FBR EchoL+ML
     FStP    dword [ESI]                                                         ;                                   |FBR FBL FBR
-    ZeroDN  ESI
 
     FMul    dword [nowEchoR]                                                    ;                                   |FBR FBL FBR*EchoR
     Mov     AH,[scr700mds+S700_ECHO_R]
@@ -4446,11 +4443,9 @@ ENDP
     %%NoEchoR:
     FAdd    dword [4+ESI]                                                       ;                                   |FBR FBL FBR+MR
     FStP    dword [4+ESI]                                                       ;                                   |FBR FBL
-    ZeroDN  4+ESI
 
     ;Calculate echo feedback -----------
 %if STEREO
-    ZeroDN  8+ESI
     FLd     ST                                                                  ;                                   |FBR FBL FBL
     FMul    dword [echoFB]                                                      ;                                   |FBR FBL FBL*EchoFB
     FLd     ST2                                                                 ;                                   |FBR FBL EFBL FBR
@@ -4458,28 +4453,25 @@ ENDP
     FAddP   ST1,ST                                                              ;                                   |FBR FBL EFBL+EFBCR
     FAdd    dword [8+ESI]                                                       ;                                   |FBR FBL EFBL+EL
     FStP    dword [EDI]                                                         ;                                   |FBR FBL
-    ZeroDN  EDI
+    ZeroDNEFB   EDI
 
-    ZeroDN  12+ESI
     FMul    dword [echoFBCT]                                                    ;                                   |FBR FBL*EchoFBCT
     FXCh    ST1                                                                 ;                                   |EFBCL FBR
     FMul    dword [echoFB]                                                      ;                                   |EFBCL FBR*EchoFB
     FAddP   ST1,ST                                                              ;                                   |EFBCL+EFBR
     FAdd    dword [12+ESI]                                                      ;                                   |EFBR+ER
     FStP    dword [4+EDI]                                                       ;                                   |(empty)
-    ZeroDN  4+EDI
+    ZeroDNEFB   4+EDI
 %else
-    ZeroDN  8+ESI
     FMul    dword [echoFB]                                                      ;                                   |FBR FBL*EchoFB
     FAdd    dword [8+ESI]                                                       ;                                   |FBR EFBL+EL
     FStP    dword [EDI]                                                         ;                                   |FBR
-    ZeroDN  EDI
+    ZeroDNEFB   EDI
 
-    ZeroDN  12+ESI
     FMul    dword [echoFB]                                                      ;                                   |FBR*EchoFB
     FAdd    dword [12+ESI]                                                      ;                                   |EFBR+ER
     FStP    dword [4+EDI]                                                       ;                                   |(empty)
-    ZeroDN  4+EDI
+    ZeroDNEFB   4+EDI
 %endif
 %endmacro
 
@@ -4531,8 +4523,8 @@ ENDP
         Mov     EAX,[echoLenM]
         Mov     [echoMaxM],EAX
         Mov     [echoCurM],EAX
-    %%NoReset:
 
+    %%NoReset:
     Add     EDX,[dspRate]
     JS      short %%Loop
 
@@ -4585,6 +4577,7 @@ ENDP
     FSubP   ST1,ST                                                              ;                                   |BASS1-BASS2
     FAdd    dword [ESI]                                                         ;                                   |BASS1-BASS2+SampleL
     FStP    dword [ESI]                                                         ;                                   |(empty)
+    ZeroDN  ESI
 
     FLd     dword [lowSumR1]                                                    ;Right                              |SumR1
     FSub    dword [lowBufR1+ECX]                                                ;                                   |SumR1-BufR1[ECX]
@@ -4599,6 +4592,7 @@ ENDP
     FSubP   ST1,ST                                                              ;                                   |BASS1-BASS2
     FAdd    dword [ESI+4]                                                       ;                                   |BASS1-BASS2+SampleR
     FStP    dword [ESI+4]                                                       ;                                   |(empty)
+    ZeroDN  ESI+4
 
     ;Reset Buffer ---------------------
     Pop     EDX,ECX                                                             ;ECX = Current Sample (Left), EDX = (Right)
@@ -4706,6 +4700,7 @@ ENDP
         FAddP   ST1,ST                                                          ;                                   |z1 (in-z1*a1)*b0+z1*b1=out
         FStP    dword [ESI]                                                     ;                                   |z1
         FStP    ST                                                              ;                                   |(empty)
+        ZeroDN  ESI
 
         FLd     dword [aafBufL]                                                 ;Left:Filter2                       |z1
         FLd     dword [ESI]                                                     ;                                   |z1 in
@@ -4727,6 +4722,7 @@ ENDP
         FAddP   ST1,ST                                                          ;                                   |z1 (in-z1*a1)*b0+z1*b1=out
         FStP    dword [ESI]                                                     ;                                   |z1
         FStP    ST                                                              ;                                   |(empty)
+        ZeroDN  ESI
 
         FLd     dword [aafBufR]                                                 ;Right:Filter1                      |z1
         FLd     dword [ESI+4]                                                   ;                                   |z1 in
@@ -4740,6 +4736,7 @@ ENDP
         FAddP   ST1,ST                                                          ;                                   |z1 (in-z1*a1)*b0+z1*b1=out
         FStP    dword [ESI+4]                                                   ;                                   |z1
         FStP    ST                                                              ;                                   |(empty)
+        ZeroDN  ESI+4
 
         FLd     dword [aafBufR]                                                 ;Right:Filter2                      |z1
         FLd     dword [ESI+4]                                                   ;                                   |z1 in
@@ -4761,6 +4758,7 @@ ENDP
         FAddP   ST1,ST                                                          ;                                   |z1 (in-z1*a1)*b0+z1*b1=out
         FStP    dword [ESI+4]                                                   ;                                   |z1
         FStP    ST                                                              ;                                   |(empty)
+        ZeroDN  ESI+4
 
         Add     ESI,16
 
@@ -4867,6 +4865,7 @@ ENDP
         FAddP   ST1,ST                                                          ;                                   |A B+C+D
         FAddP   ST1,ST                                                          ;                                   |A+B+C+D
         FStP    dword [ESP-8]                                                   ;                                   |(empty)
+        ZeroDN  ESP-8
 
         FLd     dword [28+EBX]                                                  ;A                                  |s3
         FSub    dword [20+EBX]                                                  ;                                   |s3-s2
@@ -4888,6 +4887,7 @@ ENDP
         FAddP   ST1,ST                                                          ;                                   |A B+C+D
         FAddP   ST1,ST                                                          ;                                   |A+B+C+D
         FStP    dword [ESP-4]                                                   ;                                   |(empty)
+        ZeroDN  ESP-4
 
         Jmp     short %%Exit
 
@@ -5069,8 +5069,8 @@ PROC RunDSP
         Test    dword [dspOpts],DSP_BASS                                        ;Is BASS BOOST enabled?
         JZ      .NoBASS                                                         ;   No
             MixBASS
-
         .NoBASS:
+
         ApplyLevel
         Add     ESI,16
 
@@ -5090,8 +5090,8 @@ PROC RunDSP
     Test    dword [dspOpts],DSP_ANALOG                                          ;Is Anti-Alies filter enabled?
     JZ      .NoAAF                                                              ;   No
         MixAAF
-
     .NoAAF:
+
     Cmp     byte [dspChn],2
     JE      .OutStereo
     Cmp     byte [dspSize],-4
@@ -5192,6 +5192,7 @@ PROC RunDSP
         FMul    dword [fp0_5]
         FMul    dword [fpShR31]
         FStP    dword [EDI]
+        ZeroDN  EDI
         Add     EDI,4
 
         Dec     EBP
@@ -5301,6 +5302,8 @@ PROC RunDSP
         FLd     dword [ESP-4]
         FMul    dword [fpShR31]
         FStP    dword [4+EDI]
+        ZeroDN  EDI
+        ZeroDN  4+EDI
         Add     EDI,8
 
         Dec     EBP
