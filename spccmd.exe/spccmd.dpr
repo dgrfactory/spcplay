@@ -54,7 +54,7 @@ program spccmd;
 {$BOOLEVAL OFF}                                             // 完全論理式評価               : 無効
 {$DEBUGINFO OFF}                                            // デバッグ情報                 : 無効
 {$DEFINITIONINFO OFF}                                       // シンボル宣言と参照情報       : 無効
-{$DENYPACKAGEUNIT OFF}                                      // UNIT 使用                    : 無効
+{$DENYPACKAGEUNIT ON}                                       // UNIT 不使用                  : 有効
 {$DESIGNONLY OFF}                                           // IDE 使用                     : 無効
 {$EXTENDEDSYNTAX ON}                                        // 関数の戻り値を無視可能       : 有効
 {$EXTENSION exe}                                            // 拡張子設定                   : EXE
