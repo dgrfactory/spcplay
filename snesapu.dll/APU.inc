@@ -19,10 +19,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 2003-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2023 degrade-factory
+;                                                   Copyright (C) 2003-2024 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2023-09-26
+;   - degrade-factory in 2024-01-18
 ;===================================================================================================
 
 %define APU_INC
@@ -57,7 +57,7 @@ DSPBK       EQU 0                                               ;Break SPC700/Up
 INTBK       EQU 1                                               ;Break SPC700/Update DSP if emulated 1Ts with SPC700
 
 ;Echo Memory Writer --------------------
-;   Notes: If set to '1' and the playing speed is set to anything other than 100%,
+;   Note: If set to '1' and the playing speed is set to anything other than 100%,
 ;    playing may stop.  See REDl in DSP.asm
 ECHOMEM     EQU 0                                               ;Processing echo memory is made closer to the actual device
 
@@ -210,8 +210,9 @@ PUBLIC LoadSPCFile, pFile:ptr
 ;
 ;Configures the sound processor emulator.  Range checking is performed on all parameters.
 ;
-;Notes:  -1 can be passed for any parameter you want to remain unchanged
-;        see SetDSPOpt() in DSP.Inc for a more detailed description
+;Notes:
+;   -1 can be passed for any parameter you want to remain unchanged
+;    see SetDSPOpt() in DSP.inc for a more detailed description.
 ;
 ;In:
 ;   mixType = Mixing routine (default 1)
@@ -219,7 +220,7 @@ PUBLIC LoadSPCFile, pFile:ptr
 ;   bits    = Sample size (8, 16, 24, 32, or -32 [IEEE 754], default 16)
 ;   rate    = Sample rate (8000-192000, default 32000)
 ;   inter   = Interpolation type (default INT_GAUSS)
-;   opts    = See 'DSP options' in the Defines section of DSP.Inc
+;   opts    = See 'DSP options' in the Defines section of DSP.inc
 
 PUBLIC SetAPUOpt, mixType:dword, numChn:dword, bits:dword, rate:dword, inter:dword, opts:dword
 
@@ -241,8 +242,9 @@ PUBLIC SetAPUSmpClk, speed:dword
 ;
 ;Sets the length of the song and fade.
 ;
-;Notes:  If a song is not yet playing, you must call ResetAPU or set T64Cnt to 0 before calling this
-;        To set a song with no length, pass -1 and 0 for the song and fade
+;Notes:
+;   If a song is not yet playing, you must call ResetAPU or set T64Cnt to 0 before calling this.
+;   To set a song with no length, pass -1 and 0 for the song and fade.
 ;
 ;In:
 ;   song = Length of song (in 1/64000ths second)
