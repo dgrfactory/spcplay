@@ -19,10 +19,10 @@
 * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                                        *
 *                                                                                                  *
 *                                                 Copyright (C) 2001-2004 Alpha-II Productions     *
-*                                                 Copyright (C) 2003-2021 degrade-factory          *
+*                                                 Copyright (C) 2003-2024 degrade-factory          *
 *                                                                                                  *
 * List of users and dates who/when modified this file:                                             *
-*    - degrade-factory in 2021-09-18                                                               *
+*    - degrade-factory in 2024-01-12                                                               *
 ***************************************************************************************************/
 
 #define WIN32_LEAN_AND_MEAN                                     //Leave out unnecessary grunt in windows.h
@@ -97,15 +97,15 @@
 #define ECR_OFFSET          0x402
 #define CONTROL_PORT        0x002
 
-static int BASE = 0;
-static int port0 = 0;
-static int control_pins = 0;
-static int boot = 0;
-static int transmit_type = 0;
+static int  BASE            = 0;
+static int  port0           = 0;
+static int  control_pins    = 0;
+static int  boot            = 0;
+static int  transmit_type   = 0;
 
-static u8 _700Asc = 0;
-static u8 _700Dir[2048];
-static u32 _700DirSize = 0;
+static u8   _700Asc         = 0;
+static u8   _700Dir[2048];
+static u32  _700DirSize     = 0;
 
 #define DATA        (int)(BASE + 0x000)
 #define STATUS      (int)(BASE + 0x001)
@@ -116,44 +116,41 @@ static u32 _700DirSize = 0;
 #define ClrPins(x, p)       x = (x & (~p))
 #define TogglePins(x, p)    x = (x ^ p)
 
-typedef HANDLE (__stdcall *CreateFileP)(void*, DWORD, DWORD, LPSECURITY_ATTRIBUTES, DWORD, DWORD, HANDLE);
-typedef BOOL (__stdcall *IsInpOutDriverOpenP)(void);
-typedef u8 (__stdcall *DlPortReadPortUcharP)(u16);
-typedef void (__stdcall *DlPortWritePortUcharP)(u16, u8);
-typedef int (__stdcall *CallbackPortReadP)(int);
-typedef void (__stdcall *CallbackPortWriteP)(int, int);
+typedef HANDLE      (__stdcall *CreateFileP)(void*, DWORD, DWORD, LPSECURITY_ATTRIBUTES, DWORD, DWORD, HANDLE);
+typedef BOOL        (__stdcall *IsInpOutDriverOpenP)(void);
+typedef u8          (__stdcall *DlPortReadPortUcharP)(u16);
+typedef void        (__stdcall *DlPortWritePortUcharP)(u16, u8);
+typedef int         (__stdcall *CallbackPortReadP)(int);
+typedef void        (__stdcall *CallbackPortWriteP)(int, int);
 
-static HINSTANCE hInpOut32;
-static IsInpOutDriverOpenP pIsInpOutDriverOpen;
-static DlPortReadPortUcharP pDlPortReadPortUchar;
-static DlPortWritePortUcharP pDlPortWritePortUchar;
-static CallbackPortReadP pCallbackRead;
-static CallbackPortWriteP pCallbackWrite;
-static unsigned long dwS700ThreadID;
-static HANDLE hS700ThreadHandle;
-static u32 fActiveS700Thread = 0;
+static HINSTANCE                hInpOut32;
+static IsInpOutDriverOpenP      pIsInpOutDriverOpen;
+static DlPortReadPortUcharP     pDlPortReadPortUchar;
+static DlPortWritePortUcharP    pDlPortWritePortUchar;
+static CallbackPortReadP        pCallbackRead;
+static CallbackPortWriteP       pCallbackWrite;
+static unsigned long            dwS700ThreadID;
+static HANDLE                   hS700ThreadHandle;
+static u32                      fActiveS700Thread = 0;
 
-#define TRANSMIT_TYPE_LPT           0x01
-#define TRANSMIT_TYPE_GIMIC         0x02
-#define TRANSMIT_TYPE_CALLBACK      0x03
+#define TRANSMIT_TYPE_LPT       0x01
+#define TRANSMIT_TYPE_GIMIC     0x02
+#define TRANSMIT_TYPE_CALLBACK  0x03
 
-typedef struct TRANSMITSPCEX
-{
+typedef struct TRANSMITSPCEX {
     u32     cbSize;
     u32     transmitType;
     u32     bScript700;
 } TRANSFERSPCEX;
 
-typedef struct TRANSMITSPCEXLPT
-{
+typedef struct TRANSMITSPCEXLPT {
     u32     cbSize;
     u32     transmitType;
     u32     bScript700;
     u32     dataPort;
 } TRANSFERSPCEXLPT;
 
-typedef struct TRANSMITSPCEXCALLBACK
-{
+typedef struct TRANSMITSPCEXCALLBACK {
     u32     cbSize;
     u32     transmitType;
     u32     bScript700;

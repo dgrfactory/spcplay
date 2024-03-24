@@ -19,10 +19,10 @@
 * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                                        *
 *                                                                                                  *
 *                                                 Copyright (C) 2001-2004 Alpha-II Productions     *
-*                                                 Copyright (C) 2003-2015 degrade-factory          *
+*                                                 Copyright (C) 2003-2024 degrade-factory          *
 *                                                                                                  *
 * List of users and dates who/when modified this file:                                             *
-*    - degrade-factory in 2015-07-11                                                               *
+*    - degrade-factory in 2024-01-18                                                               *
 ***************************************************************************************************/
 
 #ifndef __INC_SNESAPU
@@ -37,15 +37,14 @@
 //**************************************************************************************************
 // Function pointers to SNESAPU
 
-typedef struct
-{
-    u8      *ram;                               //Base pointer to APU RAM
-    u8      *xram;                              //Pointer to writeable IPL region
-    u8      *outPort;                           //SPC700 output ports
-    u32     *t64Cnt;                            //64kHz timer counter
-    DSPReg  *dsp;                               //DSP registers
-    Voice   *voice;                             //Internal DSP mixing data
-    u32     *vMMaxL,*vMMaxR;                    //Max main sample output
+typedef struct {
+    u8          *ram;                           //Base pointer to APU RAM
+    u8          *xram;                          //Pointer to writeable IPL region
+    u8          *outPort;                       //SPC700 output ports
+    u32         *t64Cnt;                        //64kHz timer counter
+    DSPReg      *dsp;                           //DSP registers
+    Voice       *voice;                         //Internal DSP mixing data
+    u32         *vMMaxL,*vMMaxR;                //Max main sample output
 
     void*       (__stdcall *EmuAPU)(void *pBuf, u32 len, b8 type);
     void*       (__stdcall *EmuDSP)(void *pBuf, s32 size);

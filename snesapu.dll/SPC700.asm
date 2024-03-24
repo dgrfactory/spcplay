@@ -22,10 +22,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2008 Alpha-II Productions
-;                                                   Copyright (C) 2003-2023 degrade-factory
+;                                                   Copyright (C) 2003-2024 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2023-10-01
+;   - degrade-factory in 2024-01-18
 ;===================================================================================================
 
 CPU     386
@@ -821,17 +821,21 @@ PROC RunScript700, interrupt
     .700P1P:                                                                                                        ; [PORT]
     And     ESI,3                                                               ;ESI &= 3
     MovZX   EDX,byte [outPortCp+ESI]                                            ;EDX = OutPort[ESI]
+
 %ifdef SHVC_SOUND_SUPPORT
     Call    ReadPort
 %endif
+
     Ret
 
     .700P1O:                                                                                                        ; o[PORT]
     And     ESI,3                                                               ;ESI &= 3
     MovZX   EDX,byte [outPort+ESI]                                              ;EDX = OutPort[ESI]
+
 %ifdef SHVC_SOUND_SUPPORT
     Call    ReadPort
 %endif
+
     Ret
 
     .700P1W:                                                                                                        ; w[WORK]
@@ -956,6 +960,7 @@ PROC RunScript700, interrupt
     Mov     [inPortCp+ESI],DL                                                   ;InPort[ESI] = DL
     Add     ESI,[pAPURAM]                                                       ;ESI += RAM Pointer
     Mov     [ESI+0F4h],DL                                                       ;RAM[ESI + F4h] = DL
+
 %ifdef SHVC_SOUND_SUPPORT
     Call    WritePort
 %endif
@@ -1406,10 +1411,12 @@ PROC RunScript700, interrupt
     Mov     [inPortCp],EDX                                                      ;InPort = EDX
     Mov     ESI,[pAPURAM]                                                       ;ESI = RAM Pointer
     Mov     [ESI+0F4h],EDX                                                      ;RAM[ESI + F4h] = EDX
+
 %ifdef SHVC_SOUND_SUPPORT
     Mov     ESI,-1                                                              ;ESI = -1
     Call    WritePort
 %endif
+
     Mov     DL,08h                                                              ;If SHVC-SOUND transfer mode, DL = 0x08
     And     byte [scr700stf],40h                                                ;If not, DL = 0x04
     SetZ    CL
@@ -1560,6 +1567,7 @@ ENDP
 ;In the debug build, before the fetcher handles the next opcode a user defined function is called.
 
 SPCTrace:
+%if DEBUG
     Cmp     dword [clkLeft],0                                                   ;Have we executed all clock cycles?
     JLE     SPCTimers                                                           ;   Yes, Update timers
 
@@ -1605,8 +1613,10 @@ SPCBreak:
     Test    byte [dbgOpt],SPC_TRACE
     JNZ     short .Trace
         Mov     dword [pOpFetch],SPCFetch
+
     .Trace:
     Mov     EBP,[pOpFetch]                                                      ;Restore EBP
+%endif
 
     ;Fetching begins by first subtracting the number of clock cycles emulated by the last
     ;instruction (passed in EDX).  If more cycles need to be emulated before updating timer 2, then
@@ -1751,11 +1761,13 @@ SPCTimers:
 
     Mov     EBX,[t64Cnt]
     Cmp     [t64DSP],EBX                                                        ;Interrupt Script700/DSP every 1Ts
+
 %ifdef SHVC_SOUND_SUPPORT
     JE      .NoDSP
 %else
     JE      short .NoDSP
 %endif
+
         Mov     [t64DSP],EBX
 
         Test    word [scr700int],-1                                             ;Waiting for ports interrupt?
@@ -1778,6 +1790,7 @@ SPCTimers:
         .CheckPort0:
         Add     dword [scr700cmp],32                                            ;CmpParam[0] += 32
         Mov     BL,[outPortCp]                                                  ;BL = OutPort[0]
+
 %ifdef SHVC_SOUND_SUPPORT
         Push    ESI,EDX
         Mov     ESI,-1
@@ -1786,6 +1799,7 @@ SPCTimers:
         Mov     BL,DL
         Pop     EDX,ESI
 %endif
+
         Cmp     [flushPort],BL                                                  ;FlushPort[0] = BL?
         JNE     short .No700                                                    ;   No
         And     byte [scr700stf],~0Ch                                           ;Status Flags &= ~0x0C
@@ -2373,6 +2387,7 @@ Ret
 
 %macro ResetCnt 0
     Inc     BH                                                                  ;EBX -> Counter
+
 %if SPEED
     Call    CntHack                                                             ;Call speed hack
 %else
@@ -5078,7 +5093,6 @@ ENDP
 %if DEBUG
     Test    byte [dbgOpt],SPC_TRACE
     JNZ     short %%NoDbg
-%endif
 
     Mov     EBX,[pDebug]
     Test    EBX,EBX
@@ -5087,6 +5101,8 @@ ENDP
         Jmp     SPCBreak
 
     %%NoDbg:
+%endif
+
     CleanUp 3,1
 %endmacro
 

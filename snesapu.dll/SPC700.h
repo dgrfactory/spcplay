@@ -22,10 +22,10 @@
 * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                                        *
 *                                                                                                  *
 *                                                 Copyright (C) 1999-2008 Alpha-II Productions     *
-*                                                 Copyright (C) 2003-2016 degrade-factory          *
+*                                                 Copyright (C) 2003-2024 degrade-factory          *
 *                                                                                                  *
 * List of users and dates who/when modified this file:                                             *
-*    - degrade-factory in 2016-08-20                                                               *
+*    - degrade-factory in 2024-01-18                                                               *
 ***************************************************************************************************/
 
 #ifndef __INC_SPC700
@@ -86,8 +86,7 @@
 //**************************************************************************************************
 // Public Variables
 
-typedef struct SPCFlags
-{
+typedef struct SPCFlags {
     u8      c:1;                                //Carry
     u8      z:1;                                //Zero
     u8      i:1;                                //Interrupts Enabled (not used in the SNES)
@@ -107,7 +106,7 @@ typedef struct SPCFlags
 // The parameters passed in can be modified, and on return will be used to update the internal
 // registers (except 'cnt').
 //
-// Note:
+// Notes:
 //    When modifying PC or SP, only the lower word needs to be modified; the upper word will be
 //     ignored.
 //
@@ -155,8 +154,8 @@ extern  "C" {
 // This function is a remnant from the 16-bit assembly when dynamic code reallocation was used.
 // Now it just initializes internal pointers.
 //
-// Note:
-//    Callers should use InitAPU instead
+// Notes:
+//    Callers should use InitAPU instead.
 //
 // Destroys:
 //    EAX
@@ -170,8 +169,8 @@ void InitSPC();
 // Clears all memory, resets the function registers, T64Cnt, and halt flag, and copies ROM into the
 // IPL region.
 //
-// Note:
-//    Callers should use ResetAPU instead
+// Notes:
+//    Callers should use ResetAPU instead.
 //
 // Destroys:
 //    EAX
@@ -184,9 +183,9 @@ void ResetSPC();
 //
 // Installs a vector that gets called before instruction execution for debugging purposes.
 //
-// Note:
+// Notes:
 //    pTrace is always called when a STOP instruction is encountered, regardless of the options.
-//    The build option SA_DEBUG must be enabled for pTrace to be called under other circumstances
+//    The build option SA_DEBUG must be enabled for pTrace to be called under other circumstances.
 //
 // In:
 //    pTrace-> Debugging vector (NULL can be passed to disable the debug vector, -1 leaves the
@@ -205,7 +204,7 @@ SPCDebug* SetSPCDbg(SPCDebug *pTrace, u32 opts);
 // Loads timer steps with the values in the timer registers, resets the counters, sets up the in/out
 // ports, and stores the registers.
 //
-// Note:
+// Notes:
 //    Callers should use FixAPU instead
 //
 // In:
@@ -268,9 +267,9 @@ void InPort(u8 port, u8 val);
 // Emulates the SPC700 for the number of clock cycles specified, or if the counter break option is
 // enabled, until a counter is increased, whichever happens first.
 //
-// Note:
-//    Callers should use EmuAPU instead
-//    Passing values <= 0 will cause undeterminable results
+// Notes:
+//    Callers should use EmuAPU instead.
+//    Passing values <= 0 will cause undeterminable results.
 //
 // In:
 //    cyc = Number of 24.576MHz clock cycles to execute (must be > 0)
