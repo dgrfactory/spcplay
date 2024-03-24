@@ -19,10 +19,10 @@
 * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                                        *
 *                                                                                                  *
 *                                                 Copyright (C) 2003-2006 Alpha-II Productions     *
-*                                                 Copyright (C) 2003-2021 degrade-factory          *
+*                                                 Copyright (C) 2003-2024 degrade-factory          *
 *                                                                                                  *
 * List of users and dates who/when modified this file:                                             *
-*    - degrade-factory in 2021-11-27                                                               *
+*    - degrade-factory in 2024-01-18                                                               *
 ***************************************************************************************************/
 
 #ifndef __INC_APU
@@ -31,7 +31,7 @@
 //**************************************************************************************************
 // Defines
 
-//The build options correspond to the equates at the top of APU.Inc
+//The build options correspond to the equates at the top of APU.inc
 
 //SPC700 build options bits 7-0 ----------------
 #define SA_HALFC    0x02                        //Enable half-carry flag emulation for decimal adjusts
@@ -237,8 +237,9 @@ void LoadSPCFile(void *pFile);
 //
 // Configures the sound processor emulator.  Range checking is performed on all parameters.
 //
-// Notes:  -1 can be passed for any parameter you want to remain unchanged
-//         see SetDSPOpt() in DSP.h for a more detailed explantion of the options
+// Notes:
+//    -1 can be passed for any parameter you want to remain unchanged
+//     see SetDSPOpt() in DSP.h for a more detailed explantion of the options.
 //
 // In:
 //    mixType = Mixing routine (default 1)
@@ -268,8 +269,9 @@ void SetAPUSmpClk(u32 speed);
 //
 // Sets the length of the song and fade.
 //
-// Notes:  If a song is not playing, you must call ResetAPU or set T64Cnt to 0 before calling this.
-//         To set a song with no length, pass -1 and 0 for the song and fade.
+// Notes:
+//    If a song is not playing, you must call ResetAPU or set T64Cnt to 0 before calling this.
+//    To set a song with no length, pass -1 and 0 for the song and fade.
 //
 // In:
 //    song = Length of song (in 1/64000ths second)

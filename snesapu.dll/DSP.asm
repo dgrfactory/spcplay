@@ -19,10 +19,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2023 degrade-factory
+;                                                   Copyright (C) 2003-2024 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2023-10-25
+;   - degrade-factory in 2024-01-18
 ;===================================================================================================
 
 CPU     386
@@ -34,7 +34,7 @@ BITS    32
 %include "macro.inc"
 %include "SNESAPU.inc"
 %include "SPC700.inc"
-%include "APU.Inc"
+%include "APU.inc"
 %define INTERNAL
 %include "DSP.inc"
 
@@ -1447,6 +1447,7 @@ USES ALL
         Call    InitReg
 
         Call    ResetVol
+
     .Done:
 
 ENDP
@@ -1464,6 +1465,7 @@ USES EDX
     Cmp     EAX,-1
     JE      short .NoFunc
         Mov     [pTrace],EAX
+
     .NoFunc:
     Mov     EAX,EDX
 
@@ -2513,7 +2515,6 @@ ENDP
             Jmp     %%Skip
 
         %%CheckKOff:
-
 %if DSPBK || INTBK
         Cmp     byte [EBX+mKOn],KON_CHKKOFF                                     ;Did time for checked KOFF after KON had been written?
         JA      short %%CheckEnv                                                ;   No
@@ -3864,7 +3865,6 @@ PROC CatchUp
         Mov     [pOutBuf],EAX
 
     .Skip:
-
 %if INTBK
     Push    ECX                                                                 ;Run KON/KOFF processing after emulate DSP
     CatchKOff

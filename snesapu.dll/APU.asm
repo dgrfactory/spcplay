@@ -19,10 +19,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 2003-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2023 degrade-factory
+;                                                   Copyright (C) 2003-2024 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2023-10-25
+;   - degrade-factory in 2024-01-18
 ;===================================================================================================
 
 CPU     386
@@ -65,8 +65,11 @@ SECTION .bss ALIGN=256
 SECTION .bss ALIGN=64
 %endif
 
-    apuRAMBuf   resb    APURAMSIZE*2+16                                         ;SNESAPU 64KB APU RAM buffer
-    scrRAMBuf   resb    SCR700SIZE+8                                            ;Script700 RAM buffer
+    apuRAMBuf   resb    APURAMSIZE*2                                            ;SNESAPU 64KB APU RAM buffer
+                resd    2                                                       ;   Overflow reference area
+                resd    6                                                       ;Extend function pointer address
+    scrRAMBuf   resb    SCR700SIZE                                              ;Script700 RAM buffer
+                resd    2                                                       ;   Overflow reference area
 
     scr700lbl   resd    1024                                                    ;Script700 Label work area
     scr700dsp   resb    256                                                     ;Script700 DSP enable flags (Source)

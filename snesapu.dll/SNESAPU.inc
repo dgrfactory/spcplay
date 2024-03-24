@@ -18,7 +18,7 @@
 ;if not, write to the Free Software Foundation, Inc.
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
-;                                                   Copyright (C) 2003-2012 degrade-factory
+;                                                   Copyright (C) 2003-2024 degrade-factory
 ;===================================================================================================
 
 %define SNESAPU_INC
@@ -26,4 +26,9 @@
 ;===================================================================================================
 ;Equates
 
-DSP_ALIGN   EQU 0                                                               ;DSP Object Locate Alignment
+;Align Adjustment ----------------------
+;   Note: Please refer to the map file output during build and adjust the numbers,
+;     so that the lower 8-bits of the start address of '_mix' are '00'.
+;    If it is not, the output audio will be noisy because occurred memory-leak.
+;    The value specified here is 0, 64, 128, or 192.
+DSP_ALIGN   EQU 192                                             ;DSP Object Locate Alignment
