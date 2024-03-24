@@ -18,7 +18,7 @@
 ;if not, write to the Free Software Foundation, Inc.
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
-;                                                   Copyright (C) 2003-2012 degrade-factory
+;                                                   Copyright (C) 2003-2024 degrade-factory
 ;===================================================================================================
 
 %define SNESAPU_INC
@@ -27,4 +27,5 @@
 ;===================================================================================================
 ;Equates
 
-DSP_ALIGN   EQU 128                                                             ;DSP Object Locate Alignment
+;Align Adjustment ----------------------
+DSP_ALIGN   EQU 64                                              ;DSP Object Locate Alignment

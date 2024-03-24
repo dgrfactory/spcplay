@@ -22,10 +22,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2008 Alpha-II Productions
-;                                                   Copyright (C) 2003-2021 degrade-factory
+;                                                   Copyright (C) 2003-2024 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2021-09-18
+;   - degrade-factory in 2024-01-18
 ;===================================================================================================
 
 %define SPC700_INC
@@ -115,9 +115,9 @@ PUBLIC ResetSPC, NULL
 ;              [2]   64kHz cycles left until counter 2 increases
 ;              [3]   CPU cycles left until 64kHz clock pulse
 ;
-;Note:
+;Notes:
 ;   pTrace is always called when a STOP instruction is encountered, regardless of the options.
-;   DEBUG must be set to 1 in APU.Inc for pTrace to be called under other circumstances
+;   DEBUG must be set to 1 in APU.inc for pTrace to be called under other circumstances.
 ;
 ;In:
 ;   pTrace-> debug function (NULL turns off the debug call, -1 leaves the current vector)
