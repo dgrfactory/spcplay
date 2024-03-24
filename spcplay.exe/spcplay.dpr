@@ -61,6 +61,7 @@ program spcplay;
 //{$DEFINE ITASKBARLIST3}                                   // ITaskbarList3 対応
 //{$DEFINE WIN10DARK}                                       // Windows 10 ダークテーマ
 //{$DEFINE PERFORMANCETEST}                                 // パフォーマンステスト
+//{$DEFINE SPCBPMTEST}                                      // SPC_BPM.DLL テスト
 
 {$APPTYPE GUI}                                              // アプリケーションタイプ       : GUI モード
 {$ASSERTIONS OFF}                                           // ソースコードのアサート       : 無効
@@ -94,6 +95,7 @@ program spcplay;
 {$FPUTYPE x87}                                              // 浮動小数演算命令             : x87
 {$HINTS OFF}                                                // ヒント生成                   : 無効
 {$IEEEERRORS OFF}                                           // 浮動小数エラーチェック       : 無効
+{$MODE delphi}                                              // 言語モード                   : delphi
 {$OPTIMIZATION LEVEL3,USEEBP}                               // 最適化コンパイル             : Lv3, EBP レジスタ使用
 {$POINTERMATH ON}                                           // ポインタ演算                 : 有効
 {$SAFEFPUEXCEPTIONS OFF}                                    // FPU エラー即時報告           : 無効
@@ -183,7 +185,6 @@ type
         __r: array[0..63] of byte;                          // (未使用) = 0x00 or 拡張 RAM
         XRam: array[0..63] of byte;                         // SPC700 拡張 RAM
     end;
-{$ALIGN ON}  // 構造体の自動サイズ調整なし --- ここまで
 
     // RAM 構造体
     TRAM = record case byte of
@@ -322,10 +323,11 @@ type
     TVOICES = record
         Voice: array[0..7] of TVOICE;                       // DSP ボイスレジスタ
     end;
+{$ALIGN ON}  // 構造体の自動サイズ調整なし --- ここまで
 
     // APU 構造体
     TAPU = record
-        hDLL: longword;                                     // SNESAPU.DLL ハンドル
+        hSNESAPU: longword;                                 // SNESAPU.DLL ハンドル
         Ram: ^TRAM;                                         // SPC700 RAM のポインタ (65536 バイト)
         XRam: ^TXRAM;                                       // SPC700 拡張 RAM のポインタ (64 バイト)
         SPCOutPort: ^TSPCPORT;                              // SPC700 出力ポートのポインタ
@@ -380,6 +382,13 @@ type
 {$ENDIF}
 {$IFDEF SPCDEBUG}
         SetDSPDbg: function(pTrace: pointer): pointer; stdcall;
+{$ENDIF}
+{$IFDEF SPCBPMTEST}
+        hSPCBPM: longword;                                  // SPC_BPM.DLL ハンドル
+        BPMInitialize: function(hSNESAPU: longword): longint; stdcall;
+        BPMStart: function(lpReserved: pointer): longint; stdcall;
+        BPMStop: function(): longint; stdcall;
+        BPMGetBPM: function(): longint; stdcall;
 {$ENDIF}
     end;
 
@@ -461,17 +470,38 @@ type
         end;
     end;
 
+    // TEMPOHISTORY 構造体
+    TTEMPOHISTORY = record case byte of
+        1: (cChannel: byte;                                 // チャンネル番号
+            cSource: byte;                                  // 音色番号
+            cVolume: byte;                                  // 音量
+            __r1: byte;                                     // (未使用)
+            wPitch: word;                                   // ピッチ
+            __r2: byte;                                     // (未使用)
+            __r3: byte);                                    // (未使用)
+        2: (qwHash: int64);                                 // 疑似ハッシュ値
+    end;
+
     // TEMPO 構造体
     TTEMPO = record
-        bDisable: bytebool;
-        cMaxVolume: byte;
-        cBPM: byte;
-        cKOn: byte;
-        dwStart: longword;
-        dwLast: longword;
-        dwCount: longword;
-        Count: array[60..200] of word;
-        T64Count: array[0..7] of longword;
+        bDisable: bytebool;                                 // 無効フラグ
+        cBPM: byte;                                         // 確定テンポ
+        cMinBPM: byte;                                      // テンポ解析範囲 (最小)
+        cMaxBPM: byte;                                      // テンポ解析範囲 (最大)
+        cMode: byte;                                        // テンポ解決モード (信頼度)
+        cKOn: byte;                                         // KON フラグ
+        cKOnCount: byte;                                    // KON カウンタ
+        cKOnCountOld: byte;                                 // KON カウンタ (前回の値)
+        dwStartTime: longword;                              // 解析開始時間 (64kHz)
+        dwKOnTime: longword;                                // KON 間隔解析用時間 (64kHz)
+        dwMinTime: longword;                                // 最小テンポ解析用時間 (64kHz)
+        dwMaxTime: longword;                                // 最大テンポ解析用時間 (64kHz)
+        dwTripleTime: longword;                             // 三拍子・三連符考慮時間 (64kHz)
+        Count: array[60..200] of longword;                  // テンポごとのカウンタ
+        T64Count: array[0..7] of longword;                  // チャンネルごとの前回発音時間 (64kHz)
+        Volume: array[0..7] of byte;                        // チャンネルごとの音量
+        dwHistory: longword;                                // 履歴番号
+        History: array[0..15] of TTEMPOHISTORY              // 履歴
     end;
 
     // STRDATA 構造体
@@ -500,8 +530,8 @@ type
 
     // GUID 構造体
     TGUID = record case byte of
-        1: (data1: longword;                                // 1
-            data2: word;                                    // 2
+        1: (Data1: longword;                                // 1
+            Data2: word;                                    // 2
             Data3: word;                                    // 3
             Data4: array[0..7] of byte);                    // 4
         2: (DataX: array[0..3] of longword);                // 値 (128 ビット)
@@ -2319,6 +2349,20 @@ const
     GPTR = GMEM_FIXED or GMEM_ZEROINIT;
     INVALID_HANDLE_VALUE = $FFFFFFFF;
 
+    DONT_RESOLVE_DLL_REFERENCES = $1;
+    LOAD_IGNORE_CODE_AUTHZ_LEVEL = $10;
+    LOAD_LIBRARY_AS_DATAFILE = $2;
+    LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE = $40;
+    LOAD_LIBRARY_AS_IMAGE_RESOURCE = $20;
+    LOAD_LIBRARY_REQUIRE_SIGNED_TARGET = $80;
+    LOAD_LIBRARY_SAFE_CURRENT_DIRS = $2000;
+    LOAD_LIBRARY_SEARCH_APPLICATION_DIR = $200;
+    LOAD_LIBRARY_SEARCH_DEFAULT_DIRS = $1000;
+    LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR = $100;
+    LOAD_LIBRARY_SEARCH_SYSTEM32 = $800;
+    LOAD_LIBRARY_SEARCH_USER_DIRS = $400;
+    LOAD_WITH_ALTERED_SEARCH_PATH = $8;
+
     CREATE_NEW = $1;
     CREATE_ALWAYS = $2;
     OPEN_EXISTING = $3;
@@ -2425,10 +2469,10 @@ const
     BRKP_STOPPED = $20000000;
     BRKP_RELEASE = $80000000;
 
-{$IFNDEF TRANSMITSPC}
-    CLASS_NAME: string = 'SSDLabo_SPCPLAY';
-{$ELSE}
+{$IFDEF TRANSMITSPC}
     CLASS_NAME: string = 'SSDLabo_SPCPLAY_DEBUG';
+{$ELSE}
+    CLASS_NAME: string = 'SSDLabo_SPCPLAY';
 {$ENDIF}
     SNESAPU_FILE = 'snesapu.dll';
     SPC_FILE_HEADER = 'SNES-SPC700 Sound File Data ';
@@ -2513,6 +2557,10 @@ const
     SCRIPT7SETXT_FILENAME = '65816.7SE.TXT';
     SCRIPT700TXT_FILETYPE = '700.TXT';
     SCRIPT7SETXT_FILETYPE = '7SE.TXT';
+
+{$IFDEF SPCBPMTEST}
+    SPC_BPM_FILE = 'spc_bpm.dll';
+{$ENDIF}
 
     BITMAP_NAME = 'MAINBMP';
     ICON_NAME = 'MAINICON';
@@ -2727,7 +2775,8 @@ const
     ORG_COLOR_BAR_BLUE = $10000 or COLOR_BAR_BLUE;          // 青
     ORG_COLOR_BAR_PURPLE = $10000 or COLOR_BAR_PURPLE;      // 紫
 
-    ORG_COLOR_BTNFACE = COLOR_BTNFACE + 1;                  // ボタンの色
+    ORG_COLOR_BTNFACE = COLOR_BTNFACE + 1;                  // ボタンの背景色
+    ORG_COLOR_BTNTEXT = COLOR_BTNTEXT + 1;                  // ボタンの文字色
     ORG_COLOR_GRAYTEXT = COLOR_GRAYTEXT + 1;                // 無効時の文字色
     ORG_COLOR_WINDOWTEXT = COLOR_WINDOWTEXT + 1;            // 有効時の文字色
 
@@ -2740,6 +2789,17 @@ const
     BITMAP_NUM_HEX_X6 = 16 * BITMAP_NUM_WIDTH;
     BITMAP_MARK_HEIGHT = 3;                                 // 位置マークの高さ
     BITMAP_STRING_COLOR: array[0..BITMAP_NUM - 1] of longword =
+{$IFDEF WIN10DARK}
+        (ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   ,
+         ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   ,
+         ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   ,
+         ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_WATER , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_PURPLE,
+         ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  ,
+         ORG_COLOR_BAR_RED   , ORG_COLOR_GRAYTEXT  , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  ,
+         ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN ,
+         ORG_COLOR_BAR_WATER , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_WATER ,
+         ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_PURPLE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_ORANGE);
+{$ELSE}
         (ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT,
          ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT,
          ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT,
@@ -2749,6 +2809,7 @@ const
          ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN ,
          ORG_COLOR_BAR_WATER , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_WATER ,
          ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_PURPLE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_ORANGE);
+{$ENDIF}
 
     NOISE_RATE: array[0..$1F] of int64 =
         ($3030303030,                                       // 0
@@ -3327,6 +3388,7 @@ var
         hDCStringBuffer: longword;                              // 文字画像のデバイスコンテキストハンドル
         hBitmapString: longword;                                // 文字画像のビットマップハンドル
         hPowerNotify: longword;                                 // 電源設定通知イベントのハンドル
+        hSuspendNotify: longword;                               // サスペンド通知イベントのハンドル
         lpStaticProc: pointer;                                  // 情報表示のウィンドウプロシージャのポインタ
         dwThreadHandle: longword;                               // スレッドハンドル
         dwThreadID: longword;                                   // スレッド ID
@@ -3542,6 +3604,10 @@ function  API_GetPriorityClass(hProcess: longword): longword; stdcall; external 
 function  API_GetProcAddress(hModule: longword; lpProcName: pointer): pointer; stdcall; external 'kernel32.dll' name 'GetProcAddress';
 function  API_GetSaveFileName(lpofn: pointer): longbool; stdcall; external 'comdlg32.dll' name 'GetSaveFileNameA';
 function  API_GetUserDefaultLCID(): longword; stdcall; external 'kernel32.dll' name 'GetUserDefaultLCID';
+{$IFDEF WIN10DARK}
+function  API_GetSysColor(nIndex: longint): longword; stdcall; external 'user32.dll' name 'GetSysColor';
+function  API_GetSysColorBrush(nIndex: longint): longword; stdcall; external 'user32.dll' name 'GetSysColorBrush';
+{$ENDIF}
 function  API_GetSystemMenu(hWnd: longword; bRevert: longbool): longword; stdcall; external 'user32.dll' name 'GetSystemMenu';
 function  API_GetSystemMetrics(nIndex: longint): longint; stdcall; external 'user32.dll' name 'GetSystemMetrics';
 function  API_GetVersionEx(lpVersionInfo: pointer): longbool; stdcall; external 'kernel32.dll' name 'GetVersionExA';
@@ -3563,7 +3629,7 @@ procedure API_LeaveCriticalSection(lpCriticalSection: pointer); stdcall; externa
 function  API_LoadBitmap(hThisInstance: longword; lpBitmapName: pointer): longword; stdcall; external 'user32.dll' name 'LoadBitmapA';
 function  API_LoadCursor(hThisInstance: longword; lpCursorName: pointer): longword; stdcall; external 'user32.dll' name 'LoadCursorA';
 function  API_LoadIcon(hThisInstance: longword; lpIconName: pointer): longword; stdcall; external 'user32.dll' name 'LoadIconA';
-function  API_LoadLibrary(lpLibFileName: pointer): longword; stdcall; external 'kernel32.dll' name 'LoadLibraryA';
+function  API_LoadLibraryEx(lpLibFileName: pointer; hFile: longword; dwFlags: longword): longword; stdcall; external 'kernel32.dll' name 'LoadLibraryExA';
 function  API_MakeSureDirectoryPathExists(lpPath: pointer): longbool; stdcall; external 'imagehlp.dll' name 'MakeSureDirectoryPathExists';
 function  API_MapFileAndCheckSum(Filename: pointer; HeaderSum: pointer; CheckSum: pointer): longword; stdcall; external 'imagehlp.dll' name 'MapFileAndCheckSumA';
 function  API_MessageBox(hWnd: longword; lpText: pointer; lpCaption: pointer; uType: longword): longint; stdcall; external 'user32.dll' name 'MessageBoxA';
@@ -3592,6 +3658,9 @@ function  API_SetForegroundWindow(hWnd: longword): longbool; stdcall; external '
 function  API_SetMenu(hWnd: longword; hMenu: longword): longbool; stdcall; external 'user32.dll' name 'SetMenu';
 function  API_SetPixel(hDC: longword; x: longint; y: longint; crColor: longword): longword; stdcall; external 'gdi32.dll' name 'SetPixel';
 function  API_SetPriorityClass(hProcess: longword; dwPriorityClass: longword): longbool; stdcall; external 'kernel32.dll' name 'SetPriorityClass';
+{$IFDEF WIN10DARK}
+function  API_SetTextColor(hDC: longword; crColor: longword): longword; stdcall; external 'gdi32.dll' name 'SetTextColor';
+{$ENDIF}
 function  API_SetThreadExecutionState(esFlags: longword): longword; stdcall; external 'kernel32.dll' name 'SetThreadExecutionState';
 function  API_SetTimer(hWnd: longword; uIDEvent: longword; uElapse: longword; lpTimerFunc: pointer): longword; stdcall; external 'user32.dll' name 'SetTimer';
 function  API_SetWindowLong(hWnd: longword; nIndex: longint; dwNewLong: longword): longword; stdcall; external 'user32.dll' name 'SetWindowLongA';
@@ -3967,15 +4036,15 @@ end;
 // SNESAPUCallback - SNESAPU コールバック
 // ================================================================================
 function _SNESAPUCallback(dwEffect: longword; dwAddr: longword; dwValue: longword; lpData: pointer): longword; stdcall;
+var
+    dwTemp: longword;
 
 procedure IncludeScript700File(dwAddr: longword);
 var
     I: longword;
     J: longword;
-    cfMain: CWINDOWMAIN;
     lpBuffer: pointer;
 begin
-    cfMain := Status.cfMain;
     // バッファのサイズを取得
     I := GetSize(Status.lpSPCDir, 1024);
     J := GetSize(lpData, 1024);
@@ -3987,7 +4056,7 @@ begin
     API_MoveMemory(lpBuffer, Status.lpSPCDir, I);
     API_MoveMemory(pointer(longword(lpBuffer) + I), lpData, J);
     // Script700 をロード
-    cfMain.LoadScript700(lpBuffer, dwAddr);
+    Status.cfMain.LoadScript700(lpBuffer, dwAddr);
     // バッファを解放
     FreeMem(lpBuffer, 1024);
 end;
@@ -4010,29 +4079,55 @@ var
     I: longint;
     cKOn: byte;
     cEnable: byte;
-    wCount: word;
-    wMax: word;
+    cValue: byte;
+    cBPM1: byte;
+    cBPM2: byte;
     dwBPM: longword;
     dwScan1: longint;
-    dwCount1: longword;
     dwScan2: longword;
+    dwCount1: longword;
     dwCount2: longword;
+    dwCount3: longword;
+    T64Count: longword;
     Tempo: ^TTEMPO;
     DspVoice: ^TDSPVOICE;
-    T64Count: longword;
+    History: TTEMPOHISTORY;
 begin
-    // 初期化
-    Tempo := @Status.Tempo;
     // テンポ解析が無効な場合は終了
+    Tempo := @Status.Tempo;
     if Tempo.bDisable then exit;
     // 新しく KON されたチャンネルを取得
-    cKOn := byte(dwValue);
+    cKOn := dwValue;
     cEnable := (cKOn xor Tempo.cKOn) and cKOn;
     Tempo.cKOn := cKOn;
     // 新しく KON されたチャンネルがない場合は終了
     if not bytebool(cEnable) then exit;
-    // 各チャンネルの時間成分を取得
+    // 各チャンネルの最大音量を取得
     T64Count := Apu.T64Count^;
+    cKOn := 1;
+    for I := 0 to 7 do begin
+        if bytebool(cEnable and cKOn) then begin
+            // 平均音量を取得
+            DspVoice := @Apu.DspReg.Voice[I];
+            dwScan2 := Abs(shortint(DspVoice.VolumeLeft)) + Abs(shortint(DspVoice.VolumeRight));
+            cValue := (dwScan2 shr 1) + (dwScan2 and 1);
+            Tempo.Volume[I] := cValue;
+            // 発音履歴を記録
+            if bytebool(cValue) then begin
+                History.cChannel := I;
+                History.cSource := DspVoice.SoundSourcePlayBack;
+                History.cVolume := cValue;
+                History.wPitch := DspVoice.Pitch;
+                Tempo.History[Tempo.dwHistory].qwHash := History.qwHash;
+                Tempo.dwHistory := (Tempo.dwHistory + 1) and 15;
+            // 無音を除外
+            end else cEnable := cEnable xor cKOn;
+        end;
+        Inc(cKOn, cKOn);
+    end;
+    // 解析対象のチャンネルがない場合は終了
+    if not bytebool(cEnable) then exit;
+    // 各チャンネルの時間成分を取得
     cKOn := 1;
     for I := 0 to 7 do begin
         if bytebool(cEnable and cKOn) then begin
@@ -4041,110 +4136,222 @@ begin
             if longbool(dwCount1) then begin
                 dwBPM := T64Count - dwCount1;
                 if longbool(dwBPM) then dwBPM := 7680000 div dwBPM; // 60(bpm) * 64000(1sec) * 2
+                // 重みづけ
                 if (dwBPM >= 521) and (dwBPM <= 800) then Inc(Tempo.Count[(dwBPM shr 2) + ((dwBPM shr 1) and 1)]);
                 if (dwBPM >= 240) and (dwBPM <= 520) then Inc(Tempo.Count[(dwBPM shr 2) + ((dwBPM shr 1) and 1)], 2);
                 if (dwBPM >= 261) and (dwBPM <= 400) then Inc(Tempo.Count[(dwBPM shr 1) + (dwBPM and 1)], 2);
                 if (dwBPM >= 120) and (dwBPM <= 260) then Inc(Tempo.Count[(dwBPM shr 1) + (dwBPM and 1)], 3);
                 if (dwBPM >= 131) and (dwBPM <= 200) then Inc(Tempo.Count[dwBPM], 3);
-                if (dwBPM >= 60) and (dwBPM <= 130) then Inc(Tempo.Count[dwBPM], 4);
-                if (dwBPM >= 66) and (dwBPM <= 100) then Inc(Tempo.Count[dwBPM + dwBPM], 4);
-                if (dwBPM >= 30) and (dwBPM <= 65) then Inc(Tempo.Count[dwBPM + dwBPM], 5);
+                if (dwBPM >=  60) and (dwBPM <= 130) then Inc(Tempo.Count[dwBPM], 4);
+                if (dwBPM >=  66) and (dwBPM <= 100) then Inc(Tempo.Count[dwBPM + dwBPM], 4);
+                if (dwBPM >=  30) and (dwBPM <=  65) then Inc(Tempo.Count[dwBPM + dwBPM], 5);
             end;
             Tempo.T64Count[I] := T64Count;
-            // 最大音量を記録
+            // 疑似エコーを除外
             DspVoice := @Apu.DspReg.Voice[I];
-            if Tempo.cMaxVolume < DspVoice.VolumeLeft then Tempo.cMaxVolume := DspVoice.VolumeLeft;
-            if Tempo.cMaxVolume < DspVoice.VolumeRight then Tempo.cMaxVolume := DspVoice.VolumeRight;
-            // 音量が低いチャンネル (疑似エコー) を除外
-            if (Tempo.cMaxVolume > 10) and (DspVoice.VolumeLeft <= 10) and (DspVoice.VolumeRight <= 10) then cEnable := cEnable xor cKOn;
+            for dwCount1 := 0 to 15 do begin
+                History.qwHash := Tempo.History[dwCount1].qwHash;
+                if History.cChannel = I then continue;
+                if History.cSource <> DspVoice.SoundSourcePlayBack then continue;
+                if History.cVolume <= Tempo.Volume[I] then continue;
+                if Abs(smallint(History.wPitch - DspVoice.Pitch)) >= 80 then continue;
+                cEnable := cEnable xor cKOn;
+                break;
+            end;
         end;
         Inc(cKOn, cKOn);
     end;
-    // 最終的な解析対象のチャンネルがない場合は終了
+    // 解析対象のチャンネルがない場合は終了
     if not bytebool(cEnable) then exit;
-    // KON 数をカウント
-    if T64Count - Tempo.dwLast >= 3200 then begin // 50ms
-        Tempo.dwLast := T64Count;
-        Inc(Tempo.dwCount, 1139200); // 64000(1sec) * 17.8
+    // 解析基準となるテンポの範囲を計算
+    dwCount3 := T64Count - Tempo.dwKOnTime;
+    if dwCount3 >= 4800 then begin // 75ms (max 800bpm)
+        // KON 数をカウント
+        Tempo.dwKOnTime := T64Count;
+        Inc(Tempo.cKOnCount);
+        // 曲全体のテンポを計算
+        dwBPM := 7680000 div dwCount3; // 60(bpm) * 64000(1sec) * 2
+        dwBPM := (dwBPM shr 1) + (dwBPM and 1);
+        while longbool(dwBPM) and (dwBPM <= 56) do Inc(dwBPM, dwBPM);
+        while longbool(dwBPM) and (dwBPM >= 204) do dwBPM := dwBPM shr 1;
+        if dwBPM < 60 then dwBPM := 60;
+        if dwBPM > 200 then dwBPM := 200;
+        // 最小テンポを計算
+        if dwBPM <= 70 then dwCount1 := 64 else dwCount1 := dwBPM - 6;
+        if bytebool(Tempo.cMinBPM) then begin
+            dwScan2 := Tempo.cMinBPM;
+            if (dwCount1 <= dwScan2) or ((T64Count - Tempo.dwMinTime) >= 480000) then Tempo.dwMinTime := T64Count // 7.5sec
+            else dwCount1 := dwScan2 + 1;
+        end;
+        // 最大テンポを計算
+        if dwCount1 >= 184 then if dwBPM >= 194 then dwCount2 := 200 else dwCount2 := dwBPM + 6
+        else if dwBPM >= 190 then dwCount2 := 196 else dwCount2 := dwBPM + 6;
+        if bytebool(Tempo.cMaxBPM) then begin
+            dwScan2 := Tempo.cMaxBPM;
+            if (dwCount2 >= dwScan2) or ((T64Count - Tempo.dwMaxTime) >= 320000) then Tempo.dwMaxTime := T64Count // 5sec
+            else dwCount2 := dwScan2 - (Tempo.cKOnCount and 1);
+        end;
+        if dwCount2 <= 76 then dwCount1 := 60;
+        // 解析基準範囲を確定
+        Tempo.cMinBPM := dwCount1;
+        Tempo.cMaxBPM := dwCount2;
+    end else begin
+        // 解析基準範囲が未決定の場合は、仮設定
+        if not bytebool(Tempo.cMinBPM) then Tempo.cMinBPM := 120;
+        if not bytebool(Tempo.cMaxBPM) then Tempo.cMaxBPM := 140;
+        dwCount1 := Tempo.cMinBPM;
+        dwCount2 := Tempo.cMaxBPM;
     end;
     // 解析開始から規定時間が経過していない場合は終了
-    dwCount2 := T64Count - Tempo.dwStart;
-    if dwCount2 < 64000 then exit; // 1sec
-    // 解析基準となるテンポの範囲を計算
-    dwBPM := Tempo.dwCount div dwCount2;
-    if dwBPM < 68 then dwBPM := 68; // 68 - 172
-    if dwBPM > 92 then dwBPM := 92; // 92 - 196
-    // 出現回数が最も多いテンポを取得
-    wMax := 0;
+    dwScan2 := T64Count - Tempo.dwStartTime;
+    if dwScan2 < 64000 then exit; // 1sec
+    // 解析基準範囲を補正
+    cEnable := $31; // 1-4
+    if dwCount2 >= 140 then begin
+        cValue := ((dwCount2 * 6553) shr 16) - (longword(dwCount2 >= 170) and 1) - 4; // max * 0.1 - (4 or 5)
+        if not bytebool(Tempo.cKOnCountOld) and (Tempo.cKOnCount <= cValue) then begin
+            // 初回解析時に発音回数が少ない場合、最小テンポの基準範囲を 1/2 に設定
+            dwCount1 := dwCount1 shr 1;
+            if dwCount1 < 64 then dwCount1 := 64;
+            cEnable := $41; // A-D
+        end else if bytebool(Tempo.cKOnCountOld) and (Tempo.cKOnCountOld <= cValue) then begin
+            // 前回解析時に発音回数が少ない場合、最小・最大テンポの基準範囲を 1/2 に設定
+            dwCount1 := dwCount1 shr 1;
+            dwCount2 := (dwCount2 shr 1) + 3; // min 73
+            if dwCount1 < 64 then dwCount1 := 64;
+            if dwCount2 < 127 then dwCount2 := 127;
+            cEnable := $41; // A-D
+        end else if dwCount1 <= (Tempo.cBPM + 12) then begin
+            // 最小テンポの基準範囲の最大値を、現在値の少し手前に設定
+            dwBPM := Tempo.cBPM - 2;
+            if dwCount1 > dwBPM then begin
+                dwCount1 := dwBPM;
+                if dwCount1 < 64 then dwCount1 := 64;
+                cEnable := $35; // 5-8
+            end;
+        end;
+    end;
+    // 解析基準範囲内で出現回数が最も多いテンポを取得
     dwScan1 := 0;
-    for I := dwBPM to dwBPM + 104 do begin
-        wCount := Tempo.Count[I];
-        if wMax < wCount then begin
-            wMax := wCount;
+    dwScan2 := 0;
+    cBPM1 := dwCount1;
+    cBPM2 := dwCount2;
+    for I := dwCount1 to dwCount2 do begin
+        dwCount3 := Tempo.Count[I];
+        if dwScan2 < dwCount3 then begin
             dwScan1 := I;
+            dwScan2 := dwCount3;
+            Tempo.cMode := cEnable;
         end;
     end;
-    // 解析基準範囲外のテンポを考慮
-    wMax := 0;
-    for I := dwScan1 - 5 to dwScan1 + 5 do if (I >= 60) and (I <= 200) then Inc(wMax, Tempo.Count[I]);
-    dwCount1 := longword(wMax); // バックアップ
-    Inc(wMax, wMax shr 1);
-    for I := 60 to 200 do begin
-        wCount := Tempo.Count[I];
-        if wMax < wCount then begin
-            wMax := wCount;
-            dwScan1 := I;
-        end;
-    end;
-    wMax := word(dwCount1);
     // テンポの平均値を計算して中央値を補正
+    dwScan2 := dwScan1;
+    Dec(dwScan1, 5);
+    Inc(dwScan2, 5);
+    if dwScan1 < 60 then dwScan1 := 60;
+    if dwScan2 > 200 then dwScan2 := 200;
     dwBPM := 0;
     dwCount1 := 0;
-    for I := dwScan1 - 5 to dwScan1 + 5 do if (I >= 60) and (I <= 200) then begin
-        wCount := Tempo.Count[I];
-        Inc(dwBPM, (I + I) * wCount);
-        Inc(dwCount1, wCount);
+    for I := dwScan1 to dwScan2 do begin
+        dwCount3 := Tempo.Count[I];
+        Inc(dwBPM, longword(I + I) * dwCount3);
+        Inc(dwCount1, dwCount3);
     end;
     if longbool(dwCount1) then begin
         dwBPM := dwBPM div dwCount1;
-        dwScan1 := (dwBPM shr 1) + (dwBPM and 1);
+        dwBPM := (dwBPM shr 1) + (dwBPM and 1);
     end;
     // 三拍子・三連符を考慮して中央値を補正
-    if (dwScan1 >= 76) and ((dwScan1 <= 132) or (dwScan1 >= 176)) and (dwCount1 >= 16) and (dwCount1 <= 96) then begin
-        dwBPM := 0;
-        dwCount2 := 0;
-        dwScan2 := ((dwScan1 shl (1 + (longword(dwScan1 <= 150) and 1))) * 21845) shr 16;
-        for I := dwScan2 - 5 to dwScan2 + 5 do if (I >= 60) and (I <= 200) then begin
-            wCount := Tempo.Count[I];
-            Inc(dwBPM, (I + I) * wCount);
-            Inc(dwCount2, wCount);
-        end;
-        if (dwCount2 >= 16) and (dwCount2 >= (dwCount1 shr 3)) then begin
-            dwBPM := dwBPM div dwCount2;
-            dwScan1 := (dwBPM shr 1) + (dwBPM and 1);
-            dwCount1 := dwCount2;
+    if (dwBPM >= 96) and ((dwBPM <= 128) or (dwBPM >= 176)) and (dwCount1 >= 16) then begin
+        dwScan1 := ((dwBPM shl (1 + (longword(dwBPM <= 150) and 1))) * 21845) shr 16; // x2/3 or x4/3
+        if longbool(Tempo.dwTripleTime) or ((dwScan1 >= Tempo.cMinBPM) and (dwScan1 <= Tempo.cMaxBPM)) then begin
+            // 新しい中央値を計算
+            dwScan2 := dwScan1;
+            Dec(dwScan1, 5);
+            Inc(dwScan2, 5);
+            if dwScan1 < 60 then dwScan1 := 60;
+            if dwScan2 > 200 then dwScan2 := 200;
+            cValue := dwBPM; // バックアップ
+            dwBPM := 0;
+            dwCount2 := 0;
+            for I := dwScan1 to dwScan2 do begin
+                dwCount3 := Tempo.Count[I];
+                Inc(dwBPM, longword(I + I) * dwCount3);
+                Inc(dwCount2, dwCount3);
+            end;
+            // 三連符検出の重み基準値
+            dwCount3 := 30;
+            if longbool(Tempo.dwTripleTime) then dwCount3 := 10;
+            if (dwCount2 >= dwCount3) and (dwCount2 >= (dwCount1 shr 3)) then begin
+                dwBPM := dwBPM div dwCount2;
+                dwBPM := (dwBPM shr 1) + (dwBPM and 1);
+                dwCount1 := dwCount2 shl 2;
+                Tempo.cMode := cEnable + 1;
+                Tempo.dwTripleTime := 640000; // 10sec
+            end else begin
+                dwBPM := cValue; // 復元
+            end;
         end;
     end;
-    // テンポを推測済みで、解析開始から規定時間が経過した場合は解析結果をクリア
-    dwCount2 := T64Count - Tempo.dwStart;
-    if bytebool(Tempo.cBPM) and ((wMax >= 600) or (dwCount2 >= 240000)) then begin // 3.75sec
-        // バックアップ
-        dwScan2 := longword(Tempo.cBPM);
-        // バッファをクリア
-        API_ZeroMemory(@Status.Tempo, SizeOf(TTEMPO));
+    // テンポが推測できなかった場合 (初回のみ)
+    if not bytebool(Tempo.cBPM) and not longbool(dwBPM) then begin
+        if (cBPM2 - cBPM1) <= 20 then begin
+            // テンポ解析範囲の誤差から推測
+            dwBPM := (cBPM1 + cBPM2) shr 1;
+            Tempo.cMode := cEnable + 2;
+        end else begin
+            // テンポ解析範囲の誤差が大きい場合、全範囲から推測
+            dwScan2 := 0;
+            for I := 60 to 200 do begin
+                dwCount3 := Tempo.Count[I];
+                if dwScan2 < dwCount3 then begin
+                    dwScan2 := dwCount3;
+                    dwBPM := I;
+                    Tempo.cMode := cEnable + 3;
+                end;
+            end;
+            if longbool(dwBPM) then begin
+                if dwBPM <= 70 then cBPM1 := 60 else cBPM1 := dwBPM - 10;
+                if dwBPM >= 190 then cBPM2 := 200 else cBPM2 := dwBPM + 10;
+                Tempo.cMinBPM := cBPM1;
+                Tempo.cMaxBPM := cBPM2;
+            end;
+        end;
+    end;
+    // テンポを推測済みで、解析開始から規定時間が経過した場合、解析結果をクリア
+    dwCount2 := T64Count - Tempo.dwStartTime;
+    if bytebool(Tempo.cBPM) and ((dwCount1 >= 600) or (dwCount2 >= 240000) // 3.75sec
+            or (Tempo.cBPM < cBPM1) or (Tempo.cBPM > cBPM2)) then begin
+        // KON カウントを学習
+        if (Tempo.cBPM < cBPM1) or (Tempo.cBPM > cBPM2) then begin
+            if longbool(dwBPM) and ((dwCount1 >= 30) or (dwCount2 >= 120000)) then Tempo.cBPM := dwBPM // 1.875sec
+            else if not bytebool(Tempo.cKOnCountOld) then Tempo.cBPM := dwBPM;
+            Tempo.cKOnCountOld := 0; // 学習リセット
+        end else begin
+            if longbool(dwBPM) and (dwCount1 >= 30) then Tempo.cBPM := dwBPM;
+            Tempo.cKOnCountOld := Tempo.cKOnCount;
+            if cEnable = $41 then Dec(Tempo.cKOnCountOld) else Inc(Tempo.cKOnCountOld);
+        end;
         // 初期化
-        if longbool(dwScan1) then Tempo.cBPM := byte(dwScan1) else Tempo.cBPM := byte(dwScan2);
-        Tempo.dwStart := T64Count;
-        Tempo.dwLast := T64Count;
+        Tempo.cKOnCount := 0;
+        Tempo.dwStartTime := T64Count;
+        if Tempo.dwTripleTime > dwCount2 then Dec(Tempo.dwTripleTime, dwCount2) else Tempo.dwTripleTime := 0;
+        API_ZeroMemory(@Tempo.Count, SizeOf(Tempo.Count));
         // テンポの揺れを防止
-        if (dwScan1 >= 60) and (dwScan1 <= 200) then Tempo.Count[dwScan1] := (dwCount1 * 21845)
-            shr (16 + (longword(T64Count < 720000) and 1)); // 11.25sec
-    end
+        if (dwBPM >= Tempo.cMinBPM) and (dwBPM <= Tempo.cMaxBPM) then begin
+            dwCount3 := Tempo.Count[dwBPM] shr 2;
+            if T64Count < 720000 then dwCount3 := dwCount3 shr 1; // 11.25sec
+            if not ((dwCount1 >= 60) or (dwCount2 >= 240000)) then dwCount3 := dwCount3 shr 1; // 3.75sec
+            Tempo.Count[dwBPM] := dwCount3;
+        end;
+        exit;
+    end;
     // 件数が基準値以上、または、規定時間経過後のテンポを推測値として記録
-    else if longbool(dwScan1) and ((wMax >= 60) or (dwCount2 >= 240000)) then begin // 3.75sec
-        Tempo.cBPM := byte(dwScan1);
+    if longbool(dwBPM) and ((dwCount1 >= 60) or (dwCount2 >= 240000)) then begin // 3.75sec
+        Tempo.cBPM := dwBPM;
         // テンポの揺れを防止
-        if (dwScan1 >= 60) and (dwScan1 <= 200) then Inc(Tempo.Count[dwScan1], 2);
+        if (dwBPM >= Tempo.cMinBPM) and (dwBPM <= Tempo.cMaxBPM) then Inc(Tempo.Count[dwBPM], 2);
+        exit;
     end;
 end;
 
@@ -4155,8 +4362,12 @@ begin
         CBE_INCDATA: IncludeScript700File(dwAddr); // #include Script700 binary
         CBE_REQBP: RequestBreakPoint();
         CBE_DSPREG: begin
-            if longbool(Status.DSPCheat[dwAddr and $7F]) then result := Status.DSPCheat[dwAddr and $7F] and $FF;
-            if Status.bWaveWrite and Option.bBPM and ((dwAddr and $7F) = $4C) then AnalyzeTempo();
+            dwTemp := dwAddr and $7F;
+            if longbool(Status.DSPCheat[dwTemp]) then result := Status.DSPCheat[dwTemp] and $FF;
+            if Status.bWaveWrite and Option.bBPM then case dwTemp of
+                $4C: AnalyzeTempo();
+                $5C: Status.Tempo.cKOn := Status.Tempo.cKOn and (dwValue xor $FF and $FF);
+            end;
 {$IFDEF DEBUGLOG}
             _WriteLog(Concat('DSP   : ', IntToStr(dwAddr), ' ', IntToStr(dwValue), ' ', IntToStr(longword(lpData))));
 {$ENDIF}
@@ -4194,11 +4405,19 @@ function _WinMain(hThisInstance: longword; hPrevInstance: longword; lpArgs: poin
 var
     cfMain: CWINDOWMAIN;
     cwWindowMain: CWINDOW;
-    dwFlag: longword;
+    dwBuffer: longword;
     bTransmitMsg: longbool;
     Msg: TMSG;
     dwKeyCode: longword;
+    API_SetDllDirectory: function(lpPathName: pointer): longbool; stdcall;
 begin
+    // 検索パスからカレントパスを削除 (for Windows XP SP1)
+    dwBuffer := API_LoadLibraryEx(pchar('kernel32.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    if longbool(dwBuffer) then begin
+        @API_SetDllDirectory := API_GetProcAddress(dwBuffer, pchar('SetDllDirectoryA'));
+        if longbool(@API_SetDllDirectory) then API_SetDllDirectory(pchar(''));
+        API_FreeLibrary(dwBuffer);
+    end;
     // wParam を初期化
     Msg.wParam := 0;
     // クリティカルセクションを作成
@@ -4206,14 +4425,19 @@ begin
     API_InitializeCriticalSection(@CriticalSectionStatic);
     // ウィンドウクラスを作成
     Status.ccClass := CCLASS.Create();
+{$IFDEF WIN10DARK}
+    Status.ccClass.CreateClass(@_WindowProc, hThisInstance, pchar(CLASS_NAME), CS_HREDRAW or CS_VREDRAW or CS_OWNDC, pchar(ICON_NAME),
+        NULLPOINTER, IDC_ARROW, COLOR_BTNTEXT);
+{$ELSE}
     Status.ccClass.CreateClass(@_WindowProc, hThisInstance, pchar(CLASS_NAME), CS_HREDRAW or CS_VREDRAW or CS_OWNDC, pchar(ICON_NAME),
         NULLPOINTER, IDC_ARROW, COLOR_BTNFACE);
+{$ENDIF}
     // ウィンドウを作成
     cfMain := CWINDOWMAIN.Create();
     Status.cfMain := cfMain;
-    dwFlag := cfMain.CreateWindow(hThisInstance, pchar(CLASS_NAME), lpArgs);
+    dwBuffer := cfMain.CreateWindow(hThisInstance, pchar(CLASS_NAME), lpArgs);
     // 起動に成功した場合
-    if not longbool(dwFlag) then begin
+    if not longbool(dwBuffer) then begin
         // ウィンドウを取得
         cwWindowMain := cfMain.cwWindowMain;
         // メッセージを受け取るまで待機する。 WM_QUIT の場合はループを抜ける
@@ -4691,10 +4915,10 @@ end;
 // ================================================================================
 function _OLEIDataObjectCopyData(lpDataObject: pointer; lpDestMedium: pointer; lpFormatEtc: pointer; lpSrcMedium: pointer): longword;
 var
+    handle: longword;
     FormatEtc: ^TFORMATETC;
     SrcStgMedium: ^TSTGMEDIUM;
     DestStgMedium: ^TSTGMEDIUM;
-    handle: longword;
     IDataObjectUnk: ^TIDATAOBJECTVTBL;
     AddRef: function(lpDataObject: pointer): longword;
 begin
@@ -5675,7 +5899,7 @@ begin
         // ウィンドウを解放
         cwWindowMain.Free();
         // フラグを設定
-        Apu.hDLL := NULL;
+        Apu.hSNESAPU := NULL;
         result := 99;
         // 終了
         exit;
@@ -5914,10 +6138,11 @@ begin
     if not longbool(result) then result := CheckImageHash(SNESAPU_FILE, 20);
 {$ENDIF}{$ENDIF}
     // ファイルが正常の場合
+    K := 0;
     if not longbool(result) then begin
         // SNESAPU.DLL をロード
         sData := Concat(sChPath, SNESAPU_FILE);
-        dwBuffer := API_LoadLibrary(pchar(sData));
+        dwBuffer := API_LoadLibraryEx(pchar(sData), NULL, LOAD_LIBRARY_SEARCH_APPLICATION_DIR);
         // SNESAPU.DLL のロードに成功した場合
         if longbool(dwBuffer) then begin
             // 関数を読み込む
@@ -5970,11 +6195,13 @@ begin
             if longbool(I) then result := 2;
             Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_INCS700 or CBE_INCDATA or CBE_REQBP);
 {$IFNDEF TRANSMITSPC}
-            Apu.SNESAPUInfo(@I, NULLPOINTER, NULLPOINTER);
-            if I <> SNESAPU_VERSION then result := 3;
+{$IFDEF SIGNATURE}
+            Apu.SNESAPUInfo(@K, NULLPOINTER, NULLPOINTER);
+            if K <> SNESAPU_VERSION then result := 3;
+{$ENDIF}
 {$ENDIF}
         end else result := 1;
-        Apu.hDLL := dwBuffer;
+        Apu.hSNESAPU := dwBuffer;
     end;
     // SNESAPU.DLL の情報を取得
     if not longbool(result) then begin
@@ -5986,7 +6213,7 @@ begin
         // メッセージを表示
         ShowErrMsg(100 + result);
         // SNESAPU.DLL を解放
-        if longbool(Apu.hDLL) then API_FreeLibrary(Apu.hDLL);
+        if longbool(Apu.hSNESAPU) then API_FreeLibrary(Apu.hSNESAPU);
         // バッファを解放
         FreeMem(Status.lpCurrentPath, 1024);
         FreeMem(Status.lpSPCFile, 1024);
@@ -6000,6 +6227,22 @@ begin
         // 終了
         exit;
     end;
+{$IFDEF SPCBPMTEST}
+    // SPC_BPM.DLL をロード
+    sData := Concat(sChPath, SPC_BPM_FILE);
+    dwBuffer := API_LoadLibraryEx(pchar(sData), NULL, LOAD_LIBRARY_SEARCH_APPLICATION_DIR);
+    Apu.hSPCBPM := dwBuffer;
+    // SPC_BPM.DLL のロードに成功した場合
+    if longbool(dwBuffer) then begin
+        // 関数を読み込む
+        @Apu.BPMInitialize := API_GetProcAddress(dwBuffer, pchar('Initialize'));
+        @Apu.BPMStart := API_GetProcAddress(dwBuffer, pchar('Start'));
+        @Apu.BPMStop := API_GetProcAddress(dwBuffer, pchar('Stop'));
+        @Apu.BPMGetBPM := API_GetProcAddress(dwBuffer, pchar('GetBPM'));
+    end;
+    // SPC_BPM.DLL を初期化
+    Apu.BPMInitialize(Apu.hSNESAPU);
+{$ENDIF}
     // KSDATAFORMAT_SUBTYPE_IEEE_FLOAT : 00000003-0000-0010-8000-00AA00389B71
     KSDATAFORMAT_SUBTYPE_IEEE_FLOAT.DataX[0] := $00000003;
     KSDATAFORMAT_SUBTYPE_IEEE_FLOAT.DataX[1] := $00100000;
@@ -6043,7 +6286,8 @@ begin
     IID_ITaskbarList3.DataX[3] := $AFEF5E8A;
 {$ENDIF}
     Status.hPowerNotify := NULL;
-    dwBuffer := API_LoadLibrary(pchar('user32.dll'));
+    Status.hSuspendNotify := NULL;
+    dwBuffer := API_LoadLibraryEx(pchar('user32.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if longbool(dwBuffer) then begin
         // ディスプレイの電源状態イベントを拾えるように設定 (for Windows 8, 8.1, 10, 11)
         @API_RegisterPowerSettingNotification := API_GetProcAddress(dwBuffer, pchar('RegisterPowerSettingNotification'));
@@ -6053,7 +6297,7 @@ begin
         // S0 (省電力) スリープのイベントを拾えるように設定 (for Windows 8, 8.1, 10, 11)
         @API_RegisterSuspendResumeNotification := API_GetProcAddress(dwBuffer, pchar('RegisterSuspendResumeNotification'));
         if longbool(@API_RegisterSuspendResumeNotification) then begin
-            API_RegisterSuspendResumeNotification(hWndApp, DEVICE_NOTIFY_WINDOW_HANDLE);
+            Status.hSuspendNotify := API_RegisterSuspendResumeNotification(hWndApp, DEVICE_NOTIFY_WINDOW_HANDLE);
         end;
 {$IFDEF UACDROP}
         // 権限が低いアプリケーションからのドロップを有効に設定 (for Windows Vista, 7)
@@ -6064,12 +6308,13 @@ begin
             API_ChangeWindowMessageFilter(WM_COPYGLOBALDATA, MSGFLT_ADD);
         end;
 {$ENDIF}
+        // DLL を解放
         API_FreeLibrary(dwBuffer);
     end;
     // システムのバージョン情報を取得
     Status.OsVersionInfo.dwOSVersionInfoSize := SizeOf(TOSVERSIONINFO);
     API_GetVersionEx(@Status.OsVersionInfo);
-    dwBuffer := API_LoadLibrary(pchar('ntdll.dll'));
+    dwBuffer := API_LoadLibraryEx(pchar('ntdll.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if longbool(dwBuffer) then begin
         @API_RtlGetVersion := API_GetProcAddress(dwBuffer, pchar('RtlGetVersion'));
         if longbool(@API_RtlGetVersion) then API_RtlGetVersion(@Status.OsVersionInfo);
@@ -6100,6 +6345,7 @@ begin
         string(cBuffer),
 {$ENDIF}
         1, GetSize(@cBuffer[0], 32)));
+    if K <> SNESAPU_VERSION then sInfo := Concat(sInfo, #32#42); // バージョン不一致マーク
     // 配列のサイズを初期化
     SetLength(Wave.lpData, Option.dwBufferNum);
     SetLength(Wave.Header, Option.dwBufferNum);
@@ -6279,10 +6525,10 @@ begin
     cwButtonStop := CWINDOW.Create();
     cwButtonStop.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_STOP),
         ID_BUTTON_STOP, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(238, 103, 54, 21));
-    sBuffer := '   ';
+    sBuffer := ' ';
     K := 5;
     for I := 0 to 7 do begin
-        sBuffer[2] := char($31 + I);
+        sBuffer[1] := char($31 + I);
         cwCheckTrack[I] := CWINDOW.Create();
         cwCheckTrack[I].CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(sBuffer),
             ID_BUTTON_TRACK[I], BS_AUTOCHECKBOX or BS_PUSHLIKE or WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE,
@@ -6397,18 +6643,18 @@ begin
     Apu.SetDSPDbg(@_DSPDebug);
 {$ENDIF}
 {$IFDEF WIN10DARK}
-    dwBuffer := API_LoadLibrary(pchar('dwmapi.dll'));
+    dwBuffer := API_LoadLibraryEx(pchar('dwmapi.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if longbool(dwBuffer) then begin
         @API_DwmSetWindowAttribute := API_GetProcAddress(dwBuffer, pchar('DwmSetWindowAttribute'));
-        I := -1;
+        I := -1; // true: Dark Mode
         if longbool(@API_DwmSetWindowAttribute) then API_DwmSetWindowAttribute(hWndApp, 20, @I, 4);
         API_FreeLibrary(dwBuffer);
     end;
-    dwBuffer := API_LoadLibrary(pchar('uxtheme.dll'));
+    dwBuffer := API_LoadLibraryEx(pchar('uxtheme.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if longbool(dwBuffer) then begin
         @API_SetPreferredAppMode := API_GetProcAddress(dwBuffer, pointer(longword(135)));
         if longbool(@API_SetPreferredAppMode) then API_SetPreferredAppMode(0); // Default Mode
-        if longbool(@API_SetPreferredAppMode) then API_SetPreferredAppMode(1); // Dark Mode
+        if longbool(@API_SetPreferredAppMode) then API_SetPreferredAppMode(2); // Dark Mode
         @API_RefreshImmersiveColorPolicyState := API_GetProcAddress(dwBuffer, pointer(longword(104)));
         if longbool(@API_RefreshImmersiveColorPolicyState) then API_RefreshImmersiveColorPolicyState();
         @API_FlushMenuThemes := API_GetProcAddress(dwBuffer, pointer(longword(136)));
@@ -6418,7 +6664,7 @@ begin
         @API_SetWindowTheme := API_GetProcAddress(dwBuffer, pchar('SetWindowTheme'));
         wsData := 'DarkMode_Explorer';
         if longbool(@API_SetWindowTheme) then API_SetWindowTheme(hWndApp, pwidechar(wsData), NULLPOINTER);
-        // API_SendMessage(hWndApp, WM_THEMECHANGED, NULL, NULL);
+        API_SendMessage(hWndApp, WM_THEMECHANGED, NULL, NULL);
         API_FreeLibrary(dwBuffer);
         API_UpdateWindow(hWndApp);
     end;
@@ -6435,10 +6681,11 @@ var
     I: longint;
     dwBuffer: longword;
     sChPath: string;
+    fsFile: textfile;
     NormalRect: TRECT;
     ScreenRect: TRECT;
-    fsFile: textfile;
     API_UnregisterPowerSettingNotification: function(handle: longword): longbool; stdcall;
+    API_UnregisterSuspendResumeNotification: function(handle: longword): longbool; stdcall;
 
 function GetBoolToInt(bValue: longbool): string;
 begin
@@ -6533,7 +6780,11 @@ begin
     // スレッドを解放
     API_CloseHandle(Status.dwThreadHandle);
     // SNESAPU.DLL を解放
-    if longbool(Apu.hDLL) then API_FreeLibrary(Apu.hDLL);
+    if longbool(Apu.hSNESAPU) then API_FreeLibrary(Apu.hSNESAPU);
+{$IFDEF SPCBPMTEST}
+    // SPC_BPM.DLL を解放
+    if longbool(Apu.hSPCBPM) then API_FreeLibrary(Apu.hSPCBPM);
+{$ENDIF}
 {$IFDEF CONTEXT}
     // SNESAPU コンテキストを解放
     if longbool(Status.lpContext) then FreeMem(Status.lpContext, Status.dwContextSize);
@@ -6545,13 +6796,19 @@ begin
     API_DeleteDC(Status.hDCStringBuffer);
     API_ReleaseDC(cwStaticMain.hWnd, Status.hDCStatic);
     // 電源設定通知イベントのハンドルを解放
-    dwBuffer := API_LoadLibrary(pchar('user32.dll'));
+    dwBuffer := API_LoadLibraryEx(pchar('user32.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if longbool(dwBuffer) then begin
         // ディスプレイの電源状態イベントを解除 (for Windows 8, 8.1, 10, 11)
         @API_UnregisterPowerSettingNotification := API_GetProcAddress(dwBuffer, pchar('UnregisterPowerSettingNotification'));
         if longbool(@API_UnregisterPowerSettingNotification) then begin
             if longbool(Status.hPowerNotify) then API_UnregisterPowerSettingNotification(Status.hPowerNotify);
         end;
+        // S0 (省電力) スリープのイベントを解除 (for Windows 8, 8.1, 10, 11)
+        @API_UnregisterSuspendResumeNotification := API_GetProcAddress(dwBuffer, pchar('UnregisterSuspendResumeNotification'));
+        if longbool(@API_UnregisterSuspendResumeNotification) then begin
+            if longbool(Status.hSuspendNotify) then API_UnregisterSuspendResumeNotification(Status.hSuspendNotify);
+        end;
+        // DLL を解放
         API_FreeLibrary(dwBuffer);
     end;
     // バッファを解放
@@ -6679,9 +6936,10 @@ var
     y: longint;
     dwIndex: longint;
     dwCount: longint;
-    Rect: TRECT;
     lpFile: pointer;
     lpBuffer: pointer;
+    Rect: TRECT;
+    KeyState: TKEYSTATE;
     IDropSourceVtbl: ^TIDROPSOURCEVTBL;
     IDropSource: ^TIDROPSOURCE;
     IDataObjectVtbl: ^TIDATAOBJECTVTBL;
@@ -6689,7 +6947,6 @@ var
     DropFiles: ^TDROPFILES;
     FormatEtc: ^TFORMATETC;
     StgMedium: ^TSTGMEDIUM;
-    KeyState: TKEYSTATE;
 begin
     // マウス座標を取得
     x := lParam and $FFFF;
@@ -6916,7 +7173,11 @@ begin
             Rect.right := dwLeft + dwWidth;
             Rect.top := COLOR_BAR_HEIGHT;
             Rect.bottom := COLOR_BAR_HEIGHT_X2 - longword(cNowLevel);
+{$IFDEF WIN10DARK}
+            DrawInfoFillRect(@Rect, ORG_COLOR_BTNTEXT);
+{$ELSE}
             DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
+{$ENDIF}
         end;
     end else begin
         // レベル値が前回と同じ場合は終了
@@ -6931,7 +7192,11 @@ begin
             Rect.right := dwLeft + dwWidth;
             Rect.top := COLOR_BAR_HEIGHT_X2 - longword(cLastLevel);
             Rect.bottom := COLOR_BAR_HEIGHT_X2 - longword(cNowLevel);
+{$IFDEF WIN10DARK}
+            DrawInfoFillRect(@Rect, ORG_COLOR_BTNTEXT);
+{$ELSE}
             DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
+{$ENDIF}
         end;
     end;
 end;
@@ -6953,7 +7218,11 @@ begin
     Rect.right := dwLeft + 27;
     Rect.top := COLOR_BAR_TOP;
     Rect.bottom := COLOR_BAR_HEIGHT_X2;
+{$IFDEF WIN10DARK}
+    DrawInfoFillRect(@Rect, ORG_COLOR_BTNTEXT);
+{$ELSE}
     DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
+{$ENDIF}
 end;
 
 procedure UpdateNumWrite(dwX: longint; dwL: longword);
@@ -6993,7 +7262,11 @@ begin
     Rect.right := 284 + (Status.dwScale and 1);
     Rect.top := dwY;
     Rect.bottom := dwY + (Status.dwScale and 1) + 3;
+{$IFDEF WIN10DARK}
+    DrawInfoFillRect(@Rect, ORG_COLOR_BTNTEXT);
+{$ELSE}
     DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
+{$ENDIF}
 end;
 
 procedure UpdateMarkWrite(dwI: longint; dwY: longint);
@@ -7183,20 +7456,32 @@ begin
                 Rect.right := J;
                 Rect.top := 27;
                 Rect.bottom := 32;
+{$IFDEF WIN10DARK}
+                DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
+{$ELSE}
                 DrawInfoFillRect(@Rect, ORG_COLOR_WINDOWTEXT);
+{$ENDIF}
             end;
             if J < 280 then begin
                 Rect.left := J;
                 Rect.right := 280;
                 Rect.top := 27;
                 Rect.bottom := 28;
+{$IFDEF WIN10DARK}
+                DrawInfoFillRect(@Rect, ORG_COLOR_BTNTEXT);
+{$ELSE}
                 DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
+{$ENDIF}
                 Rect.top := 28;
                 Rect.bottom := 31;
                 DrawInfoFillRect(@Rect, ORG_COLOR_GRAYTEXT);
                 Rect.top := 31;
                 Rect.bottom := 32;
+{$IFDEF WIN10DARK}
+                DrawInfoFillRect(@Rect, ORG_COLOR_BTNTEXT);
+{$ELSE}
                 DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
+{$ENDIF}
             end;
         end;
         // データをコピー
@@ -7208,7 +7493,11 @@ begin
             Rect.right := 284 + (Status.dwScale and 1);
             Rect.top := 24;
             Rect.bottom := 35 + (Status.dwScale and 1);
+{$IFDEF WIN10DARK}
+            DrawInfoFillRect(@Rect, ORG_COLOR_BTNTEXT);
+{$ELSE}
             DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
+{$ENDIF}
         end;
     end;
     // インジケータを描画
@@ -7365,25 +7654,59 @@ begin
             UpdateNumWrite(41, IntToHex(StrData, V, 4));
             V := DspReg.Flags;
             Y := 4;
-            StrData.cData[0] := BoolTable[(V shr 7) and $1];
-            UpdateNumWrite(13, 1);
-            StrData.cData[0] := BoolTable[(V shr 6) and $1];
-            UpdateNumWrite(17, 1);
-            StrData.cData[0] := BoolTable[(V shr 5) and $1];
-            UpdateNumWrite(21, 1);
-            StrData.qwData := NOISE_RATE[V and $1F];
-            UpdateNumWrite(36, 5);
-            Y := 5;
+            if not Status.bBreakButton then begin
+                StrData.cData[0] := BoolTable[(V shr 7) and $1];
+                UpdateNumWrite(13, 1);
+                StrData.cData[0] := BoolTable[(V shr 6) and $1];
+                UpdateNumWrite(17, 1);
+                StrData.cData[0] := BoolTable[(V shr 5) and $1];
+                UpdateNumWrite(21, 1);
+                StrData.qwData := NOISE_RATE[V and $1F];
+                UpdateNumWrite(36, 5);
+            end;
             if Status.bBreakButton then for I := 0 to 7 do begin
-                Z := I * 3;
-                UpdateNumWrite(11 + I * 3, IntToStr(StrData, Abs(shortint(DspReg.Voice[I].Fir)) and $7F, 3));
+                UpdateNumWrite(11 + I * 4, IntToStr(StrData, Abs(shortint(DspReg.Voice[I].Fir)) and $7F, 3));
             end else begin
+                Y := 5;
                 for I := 0 to 7 do UpdateNumWrite(11 + I * 3, IntToHex(StrData, DspReg.Voice[I].Fir, 2));
             end;
-            if Option.bBPM and not Status.bBreakButton then begin
-                Z := 0;
-                if bytebool(Status.Tempo.cBPM) then begin
-                    UpdateNumWrite(44, IntToStr(StrData, Status.Tempo.cBPM, 3));
+            if Option.bBPM then begin
+                Y := 5;
+                if Status.bBreakButton then begin
+                    if Status.bPlay then begin
+                        UpdateNumWrite(15, IntToStr(StrData, Status.Tempo.cKOnCount, 3));
+                    end else begin
+                        StrData.dwData[0] := $565656; // 'VVV'
+                        UpdateNumWrite(15, 3);
+                    end;
+                    if bytebool(Status.Tempo.cKOnCountOld) then begin
+                        UpdateNumWrite(19, IntToStr(StrData, Status.Tempo.cKOnCountOld, 3));
+                    end else begin
+                        StrData.dwData[0] := $565656; // 'VVV'
+                        UpdateNumWrite(19, 3);
+                    end;
+                    if bytebool(Status.Tempo.cMinBPM) then begin
+                        UpdateNumWrite(25, IntToStr(StrData, Status.Tempo.cMinBPM, 3));
+                    end else begin
+                        StrData.dwData[0] := $565656; // 'VVV'
+                        UpdateNumWrite(25, 3);
+                    end;
+                    if bytebool(Status.Tempo.cMaxBPM) then begin
+                        UpdateNumWrite(29, IntToStr(StrData, Status.Tempo.cMaxBPM, 3));
+                    end else begin
+                        StrData.dwData[0] := $565656; // 'VVV'
+                        UpdateNumWrite(29, 3);
+                    end;
+                    if bytebool(Status.Tempo.cMode) then StrData.dwData[0] := Status.Tempo.cMode else StrData.dwData[0] := $56; // 'V'
+                    UpdateNumWrite(35, 1);
+                end;
+{$IFDEF SPCBPMTEST}
+                I := Apu.BPMGetBPM();
+{$ELSE}
+                I := Status.Tempo.cBPM;
+{$ENDIF}
+                if longbool(I) then begin
+                    UpdateNumWrite(44, IntToStr(StrData, I, 3));
                 end else begin
                     StrData.dwData[0] := $565656; // 'VVV'
                     UpdateNumWrite(44, 3);
@@ -8583,7 +8906,7 @@ begin
     // Windows 10 以上または XP 以下の場合は終了
     if bWin10 or (Status.OsVersionInfo.dwMajorVersion < 6) then exit;
     // DWMAPI.DLL のロードに失敗した場合は終了
-    hDLL := API_LoadLibrary(pchar('dwmapi.dll'));
+    hDLL := API_LoadLibraryEx(pchar('dwmapi.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if not longbool(hDLL) then exit;
     // DwmIsCompositionEnabled API のロードに失敗した場合は終了
     @API_DwmIsCompositionEnabled := API_GetProcAddress(hDLL, pchar('DwmIsCompositionEnabled'));
@@ -8862,8 +9185,8 @@ var
     bShift: longbool;
     lpFile: pointer;
     bResult: longbool;
-    OpenFileName: TOPENFILENAME;
     dwIndex: longint;
+    OpenFileName: TOPENFILENAME;
 begin
     // バッファを確保
     GetMem(lpFile, 1024);
@@ -8923,11 +9246,11 @@ end;
 procedure CWINDOWMAIN.SaveSeekCache(dwIndex: longword);
 var
     I: longint;
+    dwEnvelope: longword;
     SPCCache: ^TSPCCACHE;
     SPCBuf: ^TSPC;
     SPCReg: ^TSPCREG;
     DspVoice: ^TDSPVOICE;
-    dwEnvelope: longword;
 begin
     // キャッシュを使用しない場合は終了
     if not longbool(Option.dwCacheNum) then exit;
@@ -9138,12 +9461,20 @@ begin
     Rect.right := 2;
     Rect.top := 0;
     Rect.bottom := 1;
+{$IFDEF WIN10DARK}
+    API_FillRect(Status.hDCVolumeBuffer, @Rect, ORG_COLOR_BTNTEXT);
+{$ELSE}
     API_FillRect(Status.hDCVolumeBuffer, @Rect, ORG_COLOR_BTNFACE);
+{$ENDIF}
     Color.dwColor := API_GetPixel(Status.hDCVolumeBuffer, 0, 0);
     J := 299 * Color.r + 587 * Color.g + 114 * Color.b;
     // 文字色の明るさを取得
     Inc(Rect.left);
+{$IFDEF WIN10DARK}
+    API_FillRect(Status.hDCVolumeBuffer, @Rect, ORG_COLOR_BTNFACE);
+{$ELSE}
     API_FillRect(Status.hDCVolumeBuffer, @Rect, ORG_COLOR_WINDOWTEXT);
+{$ENDIF}
     Color.dwColor := API_GetPixel(Status.hDCVolumeBuffer, 1, 0);
     K := 299 * Color.r + 587 * Color.g + 114 * Color.b;
     if longbool(Option.dwVolumeColor) and (Option.dwVolumeColor <= 3) then L := (Option.dwVolumeColor - 1) * COLOR_BAR_NUM
@@ -9208,7 +9539,11 @@ begin
     Rect.right := BITMAP_NUM_X6P6;
     Rect.top := 0;
     Rect.bottom := 9;
+{$IFDEF WIN10DARK}
+    API_FillRect(Status.hDCStringBuffer, @Rect, ORG_COLOR_BTNTEXT);
+{$ELSE}
     API_FillRect(Status.hDCStringBuffer, @Rect, ORG_COLOR_BTNFACE);
+{$ENDIF}
     // ビットマップリソース用から文字表示用のデバイスコンテキストへ画像を転送 (紫色でマスク)
     API_TransparentBlt(Status.hDCStringBuffer, 0, 0, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT, hDCBitmapBuffer, 0, 0, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT, $FF00FF);
     // ビットマップリソース用のデバイスコンテキストを解放
@@ -9267,9 +9602,9 @@ var
     dwReadSize: longword;
     lpBuffer: pointer;
     lpTitle: pointer;
+    sData: string;
     HdrBin: TSPCHDRBIN;
     StrData: TSTRDATA;
-    sData: string;
 
 function CheckPath(dwEnd: longword; const sName: string): longbool;
 begin
@@ -9586,17 +9921,22 @@ begin
         if Option.bBPM then begin
             // バッファをクリア
             API_ZeroMemory(@Status.Tempo, SizeOf(TTEMPO));
+{$IFDEF SPCBPMTEST}
+            // BPM 解析を開始
+            Apu.BPMStart(NULLPOINTER);
+{$ELSE}
             // コールバックを追加設定
             Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_DSPREG);
+{$ENDIF}
         end;
         // デバイスをオープン
         Status.dwWaveMessage := WAVE_MESSAGE_MAX_COUNT;
-{$IFNDEF TRANSMITSPC}
-        Status.bPlay := Status.bSPCRestart;
-        if Status.bSPCRestart then I := 0 else I := WaveOpen();
-{$ELSE}
+{$IFDEF TRANSMITSPC}
         Status.bPlay := true;
         Status.bPause := false;
+{$ELSE}
+        Status.bPlay := Status.bSPCRestart;
+        if Status.bSPCRestart then I := 0 else I := WaveOpen();
 {$ENDIF}
         // フラグを設定
         Status.bSPCRestart := false;
@@ -9645,10 +9985,10 @@ end;
 // ================================================================================
 function CWINDOWMAIN.SPCSave(lpFile: pointer; bShift: longbool): longbool;
 var
-    SPCBuf: TSPC;
-    SPCReg: ^TSPCREG;
     hFile: longword;
     dwWriteSize: longword;
+    SPCBuf: TSPC;
+    SPCReg: ^TSPCREG;
 begin
     // 初期化
     result := false;
@@ -9728,8 +10068,13 @@ begin
     T64Count := Wave.Apu[Wave.dwLastIndex].T64Count;
     // 現在の場所に変更がない場合は終了
     if dwTime = T64Count then exit;
+{$IFDEF SPCBPMTEST}
+    // テンポ解析が有効な場合、BPM 解析を停止
+    if Option.bBPM then Apu.BPMStop();
+{$ELSE}
     // テンポ解析が有効な場合、テンポ解析を無効化
     if Option.bBPM then Status.Tempo.bDisable := true;
+{$ENDIF}
     // キャッシュの基準位置を取得
     dwCacheDiff := Option.dwCacheDiff shl 6;
     dwTarget := dwTime;
@@ -9769,8 +10114,14 @@ begin
         // バッファをクリア
         API_ZeroMemory(@Status.Tempo, SizeOf(TTEMPO));
         // シーク直後の時間で初期化
-        Status.Tempo.dwStart := T64Count;
-        Status.Tempo.dwLast := T64Count;
+        Status.Tempo.dwStartTime := T64Count;
+        Status.Tempo.dwKOnTime := T64Count;
+        Status.Tempo.dwMinTime := T64Count;
+        Status.Tempo.dwMaxTime := T64Count;
+{$IFDEF SPCBPMTEST}
+        // BPM 解析を開始
+        Apu.BPMStart(NULLPOINTER);
+{$ENDIF}
     end;
 end;
 
@@ -9949,9 +10300,24 @@ begin
             case Option.dwInfo of
                 INFO_MIXER: begin
                     sInfo := Concat(sInfo, CRLF, 'MasterLv : L=    R=      EchoLv   : L=    R=', CRLF,
-                        'Delay    :    (    ms)   Feedback :    (   ', STR_MENU_SETUP_PERCENT[Status.dwLanguage], ')', CRLF,
-                        'SrcAddr  :     -   _     EchoAddr :     -', CRLF, 'DSPFlags : R=  M=  E=    NoiseClk :       Hz', CRLF, 'FIR      :');
-                    if Option.bBPM and not Status.bBreakButton then sInfo := Concat(sInfo, '                            BPM : ');
+                        'Delay    :    (    ms)   Feedback :    (   ', STR_MENU_SETUP_PERCENT[Status.dwLanguage], ')', CRLF);
+                    if Status.bBreakButton then begin
+                        sInfo := Concat(sInfo, 'SrcAddr  :     -         EchoAddr :     -', CRLF, 'FIR      :');
+{$IFDEF SPCBPMTEST}
+                        if Option.bBPM then sInfo := Concat(sInfo, CRLF, 'BPMWork  : KOn=   /    R=   -    E=   BPM*:')
+{$ELSE}
+                        if Option.bBPM then sInfo := Concat(sInfo, CRLF, 'BPMWork  : KOn=   /    R=   -    E=   BPM :')
+{$ENDIF}
+                        else sInfo := Concat(sInfo, CRLF, 'BPMWork  : (Disabled)');
+                    end else begin
+                        sInfo := Concat(sInfo, 'SrcAddr  :     -   _     EchoAddr :     -', CRLF,
+                            'DSPFlags : R=  M=  E=    NoiseClk :       Hz', CRLF, 'FIR      :');
+{$IFDEF SPCBPMTEST}
+                        if Option.bBPM then sInfo := Concat(sInfo, '                            BPM*:');
+{$ELSE}
+                        if Option.bBPM then sInfo := Concat(sInfo, '                            BPM :');
+{$ENDIF}
+                    end;
                 end;
                 INFO_CHANNEL_1, INFO_CHANNEL_2, INFO_CHANNEL_3, INFO_CHANNEL_4: sInfo := Concat(sInfo, CRLF, '1 :                      5 :',
                     CRLF, '2 :                      6 :', CRLF, '3 :                      7 :', CRLF, '4 :                      8 :');
@@ -10397,10 +10763,10 @@ var
     dwIndex: longword;
     bInit: longbool;
     bWave: longbool;
-    ApuData: ^TAPUDATA;
-    DspReg: ^TDSPREG;
     T64Count: longword;
     T64Cache: longword;
+    ApuData: ^TAPUDATA;
+    DspReg: ^TDSPREG;
     Voice: ^TVOICE;
     DspVoice: ^TDSPVOICE;
 
@@ -10420,15 +10786,15 @@ begin
             Voice.VolumeMaxRight := 0;
         end;
         // 新しいバッファを取得
-{$IFNDEF SPCCYCLE}
-        if Status.bWaveWrite then Apu.EmuAPU(Wave.lpData[dwIndex], Wave.dwEmuSize, 1);
-        // if Status.bWaveWrite then Apu.EmuAPU(Wave.lpData[dwIndex], 24576 * 23, 0);
-{$ELSE}
+{$IFDEF SPCCYCLE}
         if Status.Script700.Data.dwWork[0] = 0 then begin
           Apu.EmuAPU(Wave.lpData[dwIndex], 768, 0);
         end;
         Inc(Status.Script700.Data.dwWork[0]);
         API_ZeroMemory(Wave.lpData[dwIndex], Wave.dwBufSize);
+{$ELSE}
+        if Status.bWaveWrite then Apu.EmuAPU(Wave.lpData[dwIndex], Wave.dwEmuSize, 1);
+        // if Status.bWaveWrite then Apu.EmuAPU(Wave.lpData[dwIndex], 24576 * 23, 0);
 {$ENDIF}
         // バッファをデバイスに転送
         if longbool(API_waveOutWrite(Wave.dwHandle, @Wave.Header[dwIndex], SizeOf(TWAVEHDR))) then begin
@@ -10569,8 +10935,13 @@ begin
     else while longbool(Status.dwThreadIdle) do API_Sleep(16);
     // インジケータをクリア
     for I := 0 to Option.dwBufferNum - 1 do API_ZeroMemory(@Wave.Apu[I], SizeOf(TAPUDATA));
+{$IFDEF SPCBPMTEST}
+    // テンポ解析が有効な場合、BPM 解析を停止
+    if Option.bBPM then Apu.BPMStop();
+{$ELSE}
     // テンポ解析が有効な場合、テンポをクリア
-    if Option.bBPM then Status.Tempo.cBPM := 0;
+    if Option.bBPM then API_ZeroMemory(@Status.Tempo, SizeOf(TTEMPO));
+{$ENDIF}
 end;
 
 // ================================================================================
@@ -10734,7 +11105,7 @@ begin
             if (Apu.VolumeMaxLeft^ >= MIN_WAVE_LEVEL) or (Apu.VolumeMaxRight^ >= MIN_WAVE_LEVEL) then dwSizeL := dwSizeP;
         end;
         // 進行状況を表示
-        dwWaveL := (I + 1) * 10 div dwCount * 10;
+        dwWaveL := longword(I + 1) * 10 div dwCount * 10;
         if dwWaveL <> dwPCent then begin
             dwPCent := dwWaveL;
             cwWindowMain.SetCaption(pchar(Concat(TITLE_INFO_HEADER[Status.dwLanguage], TITLE_INFO_FILE_HEADER[Status.dwLanguage],
@@ -11161,8 +11532,8 @@ end;
 
 procedure RedrawResume(lParam: longword);
 var
-    Setting: ^TPOWERBROADCAST_SETTING;
     dwBuffer: longword;
+    Setting: ^TPOWERBROADCAST_SETTING;
 begin
     // 起動準備ができていない場合は終了
     if not longbool(Status.dwReady) or not longbool(Option.dwTimerRedrawResume) then exit;
@@ -11543,6 +11914,14 @@ begin
             // 終了メッセージを送信
             cwWindowMain.PostMessage(WM_QUIT, NULL, NULL);
         end;
+{$IFDEF WIN10DARK}
+        WM_CTLCOLORBTN, WM_CTLCOLORSTATIC, WM_CTLCOLORLISTBOX: begin
+            API_SetTextColor(wParam, API_GetSysColor(COLOR_BTNHIGHLIGHT));
+            API_SetBkColor(wParam, API_GetSysColor(COLOR_BTNTEXT));
+            dwDef := 1;
+            result := API_GetSysColorBrush(COLOR_BTNTEXT);
+        end;
+{$ENDIF}
     end;
 end;
 
