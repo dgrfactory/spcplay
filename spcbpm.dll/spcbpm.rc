@@ -1,0 +1,27 @@
+1 VERSIONINFO
+    FILEVERSION 1,0,0,0
+    PRODUCTVERSION 1,0,0,0
+    FILEFLAGSMASK 0x3fL
+    FILEFLAGS 0x8L
+    FILEOS 0x10004L
+    FILETYPE 0x1L
+    FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041103A4"
+        BEGIN
+            VALUE "FileDescription", "BPM Analyzer for SNESAPU\0"
+            VALUE "FileVersion", "$CAP_FILE_VER\0"
+            VALUE "LegalCopyright", "Copyright (C) 2023-$YEAR degrade-factory.\0"
+            VALUE "LegalTrademarks", "SNES is a registered trademark of Nintendo.\0"
+            VALUE "OriginalFilename", "spc_bpm.dll\0"
+            VALUE "ProductName", "SPCBPM\0"
+            VALUE "ProductVersion", "$CAP_PRODUCT_VER\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0411, 0x03A4
+    END
+END
