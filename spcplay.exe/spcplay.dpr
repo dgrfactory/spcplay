@@ -59,7 +59,6 @@ program spcplay;
 //{$DEFINE DEBUGLOG}                                        // デバッグログ出力
 //{$DEFINE UACDROP}                                         // UAC を超えたドロップ操作
 //{$DEFINE ITASKBARLIST3}                                   // ITaskbarList3 対応
-//{$DEFINE WIN10DARK}                                       // Windows 10 ダークテーマ
 //{$DEFINE PERFORMANCETEST}                                 // パフォーマンステスト
 //{$DEFINE SPCBPMTEST}                                      // SPC_BPM.DLL テスト
 
@@ -790,6 +789,107 @@ type
         Data: array of byte;                                // データ
     end;
 
+    // DRAWITEMSTRUCT 構造体
+    TDRAWITEMSTRUCT = record
+        ctlType: longword;                                  // コントロールの型
+        ctlID: longword;                                    // コントロールの識別子
+        itemID: longword;                                   // メニュー項目の識別子
+        itemAction: longword;                               // 描画アクション
+        itemState: longword;                                // 描画アクションが実行された後の表示状態
+        hwndItem: longword;                                 // ウィンドウハンドル、メニューハンドル
+        hDC: longword;                                      // デバイスコンテキストのハンドル
+        rcItem: TRECT;                                      // コントロールの境界
+        itemData: pointer;                                  // アプリケーション定義の値
+    end;
+
+    // MENUBARINFO 構造体
+    TMENUBARINFO = record
+        cbSize: longword;                                   // 構造体のサイズ
+        rcBar: TRECT;                                       // メニューバーのサイズ
+        hMenu: longword;                                    // メニューハンドル
+        hwndMenu: longword;                                 // ウィンドウハンドル
+        dwFlags: longword;                                  // フラグ
+    end;
+
+    // MENUITEMINFO 構造体
+    TMENUITEMINFO = record
+        cbSize: longword;                                   // 構造体のサイズ
+        fMask: longword;                                    // メンバーフラグ
+        fType: longword;                                    // メニュー項目の種類
+        fState: longword;                                   // メニュー項目の状態
+        wID: longword;                                      // メニュー項目の識別ID
+        hSubMenu: longword;                                 // サブメニューハンドル
+        hbmpChecked: longword;                              // 選択時のビットマップハンドル
+        hbmpUnchecked: longword;                            // 非選択時のビットマップハンドル
+        dwItemData: pointer;                                // アプリケーション定義の値
+        dwTypeData: pointer;                                // メニュー項目の内容
+        cch: longword;                                      // メニュー項目のテキストの長さ (文字単位)
+        hbmpItem: longword;                                 // ビットマップハンドル
+    end;
+
+    // UAHMENU 構造体
+    TUAHMENU = record
+        hMenu: longword;                                    // メニューハンドル
+        hDC: longword;                                      // デバイスコンテキストのハンドル
+        dwFlags: longword;                                  // フラグ
+    end;
+
+    // UAHMENUITEMMETRICS 構造体
+    TUAHMENUITEMMETRICS = record
+        Rect1: TRECT;
+        Rect2: TRECT;
+        Rect3: TRECT;
+    end;
+
+    // UAHMENUPOPUPMETRICS 構造体
+    TUAHMENUPOPUPMETRICS = record
+        rgcx: array[0..3] of longword;
+        fUpdateMaxWidths: longword;
+    end;
+
+    // UAHMENUITEM 構造体
+    TUAHMENUITEM = record
+        nPosition: longint;                                 // メニュー位置
+        Item: TUAHMENUITEMMETRICS;                          // メニュー情報
+        Popup: TUAHMENUPOPUPMETRICS;                        // ポップアップメニュー情報
+    end;
+
+    // UAHDRAWMENUITEM 構造体
+    TUAHDRAWMENUITEM = record
+        Struct: TDRAWITEMSTRUCT;                            // 描画情報
+        Menu: TUAHMENU;                                     // メニュー情報
+        MenuItem: TUAHMENUITEM;                             // メニューアイテム情報
+    end;
+
+    // DTTOPTS 構造体
+    TDTTOPTS = record
+        cbSize: longword;                                   // 構造体のサイズ
+        dwFlags: longword;                                  // フラグ
+        crText: longword;                                   // テキストの色
+        crBorder: longword;                                 // 枠線の色
+        crShadow: longword;                                 // 影の色
+        iTextShadowType: longint;                           // 影の種類
+        ptShadowOffset: TPOINT;                             // 影とテキストのオフセット
+        iBorderSize: longint;                               // アウトラインの半径
+        iFontPropId: longint;                               // 代替フォント
+        iColorPropId: longint;                              // 代替色
+        iStateId: longint;                                  // 代替状態
+        fApplyOverlay: longbool;                            // 影とアウトライン効果の上にテキストを描画
+        iGlowSize: longint;                                 // 光彩のサイズ
+        pfnDrawTextCallback: pointer;                       // コールバック関数のポインタ
+        lParam: longword;                                   // コールバック関数のパラメータ
+    end;
+
+{$IFDEF TRANSMITSPC}
+    // TRANSFERSPCEX 構造体
+    TTRANSFERSPCEX = record
+        cbSize: longword;                                   // 構造体のサイズ
+        transmitType: longword;                             // 送信種別
+        bScript700: longbool;                               // Script700 使用フラグ
+        lptPort: longword;                                  // LPT ポートアドレス
+    end;
+{$ENDIF}
+
 {$IFDEF ITASKBARLIST3}
     // ITASKBARLIST3VTBL 構造体
     TITASKBARLIST3VTBL = record
@@ -822,22 +922,12 @@ type
     end;
 {$ENDIF}
 
-{$IFDEF TRANSMITSPC}
-    // TRANSFERSPCEX 構造体
-    TTRANSFERSPCEX = record
-        cbSize: longword;
-        transmitType: longword;
-        bScript700: longbool;
-        lptPort: longword;
-    end;
-{$ENDIF}
-
     // CLASS クラス
     CCLASS = class
     private
     public
         procedure CreateClass(lpWindowProc: pointer; hThisInstance: longword; lpClassName: pointer; dwStyle: longword; lpIcon: pointer;
-            lpSmallIcon: pointer; dwCursor: longword; dwBackColor: longword);
+            lpSmallIcon: pointer; hCursor: longword; hbrBackground: longword);
         procedure DeleteClass(hThisInstance: longword; lpClassName: pointer);
     end;
 
@@ -872,6 +962,15 @@ type
         procedure SetMenuEnable(dwID: longword; bEnable: longbool);
     end;
 
+    // MENUBAR クラス
+    CMENUBAR = class(CMENU)
+    private
+    public
+        function  DrawMenuBar(hWnd: longword; lParam: longword): longword;
+        procedure DrawMenuBorder(hWnd: longword);
+        function  DrawMenuItem(hWnd: longword; lParam: longword): longword;
+    end;
+
     // WINDOW クラス
     CWINDOW = class
     private
@@ -899,13 +998,22 @@ type
         procedure UpdateWindow(bVisible: longbool);
     end;
 
+    // BUTTON クラス
+    CBUTTON = class(CWINDOW)
+    private
+    public
+        procedure CreateItem(hThisInstance: longword; hMainWnd: longword; hFont: longword; lpItemName: pointer; lpCaption: pointer; dwItemID: longword;
+            dwStylePlus: longword; Box: TBOX);
+        function  DrawItem(lParam: longword; bHighlight: longbool): longword;
+    end;
+
     // WINDOWMAIN クラス
     CWINDOWMAIN = class
     private
         cfMain: CFONT;                                      // フォントクラス
         cwWindowMain: CWINDOW;                              // ウィンドウクラス (メインウィンドウ)
         cmSystem: CMENU;                                    // メニュークラス (システムメニュー)
-        cmMain: CMENU;                                      // メニュークラス (メニューバー)
+        cmMain: CMENUBAR;                                   // メニュークラス (メニューバー)
         cmFile: CMENU;                                      // メニュークラス (ファイル)
         cmSetup: CMENU;                                     // メニュークラス (設定)
         cmSetupDevice: CMENU;                               // メニュークラス (設定 - サウンドデバイス)
@@ -927,31 +1035,32 @@ type
         cmSetupSeek: CMENU;                                 // メニュークラス (設定 - シーク時間)
         cmSetupInfo: CMENU;                                 // メニュークラス (設定 - 情報表示)
         cmSetupPriority: CMENU;                             // メニュークラス (設定 - 基本優先度)
+        cmSetupOthers: CMENU;                               // メニュークラス (設定 - その他設定)
         cmList: CMENU;                                      // メニュークラス (プレイリスト)
         cmListPlay: CMENU;                                  // メニュークラス (プレイリスト - 演奏開始)
         cwStaticFile: CWINDOW;                              // ウィンドウクラス (ファイル名転送用ラベル)
         cwStaticMain: CWINDOW;                              // ウィンドウクラス (情報表示用ラベル)
-        cwButtonOpen: CWINDOW;                              // ウィンドウクラス (OPEN ボタン)
-        cwButtonSave: CWINDOW;                              // ウィンドウクラス (SAVE ボタン)
-        cwButtonPlay: CWINDOW;                              // ウィンドウクラス (PLAY ボタン)
-        cwButtonRestart: CWINDOW;                           // ウィンドウクラス (RESTART ボタン)
-        cwButtonStop: CWINDOW;                              // ウィンドウクラス (STOP ボタン)
-        cwCheckTrack: array[0..7] of CWINDOW;               // ウィンドウクラス (1 ～ 8 ボタン)
-        cwButtonVolM: CWINDOW;                              // ウィンドウクラス (VL- ボタン)
-        cwButtonVolP: CWINDOW;                              // ウィンドウクラス (VL+ ボタン)
-        cwButtonSlow: CWINDOW;                              // ウィンドウクラス (SP- ボタン)
-        cwButtonFast: CWINDOW;                              // ウィンドウクラス (SP+ ボタン)
-        cwButtonBack: CWINDOW;                              // ウィンドウクラス (REW ボタン)
-        cwButtonNext: CWINDOW;                              // ウィンドウクラス (FF ボタン)
+        cwButtonOpen: CBUTTON;                              // ウィンドウクラス (OPEN ボタン)
+        cwButtonSave: CBUTTON;                              // ウィンドウクラス (SAVE ボタン)
+        cwButtonPlay: CBUTTON;                              // ウィンドウクラス (PLAY ボタン)
+        cwButtonRestart: CBUTTON;                           // ウィンドウクラス (RESTART ボタン)
+        cwButtonStop: CBUTTON;                              // ウィンドウクラス (STOP ボタン)
+        cwCheckTrack: array[0..7] of CBUTTON;               // ウィンドウクラス (1 ～ 8 ボタン)
+        cwButtonVolM: CBUTTON;                              // ウィンドウクラス (VL- ボタン)
+        cwButtonVolP: CBUTTON;                              // ウィンドウクラス (VL+ ボタン)
+        cwButtonSlow: CBUTTON;                              // ウィンドウクラス (SP- ボタン)
+        cwButtonFast: CBUTTON;                              // ウィンドウクラス (SP+ ボタン)
+        cwButtonBack: CBUTTON;                              // ウィンドウクラス (REW ボタン)
+        cwButtonNext: CBUTTON;                              // ウィンドウクラス (FF ボタン)
         cwFileList: CWINDOW;                                // ウィンドウクラス (ファイル記録用)
         cwSortList: CWINDOW;                                // ウィンドウクラス (ソート用)
         cwTempList: CWINDOW;                                // ウィンドウクラス (テンポラリ用)
         cwPlayList: CWINDOW;                                // ウィンドウクラス (プレイリスト)
-        cwButtonListAdd: CWINDOW;                           // ウィンドウクラス (ADD / INSERT ボタン)
-        cwButtonListRemove: CWINDOW;                        // ウィンドウクラス (REMOVE ボタン)
-        cwButtonListClear: CWINDOW;                         // ウィンドウクラス (CLEAR ボタン)
-        cwButtonListUp: CWINDOW;                            // ウィンドウクラス (上へボタン)
-        cwButtonListDown: CWINDOW;                          // ウィンドウクラス (下へボタン)
+        cwButtonListAdd: CBUTTON;                           // ウィンドウクラス (ADD / INSERT ボタン)
+        cwButtonListRemove: CBUTTON;                        // ウィンドウクラス (REMOVE ボタン)
+        cwButtonListClear: CBUTTON;                         // ウィンドウクラス (CLEAR ボタン)
+        cwButtonListUp: CBUTTON;                            // ウィンドウクラス (上へボタン)
+        cwButtonListDown: CBUTTON;                          // ウィンドウクラス (下へボタン)
     public
         procedure AppendList();
         function  CreateWindow(hThisInstance: longword; lpClassName: pointer; lpArgs: pointer): longword;
@@ -964,7 +1073,7 @@ type
         function  IsExt(lpFile: pointer; const sExt: string): longbool;
         function  IsSafePath(lpFile: pointer): longbool;
         procedure ListAdd(dwAuto: longword);
-        procedure ListClear();
+        procedure ListClear(bQuiet: longbool);
         procedure ListDelete();
         procedure ListDown();
         function  ListLoad(lpFile: pointer; dwType: longword; bShift: longbool): longbool;
@@ -1096,7 +1205,7 @@ const
     MF_GRAYED = $1;
     MF_HILITE = $80;
     MF_MENUBREAK = $20;
-    MF_OWNERDROW = $100;
+    MF_OWNERDRAW = $100;
     MF_POPUP = $10;
     MF_RADIOCHECK = $200;
     MF_RIGHTJUSTIFY = $2000;
@@ -1105,6 +1214,32 @@ const
     MF_STRING = $0;
     MF_UNCHECKED = $0;
     MF_UNHILITE = $0;
+
+    // MENUBAR クラス
+    MIIM_BITMAP = $80;
+    MIIM_CHECKMARKS = $8;
+    MIIM_DATA = $20;
+    MIIM_FTYPE = $100;
+    MIIM_ID = $2;
+    MIIM_STATE = $1;
+    MIIM_STRING = $40;
+    MIIM_SUBMENU = $4;
+    MIIM_TYPE = $10;
+    MIM_APPLYTOSUBMENUS = $80000000;
+    MIM_BACKGROUND = $2;
+    MIM_HELPID = $4;
+    MIM_MAXHEIGHT = $1;
+    MIM_MENUDATA = $8;
+    MIM_STYLE = $10;
+    MNS_AUTODISMISS = $10000000;
+    MNS_CHECKORBMP = $4000000;
+    MNS_DRAGDROP = $20000000;
+    MNS_MODELESS = $40000000;
+    MNS_NOCHECK = $80000000;
+    MNS_NOTIFYBYPOS = $8000000;
+    OBJID_CLIENT = $FFFFFFFC;
+    OBJID_MENU = $FFFFFFFD;
+    OBJID_SYSMENU = $FFFFFFFF;
 
     // WINDOW クラス
     BM_CLICK = $F5;
@@ -1278,6 +1413,16 @@ const
     ES_RIGHT = $2;
     ES_UPPERCASE = $8;
     ES_WANTRETURN = $1000;
+    GCL_CBCLSEXTRA = -20;
+    GCL_CBWNDEXTRA = -18;
+    GCL_HBRBACKGROUND = -10;
+    GCL_HCURSOR = -12;
+    GCL_HICON = -14;
+    GCL_HICONSM = -34;
+    GCL_HMODULE = -16;
+    GCL_MENUNAME = -8;
+    GCL_STYLE = -26;
+    GCL_WNDPROC = -24;
     GWL_EXSTYLE = -20;
     GWL_HINSTANCE = -6;
     GWL_HWNDPARENT = -8;
@@ -2131,6 +2276,12 @@ const
     WM_TIMECHANGE = $1E;
     WM_TIMER = $113;
     WM_TOUCH = $240;                                        // Windows 7
+    WM_UAHDRAWMENU = $91;
+    WM_UAHDRAWMENUITEM = $92;
+    WM_UAHDESTROYWINDOW = $90;
+    WM_UAHINITMENU = $93;
+    WM_UAHMEASUREMENUITEM = $94;
+    WM_UAHNCPAINTMENUPOPUP = $95;
     WM_UNICHAR = $109;                                      // Windows XP
     WM_UNINITMENUPOPUP = $125;
     WM_UNDO = $304;
@@ -2209,6 +2360,54 @@ const
     WS_TILED = $0;
     WS_VISIBLE = $10000000;
     WS_VSCROLL = $200000;
+
+    // BUTTON クラス
+    DT_BUTTOM = $8;
+    DT_CALCRECT = $400;
+    DT_CENTER = $1;
+    DT_EDITCONTROL = $2000;
+    DT_END_ELLIPSIS = $8000;
+    DT_EXPANDTABS = $40;
+    DT_EXTERNALLEADING = $200;
+    DT_LEFT = $0;
+    DT_HIDEPREFIX = $100000;
+    DT_INTERNAL = $1000;
+    DT_MODIFYSTRING = $10000;
+    DT_NOCLIP = $100;
+    DT_NOFULLWIDTHCHARBREAK = $80000;
+    DT_NOPREFIX = $800;
+    DT_PATH_ELLIPSIS = $4000;
+    DT_PREFIXONLY = $200000;
+    DT_RIGHT = $2;
+    DT_RTLREADING = $20000;
+    DT_SINGLELINE = $20;
+    DT_TABSTOP = $80;
+    DT_TOP = $0;
+    DT_VCENTER = $4;
+    DT_WORDBREAK = $10;
+    DT_WORD_ELLIPSIS = $40000;
+    ODA_DRAWENTIRE = $1;
+    ODA_FOCUS = $4;
+    ODA_SELECT = $2;
+    ODT_BUTTON = 4;
+    ODT_COMBOBOX = 3;
+    ODT_HEADER = 100;
+    ODT_LISTBOX = 2;
+    ODT_LISTVIEW = 102;
+    ODT_MENU = 1;
+    ODT_STATIC = 5;
+    ODT_TAB = 101;
+    ODS_CHECKED = $8;
+    ODS_COMBOBOXEDIT = $1000;
+    ODS_DEFAULT = $20;
+    ODS_DISABLED = $4;
+    ODS_FOCUS = $10;
+    ODS_GRAYED = $2;
+    ODS_HOTLIGHT = $40;
+    ODS_INACTIVE = $80;
+    ODS_NOACCEL = $100;
+    ODS_NOFOCUSRECT = $200;
+    ODS_SELECTED = $1;
 
     // MAINWINDOW クラス
     ABOVE_NORMAL_PRIORITY_CLASS = $8000;
@@ -2368,6 +2567,10 @@ const
     OPEN_EXISTING = $3;
     OPEN_ALWAYS = $4;
     TRUNCATE_EXISTING = $5;
+
+    NOSLEEP_AUTO = $0;
+    NOSLEEP_SLEEP = $1;
+    NOSLEEP_DISPLAY = $2;
 
     OLE_E_ADVF = $80040001;
     OLE_E_ADVISENOTSUPPORTED = $80040003;
@@ -2530,6 +2733,7 @@ const
     BUFFER_SHIFTKEY: string = 'SHIFTKEY 0 : ';
     BUFFER_SPEED___: string = 'SPEED    0 : ';
     BUFFER_SPEEDTUN: string = 'SPEEDTUN 0 : ';
+    BUFFER_THEME___: string = 'THEME    0 : ';
     BUFFER_TOP_____: string = 'TOP      0 : ';
     BUFFER_TOPMOST_: string = 'TOPMOST  0 : ';
     BUFFER_TOPTDISP: string = 'TOPTDISP 0 : ';
@@ -2718,6 +2922,9 @@ const
     TITLE_INFO_AMP = $4;                                    // 音量
     TITLE_INFO_SEEK = $5;                                   // シーク
 
+    THEME_DEFAULT = $0;                                     // デフォルト
+    THEME_DARK = $1;                                        // ダークモード
+
     WAVE_DEVICE_SET_ONLY = $0;                              // デバイス ID 選択のみ
     WAVE_DEVICE_UPDATE_LIST = $1;                           // デバイス一覧を更新
     WAVE_DEVICE_UPDATE_SELECT = $2;                         // 選択デバイスを更新
@@ -2768,6 +2975,13 @@ const
     COLOR_BAR_BLUE = 28;                                    // 青
     COLOR_BAR_PURPLE = 35;                                  // 紫
 
+    COLOR_DARK_BACK = $1C1C1C;                              // ダークモードの背景色
+    COLOR_DARK_DISABLED = $6D6D6D;                          // ダークモードの文字色 (無効)
+    COLOR_DARK_INACTIVE = $949494;                          // ダークモードの文字色 (非アクティブ)
+    COLOR_DARK_LIGHT = $FFFFFF;                             // ダークモードの文字色 (ハイライト)
+    COLOR_DARK_MENU = $2C2C2C;                              // ダークモードのメニュー背景色
+    COLOR_DARK_TEXT = $ECECEC;                              // ダークモードの文字色
+
     ORG_COLOR_BAR_GREEN = $10000 or COLOR_BAR_GREEN;        // 緑
     ORG_COLOR_BAR_ORANGE = $10000 or COLOR_BAR_ORANGE;      // オレンジ
     ORG_COLOR_BAR_WATER = $10000 or COLOR_BAR_WATER;        // 水色
@@ -2776,8 +2990,10 @@ const
     ORG_COLOR_BAR_PURPLE = $10000 or COLOR_BAR_PURPLE;      // 紫
 
     ORG_COLOR_BTNFACE = COLOR_BTNFACE + 1;                  // ボタンの背景色
+    ORG_COLOR_BTNSHADOW = COLOR_BTNSHADOW + 1;              // ボタンの枠線色
     ORG_COLOR_BTNTEXT = COLOR_BTNTEXT + 1;                  // ボタンの文字色
     ORG_COLOR_GRAYTEXT = COLOR_GRAYTEXT + 1;                // 無効時の文字色
+    ORG_COLOR_HIGHLIGHT = COLOR_HIGHLIGHT + 1;              // 項目の選択色
     ORG_COLOR_WINDOWTEXT = COLOR_WINDOWTEXT + 1;            // 有効時の文字色
 
     BITMAP_NUM = 53;                                        // ビットマップ文字の数
@@ -2788,18 +3004,7 @@ const
     BITMAP_NUM_X6P6 = BITMAP_NUM_X6 + BITMAP_NUM_WIDTH;
     BITMAP_NUM_HEX_X6 = 16 * BITMAP_NUM_WIDTH;
     BITMAP_MARK_HEIGHT = 3;                                 // 位置マークの高さ
-    BITMAP_STRING_COLOR: array[0..BITMAP_NUM - 1] of longword =
-{$IFDEF WIN10DARK}
-        (ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   ,
-         ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   ,
-         ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   ,
-         ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_WATER , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_PURPLE,
-         ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  ,
-         ORG_COLOR_BAR_RED   , ORG_COLOR_GRAYTEXT  , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  ,
-         ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN ,
-         ORG_COLOR_BAR_WATER , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_WATER ,
-         ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_PURPLE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_ORANGE);
-{$ELSE}
+    BITMAP_STRING_COLOR_LIGHT: array[0..BITMAP_NUM - 1] of longword =
         (ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT,
          ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT,
          ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT,
@@ -2809,7 +3014,16 @@ const
          ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN ,
          ORG_COLOR_BAR_WATER , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_WATER ,
          ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_PURPLE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_ORANGE);
-{$ENDIF}
+    BITMAP_STRING_COLOR_DARK: array[0..BITMAP_NUM - 1] of longword =
+        (ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   ,
+         ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   ,
+         ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   , ORG_COLOR_BTNFACE   ,
+         ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_WATER , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_PURPLE,
+         ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  ,
+         ORG_COLOR_BAR_RED   , ORG_COLOR_GRAYTEXT  , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_BLUE  ,
+         ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_GREEN ,
+         ORG_COLOR_BAR_WATER , ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_BLUE  , ORG_COLOR_BAR_ORANGE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_WATER ,
+         ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_PURPLE, ORG_COLOR_BAR_RED   , ORG_COLOR_BAR_GREEN , ORG_COLOR_BAR_ORANGE);
 
     NOISE_RATE: array[0..$1F] of int64 =
         ($3030303030,                                       // 0
@@ -3077,19 +3291,21 @@ const
     MENU_SETUP_SEEK_SIZE = 6;
     MENU_SETUP_SEEK_BASE = 620; // +10
     MENU_SETUP_SEEK_VALUE: array[0..MENU_SETUP_SEEK_SIZE - 1] of longword = (1000, 2000, 3000, 4000, 5000, 10000);
-    MENU_SETUP_SEEK_FAST = 652;
-    MENU_SETUP_SEEK_ASYNC = 653;
+    MENU_SETUP_SEEK_FAST = 657;
+    MENU_SETUP_SEEK_ASYNC = 658;
     MENU_SETUP_INFO = 63;
     MENU_SETUP_INFO_SIZE = 9;
     MENU_SETUP_INFO_BASE = 630;
-    MENU_SETUP_INFO_RESET = 651;
+    MENU_SETUP_INFO_RESET = 659;
     MENU_SETUP_PRIORITY = 64;
     MENU_SETUP_PRIORITY_SIZE = 6;
     MENU_SETUP_PRIORITY_BASE = 640;
     MENU_SETUP_PRIORITY_VALUE: array[0..MENU_SETUP_PRIORITY_SIZE - 1] of longword =
         (REALTIME_PRIORITY_CLASS, HIGH_PRIORITY_CLASS, ABOVE_NORMAL_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS, BELOW_NORMAL_PRIORITY_CLASS,
          IDLE_PRIORITY_CLASS);
+    MENU_SETUP_OTHERS = 65;
     MENU_SETUP_TOPMOST = 650;
+    MENU_SETUP_NOSLEEP = 651;
     MENU_LIST_PLAY = 700;
     MENU_LIST_PLAY_SELECT = 701;
     MENU_LIST_PLAY_SIZE = 6;
@@ -3171,9 +3387,12 @@ const
     ERROR_DEVICE: array[0..1] of string = ('サウンド デバイスの初期化に失敗しました。', 'Initializing selected sound device is failed.');
     ERROR_CODE_1: array[0..1] of string = (CRLF + '(エラー ', CRLF + '(ERROR ');
     ERROR_CODE_2: array[0..1] of string = (')', ')');
+    WARN_CLEAR_PLAYLIST: array[0..1] of string = (
+        'プレイリストをクリアしますか?' + CRLF + '※ この操作を行うと、元には戻せません。',
+        'Are you sure you want to clear your playlist?' + CRLF + '* This action cannot be reversed.');
     WARN_WAVE_SIZE_1: array[0..1] of string = (
         'WAVE サウンド ファイルを作成しますか?' + CRLF + '※ ファイル サイズは最大約 ',
-        'Do you want to create the WAVE file?' + CRLF + '* Maximum size of created file will be about ');
+        'Are you sure you want to create a WAVE file?' + CRLF + '* Maximum size of created file will be about ');
     WARN_WAVE_SIZE_2: array[0..1] of string = (
         'MB です。' + CRLF + '※ 作成が完了するまで時間がかかる場合があります。 作成中は操作できません。',
         'MB.' + CRLF + '* Processing might take time until completed, and you cannot cancel processing.');
@@ -3245,7 +3464,9 @@ const
     STR_MENU_SETUP_SEEK_FAST: array[0..1] of pchar = ('高速シーク(&F)', '&Fast Seek');
     STR_MENU_SETUP_SEEK_ASYNC: array[0..1] of pchar = ('演奏速度比と同期(&M)', '&Multiply by Speed');
     STR_MENU_SETUP_PRIORITY: array[0..1] of pchar = ('処理優先度(&U)', 'CP&U Priority');
+    STR_MENU_SETUP_OTHERS: array[0..1] of pchar = ('その他設定(&H)', 'Ot&her Flags');
     STR_MENU_SETUP_TOPMOST: array[0..1] of pchar = ('常に手前に表示(&W)', 'Al&ways on Top');
+    STR_MENU_SETUP_NOSLEEP: array[0..1] of pchar = ('演奏中に画面オフを抑制(&D)', 'Not Turn Off &Display');
     STR_MENU_LIST_PLAY: array[0..1] of pchar = ('演奏開始(&P)', '&Play');
     STR_MENU_LIST_PLAY_SELECT: array[0..1] of pchar = ('選択項目(&S)', '&Selected Item');
     STR_MENU_FILE_OPEN_SUB: array[0..1] of array[0..MENU_FILE_OPEN_SIZE - 1] of pchar = (
@@ -3382,11 +3603,12 @@ var
         dwBit: longint;                                         // ビット
         dwRate: longword;                                       // サンプリングレート
         dwLanguage: longword;                                   // 言語
-        hDCStatic: longword;                                    // 情報表示ウィンドウのデバイスコンテキストハンドル
-        hDCVolumeBuffer: longword;                              // インジケータのデバイスコンテキストハンドル
-        hBitmapVolume: longword;                                // インジケータのビットマップハンドル
-        hDCStringBuffer: longword;                              // 文字画像のデバイスコンテキストハンドル
-        hBitmapString: longword;                                // 文字画像のビットマップハンドル
+        hDCWindow: longword;                                    // ウィンドウ全体のデバイスコンテキストのハンドル
+        hDCStatic: longword;                                    // 情報表示ウィンドウのデバイスコンテキストのハンドル
+        hDCVolumeBuffer: longword;                              // インジケータのデバイスコンテキストのハンドル
+        hBitmapVolume: longword;                                // インジケータのビットマップのハンドル
+        hDCStringBuffer: longword;                              // 文字画像のデバイスコンテキストのハンドル
+        hBitmapString: longword;                                // 文字画像のビットマップのハンドル
         hPowerNotify: longword;                                 // 電源設定通知イベントのハンドル
         hSuspendNotify: longword;                               // サスペンド通知イベントのハンドル
         lpStaticProc: pointer;                                  // 情報表示のウィンドウプロシージャのポインタ
@@ -3456,6 +3678,9 @@ var
         SPCCache: array of TSPCCACHE;                           // シークキャッシュ
         Script700: TSCRIPT700DATA;                              // Script700 データ
         Tempo: TTEMPO;                                          // テンポ
+        hBackBrush: longword;                                   // 背景色ブラシのハンドル
+        hTextBrush: longword;                                   // 文字色ブラシのハンドル
+        hMenuBrush: longword;                                   // メニュー背景色ブラシのハンドル
 {$IFDEF CONTEXT}
         dwContextSize: longword;                                // SNESAPU コンテキストサイズ
         lpContext: pointer;                                     // SNESAPU コンテキストデータのポインタ
@@ -3511,6 +3736,7 @@ var
         dwShiftKey: longword;                                   // シフトキー動作
         dwSpeedBas: longword;                                   // 演奏速度
         dwSpeedTun: longint;                                    // 演奏速度微調整
+        dwTheme: longword;                                      // テーマ
         bTopMost: longbool;                                     // 常に手前に表示
         dwTimerOptionDisplay: longword;                         // オプション情報表示の時間
         dwTimerOptionLock: longword;                            // オプション変更ロックの時間
@@ -3545,11 +3771,6 @@ function  API_BitBlt(hdcDest: longword; nXDest: longint; nYDest: longint; nWidth
 function  API_CallWindowProc(lpPrevWndFunc: pointer; hWnd: longword; msg: longword; wParam: longword; lParam: longword): longword; stdcall; external 'user32.dll' name 'CallWindowProcA';
 function  API_CheckMenuItem(hMenu: longword; uID: longword; uCheck: longword): longword; stdcall; external 'user32.dll' name 'CheckMenuItem';
 function  API_CloseHandle(hObject: longword): longbool; stdcall; external 'kernel32.dll' name 'CloseHandle';
-{$IFDEF ITASKBARLIST3}
-function  API_CoCreateInstance(rclsid: pointer; pUnkOuter: pointer; dwClsContext: longword; riid: pointer; ppv: pointer): longword; stdcall; external 'ole32.dll' name 'CoCreateInstance';
-function  API_CoInitialize(pvReserved: pointer): longword; stdcall; external 'ole32.dll' name 'CoInitialize';
-function  API_CoUninitialize(): longword; stdcall; external 'ole32.dll' name 'CoUninitialize';
-{$ENDIF}
 function  API_CreateBitmap(nWidth: longint; nHeight: longint; nPlanes: longint; nBitCount: longint; lpBits: pointer): longword; stdcall; external 'gdi32.dll' name 'CreateBitmap';
 function  API_CreateCompatibleBitmap(hDC: longword; nWidth: longint; nHeight: longint): longword; stdcall; external 'gdi32.dll' name 'CreateCompatibleBitmap';
 function  API_CreateCompatibleDC(hDC: longword): longword; stdcall; external 'gdi32.dll' name 'CreateCompatibleDC';
@@ -3557,6 +3778,7 @@ function  API_CreateFile(lpFileName: pointer; dwDesiredAccess: longword; dwShare
 function  API_CreateFont(nHeight: longint; nWidth: longint; nEscapement: longint; nOrientation: longint; fnWeight: longint; fdwItalic: longword; fdwUnderline: longword; fdwStrikeOut: longword; fdwCharSet: longword; fdwOutputPrecision: longword; fdwClipPrecision: longword; fdwQuality: longword; fdwPitchAndFamily: longword; lpszFace: pointer): longword; stdcall; external 'gdi32.dll' name 'CreateFontA';
 function  API_CreateMenu(): longword; stdcall; external 'user32.dll' name 'CreateMenu';
 function  API_CreatePopupMenu(): longword; stdcall; external 'user32.dll' name 'CreatePopupMenu';
+function  API_CreateSolidBrush(color: longword): longword; stdcall; external 'gdi32.dll' name 'CreateSolidBrush';
 function  API_CreateThread(lpThreadAttributes: pointer; dwStackSize: longword; lpStartAddress: pointer; lpParameter: pointer; dwCreationFlags: longword; lpThreadId: pointer): longword; stdcall; external 'kernel32.dll' name 'CreateThread';
 function  API_CreateWindowEx(dwExStyle: longword; lpClassName: pointer; lpWindowName: pointer; dwStyle: longword; x: longint; y: longint; nWidth: longint; nHeight: longint; hWndParent: longword; hMenu: longword; hThisInstance: longword; lpParam: pointer): longword; stdcall; external 'user32.dll' name 'CreateWindowExA';
 function  API_DefWindowProc(hWnd: longword; msg: longword; wParam: longword; lParam: longword): longword; stdcall; external 'user32.dll' name 'DefWindowProcA';
@@ -3572,6 +3794,7 @@ procedure API_DragFinish(hDrop: longword); stdcall; external 'shell32.dll' name 
 function  API_DragQueryFile(hDrop: longword; iFile: longword; lpszFile: pointer; cch: longword): longword; stdcall; external 'shell32.dll' name 'DragQueryFileA';
 function  API_DragQueryPoint(hDrop: longword; ppt: pointer): longword; stdcall; external 'shell32.dll' name 'DragQueryPoint';
 function  API_DrawMenuBar(hWnd: longword): longbool; stdcall; external 'user32.dll' name 'DrawMenuBar';
+function  API_DrawText(hDC: longword; lpchText: pointer; cchText: longint; lprc: pointer; format: longword): longint; stdcall; external 'user32.dll' name 'DrawTextA';
 function  API_EnableMenuItem(hMenu: longword; uID: longword; uEnable: longword): longbool; stdcall; external 'user32.dll' name 'EnableMenuItem';
 function  API_EnableWindow(hWnd: longword; bEnable: longbool): longbool; stdcall; external 'user32.dll' name 'EnableWindow';
 procedure API_EnterCriticalSection(lpCriticalSection: pointer); stdcall; external 'kernel32.dll' name 'EnterCriticalSection';
@@ -3593,6 +3816,8 @@ function  API_GetFocus(): longword; stdcall; external 'user32.dll' name 'GetFocu
 function  API_GetForegroundWindow(): longword; stdcall; external 'user32.dll' name 'GetForegroundWindow';
 function  API_GetKeyboardState(lpKeyState: pointer): longbool; stdcall; external 'user32.dll' name 'GetKeyboardState';
 function  API_GetLastError(): longword; stdcall; external 'kernel32.dll' name 'GetLastError';
+function  API_GetMenuBarInfo(hWnd: longword; idObject: longword; idItem: longword; pmbi: pointer): longbool; stdcall; external 'user32.dll' name 'GetMenuBarInfo';
+function  API_GetMenuItemInfo(hMenu: longword; item: longword; fByPosition: longbool; lpmii: pointer): longbool; stdcall; external 'user32.dll' name 'GetMenuItemInfoW';
 function  API_GetMenuState(hMenu: longword; uID: longword; uFlags: longword): longword; stdcall; external 'user32.dll' name 'GetMenuState';
 function  API_GetMessage(lpMsg: pointer; hWnd: longword; wMessageFilterMin: longword; wMessageFilterMax: longword): longbool; stdcall; external 'user32.dll' name 'GetMessageA';
 function  API_GetModuleFileName(hModule: longword; lpFileName: pointer; nSize: longword): longword; stdcall; external 'kernel32.dll' name 'GetModuleFileNameA';
@@ -3604,13 +3829,12 @@ function  API_GetPriorityClass(hProcess: longword): longword; stdcall; external 
 function  API_GetProcAddress(hModule: longword; lpProcName: pointer): pointer; stdcall; external 'kernel32.dll' name 'GetProcAddress';
 function  API_GetSaveFileName(lpofn: pointer): longbool; stdcall; external 'comdlg32.dll' name 'GetSaveFileNameA';
 function  API_GetUserDefaultLCID(): longword; stdcall; external 'kernel32.dll' name 'GetUserDefaultLCID';
-{$IFDEF WIN10DARK}
 function  API_GetSysColor(nIndex: longint): longword; stdcall; external 'user32.dll' name 'GetSysColor';
 function  API_GetSysColorBrush(nIndex: longint): longword; stdcall; external 'user32.dll' name 'GetSysColorBrush';
-{$ENDIF}
 function  API_GetSystemMenu(hWnd: longword; bRevert: longbool): longword; stdcall; external 'user32.dll' name 'GetSystemMenu';
 function  API_GetSystemMetrics(nIndex: longint): longint; stdcall; external 'user32.dll' name 'GetSystemMetrics';
 function  API_GetVersionEx(lpVersionInfo: pointer): longbool; stdcall; external 'kernel32.dll' name 'GetVersionExA';
+function  API_GetWindowDC(hWnd: longword): longword; stdcall; external 'user32.dll' name 'GetWindowDC';
 function  API_GetWindowLong(hWnd: longword; nIndex: longint): longword; stdcall; external 'user32.dll' name 'GetWindowLongA';
 function  API_GetWindowPlacement(hWnd: longword; lpwndpl: pointer): longbool; stdcall; external 'user32.dll' name 'GetWindowPlacement';
 function  API_GetWindowRect(hWnd: longword; lpRect: pointer): longbool; stdcall; external 'user32.dll' name 'GetWindowRect';
@@ -3651,6 +3875,7 @@ procedure API_ReleaseStgMedium(lpStgMedium: pointer); stdcall; external 'ole32.d
 function  API_SelectObject(hDC: longword; hGdiObj: longword): longword; stdcall; external 'gdi32.dll' name 'SelectObject';
 function  API_SendMessage(hWnd: longword; msg: longword; wParam: longword; lParam: longword): longword; stdcall; external 'user32.dll' name 'SendMessageA';
 function  API_SetBkColor(hDC: longword; crColor: longword): longword; stdcall; external 'gdi32.dll' name 'SetBkColor';
+function  API_SetClassLong(hWnd: longword; nIndex: longint; dwNewLong: longword): longword; stdcall; external 'user32.dll' name 'SetClassLongA';
 function  API_SetEndOfFile(hFile: longword): longbool; stdcall; external 'kernel32.dll' name 'SetEndOfFile';
 function  API_SetFilePointer(hFile: longword; lDistanceToMove: longword; lpDistanceToMoveHigh: pointer; dwMoveMethod: longword): longword; stdcall; external 'kernel32.dll' name 'SetFilePointer';
 function  API_SetFocus(hWnd: longword): longword; stdcall; external 'user32.dll' name 'SetFocus';
@@ -3658,9 +3883,7 @@ function  API_SetForegroundWindow(hWnd: longword): longbool; stdcall; external '
 function  API_SetMenu(hWnd: longword; hMenu: longword): longbool; stdcall; external 'user32.dll' name 'SetMenu';
 function  API_SetPixel(hDC: longword; x: longint; y: longint; crColor: longword): longword; stdcall; external 'gdi32.dll' name 'SetPixel';
 function  API_SetPriorityClass(hProcess: longword; dwPriorityClass: longword): longbool; stdcall; external 'kernel32.dll' name 'SetPriorityClass';
-{$IFDEF WIN10DARK}
 function  API_SetTextColor(hDC: longword; crColor: longword): longword; stdcall; external 'gdi32.dll' name 'SetTextColor';
-{$ENDIF}
 function  API_SetThreadExecutionState(esFlags: longword): longword; stdcall; external 'kernel32.dll' name 'SetThreadExecutionState';
 function  API_SetTimer(hWnd: longword; uIDEvent: longword; uElapse: longword; lpTimerFunc: pointer): longword; stdcall; external 'user32.dll' name 'SetTimer';
 function  API_SetWindowLong(hWnd: longword; nIndex: longint; dwNewLong: longword): longword; stdcall; external 'user32.dll' name 'SetWindowLongA';
@@ -3670,9 +3893,6 @@ function  API_SetWindowText(hWnd: longword; lpString: pointer): longbool; stdcal
 procedure API_Sleep(dwMilliseconds: longword); stdcall; external 'kernel32.dll' name 'Sleep';
 function  API_StretchBlt(hdcDest: longword; nXDest: longint; nYDest: longint; nWidthDest: longint; nHeightDest: longint; hdcSrc: longword; nXSrc: longint; nYSrc: longint; nWidthSrc: longint; nHeightSrc: longint; dwRop: longword): longbool; stdcall; external 'gdi32.dll' name 'StretchBlt';
 function  API_SystemParametersInfo(uAction: longword; uParam: longword; pParam: pointer; fWinIni: longword): longbool; stdcall; external 'user32.dll' name 'SystemParametersInfoA';
-{$IFDEF PERFORMANCETEST}
-function  API_timeGetTime(): longword; stdcall; external 'winmm.dll' name 'timeGetTime';
-{$ENDIF}
 function  API_TranslateMessage(lpMsg: pointer): longbool; stdcall; external 'user32.dll' name 'TranslateMessage';
 function  API_UnregisterClass(lpClassName: pointer; hThisInstance: longword): longbool; stdcall; external 'user32.dll' name 'UnregisterClassA';
 function  API_UpdateWindow(hWnd: longword): longbool; stdcall; external 'user32.dll' name 'UpdateWindow';
@@ -3688,6 +3908,14 @@ function  API_waveOutUnprepareHeader(hwo: longword; pwh: pointer; cbwh: longword
 function  API_waveOutWrite(hwo: longword; pwh: pointer; cbwh: longword): longword; stdcall; external 'winmm.dll' name 'waveOutWrite';
 function  API_WriteFile(hFile: longword; lpBuffer: pointer; nNumberOfBytesToRead: longword; lpNumberOfBytesRead: pointer; lpOverlapped: pointer): longbool; stdcall; external 'kernel32.dll' name 'WriteFile';
 procedure API_ZeroMemory(Destination: pointer; Length: longword); stdcall; external 'kernel32.dll' name 'RtlZeroMemory';
+{$IFDEF ITASKBARLIST3}
+function  API_CoCreateInstance(rclsid: pointer; pUnkOuter: pointer; dwClsContext: longword; riid: pointer; ppv: pointer): longword; stdcall; external 'ole32.dll' name 'CoCreateInstance';
+function  API_CoInitialize(pvReserved: pointer): longword; stdcall; external 'ole32.dll' name 'CoInitialize';
+function  API_CoUninitialize(): longword; stdcall; external 'ole32.dll' name 'CoUninitialize';
+{$ENDIF}
+{$IFDEF PERFORMANCETEST}
+function  API_timeGetTime(): longword; stdcall; external 'winmm.dll' name 'timeGetTime';
+{$ENDIF}
 
 
 // *************************************************************************************************************************************************************
@@ -4411,11 +4639,13 @@ var
     dwKeyCode: longword;
     API_SetDllDirectory: function(lpPathName: pointer): longbool; stdcall;
 begin
-    // 検索パスからカレントパスを削除 (for Windows XP SP1)
+    // KERNEL32.DLL をロード
     dwBuffer := API_LoadLibraryEx(pchar('kernel32.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if longbool(dwBuffer) then begin
+        // 検索パスからカレントパスを削除 (for Windows XP SP1)
         @API_SetDllDirectory := API_GetProcAddress(dwBuffer, pchar('SetDllDirectoryA'));
         if longbool(@API_SetDllDirectory) then API_SetDllDirectory(pchar(''));
+        // DLL を解放
         API_FreeLibrary(dwBuffer);
     end;
     // wParam を初期化
@@ -4425,13 +4655,8 @@ begin
     API_InitializeCriticalSection(@CriticalSectionStatic);
     // ウィンドウクラスを作成
     Status.ccClass := CCLASS.Create();
-{$IFDEF WIN10DARK}
     Status.ccClass.CreateClass(@_WindowProc, hThisInstance, pchar(CLASS_NAME), CS_HREDRAW or CS_VREDRAW or CS_OWNDC, pchar(ICON_NAME),
-        NULLPOINTER, IDC_ARROW, COLOR_BTNTEXT);
-{$ELSE}
-    Status.ccClass.CreateClass(@_WindowProc, hThisInstance, pchar(CLASS_NAME), CS_HREDRAW or CS_VREDRAW or CS_OWNDC, pchar(ICON_NAME),
-        NULLPOINTER, IDC_ARROW, COLOR_BTNFACE);
-{$ENDIF}
+        NULLPOINTER, IDC_ARROW, ORG_COLOR_BTNFACE);
     // ウィンドウを作成
     cfMain := CWINDOWMAIN.Create();
     Status.cfMain := cfMain;
@@ -4474,7 +4699,7 @@ begin
                         VK_OEM_COMMA: cwWindowMain.PostMessage(WM_APP_COMMAND, MENU_SETUP_TIME_START, Msg.lParam); // Ctrl + , キー
                         VK_OEM_PERIOD: cwWindowMain.PostMessage(WM_APP_COMMAND, MENU_SETUP_TIME_LIMIT, Msg.lParam); // Ctrl + . キー
                         VK_OEM_2: cwWindowMain.PostMessage(WM_APP_COMMAND, MENU_SETUP_TIME_RESET, Msg.lParam); // Ctrl + / キー
-                        VK_DELETE: cfMain.ListClear(); // Ctrl + Del キー
+                        VK_DELETE: cfMain.ListClear(true); // Ctrl + Del キー
                         VK_UP: cfMain.ListUp(); // Ctrl + ↑ キー
                         VK_DOWN: cfMain.ListDown(); // Ctrl + ↓ キー
                         VK_LEFT: if Status.bShiftButton or (Option.dwShiftKey = SHIFT_KEY_SEEK) then cfMain.SetFunction(-1, FUNCTION_TYPE_SEEK)
@@ -4586,6 +4811,10 @@ begin
                         else cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_SEEK, Msg.lParam);
                     end else if Msg.hWnd = cfMain.cwPlayList.hWnd then begin
                         cfMain.DragFile(Msg.msg, Msg.wParam, Msg.lParam);
+                    end else if (Msg.msg = WM_LBUTTONDBLCLK) and longbool(API_GetWindowLong(Msg.hWnd, GWL_STYLE) and BS_OWNERDRAW) then begin
+                        // NOTE: BS_OWNERDRAW の場合、BS_NOTIFY が自動的にセットされ、ボタンのダブルクリックが
+                        // 機能してしまうため、WM_LBUTTONDBLCLK を WM_LBUTTONDOWN に強制的に変更する
+                        Msg.msg := WM_LBUTTONDOWN;
                     end;
                 end;
                 WM_RBUTTONDOWN, WM_RBUTTONDBLCLK: begin // 右ボタン
@@ -5140,7 +5369,7 @@ end;
 // CreateClass - クラス作成
 // ================================================================================
 procedure CCLASS.CreateClass(lpWindowProc: pointer; hThisInstance: longword; lpClassName: pointer; dwStyle: longword; lpIcon: pointer; lpSmallIcon: pointer;
-    dwCursor: longword; dwBackColor: longword);
+    hCursor: longword; hbrBackground: longword);
 var
     WndClassEx: TWNDCLASSEX;
 begin
@@ -5152,8 +5381,8 @@ begin
     WndClassEx.lpszMenuName := pchar(longword(word(1)));
     WndClassEx.lpszClassName := lpClassName;
     if longbool(lpIcon) then WndClassEx.hIcon := API_LoadIcon(hThisInstance, lpIcon);
-    if longbool(dwCursor) then WndClassEx.hCursor := API_LoadCursor(NULL, pointer(dwCursor));
-    if longbool(dwBackColor) then WndClassEx.hbrBackground := dwBackColor + 1;
+    if longbool(hCursor) then WndClassEx.hCursor := API_LoadCursor(NULL, pointer(hCursor));
+    if longbool(hbrBackground) then WndClassEx.hbrBackground := hbrBackground;
     if longbool(lpSmallIcon) then WndClassEx.hIconSm := API_LoadIcon(hThisInstance, lpSmallIcon);
     API_RegisterClassEx(@WndClassEx);
 end;
@@ -5327,6 +5556,144 @@ begin
     if bEnable <> longbool(dwFlags and MF_GRAYED) then exit;
     if bEnable then API_EnableMenuItem(hMenu, dwID, MF_ENABLED)
     else API_EnableMenuItem(hMenu, dwID, MF_GRAYED);
+end;
+
+
+// *************************************************************************************************************************************************************
+// MENUBAR クラス
+// *************************************************************************************************************************************************************
+
+// ================================================================================
+// DrawMenuBar - メニューバー描画
+// ================================================================================
+function CMENUBAR.DrawMenuBar(hWnd: longword; lParam: longword): longword;
+var
+    UahMenu: ^TUAHMENU;
+    MenuBarInfo: TMENUBARINFO;
+    MenuRect: TRECT;
+    WindowRect: TRECT;
+begin
+    // 初期化
+    UahMenu := pointer(lParam);
+    // メニューバーのサイズを取得
+    MenuBarInfo.cbSize := SizeOf(TMENUBARINFO);
+    API_GetMenuBarInfo(hWnd, OBJID_MENU, NULL, @MenuBarInfo);
+    API_MoveMemory(@MenuRect, @MenuBarInfo.rcBar, SizeOf(TRECT));
+    // ウィンドウの開始位置分、位置を変更
+    API_GetWindowRect(hWnd, @WindowRect);
+    Dec(MenuRect.left, WindowRect.left);
+    Dec(MenuRect.right, WindowRect.left);
+    Dec(MenuRect.top, WindowRect.top);
+    Dec(MenuRect.bottom, WindowRect.top);
+    // 描画
+    API_FillRect(UahMenu.hDC, @MenuRect, Status.hMenuBrush);
+    // メニュー境界を描画
+    DrawMenuBorder(hWnd);
+    // 成功
+    result := 1;
+end;
+
+// ================================================================================
+// DrawMenuBorder - メニュー境界描画
+// ================================================================================
+procedure CMENUBAR.DrawMenuBorder(hWnd: longword);
+var
+    MenuBarInfo: TMENUBARINFO;
+    MenuRect: TRECT;
+    WindowRect: TRECT;
+begin
+    // メニューバーのサイズを取得
+    MenuBarInfo.cbSize := SizeOf(TMENUBARINFO);
+    API_GetMenuBarInfo(hWnd, OBJID_MENU, NULL, @MenuBarInfo);
+    API_MoveMemory(@MenuRect, @MenuBarInfo.rcBar, SizeOf(TRECT));
+    // ウィンドウの開始位置分、位置を変更
+    API_GetWindowRect(hWnd, @WindowRect);
+    Dec(MenuRect.left, WindowRect.left);
+    Dec(MenuRect.right, WindowRect.left);
+    Dec(MenuRect.bottom, WindowRect.top);
+    MenuRect.top := MenuRect.bottom;
+    Inc(MenuRect.bottom);
+    // 描画
+    API_FillRect(Status.hDCWindow, @MenuRect, Status.hMenuBrush);
+end;
+
+// ================================================================================
+// DrawMenuItem - メニューアイテム描画
+// ================================================================================
+function CMENUBAR.DrawMenuItem(hWnd: longword; lParam: longword): longword;
+var
+    UahMenuItem: ^TUAHDRAWMENUITEM;
+    hDLL: longword;
+    lpText: pointer;
+    dwFlags: longword;
+    wsData: widestring;
+    hTheme: longword;
+    MenuItemInfo: TMENUITEMINFO;
+    Opts: TDTTOPTS;
+    API_DrawThemeTextEx: function(hTheme: longword; hDC: longword; iPartId: longint; iStateId: longint; pszText: pointer; cchText: longint; dwTextFlags: longword; pRect: pointer; pOptions: pointer): longword; stdcall;
+    API_OpenThemeData: function(hWnd: longword; pszClassList: pointer): longword; stdcall;
+begin
+    // 初期化
+    result := 0;
+    // Windows Vista 未満の場合は終了
+    if (Status.OsVersionInfo.dwMajorVersion < 6) then exit;
+    // UXTHEME.DLL のロードに失敗した場合は終了
+    hDLL := API_LoadLibraryEx(pchar('uxtheme.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    if not longbool(hDLL) then exit;
+    // メニューバーを描画
+    @API_DrawThemeTextEx := API_GetProcAddress(hDLL, pchar('DrawThemeTextEx'));
+    @API_OpenThemeData := API_GetProcAddress(hDLL, pchar('OpenThemeData'));
+    if longbool(@API_DrawThemeTextEx) and longbool(@API_OpenThemeData) then begin
+        // 初期化
+        UahMenuItem := pointer(lParam);
+        // バッファを確保
+        GetMem(lpText, 256);
+        // メニューのテキストを取得
+        API_ZeroMemory(@MenuItemInfo, SizeOf(TMENUITEMINFO));
+        MenuItemInfo.cbSize := SizeOf(TMENUITEMINFO);
+        MenuItemInfo.fMask := MIIM_STRING;
+        MenuItemInfo.dwTypeData := lpText;
+        MenuItemInfo.cch := 128; // マルチバイト考慮
+        API_GetMenuItemInfo(UahMenuItem.Menu.hMenu, UahMenuItem.MenuItem.nPosition, true, @MenuItemInfo);
+        // 文字色設定を準備
+        dwFlags := DT_SINGLELINE or DT_CENTER or DT_VCENTER;
+        API_ZeroMemory(@Opts, SizeOf(TDTTOPTS));
+        Opts.cbSize := SizeOf(TDTTOPTS);
+        Opts.dwFlags := 1; // DTT_TEXTCOLOR
+        // 文字色・背景色を設定
+        if longbool(UahMenuItem.Struct.itemState and (ODS_DISABLED or ODS_GRAYED)) then begin
+            Opts.crText := COLOR_DARK_DISABLED;
+            API_FillRect(UahMenuItem.Menu.hDC, @UahMenuItem.Struct.rcItem, Status.hMenuBrush);
+        end else if longbool(UahMenuItem.Struct.itemState and ODS_INACTIVE) then begin
+            Opts.crText := COLOR_DARK_INACTIVE;
+            API_FillRect(UahMenuItem.Menu.hDC, @UahMenuItem.Struct.rcItem, Status.hMenuBrush);
+        end else if longbool(UahMenuItem.Struct.itemState and ODS_HOTLIGHT) then begin
+            Opts.crText := COLOR_DARK_LIGHT;
+            API_FillRect(UahMenuItem.Menu.hDC, @UahMenuItem.Struct.rcItem, ORG_COLOR_GRAYTEXT);
+        end else if longbool(UahMenuItem.Struct.itemState and ODS_SELECTED) then begin
+            Opts.crText := COLOR_DARK_LIGHT;
+            API_FillRect(UahMenuItem.Menu.hDC, @UahMenuItem.Struct.rcItem, ORG_COLOR_HIGHLIGHT);
+        end else begin
+            Opts.crText := COLOR_DARK_LIGHT;
+            API_FillRect(UahMenuItem.Menu.hDC, @UahMenuItem.Struct.rcItem, Status.hMenuBrush);
+        end;
+        if longbool(UahMenuItem.Struct.itemState and ODS_NOACCEL) then begin
+            dwFlags := dwFlags or DT_HIDEPREFIX;
+        end;
+        // 文字色を適用
+        wsData := 'Menu';
+        hTheme := API_OpenThemeData(hWnd, pwidechar(wsData));
+        API_DrawThemeTextEx(hTheme, UahMenuItem.Menu.hDC,
+            $8, // MENU_BARITEM
+            $1, // MBI_NORMAL
+            lpText, MenuItemInfo.cch, dwFlags, @UahMenuItem.Struct.rcItem, @Opts);
+        // バッファを解放
+        FreeMem(lpText, 256);
+        // 成功
+        result := 1;
+    end;
+    // DLL を解放
+    API_FreeLibrary(hDLL);
 end;
 
 
@@ -5517,6 +5884,125 @@ end;
 
 
 // *************************************************************************************************************************************************************
+// BUTTON クラス
+// *************************************************************************************************************************************************************
+
+// ================================================================================
+// CreateItem - ボタン作成
+// ================================================================================
+procedure CBUTTON.CreateItem(hThisInstance: longword; hMainWnd: longword; hFont: longword; lpItemName: pointer; lpCaption: pointer; dwItemID: longword;
+    dwStylePlus: longword; Box: TBOX);
+var
+    dwStyle: longword;
+    dwStyleEx: longword;
+begin
+    if Option.dwTheme = THEME_DARK then begin
+        dwStyle := dwStylePlus or WS_CHILD or BS_OWNERDRAW;
+        dwStyleEx := WS_EX_NOPARENTNOTIFY;
+    end else begin
+        dwStyle := dwStylePlus or WS_CHILD;
+        dwStyleEx := WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE;
+    end;
+    hWnd := API_CreateWindowEx(dwStyleEx, lpItemName, lpCaption, dwStyle, Box.left, Box.top, Box.width, Box.height, hMainWnd, dwItemID,
+        hThisInstance, NULLPOINTER);
+    SendMessage(WM_SETFONT, hFont, NULL);
+end;
+
+// ================================================================================
+// DrawItem - ボタン描画
+// ================================================================================
+function CBUTTON.DrawItem(lParam: longword; bHighlight: longbool): longword;
+var
+    Struct: ^TDRAWITEMSTRUCT;
+    hWnd: longword;
+    hDC: longword;
+    hBitmap: longword;
+    dwWidth: longword;
+    dwHeight: longword;
+    bPushed: longbool;
+    bFocused: longbool;
+    bDisabled: longbool;
+    lpText: pointer;
+    Rect: TRECT;
+begin
+    // 初期化
+    Struct := pointer(lParam);
+    hWnd := Struct.hwndItem;
+    bPushed := longbool(Struct.itemState and ODS_SELECTED);
+    bFocused := longbool(Struct.itemState and ODS_FOCUS);
+    bDisabled := longbool(Struct.itemState and ODS_DISABLED);
+    // サイズを取得
+    API_MoveMemory(@Rect, @Struct.rcItem, SizeOf(TRECT));
+    dwWidth := Rect.right - Rect.left;
+    dwHeight := Rect.bottom - Rect.top;
+    // デバイスコンテキストを作成
+    hDC := API_CreateCompatibleDC(Struct.hDC);
+    hBitmap := API_SelectObject(hDC, API_CreateCompatibleBitmap(Struct.hDC, dwWidth, dwHeight));
+    // 背景色を描画
+    Rect.left := 0;
+    Rect.top := 0;
+    Rect.right := dwWidth;
+    Rect.bottom := dwHeight;
+    API_FillRect(hDC, @Rect, Status.hBackBrush);
+    // 外枠を描画
+    Inc(Rect.left);   // 1
+    Dec(Rect.right);  // width - 1
+    API_FillRect(hDC, @Rect, ORG_COLOR_GRAYTEXT);
+    Dec(Rect.left);   // 0
+    Inc(Rect.right);  // width
+    Inc(Rect.top);    // 1
+    Dec(Rect.bottom); // height - 1
+    API_FillRect(hDC, @Rect, ORG_COLOR_GRAYTEXT);
+    // フォーカス枠線を描画
+    Inc(Rect.left);   // 1
+    Dec(Rect.right);  // width - 1
+    if bPushed or bFocused then begin
+        if bPushed then API_FillRect(hDC, @Rect, Status.hTextBrush)
+        else API_FillRect(hDC, @Rect, ORG_COLOR_BTNSHADOW);
+        Inc(Rect.left);   // 2
+        Dec(Rect.right);  // width - 2
+        Inc(Rect.top);    // 2
+        Dec(Rect.bottom); // height - 2
+    end;
+    // 枠線内部の背景を描画
+    if bPushed then begin
+        API_FillRect(hDC, @Rect, ORG_COLOR_GRAYTEXT);
+        API_SetBkColor(Struct.hDC, API_GetSysColor(COLOR_GRAYTEXT));
+    end else if bHighlight then begin
+        API_FillRect(hDC, @Rect, ORG_COLOR_HIGHLIGHT);
+        API_SetBkColor(Struct.hDC, API_GetSysColor(COLOR_HIGHLIGHT));
+    end else begin
+        API_FillRect(hDC, @Rect, Status.hBackBrush);
+        API_SetBkColor(Struct.hDC, COLOR_DARK_BACK);
+    end;
+    // ボタンに背景をコピー
+    API_MoveMemory(@Rect, @Struct.rcItem, SizeOf(TRECT));
+    API_BitBlt(Struct.hDC, Rect.left, Rect.top, dwWidth, dwHeight, hDC, 0, 0, SRCCOPY);
+    // デバイスコンテキストを解放
+    API_DeleteObject(API_SelectObject(hDC, hBitmap));
+    API_DeleteDC(hDC);
+    // バッファを確保
+    GetMem(lpText, 16);
+    // テキストを取得
+    API_GetWindowText(hWnd, lpText, 16);
+    if bPushed then begin
+        Inc(Rect.left);
+        Inc(Rect.top);
+        Inc(Rect.right);
+        Inc(Rect.bottom);
+    end;
+    // テキストを描画
+    if bDisabled then API_SetTextColor(Struct.hDC, COLOR_DARK_DISABLED)
+    else API_SetTextColor(Struct.hDC, COLOR_DARK_TEXT);
+    API_DrawText(Struct.hDC, lpText, -1, @Rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
+    // バッファを解放
+    FreeMem(lpText, 16);
+    // 描画成功
+    result := 1;
+end;
+
+
+// *************************************************************************************************************************************************************
 // WINDOWMAIN クラス
 // *************************************************************************************************************************************************************
 
@@ -5669,21 +6155,17 @@ var
     dwTop: longint;
     hWndApp: longword;
     hFontApp: longword;
+    wsData: widestring;
     Box: TBOX;
+    API_DwmSetWindowAttribute: function(hWnd: longword; dwAttribute: longword; pvAttribute: pointer; cbAttribute: longword): longword; stdcall;
+    API_FlushMenuThemes: function(): longword; stdcall;
     API_RegisterPowerSettingNotification: function(hRecipient: longword; powerSettingGuid: pointer; flags: longword): longword; stdcall;
     API_RegisterSuspendResumeNotification: function(hRecipient: longword; flags: longword): longword; stdcall;
     API_RtlGetVersion: function(lpVersionInfo: pointer): longbool; stdcall;
-{$IFDEF UACDROP}
-    API_ChangeWindowMessageFilter: function(msg: longword; dwFlag: longword): longword; stdcall;
-{$ENDIF}
-{$IFDEF WIN10DARK}
-    wsData: widestring;
-    API_AllowDarkModeForWindow: function(hWnd: longword; bAllow: longbool): longword; stdcall;
-    API_DwmSetWindowAttribute: function(hWnd: longword; dwAttribute: longword; pvAttribute: pointer; cbAttribute: longword): longword; stdcall;
-    API_FlushMenuThemes: function(): longword; stdcall;
-    API_RefreshImmersiveColorPolicyState: function(): longword; stdcall;
     API_SetPreferredAppMode: function(dwMode: longword): longword; stdcall;
     API_SetWindowTheme: function(hWnd: longword; pszSubAppName: pointer; pszSubIdList: pointer): longword; stdcall;
+{$IFDEF UACDROP}
+    API_ChangeWindowMessageFilter: function(msg: longword; dwFlag: longword): longword; stdcall;
 {$ENDIF}
 
 function GetParameter(var dwStart: longint; dwLength: longint; bLast: longbool): string;
@@ -5841,6 +6323,9 @@ begin
     // 初期化
     result := 0;
     Randomize();
+    Status.hBackBrush := NULL;
+    Status.hTextBrush := NULL;
+    Status.hMenuBrush := NULL;
 {$IFDEF DEBUGLOG}
     _WriteLog('initialize ---------------------------------------------------------------------');
 {$ENDIF}
@@ -6018,6 +6503,7 @@ begin
     Option.dwShiftKey := 0;
     Option.dwSpeedBas := SPEED_100;
     Option.dwSpeedTun := 0;
+    Option.dwTheme := THEME_DEFAULT;
     dwTop := 100;
     Option.bTopMost := false;
     Option.dwTimerOptionDisplay := TIMER_INTERVAL_OPTION_DISPLAY;
@@ -6067,7 +6553,7 @@ begin
             if sBuffer = BUFFER_MUTE____ then Option.dwMute := GetINIValue(Option.dwMute);
             if sBuffer = BUFFER_NEXTLENG then Option.dwNextTime := GetINIValue(Option.dwNextTime);
             if sBuffer = BUFFER_NOISE___ then Option.dwNoise := GetINIValue(Option.dwNoise);
-            if sBuffer = BUFFER_NOSLEEP_ then Option.dwNoSleep := GetINIValue(Option.dwNoSleep);
+            if sBuffer = BUFFER_NOSLEEP_ then Option.dwNoSleep := GetINIValue(Option.dwNoSleep) and $3;
             if sBuffer = BUFFER_OPTION__ then Option.dwOption := GetINIValue(Option.dwOption);
             if sBuffer = BUFFER_PITCH___ then Option.dwPitch := GetINIValue(Option.dwPitch);
             if sBuffer = BUFFER_PITCHSNC then Option.bPitchAsync := ToBool(GetINIValue(longint(Option.bPitchAsync)));
@@ -6087,6 +6573,7 @@ begin
             if sBuffer = BUFFER_SHIFTKEY then Option.dwShiftKey := GetINIValue(Option.dwShiftKey);
             if sBuffer = BUFFER_SPEED___ then Option.dwSpeedBas := GetINIValue(Option.dwSpeedBas);
             if sBuffer = BUFFER_SPEEDTUN then Option.dwSpeedTun := GetINIValue(Option.dwSpeedTun);
+            if sBuffer = BUFFER_THEME___ then Option.dwTheme := GetINIValue(Option.dwTheme);
             if sBuffer = BUFFER_TOP_____ then dwTop := GetINIValue(dwTop);
             if sBuffer = BUFFER_TOPMOST_ then Option.bTopMost := ToBool(GetINIValue(longint(Option.bTopMost)));
             if sBuffer = BUFFER_TOPTDISP then Option.dwTimerOptionDisplay := GetINIValue(Option.dwTimerOptionDisplay);
@@ -6143,9 +6630,7 @@ begin
         // SNESAPU.DLL をロード
         sData := Concat(sChPath, SNESAPU_FILE);
         dwBuffer := API_LoadLibraryEx(pchar(sData), NULL, LOAD_LIBRARY_SEARCH_APPLICATION_DIR);
-        // SNESAPU.DLL のロードに成功した場合
         if longbool(dwBuffer) then begin
-            // 関数を読み込む
             I := 0;
             @Apu.EmuAPU := GetProcAddress(pchar('EmuAPU'));
             @Apu.GetAPUData := GetProcAddress(pchar('GetAPUData'));
@@ -6194,12 +6679,10 @@ begin
 {$ENDIF}
             if longbool(I) then result := 2;
             Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_INCS700 or CBE_INCDATA or CBE_REQBP);
-{$IFNDEF TRANSMITSPC}
-{$IFDEF SIGNATURE}
             Apu.SNESAPUInfo(@K, NULLPOINTER, NULLPOINTER);
+{$IFNDEF TRANSMITSPC}{$IFDEF SIGNATURE}
             if K <> SNESAPU_VERSION then result := 3;
-{$ENDIF}
-{$ENDIF}
+{$ENDIF}{$ENDIF}
         end else result := 1;
         Apu.hSNESAPU := dwBuffer;
     end;
@@ -6232,9 +6715,7 @@ begin
     sData := Concat(sChPath, SPC_BPM_FILE);
     dwBuffer := API_LoadLibraryEx(pchar(sData), NULL, LOAD_LIBRARY_SEARCH_APPLICATION_DIR);
     Apu.hSPCBPM := dwBuffer;
-    // SPC_BPM.DLL のロードに成功した場合
     if longbool(dwBuffer) then begin
-        // 関数を読み込む
         @Apu.BPMInitialize := API_GetProcAddress(dwBuffer, pchar('Initialize'));
         @Apu.BPMStart := API_GetProcAddress(dwBuffer, pchar('Start'));
         @Apu.BPMStop := API_GetProcAddress(dwBuffer, pchar('Stop'));
@@ -6287,6 +6768,7 @@ begin
 {$ENDIF}
     Status.hPowerNotify := NULL;
     Status.hSuspendNotify := NULL;
+    // USER32.DLL をロード
     dwBuffer := API_LoadLibraryEx(pchar('user32.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if longbool(dwBuffer) then begin
         // ディスプレイの電源状態イベントを拾えるように設定 (for Windows 8, 8.1, 10, 11)
@@ -6314,10 +6796,13 @@ begin
     // システムのバージョン情報を取得
     Status.OsVersionInfo.dwOSVersionInfoSize := SizeOf(TOSVERSIONINFO);
     API_GetVersionEx(@Status.OsVersionInfo);
+    // NTDLL.DLL をロード
     dwBuffer := API_LoadLibraryEx(pchar('ntdll.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if longbool(dwBuffer) then begin
+        // システムのバージョン情報を取得
         @API_RtlGetVersion := API_GetProcAddress(dwBuffer, pchar('RtlGetVersion'));
         if longbool(@API_RtlGetVersion) then API_RtlGetVersion(@Status.OsVersionInfo);
+        // DLL を解放
         API_FreeLibrary(dwBuffer);
     end;
 {$IFDEF ITASKBARLIST3}
@@ -6346,6 +6831,17 @@ begin
 {$ENDIF}
         1, GetSize(@cBuffer[0], 32)));
     if K <> SNESAPU_VERSION then sInfo := Concat(sInfo, #32#42); // バージョン不一致マーク
+    // ブラシを作成
+    if Option.dwTheme = THEME_DARK then begin
+        Status.hBackBrush := API_CreateSolidBrush(COLOR_DARK_BACK);
+        Status.hTextBrush := API_CreateSolidBrush(COLOR_DARK_TEXT);
+        Status.hMenuBrush := API_CreateSolidBrush(COLOR_DARK_MENU);
+        // 背景ブラシを変更
+        API_SetClassLong(hWndApp, GCL_HBRBACKGROUND, Status.hBackBrush);
+    end else begin
+        Status.hBackBrush := ORG_COLOR_BTNFACE;
+        Status.hTextBrush := ORG_COLOR_WINDOWTEXT;
+    end;
     // 配列のサイズを初期化
     SetLength(Wave.lpData, Option.dwBufferNum);
     SetLength(Wave.Header, Option.dwBufferNum);
@@ -6437,6 +6933,11 @@ begin
     cmSetupInfo.AppendMenu(MENU_SETUP_INFO_RESET, STR_MENU_SETUP_INFO_RESET[Status.dwLanguage]);
     // 基本優先度メニューを作成
     SetMenuTextAndTip(cmSetupPriority, MENU_SETUP_PRIORITY_SIZE, MENU_SETUP_PRIORITY_BASE, STR_MENU_SETUP_PRIORITY_SUB[Status.dwLanguage], true);
+    // その他設定メニューを作成
+    cmSetupOthers := CMENU.Create();
+    cmSetupOthers.CreatePopupMenu();
+    cmSetupOthers.AppendMenu(MENU_SETUP_TOPMOST, STR_MENU_SETUP_TOPMOST[Status.dwLanguage]);
+    cmSetupOthers.AppendMenu(MENU_SETUP_NOSLEEP, STR_MENU_SETUP_NOSLEEP[Status.dwLanguage]);
     // 設定メニューを作成
     cmSetup := CMENU.Create();
     cmSetup.CreatePopupMenu();
@@ -6460,8 +6961,7 @@ begin
     cmSetup.AppendMenu(MENU_SETUP_SEEK, STR_MENU_SETUP_SEEK[Status.dwLanguage], cmSetupSeek.hMenu);
     cmSetup.AppendMenu(MENU_SETUP_INFO, STR_MENU_SETUP_INFO[Status.dwLanguage], cmSetupInfo.hMenu);
     cmSetup.AppendMenu(MENU_SETUP_PRIORITY, STR_MENU_SETUP_PRIORITY[Status.dwLanguage], cmSetupPriority.hMenu);
-    cmSetup.AppendSeparator();
-    cmSetup.AppendMenu(MENU_SETUP_TOPMOST, STR_MENU_SETUP_TOPMOST[Status.dwLanguage]);
+    cmSetup.AppendMenu(MENU_SETUP_OTHERS, STR_MENU_SETUP_OTHERS[Status.dwLanguage], cmSetupOthers.hMenu);
     // 演奏開始メニューを作成
     cmListPlay := CMENU.Create();
     cmListPlay.CreatePopupMenu();
@@ -6485,7 +6985,7 @@ begin
     cmSystem.InsertMenu(MENU_LIST, SC_CLOSE, STR_MENU_LIST[Status.dwLanguage], cmList.hMenu);
     cmSystem.InsertSeparator(SC_CLOSE);
     // ウィンドウメニューを作成
-    cmMain := CMENU.Create();
+    cmMain := CMENUBAR.Create();
     cmMain.CreateMenu();
     cmMain.AppendMenu(MENU_FILE, STR_MENU_FILE[Status.dwLanguage], cmFile.hMenu);
     cmMain.AppendMenu(MENU_SETUP, STR_MENU_SETUP[Status.dwLanguage], cmSetup.hMenu);
@@ -6510,71 +7010,78 @@ begin
     cwTempList := CWINDOW.Create();
     cwTempList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''),
         ID_LIST_TEMP, LBS_NOREDRAW, NULL, ScalableWindowBox(0, 210, 220, 130));
-    cwButtonOpen := CWINDOW.Create();
+    cwButtonOpen := CBUTTON.Create();
     cwButtonOpen.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_OPEN),
-        ID_BUTTON_OPEN, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(5, 103, 55, 21));
-    cwButtonSave := CWINDOW.Create();
+        ID_BUTTON_OPEN, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(5, 103, 55, 21));
+    cwButtonSave := CBUTTON.Create();
     cwButtonSave.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_SAVE),
-        ID_BUTTON_SAVE, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(62, 103, 55, 21));
-    cwButtonPlay := CWINDOW.Create();
+        ID_BUTTON_SAVE, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(62, 103, 55, 21));
+    cwButtonPlay := CBUTTON.Create();
     cwButtonPlay.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_PLAY),
-        ID_BUTTON_PLAY, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(126, 103, 54, 21));
-    cwButtonRestart := CWINDOW.Create();
+        ID_BUTTON_PLAY, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(126, 103, 54, 21));
+    cwButtonRestart := CBUTTON.Create();
     cwButtonRestart.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_RESTART),
-        ID_BUTTON_RESTART, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(182, 103, 54, 21));
-    cwButtonStop := CWINDOW.Create();
+        ID_BUTTON_RESTART, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(182, 103, 54, 21));
+    cwButtonStop := CBUTTON.Create();
     cwButtonStop.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_STOP),
-        ID_BUTTON_STOP, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(238, 103, 54, 21));
+        ID_BUTTON_STOP, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(238, 103, 54, 21));
     sBuffer := ' ';
     K := 5;
     for I := 0 to 7 do begin
         sBuffer[1] := char($31 + I);
-        cwCheckTrack[I] := CWINDOW.Create();
+        cwCheckTrack[I] := CBUTTON.Create();
         cwCheckTrack[I].CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(sBuffer),
-            ID_BUTTON_TRACK[I], BS_AUTOCHECKBOX or BS_PUSHLIKE or WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE,
-            ScalableWindowBox(K, 127, 14, 21));
+            ID_BUTTON_TRACK[I], BS_AUTOCHECKBOX or BS_PUSHLIKE or WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(K, 127, 14, 21));
         Inc(K, 14);
     end;
-    cwButtonVolM := CWINDOW.Create();
+    cwButtonVolM := CBUTTON.Create();
     cwButtonVolM.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_AMPD),
-        ID_BUTTON_AMPD, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(126, 127, 26, 21));
-    cwButtonVolP := CWINDOW.Create();
+        ID_BUTTON_AMPD, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(126, 127, 26, 21));
+    cwButtonVolP := CBUTTON.Create();
     cwButtonVolP.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_AMPU),
-        ID_BUTTON_AMPU, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(154, 127, 26, 21));
-    cwButtonSlow := CWINDOW.Create();
+        ID_BUTTON_AMPU, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(154, 127, 26, 21));
+    cwButtonSlow := CBUTTON.Create();
     cwButtonSlow.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_SLOW),
-        ID_BUTTON_SLOW, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(182, 127, 26, 21));
-    cwButtonFast := CWINDOW.Create();
+        ID_BUTTON_SLOW, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(182, 127, 26, 21));
+    cwButtonFast := CBUTTON.Create();
     cwButtonFast.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_FAST),
-        ID_BUTTON_FAST, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(210, 127, 26, 21));
-    cwButtonBack := CWINDOW.Create();
+        ID_BUTTON_FAST, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(210, 127, 26, 21));
+    cwButtonBack := CBUTTON.Create();
     cwButtonBack.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_BACK),
-        ID_BUTTON_BACK, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(238, 127, 26, 21));
-    cwButtonNext := CWINDOW.Create();
+        ID_BUTTON_BACK, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(238, 127, 26, 21));
+    cwButtonNext := CBUTTON.Create();
     cwButtonNext.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_NEXT),
-        ID_BUTTON_NEXT, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(266, 127, 26, 21));
+        ID_BUTTON_NEXT, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(266, 127, 26, 21));
     cwPlayList := CWINDOW.Create();
-    cwPlayList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''),
-        ID_LIST_PLAY, LBS_DISABLENOSCROLL or LBS_NOTIFY or WS_TABSTOP or WS_VISIBLE or WS_VSCROLL, WS_EX_CLIENTEDGE or WS_EX_NOPARENTNOTIFY,
-        ScalableWindowBox(301, 0, 215, 124));
-    ScalableWindowBox(301, 0, 215, Option.dwListHeight);
-    Box.top := (Status.dwScale - 2) shl 1;
+    if Option.dwTheme = THEME_DARK then begin
+        cwPlayList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''),
+            ID_LIST_PLAY, LBS_DISABLENOSCROLL or LBS_NOTIFY or WS_TABSTOP or WS_VISIBLE or WS_VSCROLL, WS_EX_STATICEDGE or WS_EX_NOPARENTNOTIFY,
+            ScalableWindowBox(301, 0, 215, 124));
+        ScalableWindowBox(301, 0, 215, Option.dwListHeight);
+        Box.top := (Status.dwScale - 2) shl 1 + 2;
+    end else begin
+        cwPlayList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''),
+            ID_LIST_PLAY, LBS_DISABLENOSCROLL or LBS_NOTIFY or WS_TABSTOP or WS_VISIBLE or WS_VSCROLL, WS_EX_CLIENTEDGE or WS_EX_NOPARENTNOTIFY,
+            ScalableWindowBox(301, 0, 215, 124));
+        ScalableWindowBox(301, 0, 215, Option.dwListHeight);
+        Box.top := (Status.dwScale - 2) shl 1;
+    end;
     API_MoveWindow(cwPlayList.hWnd, Box.left, Box.top, Box.width, Box.height, false); // プレイリストが小さくなるバグ回避
-    cwButtonListAdd := CWINDOW.Create();
+    cwButtonListAdd := CBUTTON.Create();
     cwButtonListAdd.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_APPEND),
-        ID_BUTTON_ADD, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(301, 127, 54, 21));
-    cwButtonListRemove := CWINDOW.Create();
+        ID_BUTTON_ADD, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(301, 127, 54, 21));
+    cwButtonListRemove := CBUTTON.Create();
     cwButtonListRemove.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_REMOVE),
-        ID_BUTTON_REMOVE, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(357, 127, 54, 21));
-    cwButtonListClear := CWINDOW.Create();
+        ID_BUTTON_REMOVE, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(357, 127, 54, 21));
+    cwButtonListClear := CBUTTON.Create();
     cwButtonListClear.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_CLEAR),
-        ID_BUTTON_CLEAR, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(413, 127, 54, 21));
-    cwButtonListUp := CWINDOW.Create();
+        ID_BUTTON_CLEAR, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(413, 127, 54, 21));
+    cwButtonListUp := CBUTTON.Create();
     cwButtonListUp.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_UP[Status.dwLanguage]),
-        ID_BUTTON_UP, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(472, 127, 21, 21));
-    cwButtonListDown := CWINDOW.Create();
+        ID_BUTTON_UP, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(472, 127, 21, 21));
+    cwButtonListDown := CBUTTON.Create();
     cwButtonListDown.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_DOWN[Status.dwLanguage]),
-        ID_BUTTON_DOWN, WS_TABSTOP or WS_VISIBLE, WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE, ScalableWindowBox(495, 127, 21, 21));
+        ID_BUTTON_DOWN, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(495, 127, 21, 21));
     // Static を作成
     lpBuffer := pchar(ITEM_STATIC);
     cwStaticFile := CWINDOW.Create();
@@ -6585,7 +7092,8 @@ begin
         ID_STATIC_MAIN, SS_LEFTNOWORDWRAP or SS_NOPREFIX or SS_NOTIFY or WS_VISIBLE, WS_EX_NOPARENTNOTIFY, ScalableWindowBox(5, 2, 287, 96));
     // Static のウィンドウプロシージャを取得
     Status.lpStaticProc := pointer(API_SetWindowLong(cwStaticMain.hWnd, GWL_WNDPROC, longword(@_StaticProc)));
-    // Static のデバイスコンテキストを取得
+    // デバイスコンテキストを取得
+    Status.hDCWindow := API_GetWindowDC(cwWindowMain.hWnd);
     Status.hDCStatic := API_GetDC(cwStaticMain.hWnd);
     // インジケータ表示用のデバイスコンテキストを作成
     Status.hDCVolumeBuffer := API_CreateCompatibleDC(Status.hDCStatic);
@@ -6642,35 +7150,40 @@ begin
     Apu.SetSPCDbg(@_SPCDebug, $11); // SPC_TRACE | SPC_RETURN
     Apu.SetDSPDbg(@_DSPDebug);
 {$ENDIF}
-{$IFDEF WIN10DARK}
-    dwBuffer := API_LoadLibraryEx(pchar('dwmapi.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
-    if longbool(dwBuffer) then begin
-        @API_DwmSetWindowAttribute := API_GetProcAddress(dwBuffer, pchar('DwmSetWindowAttribute'));
-        I := -1; // true: Dark Mode
-        if longbool(@API_DwmSetWindowAttribute) then API_DwmSetWindowAttribute(hWndApp, 20, @I, 4);
-        API_FreeLibrary(dwBuffer);
+    // ダークモードの場合
+    if Option.dwTheme = THEME_DARK then begin
+        // DWMAPI.DLL をロード
+        dwBuffer := API_LoadLibraryEx(pchar('dwmapi.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+        if longbool(dwBuffer) then begin
+            // タイトルバーのダークモードを有効化
+            @API_DwmSetWindowAttribute := API_GetProcAddress(dwBuffer, pchar('DwmSetWindowAttribute'));
+            I := -1; // TRUE: ダークモード
+            if longbool(@API_DwmSetWindowAttribute) then API_DwmSetWindowAttribute(hWndApp, 20, @I, 4); // DWMWA_USE_IMMERSIVE_DARK_MODE
+            // DLL を解放
+            API_FreeLibrary(dwBuffer);
+        end;
+        // UXTHEME.DLL をロード
+        dwBuffer := API_LoadLibraryEx(pchar('uxtheme.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+        if longbool(dwBuffer) then begin
+            // ウィンドウとメニューのダークモードを有効化
+            @API_SetPreferredAppMode := API_GetProcAddress(dwBuffer, pointer(longword(135)));
+            if longbool(@API_SetPreferredAppMode) then begin
+                API_SetPreferredAppMode(0); // 一度デフォルトモードに戻す
+                API_SetPreferredAppMode(2); // ダークモード
+            end;
+            // メニューテーマを更新
+            @API_FlushMenuThemes := API_GetProcAddress(dwBuffer, pointer(longword(136)));
+            if longbool(@API_FlushMenuThemes) then API_FlushMenuThemes();
+            // プレイリストのダークモードを有効化
+            @API_SetWindowTheme := API_GetProcAddress(dwBuffer, pchar('SetWindowTheme'));
+            wsData := 'DarkMode_Explorer';
+            if longbool(@API_SetWindowTheme) then API_SetWindowTheme(cwPlayList.hWnd, pwidechar(wsData), NULLPOINTER);
+            // DLL を解放
+            API_FreeLibrary(dwBuffer);
+        end;
     end;
-    dwBuffer := API_LoadLibraryEx(pchar('uxtheme.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
-    if longbool(dwBuffer) then begin
-        @API_SetPreferredAppMode := API_GetProcAddress(dwBuffer, pointer(longword(135)));
-        if longbool(@API_SetPreferredAppMode) then API_SetPreferredAppMode(0); // Default Mode
-        if longbool(@API_SetPreferredAppMode) then API_SetPreferredAppMode(2); // Dark Mode
-        @API_RefreshImmersiveColorPolicyState := API_GetProcAddress(dwBuffer, pointer(longword(104)));
-        if longbool(@API_RefreshImmersiveColorPolicyState) then API_RefreshImmersiveColorPolicyState();
-        @API_FlushMenuThemes := API_GetProcAddress(dwBuffer, pointer(longword(136)));
-        if longbool(@API_FlushMenuThemes) then API_FlushMenuThemes();
-        @API_AllowDarkModeForWindow := API_GetProcAddress(dwBuffer, pointer(longword(133)));
-        if longbool(@API_AllowDarkModeForWindow) then API_AllowDarkModeForWindow(hWndApp, true);
-        @API_SetWindowTheme := API_GetProcAddress(dwBuffer, pchar('SetWindowTheme'));
-        wsData := 'DarkMode_Explorer';
-        if longbool(@API_SetWindowTheme) then API_SetWindowTheme(hWndApp, pwidechar(wsData), NULLPOINTER);
-        API_SendMessage(hWndApp, WM_THEMECHANGED, NULL, NULL);
-        API_FreeLibrary(dwBuffer);
-        API_UpdateWindow(hWndApp);
-    end;
-{$ENDIF}
     // 準備完了
-    API_SetTimer(cwWindowMain.hWnd, TIMER_ID_READY, TIMER_INTERVAL_READY, NULLPOINTER);
+    API_SetTimer(hWndApp, TIMER_ID_READY, TIMER_INTERVAL_READY, NULLPOINTER);
 end;
 
 // ================================================================================
@@ -6728,13 +7241,13 @@ begin
     Writeln(fsFile, Concat(BUFFER_LISTHGT_, IntToStr(Option.dwListHeight)));
     Writeln(fsFile, Concat(BUFFER_LISTMAX_, IntToStr(Option.dwListMax)));
     Writeln(fsFile, Concat(BUFFER_NEXTLENG, IntToStr(Option.dwNextTime)));
-    Writeln(fsFile, Concat(BUFFER_NOSLEEP_, IntToStr(Option.dwNoSleep)));
     Writeln(fsFile, Concat(BUFFER_PLAYLENG, IntToStr(Option.dwPlayTime)));
     Writeln(fsFile, Concat(BUFFER_SCALE___, IntToStr(Option.dwScale)));
     Writeln(fsFile, Concat(BUFFER_SEEKBAR_, IntToStr(Option.dwSeekBar)));
     Writeln(fsFile, Concat(BUFFER_SEEKMAX_, IntToStr(Option.dwSeekMax)));
     Writeln(fsFile, Concat(BUFFER_SHIFTKEY, IntToStr(Option.dwShiftKey)));
     Writeln(fsFile, Concat(BUFFER_SPEEDTUN, IntToStr(Option.dwSpeedTun)));
+    Writeln(fsFile, Concat(BUFFER_THEME___, IntToStr(Option.dwTheme)));
     Writeln(fsFile, Concat(BUFFER_TOPTDISP, IntToStr(Option.dwTimerOptionDisplay)));
     Writeln(fsFile, Concat(BUFFER_TOPTLOCK, IntToStr(Option.dwTimerOptionLock)));
     Writeln(fsFile, Concat(BUFFER_TREDRAW_, IntToStr(Option.dwTimerRedrawResume)));
@@ -6756,6 +7269,7 @@ begin
     Writeln(fsFile, Concat(BUFFER_LEFT____, IntToStr(NormalRect.left + ScreenRect.left)));
     Writeln(fsFile, Concat(BUFFER_MUTE____, IntToStr(Option.dwMute)));
     Writeln(fsFile, Concat(BUFFER_NOISE___, IntToStr(Option.dwNoise)));
+    Writeln(fsFile, Concat(BUFFER_NOSLEEP_, IntToStr(Option.dwNoSleep)));
     Writeln(fsFile, Concat(BUFFER_OPTION__, IntToStr(Option.dwOption)));
     Writeln(fsFile, Concat(BUFFER_PITCH___, IntToStr(Option.dwPitch)));
     Writeln(fsFile, Concat(BUFFER_PITCHSNC, GetBoolToInt(Option.bPitchAsync)));
@@ -6794,8 +7308,9 @@ begin
     API_DeleteDC(Status.hDCVolumeBuffer);
     API_DeleteObject(API_SelectObject(Status.hDCStringBuffer, Status.hBitmapString));
     API_DeleteDC(Status.hDCStringBuffer);
+    API_ReleaseDC(cwStaticMain.hWnd, Status.hDCWindow);
     API_ReleaseDC(cwStaticMain.hWnd, Status.hDCStatic);
-    // 電源設定通知イベントのハンドルを解放
+    // USER32.DLL をロード
     dwBuffer := API_LoadLibraryEx(pchar('user32.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if longbool(dwBuffer) then begin
         // ディスプレイの電源状態イベントを解除 (for Windows 8, 8.1, 10, 11)
@@ -6859,6 +7374,8 @@ begin
     cmSetupInfo.Free();
     cmSetupPriority.DeleteMenu();
     cmSetupPriority.Free();
+    cmSetupOthers.DeleteMenu();
+    cmSetupOthers.Free();
     cmSetup.DeleteMenu();
     cmSetup.Free();
     cmListPlay.DeleteMenu();
@@ -6921,6 +7438,10 @@ begin
     cfMain.Free();
     cwWindowMain.DeleteWindow();
     cwWindowMain.Free();
+    // ブラシを削除
+    if longbool(Status.hBackBrush) then API_DeleteObject(Status.hBackBrush);
+    if longbool(Status.hTextBrush) then API_DeleteObject(Status.hTextBrush);
+    if longbool(Status.hMenuBrush) then API_DeleteObject(Status.hMenuBrush);
 {$IFDEF ITASKBARLIST3}
     // COM インターフェイスを解放
     API_CoUninitialize();
@@ -7173,11 +7694,7 @@ begin
             Rect.right := dwLeft + dwWidth;
             Rect.top := COLOR_BAR_HEIGHT;
             Rect.bottom := COLOR_BAR_HEIGHT_X2 - longword(cNowLevel);
-{$IFDEF WIN10DARK}
-            DrawInfoFillRect(@Rect, ORG_COLOR_BTNTEXT);
-{$ELSE}
-            DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
-{$ENDIF}
+            DrawInfoFillRect(@Rect, Status.hBackBrush);
         end;
     end else begin
         // レベル値が前回と同じ場合は終了
@@ -7192,11 +7709,7 @@ begin
             Rect.right := dwLeft + dwWidth;
             Rect.top := COLOR_BAR_HEIGHT_X2 - longword(cLastLevel);
             Rect.bottom := COLOR_BAR_HEIGHT_X2 - longword(cNowLevel);
-{$IFDEF WIN10DARK}
-            DrawInfoFillRect(@Rect, ORG_COLOR_BTNTEXT);
-{$ELSE}
-            DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
-{$ENDIF}
+            DrawInfoFillRect(@Rect, Status.hBackBrush);
         end;
     end;
 end;
@@ -7218,11 +7731,7 @@ begin
     Rect.right := dwLeft + 27;
     Rect.top := COLOR_BAR_TOP;
     Rect.bottom := COLOR_BAR_HEIGHT_X2;
-{$IFDEF WIN10DARK}
-    DrawInfoFillRect(@Rect, ORG_COLOR_BTNTEXT);
-{$ELSE}
-    DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
-{$ENDIF}
+    DrawInfoFillRect(@Rect, Status.hBackBrush);
 end;
 
 procedure UpdateNumWrite(dwX: longint; dwL: longword);
@@ -7262,11 +7771,7 @@ begin
     Rect.right := 284 + (Status.dwScale and 1);
     Rect.top := dwY;
     Rect.bottom := dwY + (Status.dwScale and 1) + 3;
-{$IFDEF WIN10DARK}
-    DrawInfoFillRect(@Rect, ORG_COLOR_BTNTEXT);
-{$ELSE}
-    DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
-{$ENDIF}
+    DrawInfoFillRect(@Rect, Status.hBackBrush);
 end;
 
 procedure UpdateMarkWrite(dwI: longint; dwY: longint);
@@ -7456,32 +7961,20 @@ begin
                 Rect.right := J;
                 Rect.top := 27;
                 Rect.bottom := 32;
-{$IFDEF WIN10DARK}
-                DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
-{$ELSE}
-                DrawInfoFillRect(@Rect, ORG_COLOR_WINDOWTEXT);
-{$ENDIF}
+                DrawInfoFillRect(@Rect, Status.hTextBrush);
             end;
             if J < 280 then begin
                 Rect.left := J;
                 Rect.right := 280;
                 Rect.top := 27;
                 Rect.bottom := 28;
-{$IFDEF WIN10DARK}
-                DrawInfoFillRect(@Rect, ORG_COLOR_BTNTEXT);
-{$ELSE}
-                DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
-{$ENDIF}
+                DrawInfoFillRect(@Rect, Status.hBackBrush);
                 Rect.top := 28;
                 Rect.bottom := 31;
                 DrawInfoFillRect(@Rect, ORG_COLOR_GRAYTEXT);
                 Rect.top := 31;
                 Rect.bottom := 32;
-{$IFDEF WIN10DARK}
-                DrawInfoFillRect(@Rect, ORG_COLOR_BTNTEXT);
-{$ELSE}
-                DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
-{$ENDIF}
+                DrawInfoFillRect(@Rect, Status.hBackBrush);
             end;
         end;
         // データをコピー
@@ -7493,11 +7986,7 @@ begin
             Rect.right := 284 + (Status.dwScale and 1);
             Rect.top := 24;
             Rect.bottom := 35 + (Status.dwScale and 1);
-{$IFDEF WIN10DARK}
-            DrawInfoFillRect(@Rect, ORG_COLOR_BTNTEXT);
-{$ELSE}
-            DrawInfoFillRect(@Rect, ORG_COLOR_BTNFACE);
-{$ENDIF}
+            DrawInfoFillRect(@Rect, Status.hBackBrush);
         end;
     end;
     // インジケータを描画
@@ -8264,8 +8753,11 @@ end;
 // ================================================================================
 // ListClear - プレイリストクリア
 // ================================================================================
-procedure CWINDOWMAIN.ListClear();
+procedure CWINDOWMAIN.ListClear(bQuiet: longbool);
 begin
+    // 確認メッセージを表示
+    if not bQuiet then if cwWindowMain.MessageBox(pchar(WARN_CLEAR_PLAYLIST[Status.dwLanguage]), pchar(DEFAULT_TITLE),
+        MB_ICONQUESTION or MB_YESNO or MB_DEFBUTTON2) <> IDYES then exit;
     // プレイリストをすべてクリア
     cwFileList.SendMessage(LB_RESETCONTENT, NULL, NULL);
     cwPlayList.SendMessage(LB_RESETCONTENT, NULL, NULL);
@@ -8902,17 +9394,19 @@ var
     API_DwmIsCompositionEnabled: function(pfEnabled: pointer): longword; stdcall;
     fEnabled: longbool;
 begin
+    // 初期化
     result := false;
     // Windows 10 以上または XP 以下の場合は終了
     if bWin10 or (Status.OsVersionInfo.dwMajorVersion < 6) then exit;
     // DWMAPI.DLL のロードに失敗した場合は終了
     hDLL := API_LoadLibraryEx(pchar('dwmapi.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if not longbool(hDLL) then exit;
-    // DwmIsCompositionEnabled API のロードに失敗した場合は終了
+    // Aero 有効を判定
     @API_DwmIsCompositionEnabled := API_GetProcAddress(hDLL, pchar('DwmIsCompositionEnabled'));
-    if not longbool(@API_DwmIsCompositionEnabled) then exit;
-    // Aero 有効判定
-    API_DwmIsCompositionEnabled(@fEnabled);
+    if longbool(@API_DwmIsCompositionEnabled) then API_DwmIsCompositionEnabled(@fEnabled);
+    // DLL を解放
+    API_FreeLibrary(hDLL);
+    // 成功
     result := fEnabled;
 end;
 
@@ -9461,20 +9955,12 @@ begin
     Rect.right := 2;
     Rect.top := 0;
     Rect.bottom := 1;
-{$IFDEF WIN10DARK}
-    API_FillRect(Status.hDCVolumeBuffer, @Rect, ORG_COLOR_BTNTEXT);
-{$ELSE}
-    API_FillRect(Status.hDCVolumeBuffer, @Rect, ORG_COLOR_BTNFACE);
-{$ENDIF}
+    API_FillRect(Status.hDCVolumeBuffer, @Rect, Status.hBackBrush);
     Color.dwColor := API_GetPixel(Status.hDCVolumeBuffer, 0, 0);
     J := 299 * Color.r + 587 * Color.g + 114 * Color.b;
     // 文字色の明るさを取得
     Inc(Rect.left);
-{$IFDEF WIN10DARK}
-    API_FillRect(Status.hDCVolumeBuffer, @Rect, ORG_COLOR_BTNFACE);
-{$ELSE}
-    API_FillRect(Status.hDCVolumeBuffer, @Rect, ORG_COLOR_WINDOWTEXT);
-{$ENDIF}
+    API_FillRect(Status.hDCVolumeBuffer, @Rect, Status.hTextBrush);
     Color.dwColor := API_GetPixel(Status.hDCVolumeBuffer, 1, 0);
     K := 299 * Color.r + 587 * Color.g + 114 * Color.b;
     if longbool(Option.dwVolumeColor) and (Option.dwVolumeColor <= 3) then L := (Option.dwVolumeColor - 1) * COLOR_BAR_NUM
@@ -9517,7 +10003,8 @@ begin
     // ビットマップリソース用の描画領域を文字色で描画
     K := 0;
     for I := 0 to BITMAP_NUM - 1 do begin
-        J := BITMAP_STRING_COLOR[I];
+        if Option.dwTheme = THEME_DARK then J := BITMAP_STRING_COLOR_DARK[I]
+        else J := BITMAP_STRING_COLOR_LIGHT[I];
         if longbool(J shr 16) then begin
             // インジケータの色で描画
             J := J and $FFFF;
@@ -9539,11 +10026,7 @@ begin
     Rect.right := BITMAP_NUM_X6P6;
     Rect.top := 0;
     Rect.bottom := 9;
-{$IFDEF WIN10DARK}
-    API_FillRect(Status.hDCStringBuffer, @Rect, ORG_COLOR_BTNTEXT);
-{$ELSE}
-    API_FillRect(Status.hDCStringBuffer, @Rect, ORG_COLOR_BTNFACE);
-{$ENDIF}
+    API_FillRect(Status.hDCStringBuffer, @Rect, Status.hBackBrush);
     // ビットマップリソース用から文字表示用のデバイスコンテキストへ画像を転送 (紫色でマスク)
     API_TransparentBlt(Status.hDCStringBuffer, 0, 0, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT, hDCBitmapBuffer, 0, 0, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT, $FF00FF);
     // ビットマップリソース用のデバイスコンテキストを解放
@@ -9553,6 +10036,8 @@ begin
     API_GdiFlush();
     // メニューを描画
     API_DrawMenuBar(cwWindowMain.hWnd);
+    // メニュー境界を描画
+    if Option.dwTheme = THEME_DARK then cmMain.DrawMenuBorder(cwWindowMain.hWnd);
 end;
 
 // ================================================================================
@@ -10438,8 +10923,10 @@ begin
         cmSetupRate.SetMenuCheck(MENU_SETUP_RATE_BASE + I, Option.dwRate = MENU_SETUP_RATE_VALUE[I]);
         cmSetupRate.SetMenuEnable(MENU_SETUP_RATE_BASE + I, not Status.bPlay);
     end;
-    for I := 0 to MENU_SETUP_INTER_SIZE - 1 do cmSetupInter.SetMenuCheck(MENU_SETUP_INTER_BASE + I, Option.dwInter = MENU_SETUP_INTER_VALUE[I]);
-    for I := 0 to MENU_SETUP_PITCH_SIZE - 1 do cmSetupPitch.SetMenuCheck(MENU_SETUP_PITCH_BASE + I, Option.dwPitch = MENU_SETUP_PITCH_VALUE[I]);
+    for I := 0 to MENU_SETUP_INTER_SIZE - 1 do
+        cmSetupInter.SetMenuCheck(MENU_SETUP_INTER_BASE + I, Option.dwInter = MENU_SETUP_INTER_VALUE[I]);
+    for I := 0 to MENU_SETUP_PITCH_SIZE - 1 do
+        cmSetupPitch.SetMenuCheck(MENU_SETUP_PITCH_BASE + I, Option.dwPitch = MENU_SETUP_PITCH_VALUE[I]);
     for I := 0 to MENU_SETUP_PITCH_KEY_SIZE + MENU_SETUP_PITCH_KEY_SIZE do
         cmSetupPitchKey.SetMenuCheck(MENU_SETUP_PITCH_KEY_BASE + I, Option.dwPitch = MENU_SETUP_PITCH_VALUE[MENU_SETUP_PITCH_SIZE + I]);
     cmSetupPitch.SetMenuCheck(MENU_SETUP_PITCH_ASYNC, Option.bPitchAsync);
@@ -10447,8 +10934,10 @@ begin
         cmSetupSeparate.SetMenuCheck(MENU_SETUP_SEPARATE_BASE + I, Option.dwSeparate = MENU_SETUP_SEPARATE_VALUE[I]);
     for I := 0 to MENU_SETUP_FEEDBACK_SIZE - 1 do
         cmSetupFeedback.SetMenuCheck(MENU_SETUP_FEEDBACK_BASE + I, Option.dwFeedback = MENU_SETUP_FEEDBACK_VALUE[I]);
-    for I := 0 to MENU_SETUP_SPEED_SIZE - 1 do cmSetupSpeed.SetMenuCheck(MENU_SETUP_SPEED_BASE + I, Option.dwSpeedBas = MENU_SETUP_SPEED_VALUE[I]);
-    for I := 0 to MENU_SETUP_AMP_SIZE - 1 do cmSetupAmp.SetMenuCheck(MENU_SETUP_AMP_BASE + I, Option.dwAmp = MENU_SETUP_AMP_VALUE[I]);
+    for I := 0 to MENU_SETUP_SPEED_SIZE - 1 do
+        cmSetupSpeed.SetMenuCheck(MENU_SETUP_SPEED_BASE + I, Option.dwSpeedBas = MENU_SETUP_SPEED_VALUE[I]);
+    for I := 0 to MENU_SETUP_AMP_SIZE - 1 do
+        cmSetupAmp.SetMenuCheck(MENU_SETUP_AMP_BASE + I, Option.dwAmp = MENU_SETUP_AMP_VALUE[I]);
     for I := 0 to MENU_SETUP_MUTE_NOISE_SIZE - 1 do begin
         cmSetupMute.SetMenuCheck(MENU_SETUP_MUTE_BASE + I, longbool(Option.dwMute and (1 shl I)));
         cmSetupNoise.SetMenuCheck(MENU_SETUP_NOISE_BASE + I, longbool(Option.dwNoise and (1 shl I)));
@@ -10461,20 +10950,27 @@ begin
     cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_START, Status.bPlay);
     cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_LIMIT, Status.bPlay);
     cmSetupTime.SetMenuEnable(MENU_SETUP_TIME_RESET, Status.bOpen and Status.bTimeRepeat);
-    for I := 0 to MENU_SETUP_ORDER_SIZE - 1 do cmSetupOrder.SetMenuCheck(MENU_SETUP_ORDER_BASE + I, Option.dwPlayOrder = longword(I));
-    for I := 0 to MENU_SETUP_SEEK_SIZE - 1 do cmSetupSeek.SetMenuCheck(MENU_SETUP_SEEK_BASE + I, Option.dwSeekTime = MENU_SETUP_SEEK_VALUE[I]);
+    for I := 0 to MENU_SETUP_ORDER_SIZE - 1 do
+        cmSetupOrder.SetMenuCheck(MENU_SETUP_ORDER_BASE + I, Option.dwPlayOrder = longword(I));
+    for I := 0 to MENU_SETUP_SEEK_SIZE - 1 do
+        cmSetupSeek.SetMenuCheck(MENU_SETUP_SEEK_BASE + I, Option.dwSeekTime = MENU_SETUP_SEEK_VALUE[I]);
     cmSetupSeek.SetMenuCheck(MENU_SETUP_SEEK_FAST, Option.bSeekFast);
     cmSetupSeek.SetMenuCheck(MENU_SETUP_SEEK_ASYNC, Option.bSeekAsync);
-    for I := 0 to MENU_SETUP_INFO_SIZE - 1 do cmSetupInfo.SetMenuCheck(MENU_SETUP_INFO_BASE + I, Option.dwInfo = longword(I));
+    for I := 0 to MENU_SETUP_INFO_SIZE - 1 do
+        cmSetupInfo.SetMenuCheck(MENU_SETUP_INFO_BASE + I, Option.dwInfo = longword(I));
     cmSetupInfo.SetMenuCheck(MENU_SETUP_INFO_RESET, Option.bVolumeReset);
     for I := 0 to MENU_SETUP_PRIORITY_SIZE - 1 do begin
         cmSetupPriority.SetMenuCheck(MENU_SETUP_PRIORITY_BASE + I, Option.dwPriority = MENU_SETUP_PRIORITY_VALUE[I]);
         cmSetupPriority.SetMenuEnable(MENU_SETUP_PRIORITY_BASE + I, (Status.OsVersionInfo.dwMajorVersion >= 5)
             or (MENU_SETUP_PRIORITY_VALUE[I] <= REALTIME_PRIORITY_CLASS));
     end;
-    cmSetup.SetMenuCheck(MENU_SETUP_TOPMOST, Option.bTopMost);
+    cmSetupOthers.SetMenuCheck(MENU_SETUP_TOPMOST, Option.bTopMost);
+    cmSetupOthers.SetMenuCheck(MENU_SETUP_NOSLEEP, Option.dwNoSleep = NOSLEEP_DISPLAY);
     // ボタンを更新
-    for I := 0 to 7 do cwCheckTrack[I].SendMessage(BM_SETCHECK, 1 - (Option.dwMute and (1 shl I)) shr I, NULL);
+    for I := 0 to 7 do begin
+        cwCheckTrack[I].SendMessage(BM_SETCHECK, 1 - (Option.dwMute and (1 shl I)) shr I, NULL);
+        cwCheckTrack[I].Invalidate();
+    end;
     cwButtonVolM.SetWindowEnable(Option.dwAmp > AMP_005);
     cwButtonVolP.SetWindowEnable(Option.dwAmp < AMP_400);
     cwButtonSlow.SetWindowEnable(Option.dwSpeedBas > SPEED_001);
@@ -11286,6 +11782,8 @@ begin
     SetChangeFunction(false);
     // Ctrl キーを解除
     Status.bCtrlButton := false;
+    // メニュー境界を描画
+    if Option.dwTheme = THEME_DARK then cmMain.DrawMenuBorder(cwWindowMain.hWnd);
 end;
 
 function GetFocusWindow(): longword;
@@ -11294,6 +11792,8 @@ begin
     result := 1;
     // Shift キーを設定
     SetChangeFunction(true);
+    // メニュー境界を描画
+    if Option.dwTheme = THEME_DARK then cmMain.DrawMenuBorder(cwWindowMain.hWnd);
     // ウィンドウにフォーカスを設定
     if (API_GetForegroundWindow() = cwWindowMain.hWnd) and longbool(Status.dwFocusHandle) then
         cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_ACTIVATE, NULL);
@@ -11354,8 +11854,13 @@ procedure RedrawInfo(bWindow: boolean);
 begin
     // クリティカルセクションを開始
     API_EnterCriticalSection(@CriticalSectionStatic);
-    // ウィンドウ全体を再描画
-    if (bWindow) then API_RedrawWindow(cwWindowMain.hWnd, NULLPOINTER, NULL, RDW_INVALIDATE or RDW_ERASE or RDW_UPDATENOW or RDW_ALLCHILDREN);
+    // ウィンドウ全体を再描画する場合
+    if (bWindow) then begin
+        // ウィンドウを再描画
+        API_RedrawWindow(cwWindowMain.hWnd, NULLPOINTER, NULL, RDW_INVALIDATE or RDW_ERASE or RDW_UPDATENOW or RDW_ALLCHILDREN);
+        // メニュー境界を描画
+        if Option.dwTheme = THEME_DARK then cmMain.DrawMenuBorder(cwWindowMain.hWnd);
+    end;
     // 再描画がロックされていない場合
     if not longbool(Status.dwRedrawInfo and REDRAW_LOCK_CRITICAL) then begin
         // 再描画フラグを設定
@@ -11598,13 +12103,14 @@ begin
                         // ウィンドウを更新
                         UpdateWindow();
                     end;
+                    MENU_SETUP_NOSLEEP: Option.dwNoSleep := Option.dwNoSleep and NOSLEEP_DISPLAY xor NOSLEEP_DISPLAY;
                     MENU_LIST_ADD: ListAdd(1);
                     MENU_LIST_INSERT: ListAdd(2);
                     MENU_LIST_PLAY_SELECT: SPCPlay(PLAY_TYPE_LIST);
                     MENU_LIST_PLAY_BASE..MENU_LIST_PLAY_MAX:
                         ListNextPlay(MENU_LIST_PLAY_VALUE[wParam - MENU_LIST_PLAY_BASE], LIST_NEXT_PLAY_SELECT);
                     MENU_LIST_REMOVE: ListDelete();
-                    MENU_LIST_CLEAR: ListClear();
+                    MENU_LIST_CLEAR: ListClear(false);
                     MENU_LIST_UP: ListUp();
                     MENU_LIST_DOWN: ListDown();
                     else case wParam div 10 * 10 of
@@ -11657,7 +12163,7 @@ begin
                 end;
             end else case (wParam and $FFFF) div ID_BASE of // 子ウィンドウが変化した
                 ID_BUTTON: case wParam shr 16 of // ボタンの処理
-                    BN_CLICKED, BN_DBLCLK: case wParam and $FFFF of // クリック、ダブルクリックされた
+                    BN_CLICKED: case wParam and $FFFF of // クリック、ダブルクリックされた
                         ID_BUTTON_OPEN: OpenFile();
                         ID_BUTTON_SAVE: SaveFile();
                         ID_BUTTON_PLAY: SPCPlay(PLAY_TYPE_AUTO);
@@ -11677,7 +12183,7 @@ begin
                         ID_BUTTON_NEXT: SetFunction(1, FUNCTION_TYPE_SEEK or FUNCTION_TYPE_NO_TIMER);
                         ID_BUTTON_ADD: ListAdd(0);
                         ID_BUTTON_REMOVE: ListDelete();
-                        ID_BUTTON_CLEAR: ListClear();
+                        ID_BUTTON_CLEAR: ListClear(false);
                         ID_BUTTON_UP: if Status.bShiftButton then ListNextPlay(PLAY_ORDER_PREVIOUS, LIST_NEXT_PLAY_SELECT)
                             else ListUp();
                         ID_BUTTON_DOWN: if Status.bShiftButton then ListNextPlay(PLAY_ORDER_NEXT, LIST_NEXT_PLAY_SELECT)
@@ -11869,6 +12375,10 @@ begin
                 Status.dwReady := READY_ACTIVE;
                 // タイマーを解除
                 API_KillTimer(cwWindowMain.hWnd, TIMER_ID_READY);
+                // メニューを描画
+                API_DrawMenuBar(cwWindowMain.hWnd);
+                // メニュー境界を描画
+                if Option.dwTheme = THEME_DARK then cmMain.DrawMenuBorder(cwWindowMain.hWnd);
             end;
             TIMER_ID_OPTION_DISPLAY: begin // 情報表示解除
                 // フラグを設定
@@ -11914,14 +12424,47 @@ begin
             // 終了メッセージを送信
             cwWindowMain.PostMessage(WM_QUIT, NULL, NULL);
         end;
-{$IFDEF WIN10DARK}
-        WM_CTLCOLORBTN, WM_CTLCOLORSTATIC, WM_CTLCOLORLISTBOX: begin
-            API_SetTextColor(wParam, API_GetSysColor(COLOR_BTNHIGHLIGHT));
-            API_SetBkColor(wParam, API_GetSysColor(COLOR_BTNTEXT));
+        WM_CTLCOLORSTATIC, WM_CTLCOLORLISTBOX: if Option.dwTheme = THEME_DARK then begin
+            API_SetTextColor(wParam, COLOR_DARK_TEXT);
+            API_SetBkColor(wParam, COLOR_DARK_BACK);
             dwDef := 1;
-            result := API_GetSysColorBrush(COLOR_BTNTEXT);
+            result := Status.hBackBrush;
         end;
-{$ENDIF}
+        WM_DRAWITEM: if Option.dwTheme = THEME_DARK then begin
+            result := 0;
+            case wParam of
+                ID_BUTTON_OPEN: result := cwButtonOpen.DrawItem(lParam, false);
+                ID_BUTTON_SAVE: result := cwButtonSave.DrawItem(lParam, false);
+                ID_BUTTON_PLAY: result := cwButtonPlay.DrawItem(lParam, false);
+                ID_BUTTON_RESTART: result := cwButtonRestart.DrawItem(lParam, false);
+                ID_BUTTON_STOP: result := cwButtonStop.DrawItem(lParam, false);
+                ID_BUTTON_TRACK_BASE..ID_BUTTON_TRACK_BASE + 7: result := cwCheckTrack[wParam - ID_BUTTON_TRACK_BASE].DrawItem(
+                    lParam, not longbool(Option.dwMute and (1 shl (wParam - ID_BUTTON_TRACK_BASE))));
+                ID_BUTTON_AMPD: result := cwButtonVolM.DrawItem(lParam, false);
+                ID_BUTTON_AMPU: result := cwButtonVolP.DrawItem(lParam, false);
+                ID_BUTTON_SLOW: result := cwButtonSlow.DrawItem(lParam, false);
+                ID_BUTTON_FAST: result := cwButtonFast.DrawItem(lParam, false);
+                ID_BUTTON_BACK: result := cwButtonBack.DrawItem(lParam, false);
+                ID_BUTTON_NEXT: result := cwButtonNext.DrawItem(lParam, false);
+                ID_BUTTON_ADD: result := cwButtonListAdd.DrawItem(lParam, false);
+                ID_BUTTON_REMOVE: result := cwButtonListRemove.DrawItem(lParam, false);
+                ID_BUTTON_CLEAR: result := cwButtonListClear.DrawItem(lParam, false);
+                ID_BUTTON_UP: result := cwButtonListUp.DrawItem(lParam, false);
+                ID_BUTTON_DOWN: result := cwButtonListDown.DrawItem(lParam, false);
+            end;
+            dwDef := result;
+        end;
+        WM_UAHDRAWMENU: if Option.dwTheme = THEME_DARK then begin
+            result := cmMain.DrawMenuBar(hWnd, lParam);
+            dwDef := result;
+        end;
+        WM_UAHDRAWMENUITEM: if Option.dwTheme = THEME_DARK then begin
+            result := cmMain.DrawMenuItem(hWnd, lParam);
+            dwDef := result;
+        end;
+        WM_PAINT: if Option.dwTheme = THEME_DARK then begin
+            if hWnd = cwWindowMain.hWnd then cmMain.DrawMenuBorder(hWnd);
+        end;
     end;
 end;
 
