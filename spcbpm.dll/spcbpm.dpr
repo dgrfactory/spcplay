@@ -223,7 +223,6 @@ procedure API_ZeroMemory(Destination: pointer; Length: longword); stdcall; exter
 // ================================================================================
 // AnalyzeTempo - テンポの推測
 // ================================================================================
-
 procedure AnalyzeTempo(dwValue: longword);
 var
     I: longint;
@@ -508,7 +507,6 @@ end;
 // ================================================================================
 // SNESAPUCallback - SNESAPU コールバック
 // ================================================================================
-
 function _SNESAPUCallback(dwEffect: longword; dwAddr: longword; dwValue: longword; lpData: pointer): longword; stdcall;
 begin
     result := dwValue;
@@ -528,7 +526,6 @@ end;
 // ================================================================================
 // DSPDebug - DSP デバッグ
 // ================================================================================
-
 procedure _DSPDebug(); stdcall;
 var
     dwAddr: longword;
