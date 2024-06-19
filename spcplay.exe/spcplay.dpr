@@ -6235,6 +6235,7 @@ begin
     result := Box;
 end;
 
+{$IFNDEF TRY700A}{$IFNDEF TRY700W}{$IFDEF SIGNATURE}
 function CheckImageHash(const sPath: string; dwBase: longword): longword;
 var
     dwResult: longword;
@@ -6253,6 +6254,7 @@ begin
     // 終了
     result := 0;
 end;
+{$ENDIF}{$ENDIF}{$ENDIF}
 
 procedure SetMenuTextAndTip(var cmMenu: CMENU; nSize: longint; dwBase: longint; MsgArray: array of pchar; bRadio: longbool); overload;
 var
@@ -6616,14 +6618,12 @@ begin
     // 設定値を調整 (SCALE)
     if Option.dwScale >= 200 then Status.dwScale := 4
     else if Option.dwScale >= 150 then Status.dwScale := 3;
-{$IFNDEF TRY700A}{$IFNDEF TRY700W}
-{$IFDEF SIGNATURE}
+{$IFNDEF TRY700A}{$IFNDEF TRY700W}{$IFDEF SIGNATURE}
     // SPCPLAY.EXE の破損を確認
     if not longbool(result) then result := CheckImageHash(sEXEPath, 10);
-{$ENDIF}
     // SNESAPU.DLL の破損を確認
     if not longbool(result) then result := CheckImageHash(SNESAPU_FILE, 20);
-{$ENDIF}{$ENDIF}
+{$ENDIF}{$ENDIF}{$ENDIF}
     // ファイルが正常の場合
     K := 0;
     if not longbool(result) then begin
