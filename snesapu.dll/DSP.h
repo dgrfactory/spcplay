@@ -23,6 +23,7 @@
 *                                                                                                  *
 * List of users and dates who/when modified this file:                                             *
 *    - degrade-factory in 2024-01-18                                                               *
+*    - Zenith in 2024-06-19                                                                        *
 ***************************************************************************************************/
 
 #ifndef __INC_DSP
@@ -66,6 +67,7 @@
 #define DSP_NOSURND 0x1000                      //Disable surround sound
 #define DSP_ENVSPD  0x2000                      //Synchronize envelope updates with speed
 #define DSP_NOPLMT  0x4000                      //Disable the maximum pitch limit
+#define DSP_NOMAIN  0x8000                      //Disable main output, leaving only echo
 #define DSP_FLOAT   0x40000000                  //32bit floating-point volume output
 #define DSP_NOSAFE  0x80000000                  //Disable volume safe
 

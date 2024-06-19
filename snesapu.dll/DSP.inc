@@ -23,6 +23,7 @@
 ;
 ;List of users and dates who/when modified this file:
 ;   - degrade-factory in 2024-01-18
+;   - Zenith in 2024-06-19
 ;===================================================================================================
 
 %define DSP_INC
@@ -65,6 +66,7 @@ DSP_ECHOFIR EQU 800h                                            ;Simulate SNES e
 DSP_NOSURND EQU 1000h                                           ;Disable surround sound
 DSP_ENVSPD  EQU 2000h                                           ;Synchronize envelope updates with speed
 DSP_NOPLMT  EQU 4000h                                           ;Disable the maximum pitch limit
+DSP_NOMAIN  EQU 8000h                                           ;Disable main output, leaving only echo
 DSP_FLOAT   EQU 40000000h                                       ;32bit floating-point volume output
 DSP_NOSAFE  EQU 80000000h                                       ;Disable volume safe
 
