@@ -31,4 +31,4 @@
 ;     so that the lower 8-bits of the start address of '_mix' are '00'.
 ;    If it is not, the output audio will be noisy because occurred memory-leak.
 ;    The value specified here is 0, 64, 128, or 192.
-DSP_ALIGN   EQU 192                                             ;DSP Object Locate Alignment
+DSP_ALIGN   EQU 0                                               ;DSP Object Locate Alignment
