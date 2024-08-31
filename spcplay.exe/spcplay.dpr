@@ -3177,6 +3177,7 @@ const
     OPTION_NOSURROUND = $1000;                              // サラウンド無効
     OPTION_ENVSPEED = $2000;                                // エンベロープ速度比を同期
     OPTION_NOPLIMIT = $4000;                                // ピッチ制限無効
+    OPTION_NOMAIN = $8000;                                  // メイン無効
     OPTION_FLOATOUT = $40000000;                            // 32 ビット (float) で出力レベルを設定
     OPTION_NOEARSAFE = $80000000;                           // イヤーセーフ無効
 
@@ -3271,12 +3272,12 @@ const
     MENU_SETUP_MUTE_NOISE_SIZE = 8;
     MENU_SETUP_MUTE_NOISE_ALL_SIZE = 3;
     MENU_SETUP_OPTION = 50;
-    MENU_SETUP_OPTION_SIZE = 17;
+    MENU_SETUP_OPTION_SIZE = 18;
     MENU_SETUP_OPTION_BASE = 500; // +10
     MENU_SETUP_OPTION_VALUE: array[0..MENU_SETUP_OPTION_SIZE - 1] of longword =
         (OPTION_LOWPASS, OPTION_ECHOFIR, NULL, OPTION_BASSBOOST, OPTION_OLDSMP, OPTION_SURROUND, OPTION_REVERSE, OPTION_ENVSPEED,
-         NULL, OPTION_NOSURROUND, OPTION_NOECHO, OPTION_NOFIR, OPTION_NOPMOD, OPTION_NOPREAD, OPTION_NOPLIMIT, OPTION_NOENV,
-         OPTION_NONOISE);
+         NULL, OPTION_NOSURROUND, OPTION_NOMAIN, OPTION_NOECHO, OPTION_NOFIR, OPTION_NOPMOD, OPTION_NOPREAD, OPTION_NOPLIMIT,
+         OPTION_NOENV, OPTION_NONOISE);
     MENU_SETUP_TIME = 60;
     MENU_SETUP_TIME_DISABLE = 600;
     MENU_SETUP_TIME_ID666 = 601;
@@ -3509,12 +3510,12 @@ const
         ('標準(&N)', '過去の &Sound Blaster 互換', '過去の &ZSNES, Snes9x 互換'),
         ('&Normal', 'OLD &Sound Blaster Card', 'OLD &ZSNES, Snes9x'));
     STR_MENU_SETUP_OPTION_SUB: array[0..1] of array[0..MENU_SETUP_OPTION_SIZE - 1] of pchar = (
-        ('実機ローパス フィルタ(&L)', '実機エコー/FIR 処理(&M)', NULLPOINTER, '&BASS BOOST', '過去の &ADPCM デコーダ', '逆位相サラウンド強制(&S)',
-         '左右反転(&R)', 'エンベロープ速度比を同期(&Y)', NULLPOINTER, 'サラウンド無効(&U)', 'エコー無効(&E)', '&FIR フィルタ無効',
-         'ピッチ モジュレーション無効(&P)', 'ピッチ ベンド無効(&I)', 'ピッチ リミット無効(&T)', 'エンベロープ無効(&V)', 'ノイズ発音指定無効(&N)'),
-        ('SNES &Low-Pass Filter', 'SNES Echo/FIR &Method', NULLPOINTER, '&BASS BOOST', 'Old &ADPCM Decoder', 'Opposite-Phase &Surround',
-         '&Reverse Stereo', 'S&ynchronize Envelope with Speed', NULLPOINTER, 'Disable S&urround', 'Disable &Echo', 'Disable &FIR Filter',
-         'Disable &Pitch Modulation', 'Disable P&itch Bend', 'Disable Pi&tch Limit', 'Disable En&velope', 'Disable &Noise Flags'));
+        ('実機ローパス フィルタ(&L)', '実機エコー/FIR 処理(&C)', NULLPOINTER, '&BASS BOOST', '過去の &ADPCM デコーダ', '逆位相サラウンド強制(&S)',
+         '左右反転(&R)', 'エンベロープ速度比を同期(&Y)', NULLPOINTER, 'サラウンド無効(&U)', 'メイン無効(&M)', 'エコー無効(&E)',
+         '&FIR フィルタ無効', 'ピッチ モジュレーション無効(&P)', 'ピッチ ベンド無効(&I)', 'ピッチ リミット無効(&T)', 'エンベロープ無効(&V)', 'ノイズ発音指定無効(&N)'),
+        ('SNES &Low-Pass Filter', 'SNES E&cho/FIR Method', NULLPOINTER, '&BASS BOOST', 'Old &ADPCM Decoder', 'Opposite-Phase &Surround',
+         '&Reverse Stereo', 'S&ynchronize Envelope with Speed', NULLPOINTER, 'Disable S&urround', 'Disable &Main', 'Disable &Echo',
+         'Disable &FIR Filter', 'Disable &Pitch Modulation', 'Disable P&itch Bend', 'Disable Pi&tch Limit', 'Disable En&velope', 'Disable &Noise Flags'));
     STR_MENU_SETUP_ORDER_SUB: array[0..1] of array[0..MENU_SETUP_ORDER_SIZE - 1] of pchar = (
         ('演奏停止(&S)', '次へ(&N)', '前へ(&P)', 'ランダム(&M)', 'シャッフル(&H)', 'リピート(&R)'),
         ('&Stop', '&Next Item', '&Previous Item', 'Rando&m', 'S&huffle', '&Repeat'));
@@ -6235,6 +6236,7 @@ begin
     result := Box;
 end;
 
+{$IFNDEF TRY700A}{$IFNDEF TRY700W}{$IFDEF SIGNATURE}
 function CheckImageHash(const sPath: string; dwBase: longword): longword;
 var
     dwResult: longword;
@@ -6253,6 +6255,7 @@ begin
     // 終了
     result := 0;
 end;
+{$ENDIF}{$ENDIF}{$ENDIF}
 
 procedure SetMenuTextAndTip(var cmMenu: CMENU; nSize: longint; dwBase: longint; MsgArray: array of pchar; bRadio: longbool); overload;
 var
@@ -6616,14 +6619,12 @@ begin
     // 設定値を調整 (SCALE)
     if Option.dwScale >= 200 then Status.dwScale := 4
     else if Option.dwScale >= 150 then Status.dwScale := 3;
-{$IFNDEF TRY700A}{$IFNDEF TRY700W}
-{$IFDEF SIGNATURE}
+{$IFNDEF TRY700A}{$IFNDEF TRY700W}{$IFDEF SIGNATURE}
     // SPCPLAY.EXE の破損を確認
     if not longbool(result) then result := CheckImageHash(sEXEPath, 10);
-{$ENDIF}
     // SNESAPU.DLL の破損を確認
     if not longbool(result) then result := CheckImageHash(SNESAPU_FILE, 20);
-{$ENDIF}{$ENDIF}
+{$ENDIF}{$ENDIF}{$ENDIF}
     // ファイルが正常の場合
     K := 0;
     if not longbool(result) then begin
@@ -10784,7 +10785,7 @@ begin
             end;
             case Option.dwInfo of
                 INFO_MIXER: begin
-                    sInfo := Concat(sInfo, CRLF, 'MasterLv : L=    R=      EchoLv   : L=    R=', CRLF,
+                    sInfo := Concat(sInfo, CRLF, 'MainLv   : L=    R=      EchoLv   : L=    R=', CRLF,
                         'Delay    :    (    ms)   Feedback :    (   ', STR_MENU_SETUP_PERCENT[Status.dwLanguage], ')', CRLF);
                     if Status.bBreakButton then begin
                         sInfo := Concat(sInfo, 'SrcAddr  :     -         EchoAddr :     -', CRLF, 'FIR      :');

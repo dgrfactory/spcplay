@@ -23,6 +23,7 @@
 ;
 ;List of users and dates who/when modified this file:
 ;   - degrade-factory in 2024-01-18
+;   - Zenith in 2024-06-19
 ;===================================================================================================
 
 CPU     386
@@ -5047,7 +5048,10 @@ PROC RunDSP
     Mov     ESI,mixBuf
 
     .NextSmp:
-        MixMaster
+        Test    dword [dspOpts],DSP_NOMAIN                                      ;Is main output disabled?
+        JNZ     .NoMain                                                         ;   Yes
+            MixMaster
+        .NoMain:
 
         Test    byte [disFlag],30h                                              ;Is echo disabled by DSP? (disFlag = [4][5])
         JNZ     .NoEchoDSP                                                      ;   Yes
