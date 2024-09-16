@@ -28,4 +28,9 @@
 ;Equates
 
 ;Align Adjustment ----------------------
-DSP_ALIGN   EQU 64                                              ;DSP Object Locate Alignment
+;   Note: Please refer to the map file output during build and adjust the numbers,
+;     so that the lower 8-bits of the start address of '_mix' are '00'.
+;    If it is not, the output audio will be noisy because occurred memory-leak and
+;     buffer-overflow.
+;    The value specified here is 0, 64, 128, or 192.
+DSP_ALIGN   EQU 0                                               ;DSP Object Locate Alignment
