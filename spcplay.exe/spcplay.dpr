@@ -10785,7 +10785,7 @@ begin
             end;
             case Option.dwInfo of
                 INFO_MIXER: begin
-                    sInfo := Concat(sInfo, CRLF, 'MasterLv : L=    R=      EchoLv   : L=    R=', CRLF,
+                    sInfo := Concat(sInfo, CRLF, 'MainLv   : L=    R=      EchoLv   : L=    R=', CRLF,
                         'Delay    :    (    ms)   Feedback :    (   ', STR_MENU_SETUP_PERCENT[Status.dwLanguage], ')', CRLF);
                     if Status.bBreakButton then begin
                         sInfo := Concat(sInfo, 'SrcAddr  :     -         EchoAddr :     -', CRLF, 'FIR      :');
