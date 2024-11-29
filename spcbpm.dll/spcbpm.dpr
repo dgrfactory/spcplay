@@ -2,6 +2,51 @@
 //   BPM Analyzer for SNESAPU.DLL
 // *************************************************************************************************************************************************************
 
+// =================================================================================================
+//
+//  +++ THIS SOURCE CODE IS GPL +++
+//
+//  This program is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation; either version 2 of the License,
+//  or (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+//  See the GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the
+//  Free Software Foundation, Inc.
+//  59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+//
+//  * GNU GPL v2.0 document is in LICENSE file.
+//
+//
+//  +++ このソースコードは GPL です +++
+//
+//  このプログラムはフリーソフトウェアです。 あなたはフリーソフトウェア団体によって発行
+//  されている GNU 一般公衆利用許諾契約書のバージョン 2、もしくは希望であればそれ以上の
+//  バージョンのうち、いずれかで定められた条件の下でこのプログラムを再配布、もしくは改変
+//  することができます。
+//
+//  このプログラムは役に立つことを期待して配布されていますが、『 何の保証もありません 』。
+//  つまり、『 商品性 (機能性、安全性、耐久性に優れているか) 』や『 適合性 (ある特定の目的に
+//  うまく使用できるか) 』の黙示的な保証さえありません。
+//  詳しくは GNU 一般公衆利用許諾契約書 (GNU General Public License) をご覧ください。
+//
+//  あなたはこのプログラムと一緒に GNU 一般公衆利用許諾契約書のコピーを受け取ったはずです。
+//  受け取っていない場合は、フリーソフトウェア団体から取り寄せてください。
+//  宛先 : Free Software Foundation, Inc.
+//         59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+//
+//  ※ GNU 一般公衆利用許諾契約書バージョン 2 のドキュメントは、付属の LICENSE にあります。
+//
+//
+//  Copyright (C) 2024 degrade-factory. All rights reserved.
+//
+// =================================================================================================
 library spcbpm;
 
 //{$DEFINE FORCEDSPDBG}                                     // DSPDbg API を強制使用
