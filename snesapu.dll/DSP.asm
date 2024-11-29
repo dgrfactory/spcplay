@@ -1812,19 +1812,25 @@ USES ECX,EBX
         XChg    AL,DL
     .NoReverse:
 
-    Mov     AH,AL
-    And     AH,[surroff]
+    Test    AL,[surroff]
     SetZ    AH
     Dec     AH
     XOr     AL,AH
     Sub     AL,AH
+    Mov     AH,[surroff]
+    Cmp     AX,8080h
+    SetE    AH
+    Sub     AL,AH
     MovSX   EAX,AL
 
-    Mov     DH,DL
-    And     DH,[surroff]
+    Test    DL,[surroff]
     SetZ    DH
     Dec     DH
     XOr     DL,DH
+    Sub     DL,DH
+    Mov     DH,[surroff]
+    Cmp     DX,8080h
+    SetE    DH
     Sub     DL,DH
     MovSX   EDX,DL
 
@@ -2723,11 +2729,14 @@ ResetKON:
 
 %if STEREO=0
 RVolL:
-    Mov     AH,AL
-    And     AH,[surroff]
+    Test    AL,[surroff]
     SetZ    AH
     Dec     AH
     XOr     AL,AH
+    Sub     AL,AH
+    Mov     AH,[surroff]
+    Cmp     AX,8080h
+    SetE    AH
     Sub     AL,AH
     MovSX   EAX,AL
 
@@ -2742,11 +2751,14 @@ RVolL:
     Ret
 
 RVolR:
-    Mov     AH,AL
-    And     AH,[surroff]
+    Test    AL,[surroff]
     SetZ    AH
     Dec     AH
     XOr     AL,AH
+    Sub     AL,AH
+    Mov     AH,[surroff]
+    Cmp     AX,8080h
+    SetE    AH
     Sub     AL,AH
     MovSX   EAX,AL
 
@@ -2868,11 +2880,14 @@ RGain:
 ;Main volumes
 
 RMVolL:
-    Mov     AH,AL
-    And     AH,[surroff]
+    Test    AL,[surroff]
     SetZ    AH
     Dec     AH
     XOr     AL,AH
+    Sub     AL,AH
+    Mov     AH,[surroff]
+    Cmp     AX,8080h
+    SetE    AH
     Sub     AL,AH
     MovSX   EAX,AL
 
@@ -2887,14 +2902,22 @@ RMVolL:
     Ret
 
 RMVolR:
-    Mov     AH,AL
-    And     AH,[surroff]
+    Test    AL,[surroff]
     SetZ    AH
     Dec     AH
     XOr     AL,AH
     Sub     AL,AH
+    Mov     AH,[surroff]
+    Cmp     AX,8080h
+    SetE    AH
+    Sub     AL,AH
+
     XOr     AL,[surround]
     Sub     AL,[surround]
+    Cmp     AL,80h
+    SetE    AH
+    And     AH,[surround]
+    Sub     AL,AH
     MovSX   EAX,AL
 
     Mov     [ESP-4],EAX
@@ -2908,11 +2931,14 @@ RMVolR:
     Ret
 
 REVolL:
-    Mov     AH,AL
-    And     AH,[surroff]
+    Test    AL,[surroff]
     SetZ    AH
     Dec     AH
     XOr     AL,AH
+    Sub     AL,AH
+    Mov     AH,[surroff]
+    Cmp     AX,8080h
+    SetE    AH
     Sub     AL,AH
     MovSX   EAX,AL
 
@@ -2927,14 +2953,22 @@ REVolL:
     Ret
 
 REVolR:
-    Mov     AH,AL
-    And     AH,[surroff]
+    Test    AL,[surroff]
     SetZ    AH
     Dec     AH
     XOr     AL,AH
     Sub     AL,AH
+    Mov     AH,[surroff]
+    Cmp     AX,8080h
+    SetE    AH
+    Sub     AL,AH
+
     XOr     AL,[surround]
     Sub     AL,[surround]
+    Cmp     AL,80h
+    SetE    AH
+    And     AH,[surround]
+    Sub     AL,AH
     MovSX   EAX,AL
 
     Mov     [ESP-4],EAX
