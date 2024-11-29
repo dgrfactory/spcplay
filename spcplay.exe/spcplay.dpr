@@ -3444,7 +3444,7 @@ const
     STR_MENU_SETUP_PITCH_ZERO: pchar = ' &0 ';
     STR_MENU_SETUP_PITCH_ASYNC: array[0..1] of pchar = ('演奏速度比と同期(&M)', '&Multiply by &Speed');
     STR_MENU_SETUP_SEPARATE: array[0..1] of pchar = ('左右拡散度(&E)', 'Stereo S&eparator');
-    STR_MENU_SETUP_FEEDBACK: array[0..1] of pchar = ('フィードバック反転度(&F)', 'Echo &Feedback');
+    STR_MENU_SETUP_FEEDBACK: array[0..1] of pchar = ('フィードバック反転度(&F)', '&Feedback Mixer');
     STR_MENU_SETUP_SPEED: array[0..1] of pchar = ('演奏速度(&S)', '&Speed');
     STR_MENU_SETUP_AMP: array[0..1] of pchar = ('音量(&V)', '&Volume');
     STR_MENU_SETUP_MUTE: array[0..1] of pchar = ('チャンネル ミュート(&M)', 'Channel &Mute');
