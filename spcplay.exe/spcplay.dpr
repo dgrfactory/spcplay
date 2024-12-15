@@ -7956,7 +7956,7 @@ begin
         // ƒ^ƒCƒ€ƒQ[ƒW‚ð•`‰æ
         if not Status.bPlay then J := 140
         else if T64Count >= Status.dwDefaultTimeout then J := 280
-        else J := (T64Count * 141 div Status.dwDefaultTimeout) + 140;
+        else J := longword(int64(T64Count) * 141 div Status.dwDefaultTimeout) + 140;
         if bRedrawInfo or (J <> Status.dwLastTime) then begin
             if J > 140 then begin
                 Rect.left := 140;
