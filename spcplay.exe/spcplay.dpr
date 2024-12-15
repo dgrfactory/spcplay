@@ -3433,6 +3433,7 @@ const
     STR_MENU_FILE_EXIT: array[0..1] of pchar = ('終了(&X)', 'E&xit');
     STR_MENU_SETUP_DEVICE: array[0..1] of pchar = ('サウンド デバイス(&D)', 'Sound &Devices');
     STR_MENU_SETUP_DEVICE_MAPPER: array[0..1] of pchar = ('システム設定を使用(&D)', 'System &Default');
+    STR_MENU_SETUP_DEVICE_UNKNOWN: array[0..1] of pchar = ('不明なデバイス', 'Unknown device');
     STR_MENU_SETUP_CHANNEL: array[0..1] of pchar = ('チャンネル(&C)', '&Channels');
     STR_MENU_SETUP_BIT: array[0..1] of pchar = ('ビット(&B)', '&Bit');
     STR_MENU_SETUP_RATE: array[0..1] of pchar = ('サンプリング レート(&R)', 'Sampling &Rate');
@@ -10717,7 +10718,6 @@ begin
         // デバイスを仮選択
         if dwDeviceID >= longint(Status.dwDeviceNum) then dwDeviceID := -1;
         if dwDeviceID < -1 then dwDeviceID := -1;
-        Option.dwDeviceID := dwDeviceID;
         // デバイスメニューを作成
         if (dwFlag and WAVE_DEVICE_INITIALIZE) = WAVE_DEVICE_INITIALIZE then J := -1 else J := 0;
         for I := J to Status.dwDeviceNum - 1 do begin
@@ -10727,6 +10727,7 @@ begin
             end else begin
                 API_waveOutGetDevCaps(I, @WaveOutCaps, SizeOf(TWAVEOUTCAPS));
                 sBuffer := ChrToStr(WaveOutCaps.szPname);
+                if not longbool(Length(sBuffer)) then sBuffer := STR_MENU_SETUP_DEVICE_UNKNOWN[Status.dwLanguage];
             end;
             Status.sDeviceName[I + 1] := sBuffer;
             // デバイス名を簡略化するため、' (' 以降を削除する
@@ -10741,9 +10742,11 @@ begin
         end;
         // 前回終了時に選択していたデバイス名と一致するデバイスを優先する
         // 同名のデバイスが複数ある場合は、前回選択位置を優先する
-        J := -1;
-        for I := 0 to Status.dwDeviceNum do if Status.sDeviceName[I] = Option.sDeviceName then if J = -1 then J := I else J := -2;
-        if J >= 0 then dwDeviceID := J - 1;
+        if Option.dwDeviceID >= 0 then begin
+            J := -1;
+            for I := 0 to Status.dwDeviceNum do if Status.sDeviceName[I] = Option.sDeviceName then if J = -1 then J := I else J := -2;
+            if J >= 0 then dwDeviceID := J - 1;
+        end;
     end;
     // デバイスを再選択
     if dwDeviceID >= longint(Status.dwDeviceNum) then dwDeviceID := -1;
