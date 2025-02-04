@@ -53,31 +53,20 @@ program spccmd;
 {$ASSERTIONS OFF}                                           // ソースコードのアサート       : 無効
 {$BOOLEVAL OFF}                                             // 完全論理式評価               : 無効
 {$DEBUGINFO OFF}                                            // デバッグ情報                 : 無効
-{$DEFINITIONINFO OFF}                                       // シンボル宣言と参照情報       : 無効
 {$DENYPACKAGEUNIT ON}                                       // UNIT 不使用                  : 有効
-{$DESIGNONLY OFF}                                           // IDE 使用                     : 無効
 {$EXTENDEDSYNTAX ON}                                        // 関数の戻り値を無視可能       : 有効
-{$EXTENSION exe}                                            // 拡張子設定                   : EXE
-{$HINTS ON}                                                 // ヒント生成                   : 有効
+{$EXTENSION 'exe'}                                          // 拡張子設定                   : EXE
 {$IMAGEBASE $00400000}                                      // イメージベースアドレス       : 0x00400000
-{$IMPLICITBUILD ON}                                         // ビルドのたびに再コンパイル   : 有効
 {$IMPORTEDDATA OFF}                                         // 別パッケージのメモリ参照     : 無効
 {$IOCHECKS OFF}                                             // I/O チェック                 : 無効
-{$LOCALSYMBOLS OFF}                                         // ローカルシンボル情報         : 無効
 {$LONGSTRINGS ON}                                           // AnsiString 使用              : 有効
 {$MAXSTACKSIZE $00100000}                                   // 最大スタック設定             : 0x00100000
 {$MINENUMSIZE 1}                                            // 列挙型の最大サイズ (x256)    : 1 (256)
 {$MINSTACKSIZE $00004000}                                   // 最小スタック設定             : 0x00004000
-{$OBJEXPORTALL OFF}                                         // シンボルのエクスポート       : 無効
 {$OPENSTRINGS OFF}                                          // オープン文字列パラメータ     : 無効
-{$OPTIMIZATION ON}                                          // 最適化コンパイル             : 有効
 {$OVERFLOWCHECKS OFF}                                       // オーバーフローチェック       : 無効
 {$RANGECHECKS OFF}                                          // 範囲チェック                 : 無効
-{$REALCOMPATIBILITY OFF}                                    // Real48 互換                  : 無効
-{$REFERENCEINFO OFF}                                        // 完全な参照情報の生成         : 無効
 {$R 'spccmd.res' 'spccmd.rc'}                               // リソース                     : spccmd.res <- spccmd.rc
-{$RUNONLY OFF}                                              // 実行時のみコンパイル         : 無効
-{$SAFEDIVIDE OFF}                                           // 初期 Pentium FDIV バグ回避   : 無効
 {$STACKFRAMES OFF}                                          // 完全スタックフレーム生成     : 無効
 {$TYPEDADDRESS OFF}                                         // ポインタの型チェック         : 無効
 {$TYPEINFO OFF}                                             // 実行時型情報                 : 無効
@@ -85,6 +74,31 @@ program spccmd;
 {$WARNINGS ON}                                              // 警告生成                     : 有効
 {$WEAKPACKAGEUNIT OFF}                                      // 弱いパッケージ化             : 無効
 {$WRITEABLECONST OFF}                                       // 定数書き換え                 : 無効
+
+{$IFDEF FREEPASCAL}     // for Free Pascal 3.2+
+{$CALLING STDCALL}                                          // CALL スタック方式            : STDCALL
+{$CHECKPOINTER OFF}                                         // ポインタチェック             : 無効
+// {$CODEPAGE CP932}                                        // 文字コード                   : CP932
+{$FPUTYPE x87}                                              // 浮動小数演算命令             : x87
+{$HINTS OFF}                                                // ヒント生成                   : 無効
+{$IEEEERRORS OFF}                                           // 浮動小数エラーチェック       : 無効
+{$MODE DELPHI}                                              // 言語モード                   : DELPHI
+{$OPTIMIZATION LEVEL3,USEEBP}                               // 最適化コンパイル             : Lv3, EBP レジスタ使用
+{$POINTERMATH ON}                                           // ポインタ演算                 : 有効
+{$SAFEFPUEXCEPTIONS OFF}                                    // FPU エラー即時報告           : 無効
+{$ELSE}                 // for Boland Delphi 6+
+{$DEFINITIONINFO OFF}                                       // シンボル宣言と参照情報       : 無効
+{$DESIGNONLY OFF}                                           // IDE 使用                     : 無効
+{$HINTS ON}                                                 // ヒント生成                   : 有効
+{$IMPLICITBUILD ON}                                         // ビルドのたびに再コンパイル   : 有効
+{$LOCALSYMBOLS OFF}                                         // ローカルシンボル情報         : 無効
+{$OBJEXPORTALL OFF}                                         // シンボルのエクスポート       : 無効
+{$OPTIMIZATION ON}                                          // 最適化コンパイル             : 有効
+{$REALCOMPATIBILITY OFF}                                    // Real48 互換                  : 無効
+{$REFERENCEINFO OFF}                                        // 完全な参照情報の生成         : 無効
+{$RUNONLY OFF}                                              // 実行時のみコンパイル         : 無効
+{$SAFEDIVIDE OFF}                                           // 初期 Pentium FDIV バグ回避   : 無効
+{$ENDIF}
 
 
 // *************************************************************************************************************************************************************
@@ -158,7 +172,7 @@ const
     BUFFER_LENGTH = 13;
     BUFFER_START = BUFFER_LENGTH + 1;
     BUFFER_LANGUAGE: string = 'LANGUAGE 1 : ';
-    LIST_FILE: string = 'spcplay.stk';
+    // LIST_FILE: string = 'spcplay.stk';
     LIST_FILE_HEADER_A: string = 'SSDLabo Spcplay ListFile v1.0';
     LIST_FILE_HEADER_A_LEN = 29;
     LIST_FILE_HEADER_B: string = 'SPCPLAY PLAYLIST';
@@ -600,6 +614,19 @@ begin
     result := 0;
     J := Length(S);
     for I := 1 to J do if IsPathSeparator(S, I) then result := I;
+end;
+
+// ================================================================================
+// ChrToStr - キャラクタの動的配列を文字列に変換
+// ================================================================================
+function ChrToStr(var C: array of char): string; overload;
+var
+    S: string;
+begin
+    // NOTE: Free Pascal の場合、char 型の動的配列を string にキャストするためには、
+    // SetString を使用しないと、文字列が正しく結合されないなどの不具合が発生する
+    SetString(S, pchar(@C[0]), GetSize(@C[0], SizeOf(C)));
+    result := S;
 end;
 
 // ================================================================================
@@ -1253,13 +1280,13 @@ begin
         // bootcode をコピー
         write(output, 'Boot Code のアドレス = ');
         IntToHex(StrData, bootptr, 4);
-        write(output, Copy(String(StrData.cData), 1, 4));
+        write(output, Copy(ChrToStr(StrData.cData), 1, 4));
         write(output, '～');
         IntToHex(StrData, bootptr + count - 1, 4);
-        write(output, Copy(String(StrData.cData), 1, 4));
+        write(output, Copy(ChrToStr(StrData.cData), 1, 4));
         write(output, ' (STEP ');
         IntToHex(StrData, step, 1);
-        write(output, Copy(String(StrData.cData), 1, 1));
+        write(output, Copy(ChrToStr(StrData.cData), 1, 1));
         writeln(output, ')');
         if step >= 3 then writeln(output, '※実機では冒頭でノイズが発生する場合があります。');
         for X := 0 to count - 1 do SPCBuffer.Ram[(bootptr + X) and $FFFF] := bootcode[X];
@@ -1391,7 +1418,7 @@ begin
         ApuWrite(3, SPCBuffer.Ram[$F7]);
         // 終了
         writeln(output, STR_DONE[dwLanguage]);
-        writeln(output, Concat('TIME = ', IntToStr(API_timeGetTime() - ms), ' [ms]'));
+        writeln(output, Concat('TIME = ', IntToStr(longword(API_timeGetTime() - ms)), ' [ms]'));
     finally
         if not longbool(result) then API_SendMessage(hWnd, WM_COMMAND, MENU_FILE_PLAY, NULL); // play
         if longbool(hWnd) then API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_EMU_DEBUG, NULL);
@@ -1515,7 +1542,7 @@ begin
         // Script700 を使用していない場合は終了
         if hScript700File = INVALID_HANDLE_VALUE then begin
             writeln(output, STR_DONE[dwLanguage]);
-            writeln(output, Concat('TIME = ', IntToStr(API_timeGetTime() - ms), ' [ms]'));
+            writeln(output, Concat('TIME = ', IntToStr(longword(API_timeGetTime() - ms)), ' [ms]'));
             exit;
         end;
         // スリープ
@@ -1525,7 +1552,7 @@ begin
         dwHigh := StopTransmitSPC();
         writeln(output, Concat('StopTransmitSPC = ', IntToStr(dwHigh)));
         writeln(output, STR_DONE[dwLanguage]);
-        writeln(output, Concat('TIME = ', IntToStr(API_timeGetTime() - ms), ' [ms]'));
+        writeln(output, Concat('TIME = ', IntToStr(longword(API_timeGetTime() - ms)), ' [ms]'));
     finally
         if not longbool(result) then API_SendMessage(hWnd, WM_COMMAND, MENU_FILE_PLAY, NULL); // play
         if longbool(hWnd) then API_SendMessage(hWnd, WM_APP_MESSAGE, WM_APP_EMU_DEBUG, NULL);
@@ -1577,14 +1604,14 @@ begin
     end else if (sParam = '/hex') or (sParam = '--hex') then begin
         IntToHex(StrData, dwValue, 8);
         write(output, '$');
-        writeln(output, String(StrData.cData));
+        writeln(output, ChrToStr(StrData.cData));
     end else if (sParam = '/dec') or (sParam = '--dec') then begin
         writeln(output, IntToStr(dwValue));
     end else begin
         IntToHex(StrData, dwValue, 8);
         write(output, STR_RESULT[dwLanguage]);
         write(output, ' = $');
-        write(output, String(StrData.cData));
+        write(output, ChrToStr(StrData.cData));
         write(output, ' (');
         write(output, IntToStr(dwValue));
         writeln(output, ')');
@@ -1630,7 +1657,7 @@ begin
     end else if (sParam = '/hex') or (sParam = '--hex') then begin
         IntToHex(StrData, dwValue, 8);
         write(output, '$');
-        writeln(output, String(StrData.cData));
+        writeln(output, ChrToStr(StrData.cData));
     end else if (sParam = '/dec') or (sParam = '--dec') then begin
         writeln(output, IntToStr(dwValue));
     end else if (sParam = '/ch') or (sParam = '--ch') then begin
@@ -1661,7 +1688,7 @@ begin
         if not longbool(X and $F) then begin
             writeln(output, '');
             IntToHex(StrData, X, 4);
-            write(output, Copy(String(StrData.cData), 1, 4));
+            write(output, Copy(ChrToStr(StrData.cData), 1, 4));
             write(output, '  : ');
         end;
         if not longbool(X and $7) then begin
@@ -1679,7 +1706,13 @@ begin
             cBuffer[$7] := StrData.cData[$3];
             cBuffer[$9] := StrData.cData[$0];
             cBuffer[$A] := StrData.cData[$1];
-            write(output, String(cBuffer));
+{$IFDEF FREEPASCAL}
+            write(output, ChrToStr(cBuffer));
+{$ELSE}
+            // NOTE: Boland Delphi の場合、char の動的配列を string にキャストする場合は、
+            // 直接 string() を使用する
+            write(output, string(cBuffer));
+{$ENDIF}
         end;
     end;
     writeln(output, '');
@@ -1717,9 +1750,9 @@ begin
         API_MoveMemory(@cListHeaderA[0], @cBuffer[0], LIST_FILE_HEADER_A_LEN);
         API_MoveMemory(@cListHeaderB[0], @cBuffer[0], LIST_FILE_HEADER_B_LEN);
         // ファイルの種類を取得
-        if string(cSPCHeader) = SPC_FILE_HEADER then result := FILE_TYPE_SPC;
-        if string(cListHeaderA) = LIST_FILE_HEADER_A then result := FILE_TYPE_LIST_A;
-        if string(cListHeaderB) = LIST_FILE_HEADER_B then result := FILE_TYPE_LIST_B;
+        if ChrToStr(cSPCHeader) = SPC_FILE_HEADER then result := FILE_TYPE_SPC;
+        if ChrToStr(cListHeaderA) = LIST_FILE_HEADER_A then result := FILE_TYPE_LIST_A;
+        if ChrToStr(cListHeaderB) = LIST_FILE_HEADER_B then result := FILE_TYPE_LIST_B;
         // ファイルをクローズ
         API_CloseHandle(hFile);
     until true;
@@ -1879,7 +1912,13 @@ begin
             // プレイリストに追加
             SetLength(cBuffer, dwSizeFile);
             API_MoveMemory(@cBuffer[0], lpListFile, dwSizeFile);
+{$IFDEF FREEPASCAL}
+            sSPCFiles[I] := ChrToStr(cBuffer);
+{$ELSE}
+            // NOTE: Boland Delphi の場合、char の動的配列を string にキャストする場合は、
+            // 直接 string() を使用する
             sSPCFiles[I] := string(cBuffer);
+{$ENDIF}
         end;
         // バッファを解放
         FreeMem(lpListFile, 1024);
@@ -1983,7 +2022,13 @@ begin
     J := GetSize(lpBuffer, 1024);
     SetLength(cBuffer, J);
     API_MoveMemory(@cBuffer[0], lpBuffer, J);
+{$IFDEF FREEPASCAL}
+    sBuffer := ChrToStr(cBuffer);
+{$ELSE}
+    // NOTE: Boland Delphi の場合、char の動的配列を string にキャストする場合は、
+    // 直接 string() を使用する
     sBuffer := string(cBuffer);
+{$ENDIF}
     // パラメータを取得
     I := 1;
     sEXEPath := GetParameter(I, J, false);
