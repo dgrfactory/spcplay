@@ -24,24 +24,24 @@
 //  * GNU GPL v2.0 document is in LICENSE file.
 //
 //
-//  +++ ‚±‚Ìƒ\[ƒXƒR[ƒh‚Í GPL ‚Å‚· +++
+//  +++ ã“ã®ã‚½ãƒ¼ã‚¹ã‚³ãƒ¼ãƒ‰ã¯ GPL ã§ã™ +++
 //
-//  ‚±‚ÌƒvƒƒOƒ‰ƒ€‚ÍƒtƒŠ[ƒ\ƒtƒgƒEƒFƒA‚Å‚·B ‚ ‚È‚½‚ÍƒtƒŠ[ƒ\ƒtƒgƒEƒFƒA’c‘Ì‚É‚æ‚Á‚Ä”­s
-//  ‚³‚ê‚Ä‚¢‚é GNU ˆê”ÊŒöO—˜—p‹–‘øŒ_–ñ‘‚Ìƒo[ƒWƒ‡ƒ“ 2A‚à‚µ‚­‚ÍŠó–]‚Å‚ ‚ê‚Î‚»‚êˆÈã‚Ì
-//  ƒo[ƒWƒ‡ƒ“‚Ì‚¤‚¿A‚¢‚¸‚ê‚©‚Å’è‚ß‚ç‚ê‚½ğŒ‚Ì‰º‚Å‚±‚ÌƒvƒƒOƒ‰ƒ€‚ğÄ”z•zA‚à‚µ‚­‚Í‰ü•Ï
-//  ‚·‚é‚±‚Æ‚ª‚Å‚«‚Ü‚·B
+//  ã“ã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã¯ãƒ•ãƒªãƒ¼ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢ã§ã™ã€‚ ã‚ãªãŸã¯ãƒ•ãƒªãƒ¼ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å›£ä½“ã«ã‚ˆã£ã¦ç™ºè¡Œ
+//  ã•ã‚Œã¦ã„ã‚‹ GNU ä¸€èˆ¬å…¬è¡†åˆ©ç”¨è¨±è«¾å¥‘ç´„æ›¸ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ 2ã€ã‚‚ã—ãã¯å¸Œæœ›ã§ã‚ã‚Œã°ãã‚Œä»¥ä¸Šã®
+//  ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã®ã†ã¡ã€ã„ãšã‚Œã‹ã§å®šã‚ã‚‰ã‚ŒãŸæ¡ä»¶ã®ä¸‹ã§ã“ã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‚’å†é…å¸ƒã€ã‚‚ã—ãã¯æ”¹å¤‰
+//  ã™ã‚‹ã“ã¨ãŒã§ãã¾ã™ã€‚
 //
-//  ‚±‚ÌƒvƒƒOƒ‰ƒ€‚Í–ğ‚É—§‚Â‚±‚Æ‚ğŠú‘Ò‚µ‚Ä”z•z‚³‚ê‚Ä‚¢‚Ü‚·‚ªAw ‰½‚Ì•ÛØ‚à‚ ‚è‚Ü‚¹‚ñ xB
-//  ‚Â‚Ü‚èAw ¤•i« (‹@”\«AˆÀ‘S«A‘Ï‹v«‚É—D‚ê‚Ä‚¢‚é‚©) x‚âw “K‡« (‚ ‚é“Á’è‚Ì–Ú“I‚É
-//  ‚¤‚Ü‚­g—p‚Å‚«‚é‚©) x‚Ì–Ù¦“I‚È•ÛØ‚³‚¦‚ ‚è‚Ü‚¹‚ñB
-//  Ú‚µ‚­‚Í GNU ˆê”ÊŒöO—˜—p‹–‘øŒ_–ñ‘ (GNU General Public License) ‚ğ‚²——‚­‚¾‚³‚¢B
+//  ã“ã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã¯å½¹ã«ç«‹ã¤ã“ã¨ã‚’æœŸå¾…ã—ã¦é…å¸ƒã•ã‚Œã¦ã„ã¾ã™ãŒã€ã€ ä½•ã®ä¿è¨¼ã‚‚ã‚ã‚Šã¾ã›ã‚“ ã€ã€‚
+//  ã¤ã¾ã‚Šã€ã€ å•†å“æ€§ (æ©Ÿèƒ½æ€§ã€å®‰å…¨æ€§ã€è€ä¹…æ€§ã«å„ªã‚Œã¦ã„ã‚‹ã‹) ã€ã‚„ã€ é©åˆæ€§ (ã‚ã‚‹ç‰¹å®šã®ç›®çš„ã«
+//  ã†ã¾ãä½¿ç”¨ã§ãã‚‹ã‹) ã€ã®é»™ç¤ºçš„ãªä¿è¨¼ã•ãˆã‚ã‚Šã¾ã›ã‚“ã€‚
+//  è©³ã—ãã¯ GNU ä¸€èˆ¬å…¬è¡†åˆ©ç”¨è¨±è«¾å¥‘ç´„æ›¸ (GNU General Public License) ã‚’ã”è¦§ãã ã•ã„ã€‚
 //
-//  ‚ ‚È‚½‚Í‚±‚ÌƒvƒƒOƒ‰ƒ€‚Æˆê‚É GNU ˆê”ÊŒöO—˜—p‹–‘øŒ_–ñ‘‚ÌƒRƒs[‚ğó‚¯æ‚Á‚½‚Í‚¸‚Å‚·B
-//  ó‚¯æ‚Á‚Ä‚¢‚È‚¢ê‡‚ÍAƒtƒŠ[ƒ\ƒtƒgƒEƒFƒA’c‘Ì‚©‚çæ‚èŠñ‚¹‚Ä‚­‚¾‚³‚¢B
-//  ˆ¶æ : Free Software Foundation, Inc.
+//  ã‚ãªãŸã¯ã“ã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã¨ä¸€ç·’ã« GNU ä¸€èˆ¬å…¬è¡†åˆ©ç”¨è¨±è«¾å¥‘ç´„æ›¸ã®ã‚³ãƒ”ãƒ¼ã‚’å—ã‘å–ã£ãŸã¯ãšã§ã™ã€‚
+//  å—ã‘å–ã£ã¦ã„ãªã„å ´åˆã¯ã€ãƒ•ãƒªãƒ¼ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å›£ä½“ã‹ã‚‰å–ã‚Šå¯„ã›ã¦ãã ã•ã„ã€‚
+//  å®›å…ˆ : Free Software Foundation, Inc.
 //         59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
-//  ¦ GNU ˆê”ÊŒöO—˜—p‹–‘øŒ_–ñ‘ƒo[ƒWƒ‡ƒ“ 2 ‚ÌƒhƒLƒ…ƒƒ“ƒg‚ÍA•t‘®‚Ì LICENSE ‚É‚ ‚è‚Ü‚·B
+//  â€» GNU ä¸€èˆ¬å…¬è¡†åˆ©ç”¨è¨±è«¾å¥‘ç´„æ›¸ãƒãƒ¼ã‚¸ãƒ§ãƒ³ 2 ã®ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆã¯ã€ä»˜å±ã® LICENSE ã«ã‚ã‚Šã¾ã™ã€‚
 //
 //
 //  Copyright (C) 2003-2023 degrade-factory. All rights reserved.
@@ -56,286 +56,287 @@ program spcplay;
 //{$DEFINE CONTEXT}                                         // SNESAPU Context DEBUG
 //{$DEFINE SPCDEBUG}                                        // SNESAPU SPCDbg DEBUG
 //{$DEFINE SPCCYCLE}                                        // SNESAPU Cycles DEBUG
-//{$DEFINE DEBUGLOG}                                        // ƒfƒoƒbƒOƒƒOo—Í
-//{$DEFINE UACDROP}                                         // UAC ‚ğ’´‚¦‚½ƒhƒƒbƒv‘€ì
-//{$DEFINE ITASKBARLIST3}                                   // ITaskbarList3 ‘Î‰
-//{$DEFINE PERFORMANCETEST}                                 // ƒpƒtƒH[ƒ}ƒ“ƒXƒeƒXƒg
-//{$DEFINE SPCBPMTEST}                                      // SPC_BPM.DLL ƒeƒXƒg
+//{$DEFINE DEBUGLOG}                                        // ãƒ‡ãƒãƒƒã‚°ãƒ­ã‚°å‡ºåŠ›
+//{$DEFINE UACDROP}                                         // UAC ã‚’è¶…ãˆãŸãƒ‰ãƒ­ãƒƒãƒ—æ“ä½œ
+//{$DEFINE ITASKBARLIST3}                                   // ITaskbarList3 å¯¾å¿œ
+//{$DEFINE PERFORMANCETEST}                                 // ãƒ‘ãƒ•ã‚©ãƒ¼ãƒãƒ³ã‚¹ãƒ†ã‚¹ãƒˆ
+//{$DEFINE SPCBPMTEST}                                      // SPC_BPM.DLL ãƒ†ã‚¹ãƒˆ
 
-{$APPTYPE GUI}                                              // ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒ^ƒCƒv       : GUI ƒ‚[ƒh
-{$ASSERTIONS OFF}                                           // ƒ\[ƒXƒR[ƒh‚ÌƒAƒT[ƒg       : –³Œø
-{$BOOLEVAL OFF}                                             // Š®‘S˜_—®•]‰¿               : –³Œø
-{$DEBUGINFO OFF}                                            // ƒfƒoƒbƒOî•ñ                 : –³Œø
-{$DENYPACKAGEUNIT ON}                                       // UNIT •sg—p                  : —LŒø
-{$EXTENDEDSYNTAX ON}                                        // ŠÖ”‚Ì–ß‚è’l‚ğ–³‹‰Â”\       : —LŒø
-{$EXTENSION 'exe'}                                          // Šg’£qİ’è                   : EXE
-{$IMAGEBASE $00400000}                                      // ƒCƒ[ƒWƒx[ƒXƒAƒhƒŒƒX       : 0x00400000
-{$IMPORTEDDATA OFF}                                         // •ÊƒpƒbƒP[ƒW‚Ìƒƒ‚ƒŠQÆ     : –³Œø
-{$IOCHECKS OFF}                                             // I/O ƒ`ƒFƒbƒN                 : –³Œø
-{$LONGSTRINGS ON}                                           // AnsiString g—p              : —LŒø
-{$MAXSTACKSIZE $00100000}                                   // Å‘åƒXƒ^ƒbƒNİ’è             : 0x00100000
-{$MINENUMSIZE 1}                                            // —ñ‹“Œ^‚ÌÅ‘åƒTƒCƒY (x256)    : 1 (256)
-{$MINSTACKSIZE $00004000}                                   // Å¬ƒXƒ^ƒbƒNİ’è             : 0x00004000
-{$OPENSTRINGS OFF}                                          // ƒI[ƒvƒ“•¶š—ñƒpƒ‰ƒ[ƒ^     : –³Œø
-{$OVERFLOWCHECKS OFF}                                       // ƒI[ƒo[ƒtƒ[ƒ`ƒFƒbƒN       : –³Œø
-{$RANGECHECKS OFF}                                          // ”ÍˆÍƒ`ƒFƒbƒN                 : –³Œø
-{$R 'spcplay.res' 'spcplay.rc'}                             // ƒŠƒ\[ƒX                     : spcplay.res <- spcplay.rc
-{$STACKFRAMES OFF}                                          // Š®‘SƒXƒ^ƒbƒNƒtƒŒ[ƒ€¶¬     : –³Œø
-{$TYPEDADDRESS OFF}                                         // ƒ|ƒCƒ“ƒ^‚ÌŒ^ƒ`ƒFƒbƒN         : –³Œø
-{$TYPEINFO OFF}                                             // ÀsŒ^î•ñ                 : –³Œø
-{$VARSTRINGCHECKS OFF}                                      // •¶š—ñƒ`ƒFƒbƒN               : –³Œø
-{$WARNINGS ON}                                              // Œx¶¬                     : —LŒø
-{$WEAKPACKAGEUNIT OFF}                                      // ã‚¢ƒpƒbƒP[ƒW‰»             : –³Œø
-{$WRITEABLECONST OFF}                                       // ’è”‘‚«Š·‚¦                 : –³Œø
+{$APPTYPE GUI}                                              // ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¿ã‚¤ãƒ—       : GUI ãƒ¢ãƒ¼ãƒ‰
+{$ASSERTIONS OFF}                                           // ã‚½ãƒ¼ã‚¹ã‚³ãƒ¼ãƒ‰ã®ã‚¢ã‚µãƒ¼ãƒˆ       : ç„¡åŠ¹
+{$BOOLEVAL OFF}                                             // å®Œå…¨è«–ç†å¼è©•ä¾¡               : ç„¡åŠ¹
+{$DEBUGINFO OFF}                                            // ãƒ‡ãƒãƒƒã‚°æƒ…å ±                 : ç„¡åŠ¹
+{$DENYPACKAGEUNIT ON}                                       // UNIT ä¸ä½¿ç”¨                  : æœ‰åŠ¹
+{$EXTENDEDSYNTAX ON}                                        // é–¢æ•°ã®æˆ»ã‚Šå€¤ã‚’ç„¡è¦–å¯èƒ½       : æœ‰åŠ¹
+{$EXTENSION 'exe'}                                          // æ‹¡å¼µå­è¨­å®š                   : EXE
+{$IMAGEBASE $00400000}                                      // ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ™ãƒ¼ã‚¹ã‚¢ãƒ‰ãƒ¬ã‚¹       : 0x00400000
+{$IMPORTEDDATA OFF}                                         // åˆ¥ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ã®ãƒ¡ãƒ¢ãƒªå‚ç…§     : ç„¡åŠ¹
+{$IOCHECKS OFF}                                             // I/O ãƒã‚§ãƒƒã‚¯                 : ç„¡åŠ¹
+{$LONGSTRINGS ON}                                           // AnsiString ä½¿ç”¨              : æœ‰åŠ¹
+{$MAXSTACKSIZE $00100000}                                   // æœ€å¤§ã‚¹ã‚¿ãƒƒã‚¯è¨­å®š             : 0x00100000
+{$MINENUMSIZE 1}                                            // åˆ—æŒ™å‹ã®æœ€å¤§ã‚µã‚¤ã‚º (x256)    : 1 (256)
+{$MINSTACKSIZE $00004000}                                   // æœ€å°ã‚¹ã‚¿ãƒƒã‚¯è¨­å®š             : 0x00004000
+{$OPENSTRINGS OFF}                                          // ã‚ªãƒ¼ãƒ—ãƒ³æ–‡å­—åˆ—ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿     : ç„¡åŠ¹
+{$OVERFLOWCHECKS OFF}                                       // ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ãƒã‚§ãƒƒã‚¯       : ç„¡åŠ¹
+{$RANGECHECKS OFF}                                          // ç¯„å›²ãƒã‚§ãƒƒã‚¯                 : ç„¡åŠ¹
+{$R 'spcplay.res' 'spcplay.rc'}                             // ãƒªã‚½ãƒ¼ã‚¹                     : spcplay.res <- spcplay.rc
+{$STACKFRAMES OFF}                                          // å®Œå…¨ã‚¹ã‚¿ãƒƒã‚¯ãƒ•ãƒ¬ãƒ¼ãƒ ç”Ÿæˆ     : ç„¡åŠ¹
+{$TYPEDADDRESS OFF}                                         // ãƒã‚¤ãƒ³ã‚¿ã®å‹ãƒã‚§ãƒƒã‚¯         : ç„¡åŠ¹
+{$TYPEINFO OFF}                                             // å®Ÿè¡Œæ™‚å‹æƒ…å ±                 : ç„¡åŠ¹
+{$VARSTRINGCHECKS OFF}                                      // æ–‡å­—åˆ—ãƒã‚§ãƒƒã‚¯               : ç„¡åŠ¹
+{$WARNINGS ON}                                              // è­¦å‘Šç”Ÿæˆ                     : æœ‰åŠ¹
+{$WEAKPACKAGEUNIT OFF}                                      // å¼±ã„ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸åŒ–             : ç„¡åŠ¹
+{$WRITEABLECONST OFF}                                       // å®šæ•°æ›¸ãæ›ãˆ                 : ç„¡åŠ¹
 
 {$IFDEF FREEPASCAL}     // for Free Pascal 3.2+
-{$CALLING STDCALL}                                          // CALL ƒXƒ^ƒbƒN•û®            : STDCALL
-{$CHECKPOINTER OFF}                                         // ƒ|ƒCƒ“ƒ^ƒ`ƒFƒbƒN             : –³Œø
-{$FPUTYPE x87}                                              // •‚“®¬”‰‰Z–½—ß             : x87
-{$HINTS OFF}                                                // ƒqƒ“ƒg¶¬                   : –³Œø
-{$IEEEERRORS OFF}                                           // •‚“®¬”ƒGƒ‰[ƒ`ƒFƒbƒN       : –³Œø
-{$MODE delphi}                                              // Œ¾Œêƒ‚[ƒh                   : delphi
-{$OPTIMIZATION LEVEL3,USEEBP}                               // Å“K‰»ƒRƒ“ƒpƒCƒ‹             : Lv3, EBP ƒŒƒWƒXƒ^g—p
-{$POINTERMATH ON}                                           // ƒ|ƒCƒ“ƒ^‰‰Z                 : —LŒø
-{$SAFEFPUEXCEPTIONS OFF}                                    // FPU ƒGƒ‰[‘¦•ñ           : –³Œø
+{$CALLING STDCALL}                                          // CALL ã‚¹ã‚¿ãƒƒã‚¯æ–¹å¼            : STDCALL
+{$CHECKPOINTER OFF}                                         // ãƒã‚¤ãƒ³ã‚¿ãƒã‚§ãƒƒã‚¯             : ç„¡åŠ¹
+{$CODEPAGE UTF-8}                                           // æ–‡å­—ã‚³ãƒ¼ãƒ‰                   : UTF-8
+{$FPUTYPE x87}                                              // æµ®å‹•å°æ•°æ¼”ç®—å‘½ä»¤             : x87
+{$HINTS OFF}                                                // ãƒ’ãƒ³ãƒˆç”Ÿæˆ                   : ç„¡åŠ¹
+{$IEEEERRORS OFF}                                           // æµ®å‹•å°æ•°ã‚¨ãƒ©ãƒ¼ãƒã‚§ãƒƒã‚¯       : ç„¡åŠ¹
+{$MODE DELPHI}                                              // è¨€èªãƒ¢ãƒ¼ãƒ‰                   : DELPHI
+{$OPTIMIZATION LEVEL3,USEEBP}                               // æœ€é©åŒ–ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«             : Lv3, EBP ãƒ¬ã‚¸ã‚¹ã‚¿ä½¿ç”¨
+{$POINTERMATH ON}                                           // ãƒã‚¤ãƒ³ã‚¿æ¼”ç®—                 : æœ‰åŠ¹
+{$SAFEFPUEXCEPTIONS OFF}                                    // FPU ã‚¨ãƒ©ãƒ¼å³æ™‚å ±å‘Š           : ç„¡åŠ¹
 {$ELSE}                 // for Boland Delphi 6+
-{$DEFINITIONINFO OFF}                                       // ƒVƒ“ƒ{ƒ‹éŒ¾‚ÆQÆî•ñ       : –³Œø
-{$DESIGNONLY OFF}                                           // IDE g—p                     : –³Œø
-{$HINTS ON}                                                 // ƒqƒ“ƒg¶¬                   : —LŒø
-{$IMPLICITBUILD ON}                                         // ƒrƒ‹ƒh‚Ì‚½‚Ñ‚ÉÄƒRƒ“ƒpƒCƒ‹   : —LŒø
-{$LOCALSYMBOLS OFF}                                         // ƒ[ƒJƒ‹ƒVƒ“ƒ{ƒ‹î•ñ         : –³Œø
-{$OBJEXPORTALL OFF}                                         // ƒVƒ“ƒ{ƒ‹‚ÌƒGƒNƒXƒ|[ƒg       : –³Œø
-{$OPTIMIZATION ON}                                          // Å“K‰»ƒRƒ“ƒpƒCƒ‹             : —LŒø
-{$REALCOMPATIBILITY OFF}                                    // Real48 ŒİŠ·                  : –³Œø
-{$REFERENCEINFO OFF}                                        // Š®‘S‚ÈQÆî•ñ‚Ì¶¬         : –³Œø
-{$RUNONLY OFF}                                              // Às‚Ì‚İƒRƒ“ƒpƒCƒ‹         : –³Œø
-{$SAFEDIVIDE OFF}                                           // ‰Šú Pentium FDIV ƒoƒO‰ñ”ğ   : –³Œø
+{$DEFINITIONINFO OFF}                                       // ã‚·ãƒ³ãƒœãƒ«å®£è¨€ã¨å‚ç…§æƒ…å ±       : ç„¡åŠ¹
+{$DESIGNONLY OFF}                                           // IDE ä½¿ç”¨                     : ç„¡åŠ¹
+{$HINTS ON}                                                 // ãƒ’ãƒ³ãƒˆç”Ÿæˆ                   : æœ‰åŠ¹
+{$IMPLICITBUILD ON}                                         // ãƒ“ãƒ«ãƒ‰ã®ãŸã³ã«å†ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«   : æœ‰åŠ¹
+{$LOCALSYMBOLS OFF}                                         // ãƒ­ãƒ¼ã‚«ãƒ«ã‚·ãƒ³ãƒœãƒ«æƒ…å ±         : ç„¡åŠ¹
+{$OBJEXPORTALL OFF}                                         // ã‚·ãƒ³ãƒœãƒ«ã®ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆ       : ç„¡åŠ¹
+{$OPTIMIZATION ON}                                          // æœ€é©åŒ–ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«             : æœ‰åŠ¹
+{$REALCOMPATIBILITY OFF}                                    // Real48 äº’æ›                  : ç„¡åŠ¹
+{$REFERENCEINFO OFF}                                        // å®Œå…¨ãªå‚ç…§æƒ…å ±ã®ç”Ÿæˆ         : ç„¡åŠ¹
+{$RUNONLY OFF}                                              // å®Ÿè¡Œæ™‚ã®ã¿ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«         : ç„¡åŠ¹
+{$SAFEDIVIDE OFF}                                           // åˆæœŸ Pentium FDIV ãƒã‚°å›é¿   : ç„¡åŠ¹
 {$ENDIF}
 
 
 // *************************************************************************************************************************************************************
-// ŠO•”ƒNƒ‰ƒX‚ÌéŒ¾
+// å¤–éƒ¨ã‚¯ãƒ©ã‚¹ã®å®£è¨€
 // *************************************************************************************************************************************************************
 
 //uses MemCheck in '..\..\memcheck\MemCheck.pas';
 
 
 // *************************************************************************************************************************************************************
-// \‘¢‘ÌA‚¨‚æ‚ÑƒNƒ‰ƒX‚ÌéŒ¾
+// æ§‹é€ ä½“ã€ãŠã‚ˆã³ã‚¯ãƒ©ã‚¹ã®å®£è¨€
 // *************************************************************************************************************************************************************
 
 type
-{$ALIGN OFF} // \‘¢‘Ì‚Ì©“®ƒTƒCƒY’²®‚È‚µ --- ‚±‚±‚©‚ç
-    TSPCREG = record                                        // SPC700 ƒŒƒWƒXƒ^
-        pc: word;                                               // PC ƒŒƒWƒXƒ^
-        a: byte;                                                // A ƒŒƒWƒXƒ^
-        x: byte;                                                // X ƒŒƒWƒXƒ^
-        y: byte;                                                // Y ƒŒƒWƒXƒ^
-        psw: byte;                                              // PSW ƒŒƒWƒXƒ^
-        sp: byte;                                               // SP ƒŒƒWƒXƒ^
+{$ALIGN OFF} // æ§‹é€ ä½“ã®è‡ªå‹•ã‚µã‚¤ã‚ºèª¿æ•´ãªã— --- ã“ã“ã‹ã‚‰
+    TSPCREG = record                                        // SPC700 ãƒ¬ã‚¸ã‚¹ã‚¿
+        pc: word;                                               // PC ãƒ¬ã‚¸ã‚¹ã‚¿
+        a: byte;                                                // A ãƒ¬ã‚¸ã‚¹ã‚¿
+        x: byte;                                                // X ãƒ¬ã‚¸ã‚¹ã‚¿
+        y: byte;                                                // Y ãƒ¬ã‚¸ã‚¹ã‚¿
+        psw: byte;                                              // PSW ãƒ¬ã‚¸ã‚¹ã‚¿
+        sp: byte;                                               // SP ãƒ¬ã‚¸ã‚¹ã‚¿
     end;
 
-    // SPCHDR \‘¢‘Ì
+    // SPCHDR æ§‹é€ ä½“
     TSPCHDR = record
-        FileHdr: array[0..32] of char;                      // ƒtƒ@ƒCƒ‹ƒwƒbƒ_
-        TagTarm: array[0..1] of byte;                       // ƒwƒbƒ_‚Æƒ^ƒO‚Ì•ª—£—Ìˆæ (0x00, 0x1A)
-        TagType: byte;                                      // ƒ^ƒO‚Ìí—Ş (0x00 = –¢’è‹`, 0x1A = ID666, 0x1B = ID666 ˆÈŠO)
-        Version: byte;                                      // SPC ƒo[ƒWƒ‡ƒ“
-        Reg: TSPCREG;                                       // SPC700 ƒŒƒWƒXƒ^‚Ì‰Šú’l
-        __r1: word;                                         // (–¢g—p) = 0x00
-        Title: array[0..31] of char;                        // ‹È–¼
-        Game: array[0..31] of char;                         // ƒQ[ƒ€–¼
-        Dumper: array[0..15] of char;                       // SPC »ìÒ
-        Comment: array[0..31] of char;                      // ƒRƒƒ“ƒg
-        Date: array[0..10] of char;                         // SPC »ì“ú
-        SongLen: array[0..2] of char;                       // ‰‰‘tŠÔ
-        FadeLen: array[0..4] of char;                       // ƒtƒF[ƒhƒAƒEƒgŠÔ
-        Artist: array[0..31] of char;                       // ì‹ÈÒ
-        ChDis: byte;                                        // ƒ`ƒƒƒ“ƒlƒ‹ƒ}ƒXƒN‰Šúó‘Ô
-        Emulator: byte;                                     // o—ÍŒ³ƒGƒ~ƒ…ƒŒ[ƒ^
-        __r2: array[0..35] of byte;                         // (–¢g—p) = 0x00
-        dwSongLen: longword;                                // (–¢g—p) - ‰‰‘tŠÔ
-        dwFadeLen: longword;                                // (–¢g—p) - ƒtƒF[ƒhƒAƒEƒgŠÔ
-        TagFormat: byte;                                    // (–¢g—p) - ƒ^ƒOƒtƒH[ƒ}ƒbƒg
+        FileHdr: array[0..32] of char;                      // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ˜ãƒƒãƒ€
+        TagTarm: array[0..1] of byte;                       // ãƒ˜ãƒƒãƒ€ã¨ã‚¿ã‚°ã®åˆ†é›¢é ˜åŸŸ (0x00, 0x1A)
+        TagType: byte;                                      // ã‚¿ã‚°ã®ç¨®é¡ (0x00 = æœªå®šç¾©, 0x1A = ID666, 0x1B = ID666 ä»¥å¤–)
+        Version: byte;                                      // SPC ãƒãƒ¼ã‚¸ãƒ§ãƒ³
+        Reg: TSPCREG;                                       // SPC700 ãƒ¬ã‚¸ã‚¹ã‚¿ã®åˆæœŸå€¤
+        __r1: word;                                         // (æœªä½¿ç”¨) = 0x00
+        Title: array[0..31] of char;                        // æ›²å
+        Game: array[0..31] of char;                         // ã‚²ãƒ¼ãƒ å
+        Dumper: array[0..15] of char;                       // SPC è£½ä½œè€…
+        Comment: array[0..31] of char;                      // ã‚³ãƒ¡ãƒ³ãƒˆ
+        Date: array[0..10] of char;                         // SPC è£½ä½œæ—¥
+        SongLen: array[0..2] of char;                       // æ¼”å¥æ™‚é–“
+        FadeLen: array[0..4] of char;                       // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“
+        Artist: array[0..31] of char;                       // ä½œæ›²è€…
+        ChDis: byte;                                        // ãƒãƒ£ãƒ³ãƒãƒ«ãƒã‚¹ã‚¯åˆæœŸçŠ¶æ…‹
+        Emulator: byte;                                     // å‡ºåŠ›å…ƒã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚¿
+        __r2: array[0..35] of byte;                         // (æœªä½¿ç”¨) = 0x00
+        dwSongLen: longword;                                // (æœªä½¿ç”¨) - æ¼”å¥æ™‚é–“
+        dwFadeLen: longword;                                // (æœªä½¿ç”¨) - ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“
+        TagFormat: byte;                                    // (æœªä½¿ç”¨) - ã‚¿ã‚°ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
     end;
 
-    // SPCHDRBIN \‘¢‘Ì
+    // SPCHDRBIN æ§‹é€ ä½“
     TSPCHDRBIN = record
-        __r1: array[0..157] of byte;                        // (—\–ñ) - SPCHDR
-        DateDay: byte;                                      // SPC »ì“ú (“ú)
-        DateMonth: byte;                                    // SPC »ì“ú (Œ)
-        DateYear: word;                                     // SPC »ì“ú (”N)
-        __r2: array[0..6] of byte;                          // (–¢g—p) = 0x00
-        SongLen: word;                                      // ‰‰‘tŠÔ
-        __r3: byte;                                         // (–¢g—p) = 0x00
-        FadeLen: longword;                                  // ƒtƒF[ƒhƒAƒEƒgŠÔ
-        Artist: array[0..31] of char;                       // ì‹ÈÒ
-        ChDis: byte;                                        // ƒ`ƒƒƒ“ƒlƒ‹ƒ}ƒXƒN‰Šúó‘Ô
-        Emulator: byte;                                     // o—ÍŒ³ƒGƒ~ƒ…ƒŒ[ƒ^
-        __r4: byte;                                         // (–¢g—p) = 0x00
-        __r5: array[0..44] of byte;                         // (—\–ñ) - SPCHDR
+        __r1: array[0..157] of byte;                        // (äºˆç´„) - SPCHDR
+        DateDay: byte;                                      // SPC è£½ä½œæ—¥ (æ—¥)
+        DateMonth: byte;                                    // SPC è£½ä½œæ—¥ (æœˆ)
+        DateYear: word;                                     // SPC è£½ä½œæ—¥ (å¹´)
+        __r2: array[0..6] of byte;                          // (æœªä½¿ç”¨) = 0x00
+        SongLen: word;                                      // æ¼”å¥æ™‚é–“
+        __r3: byte;                                         // (æœªä½¿ç”¨) = 0x00
+        FadeLen: longword;                                  // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“
+        Artist: array[0..31] of char;                       // ä½œæ›²è€…
+        ChDis: byte;                                        // ãƒãƒ£ãƒ³ãƒãƒ«ãƒã‚¹ã‚¯åˆæœŸçŠ¶æ…‹
+        Emulator: byte;                                     // å‡ºåŠ›å…ƒã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚¿
+        __r4: byte;                                         // (æœªä½¿ç”¨) = 0x00
+        __r5: array[0..44] of byte;                         // (äºˆç´„) - SPCHDR
     end;
 
-    // SPC \‘¢‘Ì
+    // SPC æ§‹é€ ä½“
     TSPC = record
-        Hdr: TSPCHDR;                                       // SPC ƒtƒ@ƒCƒ‹ƒwƒbƒ_
+        Hdr: TSPCHDR;                                       // SPC ãƒ•ã‚¡ã‚¤ãƒ«ãƒ˜ãƒƒãƒ€
         Ram: array[0..65535] of byte;                       // SPC700 64KB RAM
-        Dsp: array[0..127] of byte;                         // DSP ƒŒƒWƒXƒ^
-        __r: array[0..63] of byte;                          // (–¢g—p) = 0x00 or Šg’£ RAM
-        XRam: array[0..63] of byte;                         // SPC700 Šg’£ RAM
+        Dsp: array[0..127] of byte;                         // DSP ãƒ¬ã‚¸ã‚¹ã‚¿
+        __r: array[0..63] of byte;                          // (æœªä½¿ç”¨) = 0x00 or æ‹¡å¼µ RAM
+        XRam: array[0..63] of byte;                         // SPC700 æ‹¡å¼µ RAM
     end;
 
-    // RAM \‘¢‘Ì
+    // RAM æ§‹é€ ä½“
     TRAM = record case byte of
         1: (Ram: array[0..65535] of byte);                  // RAM
-        2: (__r1: array[0..$F3] of byte;                    // (—\–ñ)
-            dwPort: longword;                               // APU ƒ|[ƒg (32 ƒrƒbƒg)
-            __r2: array[$F8..$FFFF] of byte);               // (—\–ñ)
+        2: (__r1: array[0..$F3] of byte;                    // (äºˆç´„)
+            dwPort: longword;                               // APU ãƒãƒ¼ãƒˆ (32 ãƒ“ãƒƒãƒˆ)
+            __r2: array[$F8..$FFFF] of byte);               // (äºˆç´„)
     end;
 
-    // XRAM \‘¢‘Ì
+    // XRAM æ§‹é€ ä½“
     TXRAM = record
         XRam: array[0..63] of byte;                         // XRAM
     end;
 
-    // SPCPORT \‘¢‘Ì
+    // SPCPORT æ§‹é€ ä½“
     TSPCPORT = record case byte of
-        1: (Port: array[0..3] of byte);                     // Šeƒ|[ƒg
-        2: (dwPort: longword);                              // ƒ|[ƒg (32 ƒrƒbƒg)
+        1: (Port: array[0..3] of byte);                     // å„ãƒãƒ¼ãƒˆ
+        2: (dwPort: longword);                              // ãƒãƒ¼ãƒˆ (32 ãƒ“ãƒƒãƒˆ)
     end;
 
-    // SPCSRCADDRS \‘¢‘Ì
+    // SPCSRCADDRS æ§‹é€ ä½“
     TSPCSRCADDRS = record
         Src: array[0..255] of record
-            wStart: word;                                   // ŠJnƒAƒhƒŒƒX
-            wLoop: word;                                    // ƒ‹[ƒvƒAƒhƒŒƒX
+            wStart: word;                                   // é–‹å§‹ã‚¢ãƒ‰ãƒ¬ã‚¹
+            wLoop: word;                                    // ãƒ«ãƒ¼ãƒ—ã‚¢ãƒ‰ãƒ¬ã‚¹
         end;
     end;
 
-    // SPC700REG \‘¢‘Ì
+    // SPC700REG æ§‹é€ ä½“
     TSPC700REG = record case byte of
-        1: (psw: array[0..7] of longword;                   // PSW ƒŒƒWƒXƒ^ (0x100 ‚Åƒ}ƒXƒN)
-            pc: longword;                                   // PC ƒŒƒWƒXƒ^ (‰ºˆÊ 16 ƒrƒbƒg)
-            ya: longword;                                   // Y, A ƒŒƒWƒXƒ^ (Y : ãˆÊ 8 ƒrƒbƒgA A : ‰ºˆÊ 8 ƒrƒbƒg)
-            sp: longword;                                   // SP ƒŒƒWƒXƒ^ (‰ºˆÊ 8 ƒrƒbƒg)
-            x: longword);                                   // X ƒŒƒWƒXƒ^ (‰ºˆÊ 8 ƒrƒbƒg)
+        1: (psw: array[0..7] of longword;                   // PSW ãƒ¬ã‚¸ã‚¹ã‚¿ (0x100 ã§ãƒã‚¹ã‚¯)
+            pc: longword;                                   // PC ãƒ¬ã‚¸ã‚¹ã‚¿ (ä¸‹ä½ 16 ãƒ“ãƒƒãƒˆ)
+            ya: longword;                                   // Y, A ãƒ¬ã‚¸ã‚¹ã‚¿ (Y : ä¸Šä½ 8 ãƒ“ãƒƒãƒˆã€ A : ä¸‹ä½ 8 ãƒ“ãƒƒãƒˆ)
+            sp: longword;                                   // SP ãƒ¬ã‚¸ã‚¹ã‚¿ (ä¸‹ä½ 8 ãƒ“ãƒƒãƒˆ)
+            x: longword);                                   // X ãƒ¬ã‚¸ã‚¹ã‚¿ (ä¸‹ä½ 8 ãƒ“ãƒƒãƒˆ)
         2: (Word: array[0..23] of word);
         3: (Byte: array[0..47] of byte);
     end;
 
-    // DSPVOICE \‘¢‘Ì
+    // DSPVOICE æ§‹é€ ä½“
     TDSPVOICE = record
-        VolumeLeft: byte;                                   // o—ÍƒŒƒxƒ‹ (¶)
-        VolumeRight: byte;                                  // o—ÍƒŒƒxƒ‹ (‰E)
-        Pitch: word;                                        // ƒsƒbƒ` (‰ºˆÊ 14 ƒrƒbƒg)
-        SoundSourcePlayBack: byte;                          // ”gŒ`”Ô†
-        EnvelopeADSR1: byte;                                // ƒGƒ“ƒxƒ[ƒv‚Ìí—Ş (ãˆÊ 1 ƒrƒbƒg) ‚Æ ADSR ƒGƒ“ƒxƒ[ƒv‚Ìİ’è (DR : 3 ƒrƒbƒgAAR : 4 ƒrƒbƒg)
-        EnvelopeADSR2: byte;                                // ƒGƒ“ƒxƒ[ƒv‚Ìİ’è (SL : 3 ƒrƒbƒgASR : 5 ƒrƒbƒg)
-        EnvelopeGain: byte;                                 // Gain ƒGƒ“ƒxƒ[ƒv‚Ìİ’è (ãˆÊ 3 ƒrƒbƒg)
-        CurrentEnvelope: byte;                              // Œ»İ‚ÌƒGƒ“ƒxƒ[ƒv’l
-        CurrentOutput: byte;                                // Œ»İ‚Ì”gŒ`o—Í’l
-        __r: array[0..4] of byte;                           // (—\–ñ) = DSPREG \‘¢‘Ì
-        Fir: byte;                                          // FIR ƒtƒBƒ‹ƒ^ŒW”
+        VolumeLeft: byte;                                   // å‡ºåŠ›ãƒ¬ãƒ™ãƒ« (å·¦)
+        VolumeRight: byte;                                  // å‡ºåŠ›ãƒ¬ãƒ™ãƒ« (å³)
+        Pitch: word;                                        // ãƒ”ãƒƒãƒ (ä¸‹ä½ 14 ãƒ“ãƒƒãƒˆ)
+        SoundSourcePlayBack: byte;                          // æ³¢å½¢ç•ªå·
+        EnvelopeADSR1: byte;                                // ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—ã®ç¨®é¡ (ä¸Šä½ 1 ãƒ“ãƒƒãƒˆ) ã¨ ADSR ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—ã®è¨­å®š (DR : 3 ãƒ“ãƒƒãƒˆã€AR : 4 ãƒ“ãƒƒãƒˆ)
+        EnvelopeADSR2: byte;                                // ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—ã®è¨­å®š (SL : 3 ãƒ“ãƒƒãƒˆã€SR : 5 ãƒ“ãƒƒãƒˆ)
+        EnvelopeGain: byte;                                 // Gain ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—ã®è¨­å®š (ä¸Šä½ 3 ãƒ“ãƒƒãƒˆ)
+        CurrentEnvelope: byte;                              // ç¾åœ¨ã®ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—å€¤
+        CurrentOutput: byte;                                // ç¾åœ¨ã®æ³¢å½¢å‡ºåŠ›å€¤
+        __r: array[0..4] of byte;                           // (äºˆç´„) = DSPREG æ§‹é€ ä½“
+        Fir: byte;                                          // FIR ãƒ•ã‚£ãƒ«ã‚¿ä¿‚æ•°
     end;
 
-    // DSPREG \‘¢‘Ì
+    // DSPREG æ§‹é€ ä½“
     TDSPREG = record case byte of
-        1: (Voice: array[0..7] of TDSPVOICE);               // ƒ{ƒCƒXƒŒƒWƒXƒ^ (DSPVOICE x8)
-        2: (__r00: array[0..11] of byte;                    // (—\–ñ) = DSPVOICE
-            MainVolumeLeft: byte;                           // ƒ}ƒXƒ^[‰¹—Ê (¶)
-            EchoFeedback: byte;                             // ƒGƒR[ƒtƒB[ƒhƒoƒbƒN‚Ì‹­‚³
-            __r0E: byte;                                    // (–¢g—p)
-            __r0F: byte;                                    // (—\–ñ) = DSPVOICE
-            __r10: array[0..11] of byte;                    // (—\–ñ) = DSPVOICE
-            MainVolumeRight: byte;                          // ƒ}ƒXƒ^[‰¹—Ê (‰E)
-            __r1D: byte;                                    // (–¢g—p)
-            __r1E: byte;                                    // (–¢g—p)
-            __r1F: byte;                                    // (—\–ñ) = DSPVOICE
-            __r20: array[0..11] of byte;                    // (—\–ñ) = DSPVOICE
-            EchoVolumeLeft: byte;                           // ƒGƒR[‰¹—Ê (¶)
-            PitchModOn: byte;                               // Šeƒ`ƒƒƒ“ƒlƒ‹‚Ìƒsƒbƒ`ƒ‚ƒWƒ…ƒŒ[ƒVƒ‡ƒ“‚ÌƒIƒ“ƒtƒ‰ƒO (8 ƒrƒbƒg)
-            __r2E: byte;                                    // (–¢g—p)
-            __r2F: byte;                                    // (—\–ñ) = DSPVOICE
-            __r30: array[0..11] of byte;                    // (—\–ñ) = DSPVOICE
-            EchoVolumeRight: byte;                          // ƒGƒR[‰¹—Ê (‰E)
-            NoiseOn: byte;                                  // Šeƒ`ƒƒƒ“ƒlƒ‹‚ÌƒmƒCƒY‚ÌƒIƒ“ƒtƒ‰ƒO (8 ƒrƒbƒg)
-            __r3E: byte;                                    // (–¢g—p)
-            __r3F: byte;                                    // (—\–ñ) = DSPVOICE
-            __r40: array[0..11] of byte;                    // (—\–ñ) = DSPVOICE
-            KeyOn: byte;                                    // Šeƒ`ƒƒƒ“ƒlƒ‹‚ÌƒL[‚ÌƒIƒ“ƒtƒ‰ƒO (8 ƒrƒbƒg)
-            EchoOn: byte;                                   // Šeƒ`ƒƒƒ“ƒlƒ‹‚ÌƒGƒR[‚ÌƒIƒ“ƒtƒ‰ƒO (8 ƒrƒbƒg)
-            __r4E: byte;                                    // (–¢g—p)
-            __r4F: byte;                                    // (—\–ñ) = DSPVOICE
-            __r50: array[0..11] of byte;                    // (—\–ñ) = DSPVOICE
-            KeyOff: byte;                                   // Šeƒ`ƒƒƒ“ƒlƒ‹‚ÌƒL[‚ÌƒIƒtƒtƒ‰ƒO (8 ƒrƒbƒg)
-            SourceDirectory: byte;                          // ƒ\[ƒXƒfƒBƒŒƒNƒgƒŠ (”gŒ`î•ñ‚ªŠi”[‚³‚ê‚Ä‚¢‚éƒƒ‚ƒŠ‚ÌƒIƒtƒZƒbƒgƒAƒhƒŒƒX x0x100)
-            __r5E: byte;                                    // (–¢g—p)
-            __r5F: byte;                                    // (—\–ñ) = DSPVOICE
-            __r60: array[0..11] of byte;                    // (—\–ñ) = DSPVOICE
-            Flags: byte;                                    // DSP ƒŠƒZƒbƒgAo—Í–³ŒøAƒGƒR[–³Œøƒtƒ‰ƒO (ãˆÊ 3 ƒrƒbƒg) ‚ÆƒmƒCƒYü”g” (‰ºˆÊ 5 ƒrƒbƒg)
-            EchoWaveform: byte;                             // ƒGƒR[‹L‰¯—Ìˆæ (ƒGƒR[ˆ—‚Ég—p‚·‚éƒƒ‚ƒŠ‚ÌƒIƒtƒZƒbƒgƒAƒhƒŒƒX x0x100)
-            __r6E: byte;                                    // (–¢g—p)
-            __r6F: byte;                                    // (—\–ñ) = DSPVOICE
-            __r70: array[0..11] of byte;                    // (—\–ñ) = DSPVOICE
-            EndWaveform: byte;                              // Šeƒ`ƒƒƒ“ƒlƒ‹‚Ì”gŒ`ƒtƒH[ƒ€‚ÌI—¹“_’Ê‰ßƒtƒ‰ƒO (8 ƒrƒbƒg)
-            EchoDelay: byte;                                // ƒGƒR[ƒfƒBƒŒƒCŠÔ (x16 [ms])
-            __r7E: byte;                                    // (–¢g—p)
-            __r7F: byte);                                   // (—\–ñ) = DSPVOICE
-        3: (Reg: array[0..127] of byte);                    // DSP ƒŒƒWƒXƒ^
+        1: (Voice: array[0..7] of TDSPVOICE);               // ãƒœã‚¤ã‚¹ãƒ¬ã‚¸ã‚¹ã‚¿ (DSPVOICE x8)
+        2: (__r00: array[0..11] of byte;                    // (äºˆç´„) = DSPVOICE
+            MainVolumeLeft: byte;                           // ãƒã‚¹ã‚¿ãƒ¼éŸ³é‡ (å·¦)
+            EchoFeedback: byte;                             // ã‚¨ã‚³ãƒ¼ãƒ•ã‚£ãƒ¼ãƒ‰ãƒãƒƒã‚¯ã®å¼·ã•
+            __r0E: byte;                                    // (æœªä½¿ç”¨)
+            __r0F: byte;                                    // (äºˆç´„) = DSPVOICE
+            __r10: array[0..11] of byte;                    // (äºˆç´„) = DSPVOICE
+            MainVolumeRight: byte;                          // ãƒã‚¹ã‚¿ãƒ¼éŸ³é‡ (å³)
+            __r1D: byte;                                    // (æœªä½¿ç”¨)
+            __r1E: byte;                                    // (æœªä½¿ç”¨)
+            __r1F: byte;                                    // (äºˆç´„) = DSPVOICE
+            __r20: array[0..11] of byte;                    // (äºˆç´„) = DSPVOICE
+            EchoVolumeLeft: byte;                           // ã‚¨ã‚³ãƒ¼éŸ³é‡ (å·¦)
+            PitchModOn: byte;                               // å„ãƒãƒ£ãƒ³ãƒãƒ«ã®ãƒ”ãƒƒãƒãƒ¢ã‚¸ãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚ªãƒ³ãƒ•ãƒ©ã‚° (8 ãƒ“ãƒƒãƒˆ)
+            __r2E: byte;                                    // (æœªä½¿ç”¨)
+            __r2F: byte;                                    // (äºˆç´„) = DSPVOICE
+            __r30: array[0..11] of byte;                    // (äºˆç´„) = DSPVOICE
+            EchoVolumeRight: byte;                          // ã‚¨ã‚³ãƒ¼éŸ³é‡ (å³)
+            NoiseOn: byte;                                  // å„ãƒãƒ£ãƒ³ãƒãƒ«ã®ãƒã‚¤ã‚ºã®ã‚ªãƒ³ãƒ•ãƒ©ã‚° (8 ãƒ“ãƒƒãƒˆ)
+            __r3E: byte;                                    // (æœªä½¿ç”¨)
+            __r3F: byte;                                    // (äºˆç´„) = DSPVOICE
+            __r40: array[0..11] of byte;                    // (äºˆç´„) = DSPVOICE
+            KeyOn: byte;                                    // å„ãƒãƒ£ãƒ³ãƒãƒ«ã®ã‚­ãƒ¼ã®ã‚ªãƒ³ãƒ•ãƒ©ã‚° (8 ãƒ“ãƒƒãƒˆ)
+            EchoOn: byte;                                   // å„ãƒãƒ£ãƒ³ãƒãƒ«ã®ã‚¨ã‚³ãƒ¼ã®ã‚ªãƒ³ãƒ•ãƒ©ã‚° (8 ãƒ“ãƒƒãƒˆ)
+            __r4E: byte;                                    // (æœªä½¿ç”¨)
+            __r4F: byte;                                    // (äºˆç´„) = DSPVOICE
+            __r50: array[0..11] of byte;                    // (äºˆç´„) = DSPVOICE
+            KeyOff: byte;                                   // å„ãƒãƒ£ãƒ³ãƒãƒ«ã®ã‚­ãƒ¼ã®ã‚ªãƒ•ãƒ•ãƒ©ã‚° (8 ãƒ“ãƒƒãƒˆ)
+            SourceDirectory: byte;                          // ã‚½ãƒ¼ã‚¹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª (æ³¢å½¢æƒ…å ±ãŒæ ¼ç´ã•ã‚Œã¦ã„ã‚‹ãƒ¡ãƒ¢ãƒªã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚¢ãƒ‰ãƒ¬ã‚¹ x0x100)
+            __r5E: byte;                                    // (æœªä½¿ç”¨)
+            __r5F: byte;                                    // (äºˆç´„) = DSPVOICE
+            __r60: array[0..11] of byte;                    // (äºˆç´„) = DSPVOICE
+            Flags: byte;                                    // DSP ãƒªã‚»ãƒƒãƒˆã€å‡ºåŠ›ç„¡åŠ¹ã€ã‚¨ã‚³ãƒ¼ç„¡åŠ¹ãƒ•ãƒ©ã‚° (ä¸Šä½ 3 ãƒ“ãƒƒãƒˆ) ã¨ãƒã‚¤ã‚ºå‘¨æ³¢æ•° (ä¸‹ä½ 5 ãƒ“ãƒƒãƒˆ)
+            EchoWaveform: byte;                             // ã‚¨ã‚³ãƒ¼è¨˜æ†¶é ˜åŸŸ (ã‚¨ã‚³ãƒ¼å‡¦ç†ã«ä½¿ç”¨ã™ã‚‹ãƒ¡ãƒ¢ãƒªã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚¢ãƒ‰ãƒ¬ã‚¹ x0x100)
+            __r6E: byte;                                    // (æœªä½¿ç”¨)
+            __r6F: byte;                                    // (äºˆç´„) = DSPVOICE
+            __r70: array[0..11] of byte;                    // (äºˆç´„) = DSPVOICE
+            EndWaveform: byte;                              // å„ãƒãƒ£ãƒ³ãƒãƒ«ã®æ³¢å½¢ãƒ•ã‚©ãƒ¼ãƒ ã®çµ‚äº†ç‚¹é€šéãƒ•ãƒ©ã‚° (8 ãƒ“ãƒƒãƒˆ)
+            EchoDelay: byte;                                // ã‚¨ã‚³ãƒ¼ãƒ‡ã‚£ãƒ¬ã‚¤æ™‚é–“ (x16 [ms])
+            __r7E: byte;                                    // (æœªä½¿ç”¨)
+            __r7F: byte);                                   // (äºˆç´„) = DSPVOICE
+        3: (Reg: array[0..127] of byte);                    // DSP ãƒ¬ã‚¸ã‚¹ã‚¿
     end;
 
-    // VOICE \‘¢‘Ì
+    // VOICE æ§‹é€ ä½“
     TVOICE = record
-        KOnADSR: word;                                      // KON ‚Ì ADSR ƒpƒ‰ƒ[ƒ^
-        KOnGain: byte;                                      // KON ‚Ì Gain ƒpƒ‰ƒ[ƒ^
-        ResetEnv: byte;                                     // KON Œã‚Ì ADSR/Gain •ÏXƒtƒ‰ƒO
-        CurrentSample: ^word;                               // ƒJƒŒƒ“ƒgƒTƒ“ƒvƒ‹‚Ìƒ|ƒCƒ“ƒ^
-        CurrentBlock: pointer;                              // ƒJƒŒƒ“ƒgƒuƒƒbƒN‚Ìƒ|ƒCƒ“ƒ^
-        BlockHdr: byte;                                     // ƒJƒŒƒ“ƒgƒuƒƒbƒN‚Ìƒwƒbƒ_
-        MixFlag: byte;                                      // ƒ~ƒLƒVƒ“ƒOƒIƒvƒVƒ‡ƒ“ (‰ºˆÊ 2 ƒrƒbƒg‚Åƒ~ƒ…[ƒgE‹­§ƒmƒCƒYİ’èAãˆÊ 6 ƒrƒbƒg‚Í—\–ñ)
-        EnvelopeCurrentMode: byte;                          // ƒGƒ“ƒxƒ[ƒv‚Ì“®ìƒ‚[ƒh
-        EnvelopeRateTab: byte;                              // ƒGƒ“ƒxƒ[ƒvƒŒ[ƒgƒ^ƒu‚ÌƒCƒ“ƒfƒbƒNƒX
-        EnvelopeRate: longword;                             // ƒGƒ“ƒxƒ[ƒvƒŒ[ƒg‚Ì’²®
-        SampleCounter: longword;                            // ƒTƒ“ƒvƒ‹ƒJƒEƒ“ƒ^
-        EnvelopeRateValue: longword;                        // Œ»İ‚ÌƒGƒ“ƒxƒ[ƒv’l
-        EnvelopeAdjust: longword;                           // ƒGƒ“ƒxƒ[ƒv‚Ì‚‚³
-        EnvelopeDestination: longword;                      // ƒGƒ“ƒxƒ[ƒv‚ÌÅI’l
-        VolumeMaxLeft: single;                              // Å‘åo—ÍƒŒƒxƒ‹ (¶)
-        VolumeMaxRight: single;                             // Å‘åo—ÍƒŒƒxƒ‹ (‰E)
-        LastSample1: word;                                  // ÅŒã‚ÌƒTƒ“ƒvƒ‹ 1
-        LastSample2: word;                                  // ÅŒã‚ÌƒTƒ“ƒvƒ‹ 2
-        LastSampleBlock: array[0..7] of word;               // ÅŒã‚ÌƒTƒ“ƒvƒ‹ x8 (•âŠÔˆ—‚Åg—p)
-        Buffer: array[0..15] of word;                       // 32 ƒoƒCƒgƒf[ƒ^ (ƒTƒ“ƒvƒ‹ƒuƒƒbƒN‰ğ“€‚Åg—p)
-        TargetVolumeLeft: single;                           // ÅI“I‚Èƒ`ƒƒƒ“ƒlƒ‹‰¹—Ê (¶)
-        TargetVolumeRight: single;                          // ÅI“I‚Èƒ`ƒƒƒ“ƒlƒ‹‰¹—Ê (‰E)
-        ChannelVolumeLeft: longword;                        // Œ»İ‚Ìƒ`ƒƒƒ“ƒlƒ‹‰¹—Ê (¶) (ƒNƒŠƒbƒNƒmƒCƒY–h~‹@”\‚Åg—p)
-        ChannelVolumeRight: longword;                       // Œ»İ‚Ìƒ`ƒƒƒ“ƒlƒ‹‰¹—Ê (‰E) (ƒNƒŠƒbƒNƒmƒCƒY–h~‹@”\‚Åg—p)
-        PitchRate: longword;                                // ƒ‚ƒWƒ…ƒŒ[ƒVƒ‡ƒ“Œã‚Ìƒsƒbƒ`ƒŒ[ƒg
-        PitchRateDecimal: word;                             // ƒ‚ƒWƒ…ƒŒ[ƒVƒ‡ƒ“Œã‚Ìƒsƒbƒ`ƒŒ[ƒg (¬”)
-        CurrentSource: byte;                                // ƒJƒŒƒ“ƒg‰¹F”Ô†
-        StartDelay: byte;                                   // KON ‚©‚ç”­‰¹‚Ü‚Å‚Ì’x‰„ŠÔ (64kHz)
-        PitchRateDSP: longword;                             // DSP ‚ÅƒRƒ“ƒo[ƒg‚³‚ê‚½ƒIƒŠƒWƒiƒ‹ƒsƒbƒ`ƒŒ[ƒg
-        SampleOutput: longword;                             // ƒ`ƒƒƒ“ƒlƒ‹‰¹—Ê‚ÉˆË‘¶‚µ‚È‚¢ÅŒã‚ÌƒTƒ“ƒvƒ‹ (ƒsƒbƒ`ƒ‚ƒWƒ…ƒŒ[ƒVƒ‡ƒ“‚Åg—p)
+        KOnADSR: word;                                      // KON æ™‚ã® ADSR ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+        KOnGain: byte;                                      // KON æ™‚ã® Gain ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+        ResetEnv: byte;                                     // KON å¾Œã® ADSR/Gain å¤‰æ›´ãƒ•ãƒ©ã‚°
+        CurrentSample: ^word;                               // ã‚«ãƒ¬ãƒ³ãƒˆã‚µãƒ³ãƒ—ãƒ«ã®ãƒã‚¤ãƒ³ã‚¿
+        CurrentBlock: pointer;                              // ã‚«ãƒ¬ãƒ³ãƒˆãƒ–ãƒ­ãƒƒã‚¯ã®ãƒã‚¤ãƒ³ã‚¿
+        BlockHdr: byte;                                     // ã‚«ãƒ¬ãƒ³ãƒˆãƒ–ãƒ­ãƒƒã‚¯ã®ãƒ˜ãƒƒãƒ€
+        MixFlag: byte;                                      // ãƒŸã‚­ã‚·ãƒ³ã‚°ã‚ªãƒ—ã‚·ãƒ§ãƒ³ (ä¸‹ä½ 2 ãƒ“ãƒƒãƒˆã§ãƒŸãƒ¥ãƒ¼ãƒˆãƒ»å¼·åˆ¶ãƒã‚¤ã‚ºè¨­å®šã€ä¸Šä½ 6 ãƒ“ãƒƒãƒˆã¯äºˆç´„)
+        EnvelopeCurrentMode: byte;                          // ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—ã®å‹•ä½œãƒ¢ãƒ¼ãƒ‰
+        EnvelopeRateTab: byte;                              // ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—ãƒ¬ãƒ¼ãƒˆã‚¿ãƒ–ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+        EnvelopeRate: longword;                             // ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—ãƒ¬ãƒ¼ãƒˆã®èª¿æ•´
+        SampleCounter: longword;                            // ã‚µãƒ³ãƒ—ãƒ«ã‚«ã‚¦ãƒ³ã‚¿
+        EnvelopeRateValue: longword;                        // ç¾åœ¨ã®ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—å€¤
+        EnvelopeAdjust: longword;                           // ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—ã®é«˜ã•
+        EnvelopeDestination: longword;                      // ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—ã®æœ€çµ‚å€¤
+        VolumeMaxLeft: single;                              // æœ€å¤§å‡ºåŠ›ãƒ¬ãƒ™ãƒ« (å·¦)
+        VolumeMaxRight: single;                             // æœ€å¤§å‡ºåŠ›ãƒ¬ãƒ™ãƒ« (å³)
+        LastSample1: word;                                  // æœ€å¾Œã®ã‚µãƒ³ãƒ—ãƒ« 1
+        LastSample2: word;                                  // æœ€å¾Œã®ã‚µãƒ³ãƒ—ãƒ« 2
+        LastSampleBlock: array[0..7] of word;               // æœ€å¾Œã®ã‚µãƒ³ãƒ—ãƒ« x8 (è£œé–“å‡¦ç†ã§ä½¿ç”¨)
+        Buffer: array[0..15] of word;                       // 32 ãƒã‚¤ãƒˆãƒ‡ãƒ¼ã‚¿ (ã‚µãƒ³ãƒ—ãƒ«ãƒ–ãƒ­ãƒƒã‚¯è§£å‡ã§ä½¿ç”¨)
+        TargetVolumeLeft: single;                           // æœ€çµ‚çš„ãªãƒãƒ£ãƒ³ãƒãƒ«éŸ³é‡ (å·¦)
+        TargetVolumeRight: single;                          // æœ€çµ‚çš„ãªãƒãƒ£ãƒ³ãƒãƒ«éŸ³é‡ (å³)
+        ChannelVolumeLeft: longword;                        // ç¾åœ¨ã®ãƒãƒ£ãƒ³ãƒãƒ«éŸ³é‡ (å·¦) (ã‚¯ãƒªãƒƒã‚¯ãƒã‚¤ã‚ºé˜²æ­¢æ©Ÿèƒ½ã§ä½¿ç”¨)
+        ChannelVolumeRight: longword;                       // ç¾åœ¨ã®ãƒãƒ£ãƒ³ãƒãƒ«éŸ³é‡ (å³) (ã‚¯ãƒªãƒƒã‚¯ãƒã‚¤ã‚ºé˜²æ­¢æ©Ÿèƒ½ã§ä½¿ç”¨)
+        PitchRate: longword;                                // ãƒ¢ã‚¸ãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³å¾Œã®ãƒ”ãƒƒãƒãƒ¬ãƒ¼ãƒˆ
+        PitchRateDecimal: word;                             // ãƒ¢ã‚¸ãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³å¾Œã®ãƒ”ãƒƒãƒãƒ¬ãƒ¼ãƒˆ (å°æ•°)
+        CurrentSource: byte;                                // ã‚«ãƒ¬ãƒ³ãƒˆéŸ³è‰²ç•ªå·
+        StartDelay: byte;                                   // KON ã‹ã‚‰ç™ºéŸ³ã¾ã§ã®é…å»¶æ™‚é–“ (64kHz)
+        PitchRateDSP: longword;                             // DSP ã§ã‚³ãƒ³ãƒãƒ¼ãƒˆã•ã‚ŒãŸã‚ªãƒªã‚¸ãƒŠãƒ«ãƒ”ãƒƒãƒãƒ¬ãƒ¼ãƒˆ
+        SampleOutput: longword;                             // ãƒãƒ£ãƒ³ãƒãƒ«éŸ³é‡ã«ä¾å­˜ã—ãªã„æœ€å¾Œã®ã‚µãƒ³ãƒ—ãƒ« (ãƒ”ãƒƒãƒãƒ¢ã‚¸ãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã§ä½¿ç”¨)
     end;
 
-    // VOICES \‘¢‘Ì
+    // VOICES æ§‹é€ ä½“
     TVOICES = record
-        Voice: array[0..7] of TVOICE;                       // DSP ƒ{ƒCƒXƒŒƒWƒXƒ^
+        Voice: array[0..7] of TVOICE;                       // DSP ãƒœã‚¤ã‚¹ãƒ¬ã‚¸ã‚¹ã‚¿
     end;
-{$ALIGN ON}  // \‘¢‘Ì‚Ì©“®ƒTƒCƒY’²®‚È‚µ --- ‚±‚±‚Ü‚Å
+{$ALIGN ON}  // æ§‹é€ ä½“ã®è‡ªå‹•ã‚µã‚¤ã‚ºèª¿æ•´ãªã— --- ã“ã“ã¾ã§
 
-    // APU \‘¢‘Ì
+    // APU æ§‹é€ ä½“
     TAPU = record
-        hSNESAPU: longword;                                 // SNESAPU.DLL ƒnƒ“ƒhƒ‹
-        Ram: ^TRAM;                                         // SPC700 RAM ‚Ìƒ|ƒCƒ“ƒ^ (65536 ƒoƒCƒg)
-        XRam: ^TXRAM;                                       // SPC700 Šg’£ RAM ‚Ìƒ|ƒCƒ“ƒ^ (64 ƒoƒCƒg)
-        SPCOutPort: ^TSPCPORT;                              // SPC700 o—Íƒ|[ƒg‚Ìƒ|ƒCƒ“ƒ^
-        T64Count: ^longword;                                // 64kHz ƒ^ƒCƒ}ƒJƒEƒ“ƒ^‚Ìƒ|ƒCƒ“ƒ^ (64000 count/sec)
-        DspReg: ^TDSPREG;                                   // DSP ƒŒƒWƒXƒ^‚Ìƒ|ƒCƒ“ƒ^ (128 ƒoƒCƒg)
-        Voices: ^TVOICES;                                   // DSP ƒ~ƒLƒVƒ“ƒOƒf[ƒ^‚Ìƒ|ƒCƒ“ƒ^ (TVOICE x8)
-        VolumeMaxLeft: ^single;                             // ƒ~ƒLƒVƒ“ƒOÅ‘åo—ÍƒŒƒxƒ‹ (¶) ‚Ìƒ|ƒCƒ“ƒ^
-        VolumeMaxRight: ^single;                            // ƒ~ƒLƒVƒ“ƒOÅ‘åo—ÍƒŒƒxƒ‹ (‰E) ‚Ìƒ|ƒCƒ“ƒ^
-        SPC700Reg: ^TSPC700REG;                             // SPC700 ƒŒƒWƒXƒ^‚Ìƒ|ƒCƒ“ƒ^
+        hSNESAPU: longword;                                 // SNESAPU.DLL ãƒãƒ³ãƒ‰ãƒ«
+        Ram: ^TRAM;                                         // SPC700 RAM ã®ãƒã‚¤ãƒ³ã‚¿ (65536 ãƒã‚¤ãƒˆ)
+        XRam: ^TXRAM;                                       // SPC700 æ‹¡å¼µ RAM ã®ãƒã‚¤ãƒ³ã‚¿ (64 ãƒã‚¤ãƒˆ)
+        SPCOutPort: ^TSPCPORT;                              // SPC700 å‡ºåŠ›ãƒãƒ¼ãƒˆã®ãƒã‚¤ãƒ³ã‚¿
+        T64Count: ^longword;                                // 64kHz ã‚¿ã‚¤ãƒã‚«ã‚¦ãƒ³ã‚¿ã®ãƒã‚¤ãƒ³ã‚¿ (64000 count/sec)
+        DspReg: ^TDSPREG;                                   // DSP ãƒ¬ã‚¸ã‚¹ã‚¿ã®ãƒã‚¤ãƒ³ã‚¿ (128 ãƒã‚¤ãƒˆ)
+        Voices: ^TVOICES;                                   // DSP ãƒŸã‚­ã‚·ãƒ³ã‚°ãƒ‡ãƒ¼ã‚¿ã®ãƒã‚¤ãƒ³ã‚¿ (TVOICE x8)
+        VolumeMaxLeft: ^single;                             // ãƒŸã‚­ã‚·ãƒ³ã‚°æœ€å¤§å‡ºåŠ›ãƒ¬ãƒ™ãƒ« (å·¦) ã®ãƒã‚¤ãƒ³ã‚¿
+        VolumeMaxRight: ^single;                            // ãƒŸã‚­ã‚·ãƒ³ã‚°æœ€å¤§å‡ºåŠ›ãƒ¬ãƒ™ãƒ« (å³) ã®ãƒã‚¤ãƒ³ã‚¿
+        SPC700Reg: ^TSPC700REG;                             // SPC700 ãƒ¬ã‚¸ã‚¹ã‚¿ã®ãƒã‚¤ãƒ³ã‚¿
         EmuAPU: function(buffer: pointer; length: longword; ltype: byte): pointer; stdcall;
         GetAPUData: procedure(ppRam: pointer; ppXRam: pointer; ppSPCOutput: pointer; ppT64Count: pointer; ppDsp: pointer; ppVoices: pointer;
             ppVolumeMaxLeft: pointer; ppVolumeMaxRight: pointer); stdcall;
@@ -383,7 +384,7 @@ type
         SetDSPDbg: function(pTrace: pointer): pointer; stdcall;
 {$ENDIF}
 {$IFDEF SPCBPMTEST}
-        hSPCBPM: longword;                                  // SPC_BPM.DLL ƒnƒ“ƒhƒ‹
+        hSPCBPM: longword;                                  // SPC_BPM.DLL ãƒãƒ³ãƒ‰ãƒ«
         BPMInitialize: function(hSNESAPU: longword): longint; stdcall;
         BPMStart: function(lpReserved: pointer): longint; stdcall;
         BPMStop: function(): longint; stdcall;
@@ -391,507 +392,507 @@ type
 {$ENDIF}
     end;
 
-    // SCRIPT700 \‘¢‘Ì
+    // SCRIPT700 æ§‹é€ ä½“
     TSCRIPT700 = record
-        dwWork: array[0..7] of longword;                    // ƒ†[ƒUƒ[ƒNƒGƒŠƒA
-        dwCmpParam: array[0..1] of longword;                // ”äŠr—pƒpƒ‰ƒ[ƒ^ƒGƒŠƒA
-        dwWaitCnt: longword;                                // ƒEƒFƒCƒgƒJƒEƒ“ƒg
-        dwPointer: longword;                                // ƒvƒƒOƒ‰ƒ€ƒ|ƒCƒ“ƒ^
-        cStatusFlag: byte;                                  // ƒXƒe[ƒ^ƒXƒtƒ‰ƒO
-        __reserved: byte;                                   // (—\–ñ)
-        dwIntInPort: byte;                                  // “ü—Íƒ|[ƒgŠÄ‹ƒEƒFƒCƒg
-        dwIntOutPort: byte;                                 // o—Íƒ|[ƒgŠÄ‹ƒEƒFƒCƒg
-        dwData: longword;                                   // ƒf[ƒ^ƒGƒŠƒA‚ÌƒIƒtƒZƒbƒgƒAƒhƒŒƒX
-        dwStack: longword;                                  // ƒXƒ^ƒbƒNƒ|ƒCƒ“ƒ^
+        dwWork: array[0..7] of longword;                    // ãƒ¦ãƒ¼ã‚¶ãƒ¯ãƒ¼ã‚¯ã‚¨ãƒªã‚¢
+        dwCmpParam: array[0..1] of longword;                // æ¯”è¼ƒç”¨ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚¨ãƒªã‚¢
+        dwWaitCnt: longword;                                // ã‚¦ã‚§ã‚¤ãƒˆã‚«ã‚¦ãƒ³ãƒˆ
+        dwPointer: longword;                                // ãƒ—ãƒ­ã‚°ãƒ©ãƒ ãƒã‚¤ãƒ³ã‚¿
+        cStatusFlag: byte;                                  // ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ãƒ•ãƒ©ã‚°
+        __reserved: byte;                                   // (äºˆç´„)
+        dwIntInPort: byte;                                  // å…¥åŠ›ãƒãƒ¼ãƒˆç›£è¦–ã‚¦ã‚§ã‚¤ãƒˆ
+        dwIntOutPort: byte;                                 // å‡ºåŠ›ãƒãƒ¼ãƒˆç›£è¦–ã‚¦ã‚§ã‚¤ãƒˆ
+        dwData: longword;                                   // ãƒ‡ãƒ¼ã‚¿ã‚¨ãƒªã‚¢ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚¢ãƒ‰ãƒ¬ã‚¹
+        dwStack: longword;                                  // ã‚¹ã‚¿ãƒƒã‚¯ãƒã‚¤ãƒ³ã‚¿
     end;
 
-    // SCRIPT700DATA \‘¢‘Ì
+    // SCRIPT700DATA æ§‹é€ ä½“
     TSCRIPT700DATA = record
-        Data: ^TSCRIPT700;                                  // ƒf[ƒ^
-        dwProgSize: longword;                               // ƒvƒƒOƒ‰ƒ€ƒTƒCƒY
+        Data: ^TSCRIPT700;                                  // ãƒ‡ãƒ¼ã‚¿
+        dwProgSize: longword;                               // ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‚µã‚¤ã‚º
     end;
 
-    // SCRIPT700EX \‘¢‘Ì
+    // SCRIPT700EX æ§‹é€ ä½“
     TSCRIPT700EX = record
-        Base: TSCRIPT700;                                   // Šî–{ƒf[ƒ^
-        dwJump: longword;                                   // ƒWƒƒƒ“ƒvæƒAƒhƒŒƒX
-        dwTemp: longword;                                   // ˆêŠi”[—p
-        Stack: array[0..127] of longword;                   // ƒXƒ^ƒbƒNƒƒ‚ƒŠ
+        Base: TSCRIPT700;                                   // åŸºæœ¬ãƒ‡ãƒ¼ã‚¿
+        dwJump: longword;                                   // ã‚¸ãƒ£ãƒ³ãƒ—å…ˆã‚¢ãƒ‰ãƒ¬ã‚¹
+        dwTemp: longword;                                   // ä¸€æ™‚æ ¼ç´ç”¨
+        Stack: array[0..127] of longword;                   // ã‚¹ã‚¿ãƒƒã‚¯ãƒ¡ãƒ¢ãƒª
     end;
 
-    // APUDATA \‘¢‘Ì
+    // APUDATA æ§‹é€ ä½“
     TAPUDATA = record
-        SPCApuPort: TSPCPORT;                               // SPC700 “ü—Íƒ|[ƒg
-        SPCOutPort: TSPCPORT;                               // SPC700 o—Íƒ|[ƒg
-        SPCSrcAddrs: TSPCSRCADDRS;                          // SPC700 ‰¹FƒAƒhƒŒƒX
-        SPC700Reg: TSPC700REG;                              // SPC700 ƒŒƒWƒXƒ^
-        T64Count: longword;                                 // 64kHz ƒ^ƒCƒ}ƒJƒEƒ“ƒ^
-        DspReg: TDSPREG;                                    // DSP ƒŒƒWƒXƒ^
-        Voices: TVOICES;                                    // DSP ƒ~ƒLƒVƒ“ƒOƒf[ƒ^
-        VolumeMaxLeft: single;                              // ƒ~ƒLƒVƒ“ƒOÅ‘åo—ÍƒŒƒxƒ‹ (¶)
-        VolumeMaxRight: single;                             // ƒ~ƒLƒVƒ“ƒOÅ‘åo—ÍƒŒƒxƒ‹ (‰E)
-        Script700: TSCRIPT700;                              // Script700 ƒf[ƒ^
+        SPCApuPort: TSPCPORT;                               // SPC700 å…¥åŠ›ãƒãƒ¼ãƒˆ
+        SPCOutPort: TSPCPORT;                               // SPC700 å‡ºåŠ›ãƒãƒ¼ãƒˆ
+        SPCSrcAddrs: TSPCSRCADDRS;                          // SPC700 éŸ³è‰²ã‚¢ãƒ‰ãƒ¬ã‚¹
+        SPC700Reg: TSPC700REG;                              // SPC700 ãƒ¬ã‚¸ã‚¹ã‚¿
+        T64Count: longword;                                 // 64kHz ã‚¿ã‚¤ãƒã‚«ã‚¦ãƒ³ã‚¿
+        DspReg: TDSPREG;                                    // DSP ãƒ¬ã‚¸ã‚¹ã‚¿
+        Voices: TVOICES;                                    // DSP ãƒŸã‚­ã‚·ãƒ³ã‚°ãƒ‡ãƒ¼ã‚¿
+        VolumeMaxLeft: single;                              // ãƒŸã‚­ã‚·ãƒ³ã‚°æœ€å¤§å‡ºåŠ›ãƒ¬ãƒ™ãƒ« (å·¦)
+        VolumeMaxRight: single;                             // ãƒŸã‚­ã‚·ãƒ³ã‚°æœ€å¤§å‡ºåŠ›ãƒ¬ãƒ™ãƒ« (å³)
+        Script700: TSCRIPT700;                              // Script700 ãƒ‡ãƒ¼ã‚¿
     end;
 
-    // SPCCACHE \‘¢‘Ì
+    // SPCCACHE æ§‹é€ ä½“
     TSPCCACHE = record
-        Spc: TSPC;                                          // SPC ƒtƒ@ƒCƒ‹ƒoƒbƒtƒ@
-        Script700: TSCRIPT700EX;                            // Script700 Š®‘Sƒoƒbƒtƒ@
-        SPCOutPort: TSPCPORT;                               // SPC700 o—Íƒ|[ƒg
+        Spc: TSPC;                                          // SPC ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒƒãƒ•ã‚¡
+        Script700: TSCRIPT700EX;                            // Script700 å®Œå…¨ãƒãƒƒãƒ•ã‚¡
+        SPCOutPort: TSPCPORT;                               // SPC700 å‡ºåŠ›ãƒãƒ¼ãƒˆ
     end;
 
-    // LEVEL \‘¢‘Ì
+    // LEVEL æ§‹é€ ä½“
     TLEVEL = record
-        cMasterVolumeLeft: byte;                            // ƒ}ƒXƒ^[‰¹—Ê (¶)
-        cMasterVolumeRight: byte;                           // ƒ}ƒXƒ^[‰¹—Ê (‰E)
-        cMasterEchoLeft: byte;                              // ƒ}ƒXƒ^[ƒGƒR[ (¶)
-        cMasterEchoRight: byte;                             // ƒ}ƒXƒ^[ƒGƒR[ (‰E)
-        cMasterDelay: byte;                                 // ƒ}ƒXƒ^[ƒfƒBƒŒƒC
-        cMasterFeedback: byte;                              // ƒ}ƒXƒ^[ƒtƒB[ƒhƒoƒbƒN
-        cMasterLevelLeft: byte;                             // ƒ}ƒXƒ^[o—ÍƒŒƒxƒ‹ (¶)
-        cMasterLevelRight: byte;                            // ƒ}ƒXƒ^[o—ÍƒŒƒxƒ‹ (‰E)
-        Channel: array[0..7] of record                      // ƒ`ƒƒƒ“ƒlƒ‹
-            bChannelShow: bytebool;                             // ƒ`ƒƒƒ“ƒlƒ‹•\¦
-            cChannelVolumeLeft: byte;                           // ƒ`ƒƒƒ“ƒlƒ‹‰¹—Ê (¶)
-            cChannelVolumeRight: byte;                          // ƒ`ƒƒƒ“ƒlƒ‹‰¹—Ê (‰E)
-            cChannelPitch: byte;                                // ƒ`ƒƒƒ“ƒlƒ‹ƒsƒbƒ`
-            cChannelEnvelope: byte;                             // ƒ`ƒƒƒ“ƒlƒ‹ƒGƒ“ƒxƒ[ƒv
-            cChannelLevelLeft: byte;                            // ƒ`ƒƒƒ“ƒlƒ‹o—ÍƒŒƒxƒ‹ (¶)
-            cChannelLevelRight: byte;                           // ƒ`ƒƒƒ“ƒlƒ‹o—ÍƒŒƒxƒ‹ (‰E)
-            __r: byte;                                          // (–¢g—p)
-            dwChannelEffect: record case byte of                // ƒ`ƒƒƒ“ƒlƒ‹ƒGƒtƒFƒNƒg
-                1: (EchoOn: bytebool;                               // ƒGƒR[ƒtƒ‰ƒO
-                    PitchModOn: bytebool;                           // ƒsƒbƒ`ƒ‚ƒWƒ…ƒŒ[ƒVƒ‡ƒ“ƒtƒ‰ƒO
-                    NoiseOn: bytebool;                              // ƒmƒCƒYƒtƒ‰ƒO
-                    Update: bytebool);                              // XVƒtƒ‰ƒO
-                2: (dwValue: longword);                             // ƒtƒ‰ƒO (32 ƒrƒbƒg)
+        cMasterVolumeLeft: byte;                            // ãƒã‚¹ã‚¿ãƒ¼éŸ³é‡ (å·¦)
+        cMasterVolumeRight: byte;                           // ãƒã‚¹ã‚¿ãƒ¼éŸ³é‡ (å³)
+        cMasterEchoLeft: byte;                              // ãƒã‚¹ã‚¿ãƒ¼ã‚¨ã‚³ãƒ¼ (å·¦)
+        cMasterEchoRight: byte;                             // ãƒã‚¹ã‚¿ãƒ¼ã‚¨ã‚³ãƒ¼ (å³)
+        cMasterDelay: byte;                                 // ãƒã‚¹ã‚¿ãƒ¼ãƒ‡ã‚£ãƒ¬ã‚¤
+        cMasterFeedback: byte;                              // ãƒã‚¹ã‚¿ãƒ¼ãƒ•ã‚£ãƒ¼ãƒ‰ãƒãƒƒã‚¯
+        cMasterLevelLeft: byte;                             // ãƒã‚¹ã‚¿ãƒ¼å‡ºåŠ›ãƒ¬ãƒ™ãƒ« (å·¦)
+        cMasterLevelRight: byte;                            // ãƒã‚¹ã‚¿ãƒ¼å‡ºåŠ›ãƒ¬ãƒ™ãƒ« (å³)
+        Channel: array[0..7] of record                      // ãƒãƒ£ãƒ³ãƒãƒ«
+            bChannelShow: bytebool;                             // ãƒãƒ£ãƒ³ãƒãƒ«è¡¨ç¤º
+            cChannelVolumeLeft: byte;                           // ãƒãƒ£ãƒ³ãƒãƒ«éŸ³é‡ (å·¦)
+            cChannelVolumeRight: byte;                          // ãƒãƒ£ãƒ³ãƒãƒ«éŸ³é‡ (å³)
+            cChannelPitch: byte;                                // ãƒãƒ£ãƒ³ãƒãƒ«ãƒ”ãƒƒãƒ
+            cChannelEnvelope: byte;                             // ãƒãƒ£ãƒ³ãƒãƒ«ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—
+            cChannelLevelLeft: byte;                            // ãƒãƒ£ãƒ³ãƒãƒ«å‡ºåŠ›ãƒ¬ãƒ™ãƒ« (å·¦)
+            cChannelLevelRight: byte;                           // ãƒãƒ£ãƒ³ãƒãƒ«å‡ºåŠ›ãƒ¬ãƒ™ãƒ« (å³)
+            __r: byte;                                          // (æœªä½¿ç”¨)
+            dwChannelEffect: record case byte of                // ãƒãƒ£ãƒ³ãƒãƒ«ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
+                1: (EchoOn: bytebool;                               // ã‚¨ã‚³ãƒ¼ãƒ•ãƒ©ã‚°
+                    PitchModOn: bytebool;                           // ãƒ”ãƒƒãƒãƒ¢ã‚¸ãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ãƒ•ãƒ©ã‚°
+                    NoiseOn: bytebool;                              // ãƒã‚¤ã‚ºãƒ•ãƒ©ã‚°
+                    Update: bytebool);                              // æ›´æ–°ãƒ•ãƒ©ã‚°
+                2: (dwValue: longword);                             // ãƒ•ãƒ©ã‚° (32 ãƒ“ãƒƒãƒˆ)
             end;
         end;
     end;
 
-    // TEMPOHISTORY \‘¢‘Ì
+    // TEMPOHISTORY æ§‹é€ ä½“
     TTEMPOHISTORY = record case byte of
-        1: (cChannel: byte;                                 // ƒ`ƒƒƒ“ƒlƒ‹”Ô†
-            cSource: byte;                                  // ‰¹F”Ô†
-            cVolume: byte;                                  // ‰¹—Ê
-            __r1: byte;                                     // (–¢g—p)
-            wPitch: word;                                   // ƒsƒbƒ`
-            __r2: byte;                                     // (–¢g—p)
-            __r3: byte);                                    // (–¢g—p)
-        2: (qwHash: int64);                                 // ‹^—ƒnƒbƒVƒ…’l
+        1: (cChannel: byte;                                 // ãƒãƒ£ãƒ³ãƒãƒ«ç•ªå·
+            cSource: byte;                                  // éŸ³è‰²ç•ªå·
+            cVolume: byte;                                  // éŸ³é‡
+            __r1: byte;                                     // (æœªä½¿ç”¨)
+            wPitch: word;                                   // ãƒ”ãƒƒãƒ
+            __r2: byte;                                     // (æœªä½¿ç”¨)
+            __r3: byte);                                    // (æœªä½¿ç”¨)
+        2: (qwHash: int64);                                 // ç–‘ä¼¼ãƒãƒƒã‚·ãƒ¥å€¤
     end;
 
-    // TEMPO \‘¢‘Ì
+    // TEMPO æ§‹é€ ä½“
     TTEMPO = record
-        bDisable: bytebool;                                 // –³Œøƒtƒ‰ƒO
-        cBPM: byte;                                         // Šm’èƒeƒ“ƒ|
-        cMinBPM: byte;                                      // ƒeƒ“ƒ|‰ğÍ”ÍˆÍ (Å¬)
-        cMaxBPM: byte;                                      // ƒeƒ“ƒ|‰ğÍ”ÍˆÍ (Å‘å)
-        cMode: byte;                                        // ƒeƒ“ƒ|‰ğŒˆƒ‚[ƒh (M—Š“x)
-        cKOn: byte;                                         // KON ƒtƒ‰ƒO
-        cKOnCount: byte;                                    // KON ƒJƒEƒ“ƒ^
-        cKOnCountOld: byte;                                 // KON ƒJƒEƒ“ƒ^ (‘O‰ñ‚Ì’l)
-        dwStartTime: longword;                              // ‰ğÍŠJnŠÔ (64kHz)
-        dwKOnTime: longword;                                // KON ŠÔŠu‰ğÍ—pŠÔ (64kHz)
-        dwMinTime: longword;                                // Å¬ƒeƒ“ƒ|‰ğÍ—pŠÔ (64kHz)
-        dwMaxTime: longword;                                // Å‘åƒeƒ“ƒ|‰ğÍ—pŠÔ (64kHz)
-        dwTripleTime: longword;                             // O”qEO˜A•„l—¶ŠÔ (64kHz)
-        Count: array[60..200] of longword;                  // ƒeƒ“ƒ|‚²‚Æ‚ÌƒJƒEƒ“ƒ^
-        T64Count: array[0..7] of longword;                  // ƒ`ƒƒƒ“ƒlƒ‹‚²‚Æ‚Ì‘O‰ñ”­‰¹ŠÔ (64kHz)
-        Volume: array[0..7] of byte;                        // ƒ`ƒƒƒ“ƒlƒ‹‚²‚Æ‚Ì‰¹—Ê
-        dwHistory: longword;                                // —š—ğ”Ô†
-        History: array[0..15] of TTEMPOHISTORY              // —š—ğ
+        bDisable: bytebool;                                 // ç„¡åŠ¹ãƒ•ãƒ©ã‚°
+        cBPM: byte;                                         // ç¢ºå®šãƒ†ãƒ³ãƒ
+        cMinBPM: byte;                                      // ãƒ†ãƒ³ãƒè§£æç¯„å›² (æœ€å°)
+        cMaxBPM: byte;                                      // ãƒ†ãƒ³ãƒè§£æç¯„å›² (æœ€å¤§)
+        cMode: byte;                                        // ãƒ†ãƒ³ãƒè§£æ±ºãƒ¢ãƒ¼ãƒ‰ (ä¿¡é ¼åº¦)
+        cKOn: byte;                                         // KON ãƒ•ãƒ©ã‚°
+        cKOnCount: byte;                                    // KON ã‚«ã‚¦ãƒ³ã‚¿
+        cKOnCountOld: byte;                                 // KON ã‚«ã‚¦ãƒ³ã‚¿ (å‰å›ã®å€¤)
+        dwStartTime: longword;                              // è§£æé–‹å§‹æ™‚é–“ (64kHz)
+        dwKOnTime: longword;                                // KON é–“éš”è§£æç”¨æ™‚é–“ (64kHz)
+        dwMinTime: longword;                                // æœ€å°ãƒ†ãƒ³ãƒè§£æç”¨æ™‚é–“ (64kHz)
+        dwMaxTime: longword;                                // æœ€å¤§ãƒ†ãƒ³ãƒè§£æç”¨æ™‚é–“ (64kHz)
+        dwTripleTime: longword;                             // ä¸‰æ‹å­ãƒ»ä¸‰é€£ç¬¦è€ƒæ…®æ™‚é–“ (64kHz)
+        Count: array[60..200] of longword;                  // ãƒ†ãƒ³ãƒã”ã¨ã®ã‚«ã‚¦ãƒ³ã‚¿
+        T64Count: array[0..7] of longword;                  // ãƒãƒ£ãƒ³ãƒãƒ«ã”ã¨ã®å‰å›ç™ºéŸ³æ™‚é–“ (64kHz)
+        Volume: array[0..7] of byte;                        // ãƒãƒ£ãƒ³ãƒãƒ«ã”ã¨ã®éŸ³é‡
+        dwHistory: longword;                                // å±¥æ­´ç•ªå·
+        History: array[0..15] of TTEMPOHISTORY              // å±¥æ­´
     end;
 
-    // STRDATA \‘¢‘Ì
+    // STRDATA æ§‹é€ ä½“
     TSTRDATA = record case byte of
-        1: (cData: array[0..7] of char);                    // 1 •¶š x8
-        2: (bData: array[0..7] of byte);                    // 8 ƒrƒbƒg x8
-        3: (wData: array[0..3] of word);                    // 16 ƒrƒbƒg x4
-        4: (dwData: array[0..1] of longword);               // 32 ƒrƒbƒg x2
-        5: (qwData: int64);                                 // 64 ƒrƒbƒg
+        1: (cData: array[0..7] of char);                    // 1 æ–‡å­— x8
+        2: (bData: array[0..7] of byte);                    // 8 ãƒ“ãƒƒãƒˆ x8
+        3: (wData: array[0..3] of word);                    // 16 ãƒ“ãƒƒãƒˆ x4
+        4: (dwData: array[0..1] of longword);               // 32 ãƒ“ãƒƒãƒˆ x2
+        5: (qwData: int64);                                 // 64 ãƒ“ãƒƒãƒˆ
     end;
 
-    // CRITICALSECTION \‘¢‘Ì
+    // CRITICALSECTION æ§‹é€ ä½“
     TCRITICALSECTION = record
-        lpDebugInfo: pointer;                               // ƒfƒoƒbƒOî•ñ‚Ìƒ|ƒCƒ“ƒ^
-        dwLockCount: longword;                              // ƒƒbƒN‰ñ”
-        dwRecursionCount: longword;                         // Ä‹A‰ñ”
-        hOwningThread: longword;                            // ƒXƒŒƒbƒhƒnƒ“ƒhƒ‹
-        hLockSemaphore: longword;                           // ƒƒbƒNM†ƒnƒ“ƒhƒ‹
-        dwSpinCount: longword;                              // ‘Ò‹@‰ñ”
+        lpDebugInfo: pointer;                               // ãƒ‡ãƒãƒƒã‚°æƒ…å ±ã®ãƒã‚¤ãƒ³ã‚¿
+        dwLockCount: longword;                              // ãƒ­ãƒƒã‚¯å›æ•°
+        dwRecursionCount: longword;                         // å†å¸°å›æ•°
+        hOwningThread: longword;                            // ã‚¹ãƒ¬ãƒƒãƒ‰ãƒãƒ³ãƒ‰ãƒ«
+        hLockSemaphore: longword;                           // ãƒ­ãƒƒã‚¯ä¿¡å·ãƒãƒ³ãƒ‰ãƒ«
+        dwSpinCount: longword;                              // å¾…æ©Ÿå›æ•°
     end;
 
-    // DBLPOINTER \‘¢‘Ì
+    // DBLPOINTER æ§‹é€ ä½“
     TDBLPOINTER = record
-        p: pointer;                                         // ƒ|ƒCƒ“ƒ^
+        p: pointer;                                         // ãƒã‚¤ãƒ³ã‚¿
     end;
 
-    // GUID \‘¢‘Ì
+    // GUID æ§‹é€ ä½“
     TGUID = record case byte of
         1: (Data1: longword;                                // 1
             Data2: word;                                    // 2
             Data3: word;                                    // 3
             Data4: array[0..7] of byte);                    // 4
-        2: (DataX: array[0..3] of longword);                // ’l (128 ƒrƒbƒg)
+        2: (DataX: array[0..3] of longword);                // å€¤ (128 ãƒ“ãƒƒãƒˆ)
     end;
 
-    // LONGLONG \‘¢‘Ì
+    // LONGLONG æ§‹é€ ä½“
     TLONGLONG = record
-        l: longword;                                        // ‰ºˆÊ 32 ƒrƒbƒg
-        h: longword;                                        // ãˆÊ 32 ƒrƒbƒg
+        l: longword;                                        // ä¸‹ä½ 32 ãƒ“ãƒƒãƒˆ
+        h: longword;                                        // ä¸Šä½ 32 ãƒ“ãƒƒãƒˆ
     end;
 
-    // POINT \‘¢‘Ì
+    // POINT æ§‹é€ ä½“
     TPOINT = record
-        x: longint;                                         // X À•W
-        y: longint;                                         // Y À•W
+        x: longint;                                         // X åº§æ¨™
+        y: longint;                                         // Y åº§æ¨™
     end;
 
-    // RECT \‘¢‘Ì
+    // RECT æ§‹é€ ä½“
     TRECT = record
-        left: longint;                                      // ¶
-        top: longint;                                       // ã
-        right: longint;                                     // ‰E
-        bottom: longint;                                    // ‰º
+        left: longint;                                      // å·¦
+        top: longint;                                       // ä¸Š
+        right: longint;                                     // å³
+        bottom: longint;                                    // ä¸‹
     end;
 
-    // BOX \‘¢‘Ì
+    // BOX æ§‹é€ ä½“
     TBOX = record
-        left: longint;                                      // ¶
-        top: longint;                                       // ã
-        width: longint;                                     // •
-        height: longint;                                    // ‚‚³
+        left: longint;                                      // å·¦
+        top: longint;                                       // ä¸Š
+        width: longint;                                     // å¹…
+        height: longint;                                    // é«˜ã•
     end;
 
-    // KEYSTATE \‘¢‘Ì
+    // KEYSTATE æ§‹é€ ä½“
     TKEYSTATE = record
-        k: array[0..255] of byte;                           // ƒL[‚Ìó‘Ô
+        k: array[0..255] of byte;                           // ã‚­ãƒ¼ã®çŠ¶æ…‹
     end;
 
-    // MONITORINFO \‘¢‘Ì
+    // MONITORINFO æ§‹é€ ä½“
     TMONITORINFO = record
-        cdSize: longword;                                   // \‘¢‘Ì‚ÌƒTƒCƒY
-        rcMonitor: TRECT;                                   // ƒ‚ƒjƒ^‘S‘Ì‚ÌƒTƒCƒY
-        rcWork: TRECT;                                      // ì‹Æ—Ìˆæ‚ÌƒTƒCƒY
-        dwFlags: longword;                                  // ƒtƒ‰ƒO
+        cdSize: longword;                                   // æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º
+        rcMonitor: TRECT;                                   // ãƒ¢ãƒ‹ã‚¿å…¨ä½“ã®ã‚µã‚¤ã‚º
+        rcWork: TRECT;                                      // ä½œæ¥­é ˜åŸŸã®ã‚µã‚¤ã‚º
+        dwFlags: longword;                                  // ãƒ•ãƒ©ã‚°
     end;
 
-    // MSG \‘¢‘Ì
+    // MSG æ§‹é€ ä½“
     TMSG = record
-        hWnd: longword;                                     // ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-        msg: longword;                                      // ƒƒbƒZ[ƒW
-        wParam: longword;                                   // ƒƒbƒZ[ƒW’Ç‰Áî•ñ 1
-        lParam: longword;                                   // ƒƒbƒZ[ƒW’Ç‰Áî•ñ 2
-        dwTime: longword;                                   // ƒƒbƒZ[ƒW‘—MŠÔ
-        pt: TPOINT;                                         // ƒƒbƒZ[ƒW”­¶À•W (POINT \‘¢‘Ì)
+        hWnd: longword;                                     // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+        msg: longword;                                      // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+        wParam: longword;                                   // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸è¿½åŠ æƒ…å ± 1
+        lParam: longword;                                   // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸è¿½åŠ æƒ…å ± 2
+        dwTime: longword;                                   // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸é€ä¿¡æ™‚é–“
+        pt: TPOINT;                                         // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ç™ºç”Ÿåº§æ¨™ (POINT æ§‹é€ ä½“)
     end;
 
-    // OPENFILENAME \‘¢‘Ì
+    // OPENFILENAME æ§‹é€ ä½“
     TOPENFILENAME = record
-        lStructSize: longword;                              // \‘¢‘Ì‚ÌƒTƒCƒY
-        hwndOwner: longword;                                // ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-        hThisInstance: longword;                            // ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-        lpstrFilter: pointer;                               // ƒtƒBƒ‹ƒ^
-        lpstrCustomFilter: pointer;                         // ƒJƒXƒ^ƒ€ƒtƒBƒ‹ƒ^
-        nMaxCustFilter: longword;                           // ƒtƒBƒ‹ƒ^‚ÌÅ‘å’l
-        nFilterIndex: longword;                             // ƒtƒBƒ‹ƒ^‚Ì‘I‘ğ’l
-        lpstrFile: pointer;                                 // ƒtƒ@ƒCƒ‹–¼
-        nMaxFile: longword;                                 // Å‘åƒtƒ@ƒCƒ‹
-        lpstrFileTitle: pointer;                            // ƒtƒ@ƒCƒ‹ƒ^ƒCƒgƒ‹
-        nMaxFileTitle: longword;                            // Å‘åƒtƒ@ƒCƒ‹ƒ^ƒCƒgƒ‹
-        lpstrInitialDir: pointer;                           // ‰ŠúƒtƒHƒ‹ƒ_
-        lpstrTitle: pointer;                                // ƒ^ƒCƒgƒ‹
-        Flags: longword;                                    // ƒtƒ‰ƒO
-        nFileOffset: word;                                  // ƒtƒ@ƒCƒ‹ƒIƒtƒZƒbƒg
-        nFileExtension: word;                               // ƒtƒ@ƒCƒ‹Šg’£
-        lpstrDefExt: pointer;                               // ƒfƒtƒHƒ‹ƒgŠg’£
-        lCustData: longword;                                // ƒJƒXƒ^ƒ€ƒf[ƒ^
-        lpfnHook: pointer;                                  // ƒtƒbƒN
-        lpTemplateName: pointer;                            // ƒeƒ“ƒvƒŒ[ƒg–¼
+        lStructSize: longword;                              // æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º
+        hwndOwner: longword;                                // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+        hThisInstance: longword;                            // ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+        lpstrFilter: pointer;                               // ãƒ•ã‚£ãƒ«ã‚¿
+        lpstrCustomFilter: pointer;                         // ã‚«ã‚¹ã‚¿ãƒ ãƒ•ã‚£ãƒ«ã‚¿
+        nMaxCustFilter: longword;                           // ãƒ•ã‚£ãƒ«ã‚¿ã®æœ€å¤§å€¤
+        nFilterIndex: longword;                             // ãƒ•ã‚£ãƒ«ã‚¿ã®é¸æŠå€¤
+        lpstrFile: pointer;                                 // ãƒ•ã‚¡ã‚¤ãƒ«å
+        nMaxFile: longword;                                 // æœ€å¤§ãƒ•ã‚¡ã‚¤ãƒ«
+        lpstrFileTitle: pointer;                            // ãƒ•ã‚¡ã‚¤ãƒ«ã‚¿ã‚¤ãƒˆãƒ«
+        nMaxFileTitle: longword;                            // æœ€å¤§ãƒ•ã‚¡ã‚¤ãƒ«ã‚¿ã‚¤ãƒˆãƒ«
+        lpstrInitialDir: pointer;                           // åˆæœŸãƒ•ã‚©ãƒ«ãƒ€
+        lpstrTitle: pointer;                                // ã‚¿ã‚¤ãƒˆãƒ«
+        Flags: longword;                                    // ãƒ•ãƒ©ã‚°
+        nFileOffset: word;                                  // ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+        nFileExtension: word;                               // ãƒ•ã‚¡ã‚¤ãƒ«æ‹¡å¼µ
+        lpstrDefExt: pointer;                               // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆæ‹¡å¼µ
+        lCustData: longword;                                // ã‚«ã‚¹ã‚¿ãƒ ãƒ‡ãƒ¼ã‚¿
+        lpfnHook: pointer;                                  // ãƒ•ãƒƒã‚¯
+        lpTemplateName: pointer;                            // ãƒ†ãƒ³ãƒ—ãƒ¬ãƒ¼ãƒˆå
     end;
 
-    // OSVERSIONINFO \‘¢‘Ì
-    TOSVERSIONINFO = record
-        dwOSVersionInfoSize: longword;                      // \‘¢‘Ì‚ÌƒTƒCƒY
-        dwMajorVersion: longword;                           // ƒƒWƒƒ[ƒo[ƒWƒ‡ƒ“
-        dwMinorVersion: longword;                           // ƒ}ƒCƒi[ƒo[ƒWƒ‡ƒ“
-        dwBuildNumber: longword;                            // ƒrƒ‹ƒhƒiƒ“ƒo[
-        dwPlatformId: longword;                             // ƒvƒ‰ƒbƒgƒtƒH[ƒ€ ID
-        szCSDVersion: array[0..127] of char;                // ’Ç‰Áî•ñ
+    // RTL_OSVERSIONINFOW æ§‹é€ ä½“
+    TRTLOSVERSIONINFOW = record
+        dwOSVersionInfoSize: longword;                      // æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º
+        dwMajorVersion: longword;                           // ãƒ¡ã‚¸ãƒ£ãƒ¼ãƒãƒ¼ã‚¸ãƒ§ãƒ³
+        dwMinorVersion: longword;                           // ãƒã‚¤ãƒŠãƒ¼ãƒãƒ¼ã‚¸ãƒ§ãƒ³
+        dwBuildNumber: longword;                            // ãƒ“ãƒ«ãƒ‰ãƒŠãƒ³ãƒãƒ¼
+        dwPlatformId: longword;                             // ãƒ—ãƒ©ãƒƒãƒˆãƒ•ã‚©ãƒ¼ãƒ  ID
+        szCSDVersion: array[0..127] of widechar;            // è¿½åŠ æƒ…å ±
     end;
 
-    // REFCOLOR \‘¢‘Ì
+    // REFCOLOR æ§‹é€ ä½“
     TREFCOLOR = record case byte of
-        1: (r: byte;                                        // Ô
-            g: byte;                                        // —Î
-            b: byte;                                        // Â
-            a: byte);                                       // ƒAƒ‹ƒtƒ@
-        2: (dwColor: longword);                             // F”Ô†
+        1: (r: byte;                                        // èµ¤
+            g: byte;                                        // ç·‘
+            b: byte;                                        // é’
+            a: byte);                                       // ã‚¢ãƒ«ãƒ•ã‚¡
+        2: (dwColor: longword);                             // è‰²ç•ªå·
     end;
 
-    // WAVEFORMATEXTENSIBLE \‘¢‘Ì
+    // WAVEFORMATEXTENSIBLE æ§‹é€ ä½“
     TWAVEFORMATEXTENSIBLE = record
-        wFormatTag: word;                                   // ƒtƒH[ƒ}ƒbƒgƒ^ƒO
-        nChannels: word;                                    // ƒ`ƒƒƒ“ƒlƒ‹
-        nSamplesPerSec: longword;                           // ƒTƒ“ƒvƒŠƒ“ƒOƒŒ[ƒg
-        nAvgBytesPerSec: longword;                          // 1 •b‚ ‚½‚è‚ÌƒoƒCƒg”
-        nBlockAlign: word;                                  // ƒuƒƒbƒN’PˆÊ‚ÌƒoƒCƒg”
-        wBitsPerSample: word;                               // 1 ƒTƒ“ƒvƒ‹‚ ‚½‚è‚Ìƒrƒbƒg”
-        cbSize: word;                                       // ’Ç‰Áî•ñ‚ÌƒTƒCƒY
-        wValidBitsPerSample: word;                          // 1 ƒTƒ“ƒvƒ‹‚ ‚½‚è‚Ìƒrƒbƒg”
-        dwChannelMask: longword;                            // ƒ`ƒƒƒ“ƒlƒ‹ƒ}ƒXƒN
-        SubFormat: TGUID;                                   // ƒTƒuƒtƒH[ƒ}ƒbƒg
+        wFormatTag: word;                                   // ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚¿ã‚°
+        nChannels: word;                                    // ãƒãƒ£ãƒ³ãƒãƒ«
+        nSamplesPerSec: longword;                           // ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ¬ãƒ¼ãƒˆ
+        nAvgBytesPerSec: longword;                          // 1 ç§’ã‚ãŸã‚Šã®ãƒã‚¤ãƒˆæ•°
+        nBlockAlign: word;                                  // ãƒ–ãƒ­ãƒƒã‚¯å˜ä½ã®ãƒã‚¤ãƒˆæ•°
+        wBitsPerSample: word;                               // 1 ã‚µãƒ³ãƒ—ãƒ«ã‚ãŸã‚Šã®ãƒ“ãƒƒãƒˆæ•°
+        cbSize: word;                                       // è¿½åŠ æƒ…å ±ã®ã‚µã‚¤ã‚º
+        wValidBitsPerSample: word;                          // 1 ã‚µãƒ³ãƒ—ãƒ«ã‚ãŸã‚Šã®ãƒ“ãƒƒãƒˆæ•°
+        dwChannelMask: longword;                            // ãƒãƒ£ãƒ³ãƒãƒ«ãƒã‚¹ã‚¯
+        SubFormat: TGUID;                                   // ã‚µãƒ–ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
     end;
 
-    // WAVEHDR \‘¢‘Ì
+    // WAVEHDR æ§‹é€ ä½“
     TWAVEHDR = record
-        lpData: pointer;                                    // ƒoƒbƒtƒ@‚Ìƒ|ƒCƒ“ƒ^
-        dwBufferLength: longword;                           // ƒoƒbƒtƒ@‚ÌƒTƒCƒY
-        dwBytesRecorded: longword;                          // ˜^‰¹Ï‚İ‚ÌƒTƒCƒY
-        dwUser: longword;                                   // ƒ†[ƒUƒf[ƒ^
-        dwFlags: longword;                                  // ƒtƒ‰ƒO
-        dwLoops: longword;                                  // ƒ‹[ƒv‰ñ”
-        __lpNext: pointer;                                  // (—\–ñ)
-        __reserved: longword;                               // (—\–ñ)
+        lpData: pointer;                                    // ãƒãƒƒãƒ•ã‚¡ã®ãƒã‚¤ãƒ³ã‚¿
+        dwBufferLength: longword;                           // ãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º
+        dwBytesRecorded: longword;                          // éŒ²éŸ³æ¸ˆã¿ã®ã‚µã‚¤ã‚º
+        dwUser: longword;                                   // ãƒ¦ãƒ¼ã‚¶ãƒ‡ãƒ¼ã‚¿
+        dwFlags: longword;                                  // ãƒ•ãƒ©ã‚°
+        dwLoops: longword;                                  // ãƒ«ãƒ¼ãƒ—å›æ•°
+        __lpNext: pointer;                                  // (äºˆç´„)
+        __reserved: longword;                               // (äºˆç´„)
     end;
 
-    // WAVEOUTCAPS \‘¢‘Ì
+    // WAVEOUTCAPS æ§‹é€ ä½“
     TWAVEOUTCAPS = record
-        wMid: word;                                         // »‘¢Œ³”Ô†
-        wPid: word;                                         // »•i”Ô†
-        vDriverVersion: record                              // ƒo[ƒWƒ‡ƒ“
-            wMinor: byte;                                       // ƒ}ƒCƒi[ƒo[ƒWƒ‡ƒ“
-            wMajor: byte;                                       // ƒƒWƒƒ[ƒo[ƒWƒ‡ƒ“
-            __r: word;                                          // (—\–ñ)
+        wMid: word;                                         // è£½é€ å…ƒç•ªå·
+        wPid: word;                                         // è£½å“ç•ªå·
+        vDriverVersion: record                              // ãƒãƒ¼ã‚¸ãƒ§ãƒ³
+            wMinor: byte;                                       // ãƒã‚¤ãƒŠãƒ¼ãƒãƒ¼ã‚¸ãƒ§ãƒ³
+            wMajor: byte;                                       // ãƒ¡ã‚¸ãƒ£ãƒ¼ãƒãƒ¼ã‚¸ãƒ§ãƒ³
+            __r: word;                                          // (äºˆç´„)
         end;
-        szPname: array[0..31] of char;                      // ƒfƒoƒCƒX–¼
-        dwFormats: longword;                                // ƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚éƒtƒH[ƒ}ƒbƒg
-        wChannels: word;                                    // ƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚éƒ`ƒƒƒ“ƒlƒ‹
-        __wReserved1: word;                                 // (—\–ñ)
-        dwSupport: longword;                                // ƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚éƒRƒ“ƒgƒ[ƒ‹
+        szPname: array[0..31] of widechar;                  // ãƒ‡ãƒã‚¤ã‚¹å
+        dwFormats: longword;                                // ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã‚‹ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+        wChannels: word;                                    // ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã‚‹ãƒãƒ£ãƒ³ãƒãƒ«
+        __wReserved1: word;                                 // (äºˆç´„)
+        dwSupport: longword;                                // ã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ã‚‹ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«
     end;
 
-    // WIN32FINDDATA \‘¢‘Ì
+    // WIN32FINDDATA æ§‹é€ ä½“
     TWIN32FINDDATA = record
-        dwFileAttributes: longword;                         // ‘®«
-        ftCreateTime: TLONGLONG;                            // ì¬“ú
-        ftLastAccessTime: TLONGLONG;                        // ÅIƒAƒNƒZƒX“ú
-        ftLastWriteTime: TLONGLONG;                         // ÅIXV“ú
-        dwFileSizeHigh: longword;                           // ƒtƒ@ƒCƒ‹ƒTƒCƒY (ãˆÊ)
-        dwFileSizeLow: longword;                            // ƒtƒ@ƒCƒ‹ƒTƒCƒY (‰ºˆÊ)
-        dwReserved0: longword;                              // (—\–ñ)
-        dwReserved1: longword;                              // (—\–ñ)
-        cFileName: array[0..259] of char;                   // ’·‚¢ƒtƒ@ƒCƒ‹–¼
-        cAlternateFileName: array[0..13] of char;           // ’Z‚¢ƒtƒ@ƒCƒ‹–¼
+        dwFileAttributes: longword;                         // å±æ€§
+        ftCreateTime: TLONGLONG;                            // ä½œæˆæ—¥æ™‚
+        ftLastAccessTime: TLONGLONG;                        // æœ€çµ‚ã‚¢ã‚¯ã‚»ã‚¹æ—¥æ™‚
+        ftLastWriteTime: TLONGLONG;                         // æœ€çµ‚æ›´æ–°æ—¥æ™‚
+        dwFileSizeHigh: longword;                           // ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚º (ä¸Šä½)
+        dwFileSizeLow: longword;                            // ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚º (ä¸‹ä½)
+        dwReserved0: longword;                              // (äºˆç´„)
+        dwReserved1: longword;                              // (äºˆç´„)
+        wcFileName: array[0..259] of widechar;              // é•·ã„ãƒ•ã‚¡ã‚¤ãƒ«å (ä¸Šé™ MAX_PATH)
+        wcAlternateFileName: array[0..13] of widechar;      // çŸ­ã„ãƒ•ã‚¡ã‚¤ãƒ«å
     end;
 
-    // WINDOWPLACEMENT \‘¢‘Ì
+    // WINDOWPLACEMENT æ§‹é€ ä½“
     TWINDOWPLACEMENT = record
-        length: longword;                                   // \‘¢‘ÌƒTƒCƒY
-        flags: longword;                                    // ƒtƒ‰ƒO
-        showCmd: longword;                                  // •\¦ƒXƒ^ƒCƒ‹
-        ptMinPosition: TPOINT;                              // Å¬‰»À•W
-        ptMaxPosition: TPOINT;                              // Å‘å‰»À•W
-        rcNormalPosition: TRECT;                            // ’ÊíÀ•W
+        length: longword;                                   // æ§‹é€ ä½“ã‚µã‚¤ã‚º
+        flags: longword;                                    // ãƒ•ãƒ©ã‚°
+        showCmd: longword;                                  // è¡¨ç¤ºã‚¹ã‚¿ã‚¤ãƒ«
+        ptMinPosition: TPOINT;                              // æœ€å°åŒ–åº§æ¨™
+        ptMaxPosition: TPOINT;                              // æœ€å¤§åŒ–åº§æ¨™
+        rcNormalPosition: TRECT;                            // é€šå¸¸åº§æ¨™
     end;
 
-    // WNDCLASSEX \‘¢‘Ì
+    // WNDCLASSEX æ§‹é€ ä½“
     TWNDCLASSEX = record
-        cdSize: longword;                                   // \‘¢‘ÌƒTƒCƒY
-        style: longword;                                    // ƒNƒ‰ƒXƒXƒ^ƒCƒ‹
-        lpfnwndproc: pointer;                               // WindowProc ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
-        cbClsextra: longint;                                // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‰Šú‰»
-        cbWndExtra: longint;                                // ƒEƒBƒ“ƒhƒEƒCƒ“ƒXƒ^ƒ“ƒX‰Šú‰»
-        hThisInstance: longword;                            // ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-        hIcon: longword;                                    // 32x32 ƒAƒCƒRƒ“ƒnƒ“ƒhƒ‹
-        hCursor: longword;                                  // ƒJ[ƒ\ƒ‹ƒnƒ“ƒhƒ‹
-        hbrBackground: longword;                            // ”wŒiFƒnƒ“ƒhƒ‹ (+1)
-        lpszMenuName: pointer;                              // ƒfƒtƒHƒ‹ƒgƒƒjƒ…[‚Ìƒ|ƒCƒ“ƒ^
-        lpszClassName: pointer;                             // ƒNƒ‰ƒX–¼‚Ìƒ|ƒCƒ“ƒ^
-        hIconSm: longword;                                  // 16x16 ƒAƒCƒRƒ“ƒnƒ“ƒhƒ‹
+        cdSize: longword;                                   // æ§‹é€ ä½“ã‚µã‚¤ã‚º
+        style: longword;                                    // ã‚¯ãƒ©ã‚¹ã‚¹ã‚¿ã‚¤ãƒ«
+        lpfnwndproc: pointer;                               // WindowProc é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
+        cbClsextra: longint;                                // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹åˆæœŸåŒ–
+        cbWndExtra: longint;                                // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹åˆæœŸåŒ–
+        hThisInstance: longword;                            // ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+        hIcon: longword;                                    // 32x32 ã‚¢ã‚¤ã‚³ãƒ³ãƒãƒ³ãƒ‰ãƒ«
+        hCursor: longword;                                  // ã‚«ãƒ¼ã‚½ãƒ«ãƒãƒ³ãƒ‰ãƒ«
+        hbrBackground: longword;                            // èƒŒæ™¯è‰²ãƒãƒ³ãƒ‰ãƒ« (+1)
+        lpszMenuName: pointer;                              // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ãƒã‚¤ãƒ³ã‚¿
+        lpszClassName: pointer;                             // ã‚¯ãƒ©ã‚¹åã®ãƒã‚¤ãƒ³ã‚¿
+        hIconSm: longword;                                  // 16x16 ã‚¢ã‚¤ã‚³ãƒ³ãƒãƒ³ãƒ‰ãƒ«
     end;
 
-    // DROPFILES \‘¢‘Ì
+    // DROPFILES æ§‹é€ ä½“
     TDROPFILES = record
-        pFiles: longword;                                   // ƒtƒ@ƒCƒ‹ˆê——‚ÌŠJnƒCƒ“ƒfƒbƒNƒX
-        pt: TPOINT;                                         // ƒ}ƒEƒXÀ•W
-        fNC: longbool;                                      // ”ñƒNƒ‰ƒCƒAƒ“ƒg—Ìˆæƒtƒ‰ƒO
-        fWide: longbool;                                    // UNICODE (Win9x: false, WinNT: true •K{)
+        pFiles: longword;                                   // ãƒ•ã‚¡ã‚¤ãƒ«ä¸€è¦§ã®é–‹å§‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+        pt: TPOINT;                                         // ãƒã‚¦ã‚¹åº§æ¨™
+        fNC: longbool;                                      // éã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆé ˜åŸŸãƒ•ãƒ©ã‚°
+        fWide: longbool;                                    // UNICODE (Win9x: false, WinNT: true å¿…é ˆ)
     end;
 
-    // FORMATETC \‘¢‘Ì
+    // FORMATETC æ§‹é€ ä½“
     TFORMATETC = record
-        cfFormat: word;                                     // ƒNƒŠƒbƒvƒ{[ƒhƒtƒH[ƒ}ƒbƒgŒ`®
-        ptd: pointer;                                       // ‘ÎÛƒfƒoƒCƒXî•ñ
-        dwAspect: longword;                                 // •\¦‚ÉŠÜ‚Ü‚ê‚é•K—v‚ª‚ ‚éÚ×î•ñ
-        lindex: longint;                                    // ƒf[ƒ^‚ªƒy[ƒW‹«ŠE‚ğ‰z‚¦‚Ä•ªŠ„‚³‚ê‚é•K—v‚ª‚ ‚éê‡‚Ì“Á«
-        tymed: longword;                                    // ƒf[ƒ^“]‘—‚Ég—p‚·‚éƒXƒgƒŒ[ƒW‚Ìí—Ş
+        cfFormat: word;                                     // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå½¢å¼
+        ptd: pointer;                                       // å¯¾è±¡ãƒ‡ãƒã‚¤ã‚¹æƒ…å ±
+        dwAspect: longword;                                 // è¡¨ç¤ºã«å«ã¾ã‚Œã‚‹å¿…è¦ãŒã‚ã‚‹è©³ç´°æƒ…å ±
+        lindex: longint;                                    // ãƒ‡ãƒ¼ã‚¿ãŒãƒšãƒ¼ã‚¸å¢ƒç•Œã‚’è¶Šãˆã¦åˆ†å‰²ã•ã‚Œã‚‹å¿…è¦ãŒã‚ã‚‹å ´åˆã®ç‰¹æ€§
+        tymed: longword;                                    // ãƒ‡ãƒ¼ã‚¿è»¢é€ã«ä½¿ç”¨ã™ã‚‹ã‚¹ãƒˆãƒ¬ãƒ¼ã‚¸ã®ç¨®é¡
     end;
 
-    // STGMEDIUM \‘¢‘Ì
+    // STGMEDIUM æ§‹é€ ä½“
     TSTGMEDIUM = record
-        tymed: longword;                                    // ƒf[ƒ^“]‘—‚Ég—p‚·‚éƒXƒgƒŒ[ƒW‚Ìí—Ş
-        handle: longword;                                   // ƒf[ƒ^‚Ìƒnƒ“ƒhƒ‹
-        pUnkForRelease: pointer;                            // ƒXƒgƒŒ[ƒW‰ğ•ú‚ÉƒR[ƒ‹‚·‚éƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ìƒ|ƒCƒ“ƒ^
+        tymed: longword;                                    // ãƒ‡ãƒ¼ã‚¿è»¢é€ã«ä½¿ç”¨ã™ã‚‹ã‚¹ãƒˆãƒ¬ãƒ¼ã‚¸ã®ç¨®é¡
+        handle: longword;                                   // ãƒ‡ãƒ¼ã‚¿ã®ãƒãƒ³ãƒ‰ãƒ«
+        pUnkForRelease: pointer;                            // ã‚¹ãƒˆãƒ¬ãƒ¼ã‚¸è§£æ”¾æ™‚ã«ã‚³ãƒ¼ãƒ«ã™ã‚‹ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
     end;
 
-    // DROPOBJECT \‘¢‘Ì
+    // DROPOBJECT æ§‹é€ ä½“
     TDROPOBJECT = record
-        FormatEtc: ^TFORMATETC;                             // FORMATETC \‘¢‘Ì
-        StgMedium: ^TSTGMEDIUM;                             // STGMEDIUM \‘¢‘Ì
-        fRelease: longbool;                                 // ƒf[ƒ^•¡»ƒtƒ‰ƒO
+        FormatEtc: ^TFORMATETC;                             // FORMATETC æ§‹é€ ä½“
+        StgMedium: ^TSTGMEDIUM;                             // STGMEDIUM æ§‹é€ ä½“
+        fRelease: longbool;                                 // ãƒ‡ãƒ¼ã‚¿è¤‡è£½ãƒ•ãƒ©ã‚°
     end;
 
-    // IDROPSOURCEVTBL \‘¢‘Ì
+    // IDROPSOURCEVTBL æ§‹é€ ä½“
     TIDROPSOURCEVTBL = record
-        OLEIDropSourceQueryInterface: pointer;              // IDropSource::QueryInterface ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
-        OLEIDropSourceAddRef: pointer;                      // IDropSource::AddRef ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
-        OLEIDropSourceRelease: pointer;                     // IDropSource::Release ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
-        OLEIDropSourceQueryContinueDrag: pointer;           // IDropSource::QueryContinueDrag ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
-        OLEIDropSourceGiveFeedback: pointer;                // IDropSource::GiveFeedback ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
+        OLEIDropSourceQueryInterface: pointer;              // IDropSource::QueryInterface é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
+        OLEIDropSourceAddRef: pointer;                      // IDropSource::AddRef é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
+        OLEIDropSourceRelease: pointer;                     // IDropSource::Release é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
+        OLEIDropSourceQueryContinueDrag: pointer;           // IDropSource::QueryContinueDrag é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
+        OLEIDropSourceGiveFeedback: pointer;                // IDropSource::GiveFeedback é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
     end;
 
-    // IDROPSOURCE \‘¢‘Ì
+    // IDROPSOURCE æ§‹é€ ä½“
     TIDROPSOURCE = record
-        lpVtbl: pointer;                                    // ƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ìƒ|ƒCƒ“ƒ^
-        dwRefCnt: longword;                                 // QÆƒJƒEƒ“ƒg
+        lpVtbl: pointer;                                    // ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
+        dwRefCnt: longword;                                 // å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆ
     end;
 
-    // IDATAOBJECTVTBL \‘¢‘Ì
+    // IDATAOBJECTVTBL æ§‹é€ ä½“
     TIDATAOBJECTVTBL = record
-        OLEIDataObjectQueryInterface: pointer;              // IDataObject::QueryInterface ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
-        OLEIDataObjectAddRef: pointer;                      // IDataObject::AddRef ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
-        OLEIDataObjectRelease: pointer;                     // IDataObject::Release ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
-        OLEIDataObjectGetData: pointer;                     // IDataObject::GetData ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
-        OLEIDataObjectGetDataHere: pointer;                 // IDataObject::GetDataHere ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
-        OLEIDataObjectQueryGetData: pointer;                // IDataObject::QueryGetData ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
-        OLEIDataObjectGetCanonicalFormatEtc: pointer;       // IDataObject::GetCanonicalFormatEtc ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
-        OLEIDataObjectSetData: pointer;                     // IDataObject::SetData ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
-        OLEIDataObjectEnumFormatEtc: pointer;               // IDataObject::EnumFormatEtc ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
-        OLEIDataObjectDAdvise: pointer;                     // IDataObject::DAdvise ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
-        OLEIDataObjectDUnadvise: pointer;                   // IDataObject::DUnadvise ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
-        OLEIDataObjectEnumDAdvise: pointer;                 // IDataObject::EnumDAdvise ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
+        OLEIDataObjectQueryInterface: pointer;              // IDataObject::QueryInterface é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
+        OLEIDataObjectAddRef: pointer;                      // IDataObject::AddRef é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
+        OLEIDataObjectRelease: pointer;                     // IDataObject::Release é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
+        OLEIDataObjectGetData: pointer;                     // IDataObject::GetData é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
+        OLEIDataObjectGetDataHere: pointer;                 // IDataObject::GetDataHere é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
+        OLEIDataObjectQueryGetData: pointer;                // IDataObject::QueryGetData é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
+        OLEIDataObjectGetCanonicalFormatEtc: pointer;       // IDataObject::GetCanonicalFormatEtc é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
+        OLEIDataObjectSetData: pointer;                     // IDataObject::SetData é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
+        OLEIDataObjectEnumFormatEtc: pointer;               // IDataObject::EnumFormatEtc é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
+        OLEIDataObjectDAdvise: pointer;                     // IDataObject::DAdvise é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
+        OLEIDataObjectDUnadvise: pointer;                   // IDataObject::DUnadvise é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
+        OLEIDataObjectEnumDAdvise: pointer;                 // IDataObject::EnumDAdvise é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
     end;
 
-    // IDATAOBJECT \‘¢‘Ì
+    // IDATAOBJECT æ§‹é€ ä½“
     TIDATAOBJECT = record
-        lpVtbl: pointer;                                    // ƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ìƒ|ƒCƒ“ƒ^
-        dwRefCnt: longword;                                 // QÆƒJƒEƒ“ƒg
-        dwObjectCnt: longword;                              // ƒf[ƒ^ƒIƒuƒWƒFƒNƒg”
-        Objects: array[0..15] of TDROPOBJECT;               // ƒf[ƒ^ƒIƒuƒWƒFƒNƒgî•ñ
+        lpVtbl: pointer;                                    // ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
+        dwRefCnt: longword;                                 // å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆ
+        dwObjectCnt: longword;                              // ãƒ‡ãƒ¼ã‚¿ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæ•°
+        Objects: array[0..15] of TDROPOBJECT;               // ãƒ‡ãƒ¼ã‚¿ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæƒ…å ±
     end;
 
-    // POWERBROADCAST_SETTING \‘¢‘Ì
+    // POWERBROADCAST_SETTING æ§‹é€ ä½“
     TPOWERBROADCAST_SETTING = record
-        PowerSetting: TGUID;                                // “dŒ¹İ’è
-        dwDataLength: longword;                             // ƒf[ƒ^‚Ì’·‚³
-        Data: array of byte;                                // ƒf[ƒ^
+        PowerSetting: TGUID;                                // é›»æºè¨­å®š
+        dwDataLength: longword;                             // ãƒ‡ãƒ¼ã‚¿ã®é•·ã•
+        Data: array of byte;                                // ãƒ‡ãƒ¼ã‚¿
     end;
 
-    // DRAWITEMSTRUCT \‘¢‘Ì
+    // DRAWITEMSTRUCT æ§‹é€ ä½“
     TDRAWITEMSTRUCT = record
-        ctlType: longword;                                  // ƒRƒ“ƒgƒ[ƒ‹‚ÌŒ^
-        ctlID: longword;                                    // ƒRƒ“ƒgƒ[ƒ‹‚Ì¯•Êq
-        itemID: longword;                                   // ƒƒjƒ…[€–Ú‚Ì¯•Êq
-        itemAction: longword;                               // •`‰æƒAƒNƒVƒ‡ƒ“
-        itemState: longword;                                // •`‰æƒAƒNƒVƒ‡ƒ“‚ªÀs‚³‚ê‚½Œã‚Ì•\¦ó‘Ô
-        hwndItem: longword;                                 // ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹Aƒƒjƒ…[ƒnƒ“ƒhƒ‹
-        hDC: longword;                                      // ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚Ìƒnƒ“ƒhƒ‹
-        rcItem: TRECT;                                      // ƒRƒ“ƒgƒ[ƒ‹‚Ì‹«ŠE
-        itemData: pointer;                                  // ƒAƒvƒŠƒP[ƒVƒ‡ƒ“’è‹`‚Ì’l
+        ctlType: longword;                                  // ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®å‹
+        ctlID: longword;                                    // ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®è­˜åˆ¥å­
+        itemID: longword;                                   // ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®ã®è­˜åˆ¥å­
+        itemAction: longword;                               // æç”»ã‚¢ã‚¯ã‚·ãƒ§ãƒ³
+        itemState: longword;                                // æç”»ã‚¢ã‚¯ã‚·ãƒ§ãƒ³ãŒå®Ÿè¡Œã•ã‚ŒãŸå¾Œã®è¡¨ç¤ºçŠ¶æ…‹
+        hwndItem: longword;                                 // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«ã€ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ³ãƒ‰ãƒ«
+        hDC: longword;                                      // ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®ãƒãƒ³ãƒ‰ãƒ«
+        rcItem: TRECT;                                      // ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã®å¢ƒç•Œ
+        itemData: pointer;                                  // ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³å®šç¾©ã®å€¤
     end;
 
-    // MENUBARINFO \‘¢‘Ì
+    // MENUBARINFO æ§‹é€ ä½“
     TMENUBARINFO = record
-        cbSize: longword;                                   // \‘¢‘Ì‚ÌƒTƒCƒY
-        rcBar: TRECT;                                       // ƒƒjƒ…[ƒo[‚ÌƒTƒCƒY
-        hMenu: longword;                                    // ƒƒjƒ…[ƒnƒ“ƒhƒ‹
-        hwndMenu: longword;                                 // ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-        dwFlags: longword;                                  // ƒtƒ‰ƒO
+        cbSize: longword;                                   // æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º
+        rcBar: TRECT;                                       // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼ã®ã‚µã‚¤ã‚º
+        hMenu: longword;                                    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ³ãƒ‰ãƒ«
+        hwndMenu: longword;                                 // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+        dwFlags: longword;                                  // ãƒ•ãƒ©ã‚°
     end;
 
-    // MENUITEMINFO \‘¢‘Ì
+    // MENUITEMINFO æ§‹é€ ä½“
     TMENUITEMINFO = record
-        cbSize: longword;                                   // \‘¢‘Ì‚ÌƒTƒCƒY
-        fMask: longword;                                    // ƒƒ“ƒo[ƒtƒ‰ƒO
-        fType: longword;                                    // ƒƒjƒ…[€–Ú‚Ìí—Ş
-        fState: longword;                                   // ƒƒjƒ…[€–Ú‚Ìó‘Ô
-        wID: longword;                                      // ƒƒjƒ…[€–Ú‚Ì¯•ÊID
-        hSubMenu: longword;                                 // ƒTƒuƒƒjƒ…[ƒnƒ“ƒhƒ‹
-        hbmpChecked: longword;                              // ‘I‘ğ‚Ìƒrƒbƒgƒ}ƒbƒvƒnƒ“ƒhƒ‹
-        hbmpUnchecked: longword;                            // ”ñ‘I‘ğ‚Ìƒrƒbƒgƒ}ƒbƒvƒnƒ“ƒhƒ‹
-        dwItemData: pointer;                                // ƒAƒvƒŠƒP[ƒVƒ‡ƒ“’è‹`‚Ì’l
-        dwTypeData: pointer;                                // ƒƒjƒ…[€–Ú‚Ì“à—e
-        cch: longword;                                      // ƒƒjƒ…[€–Ú‚ÌƒeƒLƒXƒg‚Ì’·‚³ (•¶š’PˆÊ)
-        hbmpItem: longword;                                 // ƒrƒbƒgƒ}ƒbƒvƒnƒ“ƒhƒ‹
+        cbSize: longword;                                   // æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º
+        fMask: longword;                                    // ãƒ¡ãƒ³ãƒãƒ¼ãƒ•ãƒ©ã‚°
+        fType: longword;                                    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®ã®ç¨®é¡
+        fState: longword;                                   // ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®ã®çŠ¶æ…‹
+        wID: longword;                                      // ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®ã®è­˜åˆ¥ID
+        hSubMenu: longword;                                 // ã‚µãƒ–ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ³ãƒ‰ãƒ«
+        hbmpChecked: longword;                              // é¸æŠæ™‚ã®ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ãƒãƒ³ãƒ‰ãƒ«
+        hbmpUnchecked: longword;                            // éé¸æŠæ™‚ã®ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ãƒãƒ³ãƒ‰ãƒ«
+        dwItemData: pointer;                                // ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³å®šç¾©ã®å€¤
+        dwTypeData: pointer;                                // ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®ã®å†…å®¹
+        cch: longword;                                      // ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®ã®ãƒ†ã‚­ã‚¹ãƒˆã®é•·ã• (æ–‡å­—å˜ä½)
+        hbmpItem: longword;                                 // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ãƒãƒ³ãƒ‰ãƒ«
     end;
 
-    // UAHMENU \‘¢‘Ì
+    // UAHMENU æ§‹é€ ä½“
     TUAHMENU = record
-        hMenu: longword;                                    // ƒƒjƒ…[ƒnƒ“ƒhƒ‹
-        hDC: longword;                                      // ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚Ìƒnƒ“ƒhƒ‹
-        dwFlags: longword;                                  // ƒtƒ‰ƒO
+        hMenu: longword;                                    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ³ãƒ‰ãƒ«
+        hDC: longword;                                      // ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®ãƒãƒ³ãƒ‰ãƒ«
+        dwFlags: longword;                                  // ãƒ•ãƒ©ã‚°
     end;
 
-    // UAHMENUITEMMETRICS \‘¢‘Ì
+    // UAHMENUITEMMETRICS æ§‹é€ ä½“
     TUAHMENUITEMMETRICS = record
         Rect1: TRECT;
         Rect2: TRECT;
         Rect3: TRECT;
     end;
 
-    // UAHMENUPOPUPMETRICS \‘¢‘Ì
+    // UAHMENUPOPUPMETRICS æ§‹é€ ä½“
     TUAHMENUPOPUPMETRICS = record
         rgcx: array[0..3] of longword;
         fUpdateMaxWidths: longword;
     end;
 
-    // UAHMENUITEM \‘¢‘Ì
+    // UAHMENUITEM æ§‹é€ ä½“
     TUAHMENUITEM = record
-        nPosition: longint;                                 // ƒƒjƒ…[ˆÊ’u
-        Item: TUAHMENUITEMMETRICS;                          // ƒƒjƒ…[î•ñ
-        Popup: TUAHMENUPOPUPMETRICS;                        // ƒ|ƒbƒvƒAƒbƒvƒƒjƒ…[î•ñ
+        nPosition: longint;                                 // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ä½ç½®
+        Item: TUAHMENUITEMMETRICS;                          // ãƒ¡ãƒ‹ãƒ¥ãƒ¼æƒ…å ±
+        Popup: TUAHMENUPOPUPMETRICS;                        // ãƒãƒƒãƒ—ã‚¢ãƒƒãƒ—ãƒ¡ãƒ‹ãƒ¥ãƒ¼æƒ…å ±
     end;
 
-    // UAHDRAWMENUITEM \‘¢‘Ì
+    // UAHDRAWMENUITEM æ§‹é€ ä½“
     TUAHDRAWMENUITEM = record
-        Struct: TDRAWITEMSTRUCT;                            // •`‰æî•ñ
-        Menu: TUAHMENU;                                     // ƒƒjƒ…[î•ñ
-        MenuItem: TUAHMENUITEM;                             // ƒƒjƒ…[ƒAƒCƒeƒ€î•ñ
+        Struct: TDRAWITEMSTRUCT;                            // æç”»æƒ…å ±
+        Menu: TUAHMENU;                                     // ãƒ¡ãƒ‹ãƒ¥ãƒ¼æƒ…å ±
+        MenuItem: TUAHMENUITEM;                             // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¢ã‚¤ãƒ†ãƒ æƒ…å ±
     end;
 
-    // DTTOPTS \‘¢‘Ì
+    // DTTOPTS æ§‹é€ ä½“
     TDTTOPTS = record
-        cbSize: longword;                                   // \‘¢‘Ì‚ÌƒTƒCƒY
-        dwFlags: longword;                                  // ƒtƒ‰ƒO
-        crText: longword;                                   // ƒeƒLƒXƒg‚ÌF
-        crBorder: longword;                                 // ˜gü‚ÌF
-        crShadow: longword;                                 // ‰e‚ÌF
-        iTextShadowType: longint;                           // ‰e‚Ìí—Ş
-        ptShadowOffset: TPOINT;                             // ‰e‚ÆƒeƒLƒXƒg‚ÌƒIƒtƒZƒbƒg
-        iBorderSize: longint;                               // ƒAƒEƒgƒ‰ƒCƒ“‚Ì”¼Œa
-        iFontPropId: longint;                               // ‘ã‘ÖƒtƒHƒ“ƒg
-        iColorPropId: longint;                              // ‘ã‘ÖF
-        iStateId: longint;                                  // ‘ã‘Öó‘Ô
-        fApplyOverlay: longbool;                            // ‰e‚ÆƒAƒEƒgƒ‰ƒCƒ“Œø‰Ê‚Ìã‚ÉƒeƒLƒXƒg‚ğ•`‰æ
-        iGlowSize: longint;                                 // ŒõÊ‚ÌƒTƒCƒY
-        pfnDrawTextCallback: pointer;                       // ƒR[ƒ‹ƒoƒbƒNŠÖ”‚Ìƒ|ƒCƒ“ƒ^
-        lParam: longword;                                   // ƒR[ƒ‹ƒoƒbƒNŠÖ”‚Ìƒpƒ‰ƒ[ƒ^
+        cbSize: longword;                                   // æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º
+        dwFlags: longword;                                  // ãƒ•ãƒ©ã‚°
+        crText: longword;                                   // ãƒ†ã‚­ã‚¹ãƒˆã®è‰²
+        crBorder: longword;                                 // æ ç·šã®è‰²
+        crShadow: longword;                                 // å½±ã®è‰²
+        iTextShadowType: longint;                           // å½±ã®ç¨®é¡
+        ptShadowOffset: TPOINT;                             // å½±ã¨ãƒ†ã‚­ã‚¹ãƒˆã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+        iBorderSize: longint;                               // ã‚¢ã‚¦ãƒˆãƒ©ã‚¤ãƒ³ã®åŠå¾„
+        iFontPropId: longint;                               // ä»£æ›¿ãƒ•ã‚©ãƒ³ãƒˆ
+        iColorPropId: longint;                              // ä»£æ›¿è‰²
+        iStateId: longint;                                  // ä»£æ›¿çŠ¶æ…‹
+        fApplyOverlay: longbool;                            // å½±ã¨ã‚¢ã‚¦ãƒˆãƒ©ã‚¤ãƒ³åŠ¹æœã®ä¸Šã«ãƒ†ã‚­ã‚¹ãƒˆã‚’æç”»
+        iGlowSize: longint;                                 // å…‰å½©ã®ã‚µã‚¤ã‚º
+        pfnDrawTextCallback: pointer;                       // ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
+        lParam: longword;                                   // ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
     end;
 
 {$IFDEF TRANSMITSPC}
-    // TRANSFERSPCEX \‘¢‘Ì
+    // TRANSFERSPCEX æ§‹é€ ä½“
     TTRANSFERSPCEX = record
-        cbSize: longword;                                   // \‘¢‘Ì‚ÌƒTƒCƒY
-        transmitType: longword;                             // ‘—Mí•Ê
-        bScript700: longbool;                               // Script700 g—pƒtƒ‰ƒO
-        lptPort: longword;                                  // LPT ƒ|[ƒgƒAƒhƒŒƒX
+        cbSize: longword;                                   // æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º
+        transmitType: longword;                             // é€ä¿¡ç¨®åˆ¥
+        bScript700: longbool;                               // Script700 ä½¿ç”¨ãƒ•ãƒ©ã‚°
+        lptPort: longword;                                  // LPT ãƒãƒ¼ãƒˆã‚¢ãƒ‰ãƒ¬ã‚¹
     end;
 {$ENDIF}
 
 {$IFDEF ITASKBARLIST3}
-    // ITASKBARLIST3VTBL \‘¢‘Ì
+    // ITASKBARLIST3VTBL æ§‹é€ ä½“
     TITASKBARLIST3VTBL = record
         COMITaskbarListQueryInterface: function(lpTaskbarList: pointer; priid: pointer; lplpDropSource: pointer): longword; stdcall;
         COMITaskbarListAddRef: function(lpTaskbarList: pointer): longword; stdcall;
@@ -916,53 +917,58 @@ type
         COMITaskbarList3SetThumbnailClip: procedure(lpTaskbarList: pointer; hWnd: longword; prcClip: longword); stdcall;
     end;
 
-    // ITASKBARLIST3 \‘¢‘Ì
+    // ITASKBARLIST3 æ§‹é€ ä½“
     TITASKBARLIST3 = record
-        lpVtbl: pointer;                                    // ƒCƒ“ƒ^[ƒtƒFƒCƒX‚Ìƒ|ƒCƒ“ƒ^
+        lpVtbl: pointer;                                    // ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿
     end;
 {$ENDIF}
 
-    // CLASS ƒNƒ‰ƒX
+{$IFNDEF FREEPASCAL}
+    // å‹ã‚¨ã‚¤ãƒªã‚¢ã‚¹
+    utf8string = type string;
+{$ENDIF}
+
+    // CLASS ã‚¯ãƒ©ã‚¹
     CCLASS = class
     private
     public
-        procedure CreateClass(lpWindowProc: pointer; hThisInstance: longword; lpClassName: pointer; dwStyle: longword; lpIcon: pointer;
+        procedure CreateClass(lpWindowProc: pointer; hThisInstance: longword; const sClassName: utf8string; dwStyle: longword; lpIcon: pointer;
             lpSmallIcon: pointer; hCursor: longword; hbrBackground: longword);
-        procedure DeleteClass(hThisInstance: longword; lpClassName: pointer);
+        procedure DeleteClass(hThisInstance: longword; const sClassName: utf8string);
     end;
 
-    // FONT ƒNƒ‰ƒX
+    // FONT ã‚¯ãƒ©ã‚¹
     CFONT = class
     private
     public
-        hFont: longword;                                    // ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹
-        procedure CreateFont(lpFontName: pointer; nHeight: longint; nWidth: longint; bBold: longbool; bItalic: longbool; bUnderLine: longbool;
+        hFont: longword;                                    // ãƒ•ã‚©ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ«
+        procedure CreateFont(const sFontName: utf8string; nHeight: longint; nWidth: longint; bBold: longbool; bItalic: longbool; bUnderLine: longbool;
             bStrike: longbool);
         procedure DeleteFont();
     end;
 
-    // MENU ƒNƒ‰ƒX
+    // MENU ã‚¯ãƒ©ã‚¹
     CMENU = class
     private
     public
-        hMenu: longword;                                    // ƒƒjƒ…[ƒnƒ“ƒhƒ‹
-        procedure AppendMenu(dwID: longword; lpString: pointer); overload;
-        procedure AppendMenu(dwID: longword; lpString: pointer; bRadio: longbool); overload;
-        procedure AppendMenu(dwID: longword; lpString: pointer; hSubMenuID: longword); overload;
+        hMenu: longword;                                    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ³ãƒ‰ãƒ«
+        procedure AppendMenu(dwID: longword; const sString: utf8string); overload;
+        procedure AppendMenu(dwID: longword; const sString: utf8string; bRadio: longbool); overload;
+        procedure AppendMenu(dwID: longword; const sString: utf8string; hSubMenuID: longword); overload;
         procedure AppendSeparator();
         procedure CreateMenu();
         procedure CreatePopupMenu();
         procedure DeleteMenu();
-        procedure InsertMenu(dwID: longword; dwAfterId: longword; lpString: pointer); overload;
-        procedure InsertMenu(dwID: longword; dwAfterId: longword; lpString: pointer; bRadio: longbool); overload;
-        procedure InsertMenu(dwID: longword; dwAfterId: longword; lpString: pointer; hSubMenuID: longword); overload;
+        procedure InsertMenu(dwID: longword; dwAfterId: longword; const sString: utf8string); overload;
+        procedure InsertMenu(dwID: longword; dwAfterId: longword; const sString: utf8string; bRadio: longbool); overload;
+        procedure InsertMenu(dwID: longword; dwAfterId: longword; const sString: utf8string; hSubMenuID: longword); overload;
         procedure InsertSeparator(dwId: longword);
         procedure RemoveItem(dwId: longword);
         procedure SetMenuCheck(dwID: longword; bCheck: longbool);
         procedure SetMenuEnable(dwID: longword; bEnable: longbool);
     end;
 
-    // MENUBAR ƒNƒ‰ƒX
+    // MENUBAR ã‚¯ãƒ©ã‚¹
     CMENUBAR = class(CMENU)
     private
     public
@@ -971,26 +977,32 @@ type
         function  DrawMenuItem(hWnd: longword; lParam: longword): longword;
     end;
 
-    // WINDOW ƒNƒ‰ƒX
+    // WINDOW ã‚¯ãƒ©ã‚¹
     CWINDOW = class
     private
     public
-        hWnd: longword;                                     // ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
-        bMessageBox: longbool;                              // ƒƒbƒZ[ƒWƒ{ƒbƒNƒXƒtƒ‰ƒO
-        procedure CreateItem(hThisInstance: longword; hMainWnd: longword; hFont: longword; lpItemName: pointer; lpCaption: pointer; dwItemID: longword;
-            dwStylePlus: longword; dwStyleExPlus: longword; Box: TBOX);
-        procedure CreateWindow(hThisInstance: longword; lpClassName: pointer; lpWndName: pointer; dwStylePlus: longword; dwStyleExPlus: longword; Box: TBOX);
+        hWnd: longword;                                     // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
+        bMessageBox: longbool;                              // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ãƒ•ãƒ©ã‚°
+        procedure CreateItem(hThisInstance: longword; hMainWnd: longword; hFont: longword; const sItemName: utf8string; const sCaption: utf8string;
+            dwItemID: longword; dwStylePlus: longword; dwStyleExPlus: longword; Box: TBOX);
+        procedure CreateWindow(hThisInstance: longword; const sClassName: utf8string; const sWndName: utf8string; dwStylePlus: longword;
+            dwStyleExPlus: longword; Box: TBOX);
         procedure DeleteWindow();
-        function  GetCaption(lpCaption: pointer; nMaxCount: longint): longint;
+        function  GetCaption(dwSize: longint): utf8string;
         function  GetSystemMenu(): CMENU;
         function  GetWindowRect(lpRect: pointer): longbool;
         function  GetWindowStyle(): longword;
         function  GetWindowStyleEx(): longword;
         function  Invalidate(): longbool;
-        function  MessageBox(lpText: pointer; lpCaption: pointer; uType: longword): longint;
+        function  MessageBox(const sText: utf8string): longint; overload;
+        function  MessageBox(const sText: utf8string; const sCaption: utf8string; uType: longword): longint; overload;
         function  PostMessage(msg: longword; wParam: longword; lParam: longword): longbool;
-        function  SendMessage(msg: longword; wParam: longword; lParam: longword): longword;
-        procedure SetCaption(lpCaption: pointer);
+        function  SendMessage(msg: longword; wParam: longword): longword; overload;
+        function  SendMessage(msg: longword; wParam: longword; lParam: longword): longword; overload;
+        function  SendMessage(msg: longword; wParam: longword; lParam: pointer): longword; overload;
+        function  SendMessageA(msg: longword; wParam: longword; lParam: pointer): longword; overload;
+        function  SendMessageA(msg: longword; wParam: longword; lParam: pointer; dwParamSize: longword): longword; overload;
+        procedure SetCaption(const sCaption: utf8string);
         procedure SetWindowEnable(bEnable: longbool);
         procedure SetWindowPosition(nLeft: longint; nTop: longint; nWidth: longint; nHeight: longint);
         procedure SetWindowShowStyle(nCmdShow: longint);
@@ -998,93 +1010,94 @@ type
         procedure UpdateWindow(bVisible: longbool);
     end;
 
-    // BUTTON ƒNƒ‰ƒX
+    // BUTTON ã‚¯ãƒ©ã‚¹
     CBUTTON = class(CWINDOW)
     private
     public
-        procedure CreateItem(hThisInstance: longword; hMainWnd: longword; hFont: longword; lpItemName: pointer; lpCaption: pointer; dwItemID: longword;
-            dwStylePlus: longword; Box: TBOX);
+        procedure CreateItem(hThisInstance: longword; hMainWnd: longword; hFont: longword; const sItemName: utf8string; const sCaption: utf8string;
+            dwItemID: longword; dwStylePlus: longword; Box: TBOX);
         function  DrawItem(lParam: longword; bHighlight: longbool): longword;
     end;
 
-    // WINDOWMAIN ƒNƒ‰ƒX
+    // WINDOWMAIN ã‚¯ãƒ©ã‚¹
     CWINDOWMAIN = class
     private
-        cfMain: CFONT;                                      // ƒtƒHƒ“ƒgƒNƒ‰ƒX
-        cwWindowMain: CWINDOW;                              // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (ƒƒCƒ“ƒEƒBƒ“ƒhƒE)
-        cmSystem: CMENU;                                    // ƒƒjƒ…[ƒNƒ‰ƒX (ƒVƒXƒeƒ€ƒƒjƒ…[)
-        cmMain: CMENUBAR;                                   // ƒƒjƒ…[ƒNƒ‰ƒX (ƒƒjƒ…[ƒo[)
-        cmFile: CMENU;                                      // ƒƒjƒ…[ƒNƒ‰ƒX (ƒtƒ@ƒCƒ‹)
-        cmSetup: CMENU;                                     // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è)
-        cmSetupDevice: CMENU;                               // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - ƒTƒEƒ“ƒhƒfƒoƒCƒX)
-        cmSetupChannel: CMENU;                              // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - ƒ`ƒƒƒ“ƒlƒ‹)
-        cmSetupBit: CMENU;                                  // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - ƒrƒbƒg)
-        cmSetupRate: CMENU;                                 // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - ƒTƒ“ƒvƒŠƒ“ƒOƒŒ[ƒg)
-        cmSetupInter: CMENU;                                // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - •âŠÔˆ—)
-        cmSetupPitch: CMENU;                                // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - ƒsƒbƒ`)
-        cmSetupPitchKey: CMENU;                             // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - ƒsƒbƒ` - ƒL[)
-        cmSetupSeparate: CMENU;                             // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - ¶‰EŠgU“x)
-        cmSetupFeedback: CMENU;                             // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - ƒtƒB[ƒhƒoƒbƒN”½“]“x)
-        cmSetupSpeed: CMENU;                                // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - ‰‰‘t‘¬“x)
-        cmSetupAmp: CMENU;                                  // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - ‰¹—Ê)
-        cmSetupMute: CMENU;                                 // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - ƒ`ƒƒƒ“ƒlƒ‹ƒ}ƒXƒN)
-        cmSetupNoise: CMENU;                                // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - ƒ`ƒƒƒ“ƒlƒ‹ƒmƒCƒY)
-        cmSetupOption: CMENU;                               // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - Šg’£İ’è)
-        cmSetupTime: CMENU;                                 // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - ‰‰‘tŠÔ)
-        cmSetupOrder: CMENU;                                // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - ‰‰‘t‡˜)
-        cmSetupSeek: CMENU;                                 // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - ƒV[ƒNŠÔ)
-        cmSetupInfo: CMENU;                                 // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - î•ñ•\¦)
-        cmSetupPriority: CMENU;                             // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - Šî–{—Dæ“x)
-        cmSetupOthers: CMENU;                               // ƒƒjƒ…[ƒNƒ‰ƒX (İ’è - ‚»‚Ì‘¼İ’è)
-        cmList: CMENU;                                      // ƒƒjƒ…[ƒNƒ‰ƒX (ƒvƒŒƒCƒŠƒXƒg)
-        cmListPlay: CMENU;                                  // ƒƒjƒ…[ƒNƒ‰ƒX (ƒvƒŒƒCƒŠƒXƒg - ‰‰‘tŠJn)
-        cwStaticFile: CWINDOW;                              // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (ƒtƒ@ƒCƒ‹–¼“]‘——pƒ‰ƒxƒ‹)
-        cwStaticMain: CWINDOW;                              // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (î•ñ•\¦—pƒ‰ƒxƒ‹)
-        cwButtonOpen: CBUTTON;                              // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (OPEN ƒ{ƒ^ƒ“)
-        cwButtonSave: CBUTTON;                              // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (SAVE ƒ{ƒ^ƒ“)
-        cwButtonPlay: CBUTTON;                              // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (PLAY ƒ{ƒ^ƒ“)
-        cwButtonRestart: CBUTTON;                           // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (RESTART ƒ{ƒ^ƒ“)
-        cwButtonStop: CBUTTON;                              // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (STOP ƒ{ƒ^ƒ“)
-        cwCheckTrack: array[0..7] of CBUTTON;               // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (1 ` 8 ƒ{ƒ^ƒ“)
-        cwButtonVolM: CBUTTON;                              // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (VL- ƒ{ƒ^ƒ“)
-        cwButtonVolP: CBUTTON;                              // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (VL+ ƒ{ƒ^ƒ“)
-        cwButtonSlow: CBUTTON;                              // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (SP- ƒ{ƒ^ƒ“)
-        cwButtonFast: CBUTTON;                              // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (SP+ ƒ{ƒ^ƒ“)
-        cwButtonBack: CBUTTON;                              // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (REW ƒ{ƒ^ƒ“)
-        cwButtonNext: CBUTTON;                              // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (FF ƒ{ƒ^ƒ“)
-        cwFileList: CWINDOW;                                // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (ƒtƒ@ƒCƒ‹‹L˜^—p)
-        cwSortList: CWINDOW;                                // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (ƒ\[ƒg—p)
-        cwTempList: CWINDOW;                                // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (ƒeƒ“ƒ|ƒ‰ƒŠ—p)
-        cwPlayList: CWINDOW;                                // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (ƒvƒŒƒCƒŠƒXƒg)
-        cwButtonListAdd: CBUTTON;                           // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (ADD / INSERT ƒ{ƒ^ƒ“)
-        cwButtonListRemove: CBUTTON;                        // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (REMOVE ƒ{ƒ^ƒ“)
-        cwButtonListClear: CBUTTON;                         // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (CLEAR ƒ{ƒ^ƒ“)
-        cwButtonListUp: CBUTTON;                            // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (ã‚Öƒ{ƒ^ƒ“)
-        cwButtonListDown: CBUTTON;                          // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX (‰º‚Öƒ{ƒ^ƒ“)
+        cfMain: CFONT;                                      // ãƒ•ã‚©ãƒ³ãƒˆã‚¯ãƒ©ã‚¹
+        cwWindowMain: CWINDOW;                              // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦)
+        cmSystem: CMENU;                                    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒ‹ãƒ¥ãƒ¼)
+        cmMain: CMENUBAR;                                   // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼)
+        cmFile: CMENU;                                      // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (ãƒ•ã‚¡ã‚¤ãƒ«)
+        cmSetup: CMENU;                                     // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š)
+        cmSetupDevice: CMENU;                               // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - ã‚µã‚¦ãƒ³ãƒ‰ãƒ‡ãƒã‚¤ã‚¹)
+        cmSetupChannel: CMENU;                              // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - ãƒãƒ£ãƒ³ãƒãƒ«)
+        cmSetupBit: CMENU;                                  // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - ãƒ“ãƒƒãƒˆ)
+        cmSetupRate: CMENU;                                 // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ¬ãƒ¼ãƒˆ)
+        cmSetupInter: CMENU;                                // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - è£œé–“å‡¦ç†)
+        cmSetupPitch: CMENU;                                // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - ãƒ”ãƒƒãƒ)
+        cmSetupPitchKey: CMENU;                             // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - ãƒ”ãƒƒãƒ - ã‚­ãƒ¼)
+        cmSetupSeparate: CMENU;                             // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - å·¦å³æ‹¡æ•£åº¦)
+        cmSetupFeedback: CMENU;                             // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - ãƒ•ã‚£ãƒ¼ãƒ‰ãƒãƒƒã‚¯åè»¢åº¦)
+        cmSetupSpeed: CMENU;                                // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - æ¼”å¥é€Ÿåº¦)
+        cmSetupAmp: CMENU;                                  // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - éŸ³é‡)
+        cmSetupMute: CMENU;                                 // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - ãƒãƒ£ãƒ³ãƒãƒ«ãƒã‚¹ã‚¯)
+        cmSetupNoise: CMENU;                                // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - ãƒãƒ£ãƒ³ãƒãƒ«ãƒã‚¤ã‚º)
+        cmSetupOption: CMENU;                               // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - æ‹¡å¼µè¨­å®š)
+        cmSetupTime: CMENU;                                 // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - æ¼”å¥æ™‚é–“)
+        cmSetupOrder: CMENU;                                // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - æ¼”å¥é †åº)
+        cmSetupSeek: CMENU;                                 // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - ã‚·ãƒ¼ã‚¯æ™‚é–“)
+        cmSetupInfo: CMENU;                                 // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - æƒ…å ±è¡¨ç¤º)
+        cmSetupPriority: CMENU;                             // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - åŸºæœ¬å„ªå…ˆåº¦)
+        cmSetupOthers: CMENU;                               // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (è¨­å®š - ãã®ä»–è¨­å®š)
+        cmList: CMENU;                                      // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆ)
+        cmListPlay: CMENU;                                  // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒ©ã‚¹ (ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆ - æ¼”å¥é–‹å§‹)
+        cwStaticFile: CWINDOW;                              // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (ãƒ•ã‚¡ã‚¤ãƒ«åè»¢é€ç”¨ãƒ©ãƒ™ãƒ«)
+        cwStaticMain: CWINDOW;                              // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (æƒ…å ±è¡¨ç¤ºç”¨ãƒ©ãƒ™ãƒ«)
+        cwButtonOpen: CBUTTON;                              // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (OPEN ãƒœã‚¿ãƒ³)
+        cwButtonSave: CBUTTON;                              // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (SAVE ãƒœã‚¿ãƒ³)
+        cwButtonPlay: CBUTTON;                              // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (PLAY ãƒœã‚¿ãƒ³)
+        cwButtonRestart: CBUTTON;                           // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (RESTART ãƒœã‚¿ãƒ³)
+        cwButtonStop: CBUTTON;                              // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (STOP ãƒœã‚¿ãƒ³)
+        cwCheckTrack: array[0..7] of CBUTTON;               // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (1 ï½ 8 ãƒœã‚¿ãƒ³)
+        cwButtonVolM: CBUTTON;                              // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (VL- ãƒœã‚¿ãƒ³)
+        cwButtonVolP: CBUTTON;                              // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (VL+ ãƒœã‚¿ãƒ³)
+        cwButtonSlow: CBUTTON;                              // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (SP- ãƒœã‚¿ãƒ³)
+        cwButtonFast: CBUTTON;                              // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (SP+ ãƒœã‚¿ãƒ³)
+        cwButtonBack: CBUTTON;                              // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (REW ãƒœã‚¿ãƒ³)
+        cwButtonNext: CBUTTON;                              // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (FF ãƒœã‚¿ãƒ³)
+        cwFileList: CWINDOW;                                // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (ãƒ•ã‚¡ã‚¤ãƒ«è¨˜éŒ²ç”¨)
+        cwSortList: CWINDOW;                                // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (ã‚½ãƒ¼ãƒˆç”¨)
+        cwTempList: CWINDOW;                                // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (ãƒ†ãƒ³ãƒãƒ©ãƒªç”¨)
+        cwPlayList: CWINDOW;                                // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆ)
+        cwButtonListAdd: CBUTTON;                           // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (ADD / INSERT ãƒœã‚¿ãƒ³)
+        cwButtonListRemove: CBUTTON;                        // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (REMOVE ãƒœã‚¿ãƒ³)
+        cwButtonListClear: CBUTTON;                         // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (CLEAR ãƒœã‚¿ãƒ³)
+        cwButtonListUp: CBUTTON;                            // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (ä¸Šã¸ãƒœã‚¿ãƒ³)
+        cwButtonListDown: CBUTTON;                          // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ (ä¸‹ã¸ãƒœã‚¿ãƒ³)
     public
         procedure AppendList();
-        function  CreateWindow(hThisInstance: longword; lpClassName: pointer; lpArgs: pointer): longword;
+        function  CreateWindow(hThisInstance: longword; const sClassName: utf8string; lpArgs: pointer): longword;
         procedure DeleteWindow();
         procedure DragFile(msg: longword; wParam: longword; lParam: longword);
         procedure DrawInfo(pApuData: pointer; bWave: longbool);
         function  DropFile(dwParam: longword): longword;
-        function  GetFileType(lpFile: pointer; bShowMsg: longbool; bScript700: longbool): longword;
+        procedure GetFileTitle(const sPath: utf8string; lpTarget: pointer);
+        function  GetFileType(const sPath: utf8string; bShowMsg: longbool; bScript700: longbool): longword;
         procedure GetID666Format(var Hdr: TSPCHDR);
-        function  IsExt(lpFile: pointer; const sExt: string): longbool;
-        function  IsSafePath(lpFile: pointer): longbool;
+        function  IsExt(const sPath: utf8string; const sExt: utf8string): longbool;
+        function  IsSafePath(const sPath: utf8string): longbool;
         procedure ListAdd(dwAuto: longword);
         procedure ListClear(bQuiet: longbool);
         procedure ListDelete();
         procedure ListDown();
-        function  ListLoad(lpFile: pointer; dwType: longword; bShift: longbool): longbool;
+        function  ListLoad(const sPath: utf8string; dwType: longword; bShift: longbool): longbool;
         procedure ListNextPlay(dwOrder: longword; dwFlag: longword);
         function  ListPlay(dwOrder: longword; dwIndex: longint; dwFlag: longword): longint;
-        function  ListSave(lpFile: pointer; bShift: longbool): longbool;
+        function  ListSave(const sPath: utf8string; bShift: longbool): longbool;
         procedure ListUp();
-        function  LoadScript700(lpFile: pointer; dwAddr: longword): longbool;
+        function  LoadScript700(const sPath: utf8string; dwAddr: longword): longbool;
         procedure MoveWindowScreenSide();
         procedure OpenFile();
-        function  ReloadScript700(lpFile: pointer): longbool;
+        function  ReloadScript700(const sPath: utf8string): longbool;
         procedure ResetInfo(bRedraw: longbool);
         procedure ResizeWindow();
         procedure SaveFile();
@@ -1095,11 +1108,11 @@ type
         procedure SetGraphic();
         procedure SetTabFocus(hWnd: longword; bNext: longbool);
         procedure ShowErrMsg(dwCode: longword);
-        function  SPCLoad(lpFile: pointer; bAutoPlay: longbool): longbool;
+        function  SPCLoad(const sPath: utf8string; bAutoPlay: longbool): longbool;
         procedure SPCOption();
         procedure SPCPlay(dwType: longword);
         procedure SPCReset(bWave: longbool);
-        function  SPCSave(lpFile: pointer; bShift: longbool): longbool;
+        function  SPCSave(const sPath: utf8string; bShift: longbool): longbool;
         procedure SPCSeek(dwTime: longword; bCache: longbool);
         procedure SPCStop(bRestart: longbool);
         procedure SPCTime(bCal: longbool; bDefault: longbool; bSet: longbool);
@@ -1117,24 +1130,26 @@ type
         procedure WaveQuit();
         procedure WaveReset(bForce: longbool);
         function  WaveResume(): longbool;
-        function  WaveSave(lpFile: pointer; bShift: longbool; bQuiet: longbool): longbool;
+        function  WaveSave(const sPath: utf8string; bShift: longbool; bQuiet: longbool): longbool;
         procedure WaveStart();
         function  WindowProc(hWnd: longword; msg: longword; wParam: longword; lParam: longword; var dwDef: longword): longword;
     end;
 
 
 // *************************************************************************************************************************************************************
-// ’è”‚ÌéŒ¾
+// å®šæ•°ã®å®£è¨€
 // *************************************************************************************************************************************************************
 
 const
-    // Delphi •W€’è”
-    NULL = 0;                                               // ƒkƒ‹
-    NULLCHAR = #0;                                          // ƒkƒ‹•¶š
-    NULLPOINTER = nil;                                      // ƒkƒ‹ƒ|ƒCƒ“ƒ^
-    CRLF = #13#10;                                          // ‰üs
+    // Delphi æ¨™æº–å®šæ•°
+    NULL = 0;                                               // ãƒŒãƒ«
+    NULLCHAR = #0;                                          // ãƒŒãƒ«æ–‡å­—
+    NULLPOINTER = nil;                                      // ãƒŒãƒ«ãƒã‚¤ãƒ³ã‚¿
+    CR = #13;                                               // CR
+    LF = #10;                                               // LF
+    CRLF = #13#10;                                          // æ”¹è¡Œ
 
-    // CLASS ƒNƒ‰ƒX
+    // CLASS ã‚¯ãƒ©ã‚¹
     COLOR_3DDKSHADOW = $15;
     COLOR_3DLIGHT = $16;
     COLOR_ACTIVEBORDER = $A;
@@ -1196,7 +1211,7 @@ const
     IDC_UPARROW = $7F04;
     IDC_WAIT = $7F02;
 
-    // MENU ƒNƒ‰ƒX
+    // MENU ã‚¯ãƒ©ã‚¹
     MF_BYCOMMAND = $0;
     MF_BYPOSITION = $400;
     MF_CHECKED = $8;
@@ -1215,7 +1230,7 @@ const
     MF_UNCHECKED = $0;
     MF_UNHILITE = $0;
 
-    // MENUBAR ƒNƒ‰ƒX
+    // MENUBAR ã‚¯ãƒ©ã‚¹
     MIIM_BITMAP = $80;
     MIIM_CHECKMARKS = $8;
     MIIM_DATA = $20;
@@ -1241,7 +1256,7 @@ const
     OBJID_MENU = $FFFFFFFD;
     OBJID_SYSMENU = $FFFFFFFF;
 
-    // WINDOW ƒNƒ‰ƒX
+    // WINDOW ã‚¯ãƒ©ã‚¹
     BM_CLICK = $F5;
     BM_GETCHECK = $F0;
     BM_GETIMAGE = $F6;
@@ -1650,7 +1665,7 @@ const
     STN_DBLCLK = $1;
     STN_DISABLE = $3;
     STN_ENABLE = $2;
-    SM_AEROFRAME = 85;                                      // ƒEƒBƒ“ƒhƒE‚Ì˜gü (px) for Windows Vista, 7
+    SM_AEROFRAME = 85;                                      // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®æ ç·š (px) for Windows Vista, 7
     SM_ARRANGE = 56;
     SM_CLEANBOOT = 67;
     SM_CMETRICS16 = 76;                                     // for Win9x
@@ -2077,7 +2092,7 @@ const
     WA_INACTIVATE = $0;
     WM_ACTIVATE = $6;
     WM_ACTIVATEAPP = $1C;
-    WM_APP = $8000;                                         // ` $BFFF
+    WM_APP = $8000;                                         // ï½ $BFFF
     WM_ASKCBFORMATNAME = $30C;
     WM_CANCELJOURNAL = $4B;
     WM_CANCELMODE = $1F;
@@ -2285,7 +2300,7 @@ const
     WM_UNICHAR = $109;                                      // Windows XP
     WM_UNINITMENUPOPUP = $125;
     WM_UNDO = $304;
-    WM_USER = $400;                                         // ` $7FFF
+    WM_USER = $400;                                         // ï½ $7FFF
     WM_USERCHANGED = $54;                                   // Windows XP
     WM_VKEYTOITEM = $2E;
     WM_VSCROLL = $115;
@@ -2361,7 +2376,7 @@ const
     WS_VISIBLE = $10000000;
     WS_VSCROLL = $200000;
 
-    // BUTTON ƒNƒ‰ƒX
+    // BUTTON ã‚¯ãƒ©ã‚¹
     DT_BUTTOM = $8;
     DT_CALCRECT = $400;
     DT_CENTER = $1;
@@ -2409,7 +2424,7 @@ const
     ODS_NOFOCUSRECT = $200;
     ODS_SELECTED = $1;
 
-    // MAINWINDOW ƒNƒ‰ƒX
+    // MAINWINDOW ã‚¯ãƒ©ã‚¹
     ABOVE_NORMAL_PRIORITY_CLASS = $8000;
     BELOW_NORMAL_PRIORITY_CLASS = $4000;
     HIGH_PRIORITY_CLASS = $80;
@@ -2568,6 +2583,8 @@ const
     OPEN_ALWAYS = $4;
     TRUNCATE_EXISTING = $5;
 
+    MAX_PATH = 260;
+
     NOSLEEP_AUTO = $0;
     NOSLEEP_SLEEP = $1;
     NOSLEEP_DISPLAY = $2;
@@ -2622,6 +2639,13 @@ const
     WAVE_FORMAT_IEEE_FLOAT = $3;
     WAVE_FORMAT_PCM = $1;
     WAVE_FORMAT_QUERY = $1;
+
+    WC_COMPOSITECHECK = $200;
+    WC_DEFAULTCHAR = $40;
+    WC_DISCARDNS = $10;
+    WC_NO_BEST_FIT_CHARS = $400;
+    WC_SEPCHARS = $20;
+
     MM_WOM_CLOSE = $3BC;
     MM_WOM_DONE = $3BD;
     MM_WOM_OPEN = $3BB;
@@ -2653,11 +2677,11 @@ const
     CLSCTX_PS_DLL = $80000000;
 {$ENDIF}
 
-    // SNES SPC700 Player –{‘Ì‚Ìİ’è
-    DEFAULT_TITLE: string = 'SNES SPC700 Player';
-    SPCPLAY_TITLE = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
-    SNESAPU_TITLE = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
-    SPCPLAY_VERSION = '$CAP_FILE_VER';
+    // SNES SPC700 Player æœ¬ä½“ã®è¨­å®š
+    DEFAULT_TITLE: utf8string = 'SNES SPC700 Player';
+    SPCPLAY_TITLE: utf8string = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
+    SNESAPU_TITLE: utf8string = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
+    SPCPLAY_VERSION: utf8string = '$CAP_FILE_VER';
     SNESAPU_VERSION = $20000; // SNESAPU_VER
     APPLINK_VERSION = $02190400;
 
@@ -2672,103 +2696,112 @@ const
     BRKP_STOPPED = $20000000;
     BRKP_RELEASE = $80000000;
 
+    BUFFER_SIZE_FILES = 262144;
+    BUFFER_SIZE_LPARAM = 65536;
+    BUFFER_SIZE_PATH = 4096;
+    BUFFER_SIZE_TITLE = 33;
+    COPY_SIZE_FILES = BUFFER_SIZE_FILES - 2;
+    COPY_SIZE_PATH = BUFFER_SIZE_PATH - 1;
+    COPY_SIZE_TITLE = BUFFER_SIZE_TITLE - 1;
+
 {$IFDEF TRANSMITSPC}
-    CLASS_NAME: string = 'SSDLabo_SPCPLAY_DEBUG';
+    CLASS_NAME: utf8string = 'SSDLabo_SPCPLAY_DEBUG';
 {$ELSE}
-    CLASS_NAME: string = 'SSDLabo_SPCPLAY';
+    CLASS_NAME: utf8string = 'SSDLabo_SPCPLAY';
 {$ENDIF}
-    SNESAPU_FILE = 'snesapu.dll';
-    SPC_FILE_HEADER = 'SNES-SPC700 Sound File Data ';
+    SNESAPU_FILE: utf8string = 'snesapu.dll';
+    SPC_FILE_HEADER: utf8string = 'SNES-SPC700 Sound File Data ';
     SPC_FILE_HEADER_LEN = 28;
-    INI_FILE: string = 'spcplay.ini';
-    SECTION_USER_POLICY = '[USER POLICY]';
-    SECTION_APP_SETTING = '[APP SETTING]';
+    INI_FILE: utf8string = 'spcplay.ini';
+    SECTION_HEADER: utf8string = 'â—†â—‡ï¼Šï¼‹ãƒ» String to detect UTF-8 in text editors ãƒ»ï¼‹ï¼Šâ—‡â—†';
+    SECTION_USER_POLICY: utf8string = '[USER POLICY]';
+    SECTION_APP_SETTING: utf8string = '[APP SETTING]';
     BUFFER_LENGTH = 13;
     BUFFER_START = BUFFER_LENGTH + 1;
-    BUFFER_AMP_____: string = 'AMP      0 : ';
-    BUFFER_BIT_____: string = 'BIT      0 : ';
-    BUFFER_BMPFONT_: string = 'BMPFONT  0 : ';
-    BUFFER_BPM_____: string = 'BPM      0 : ';
-    BUFFER_BUFNUM__: string = 'BUFNUM   2 : ';
-    BUFFER_BUFTIME_: string = 'BUFTIME  2 : ';
-    BUFFER_CACHEDIF: string = 'CACHEDIF 0 : ';
-    BUFFER_CACHEINT: string = 'CACHEINT 0 : ';
-    BUFFER_CACHEKON: string = 'CACHEKON 0 : ';
-    BUFFER_CACHENUM: string = 'CACHENUM 0 : ';
-    BUFFER_CHANNEL_: string = 'CHANNEL  0 : ';
-    BUFFER_DEVICE__: string = 'DEVICE   0 : ';
-    BUFFER_DEVNAME_: string = 'DEVNAME  0 : ';
-    BUFFER_DRAWINFO: string = 'DRAWINFO 0 : ';
-    BUFFER_EARSAFE_: string = 'EARSAFE  0 : ';
-    BUFFER_FADELENG: string = 'FADELENG 0 : ';
-    BUFFER_FEEDBACK: string = 'FEEDBACK 1 : ';
-    BUFFER_FONTNAME: string = 'FONTNAME 3 : ';
-    BUFFER_HIDELENG: string = 'HIDELENG 0 : ';
-    BUFFER_INFO____: string = 'INFO     0 : ';
-    BUFFER_INTER___: string = 'INTER    0 : ';
-    BUFFER_LANGUAGE: string = 'LANGUAGE 1 : ';
-    BUFFER_LEFT____: string = 'LEFT     0 : ';
-    BUFFER_LISTHGT_: string = 'LISTHGT  0 : ';
-    BUFFER_LISTMAX_: string = 'LISTMAX  0 : ';
-    BUFFER_MUTE____: string = 'MUTE     0 : ';
-    BUFFER_NEXTLENG: string = 'NEXTLENG 0 : ';
-    BUFFER_NOISE___: string = 'NOISE    0 : ';
-    BUFFER_NOSLEEP_: string = 'NOSLEEP  0 : ';
-    BUFFER_OPTION__: string = 'OPTION   0 : ';
-    BUFFER_PITCH___: string = 'PITCH    0 : ';
-    BUFFER_PITCHSNC: string = 'PITCHSNC 0 : ';
-    BUFFER_PLAYDEF_: string = 'PLAYDEF  0 : ';
-    BUFFER_PLAYLENG: string = 'PLAYLENG 0 : ';
-    BUFFER_PLAYTIME: string = 'PLAYTIME 0 : ';
-    BUFFER_PLAYTYPE: string = 'PLAYTYPE 0 : ';
-    BUFFER_PRIORITY: string = 'PRIORITY 0 : ';
-    BUFFER_RATE____: string = 'RATE     0 : ';
-    BUFFER_SCALE___: string = 'SCALE    0 : ';
-    BUFFER_SEEKBAR_: string = 'SEEKBAR  0 : ';
-    BUFFER_SEEKFAST: string = 'SEEKFAST 2 : ';
-    BUFFER_SEEKMAX_: string = 'SEEKMAX  1 : ';
-    BUFFER_SEEKSNC_: string = 'SEEKSNC  0 : ';
-    BUFFER_SEEKTIME: string = 'SEEKTIME 1 : ';
-    BUFFER_SEPARATE: string = 'SEPARATE 0 : ';
-    BUFFER_SHIFTKEY: string = 'SHIFTKEY 0 : ';
-    BUFFER_SPEED___: string = 'SPEED    0 : ';
-    BUFFER_SPEEDTUN: string = 'SPEEDTUN 0 : ';
-    BUFFER_THEME___: string = 'THEME    0 : ';
-    BUFFER_TOP_____: string = 'TOP      0 : ';
-    BUFFER_TOPMOST_: string = 'TOPMOST  0 : ';
-    BUFFER_TOPTDISP: string = 'TOPTDISP 0 : ';
-    BUFFER_TOPTLOCK: string = 'TOPTLOCK 0 : ';
-    BUFFER_TREDRAW_: string = 'TREDRAW  0 : ';
-    BUFFER_VERSION_: string = 'VERSION  0 : ';
-    BUFFER_VOLCOLOR: string = 'VOLCOLOR 0 : ';
-    BUFFER_VOLRESET: string = 'VOLRESET 0 : ';
-    BUFFER_VOLSPEED: string = 'VOLSPEED 2 : ';
-    BUFFER_WAITLENG: string = 'WAITLENG 0 : ';
-    BUFFER_WAVBLANK: string = 'WAVBLANK 0 : ';
-    BUFFER_WAVEFMT_: string = 'WAVEFMT  0 : ';
-    FONT_NAME: array[0..1] of string = ('Microsoft Applocale', 'Lucida Console');
-    LIST_FILE: string = 'spcplay.stk';
-    LIST_FILE_HEADER_A: string = 'SSDLabo Spcplay ListFile v1.0';
+    BUFFER_AMP_____: utf8string = 'AMP      0 : ';
+    BUFFER_BIT_____: utf8string = 'BIT      0 : ';
+    BUFFER_BMPFONT_: utf8string = 'BMPFONT  0 : ';
+    BUFFER_BPM_____: utf8string = 'BPM      0 : ';
+    BUFFER_BUFNUM__: utf8string = 'BUFNUM   2 : ';
+    BUFFER_BUFTIME_: utf8string = 'BUFTIME  2 : ';
+    BUFFER_CACHEDIF: utf8string = 'CACHEDIF 0 : ';
+    BUFFER_CACHEINT: utf8string = 'CACHEINT 0 : ';
+    BUFFER_CACHEKON: utf8string = 'CACHEKON 0 : ';
+    BUFFER_CACHENUM: utf8string = 'CACHENUM 0 : ';
+    BUFFER_CHANNEL_: utf8string = 'CHANNEL  0 : ';
+    BUFFER_DEVICE__: utf8string = 'DEVICE   0 : ';
+    BUFFER_DEVNAME_: utf8string = 'DEVNAME  0 : ';
+    BUFFER_DRAWINFO: utf8string = 'DRAWINFO 0 : ';
+    BUFFER_EARSAFE_: utf8string = 'EARSAFE  0 : ';
+    BUFFER_FADELENG: utf8string = 'FADELENG 0 : ';
+    BUFFER_FEEDBACK: utf8string = 'FEEDBACK 1 : ';
+    BUFFER_FONTNAME: utf8string = 'FONTNAME 3 : ';
+    BUFFER_HIDELENG: utf8string = 'HIDELENG 0 : ';
+    BUFFER_INFO____: utf8string = 'INFO     0 : ';
+    BUFFER_INTER___: utf8string = 'INTER    0 : ';
+    BUFFER_LANGUAGE: utf8string = 'LANGUAGE 1 : ';
+    BUFFER_LEFT____: utf8string = 'LEFT     0 : ';
+    BUFFER_LISTHGT_: utf8string = 'LISTHGT  0 : ';
+    BUFFER_LISTMAX_: utf8string = 'LISTMAX  0 : ';
+    BUFFER_MUTE____: utf8string = 'MUTE     0 : ';
+    BUFFER_NEXTLENG: utf8string = 'NEXTLENG 0 : ';
+    BUFFER_NOISE___: utf8string = 'NOISE    0 : ';
+    BUFFER_NOSLEEP_: utf8string = 'NOSLEEP  0 : ';
+    BUFFER_OPTION__: utf8string = 'OPTION   0 : ';
+    BUFFER_PITCH___: utf8string = 'PITCH    0 : ';
+    BUFFER_PITCHSNC: utf8string = 'PITCHSNC 0 : ';
+    BUFFER_PLAYDEF_: utf8string = 'PLAYDEF  0 : ';
+    BUFFER_PLAYLENG: utf8string = 'PLAYLENG 0 : ';
+    BUFFER_PLAYTIME: utf8string = 'PLAYTIME 0 : ';
+    BUFFER_PLAYTYPE: utf8string = 'PLAYTYPE 0 : ';
+    BUFFER_PRIORITY: utf8string = 'PRIORITY 0 : ';
+    BUFFER_RATE____: utf8string = 'RATE     0 : ';
+    BUFFER_SCALE___: utf8string = 'SCALE    0 : ';
+    BUFFER_SEEKBAR_: utf8string = 'SEEKBAR  0 : ';
+    BUFFER_SEEKFAST: utf8string = 'SEEKFAST 2 : ';
+    BUFFER_SEEKMAX_: utf8string = 'SEEKMAX  1 : ';
+    BUFFER_SEEKSNC_: utf8string = 'SEEKSNC  0 : ';
+    BUFFER_SEEKTIME: utf8string = 'SEEKTIME 1 : ';
+    BUFFER_SEPARATE: utf8string = 'SEPARATE 0 : ';
+    BUFFER_SHIFTKEY: utf8string = 'SHIFTKEY 0 : ';
+    BUFFER_SPEED___: utf8string = 'SPEED    0 : ';
+    BUFFER_SPEEDTUN: utf8string = 'SPEEDTUN 0 : ';
+    BUFFER_THEME___: utf8string = 'THEME    0 : ';
+    BUFFER_TOP_____: utf8string = 'TOP      0 : ';
+    BUFFER_TOPMOST_: utf8string = 'TOPMOST  0 : ';
+    BUFFER_TOPTDISP: utf8string = 'TOPTDISP 0 : ';
+    BUFFER_TOPTLOCK: utf8string = 'TOPTLOCK 0 : ';
+    BUFFER_TREDRAW_: utf8string = 'TREDRAW  0 : ';
+    BUFFER_VERSION_: utf8string = 'VERSION  0 : ';
+    BUFFER_VOLCOLOR: utf8string = 'VOLCOLOR 0 : ';
+    BUFFER_VOLRESET: utf8string = 'VOLRESET 0 : ';
+    BUFFER_VOLSPEED: utf8string = 'VOLSPEED 2 : ';
+    BUFFER_WAITLENG: utf8string = 'WAITLENG 0 : ';
+    BUFFER_WAVBLANK: utf8string = 'WAVBLANK 0 : ';
+    BUFFER_WAVEFMT_: utf8string = 'WAVEFMT  0 : ';
+    FONT_NAME: array[0..1] of utf8string = ('Microsoft Applocale', 'Lucida Console');
+    LIST_FILE: utf8string = 'spcplay.stk';
+    LIST_FILE_HEADER_A: utf8string = 'SSDLabo Spcplay ListFile v1.0';
     LIST_FILE_HEADER_A_LEN = 29;
-    LIST_FILE_HEADER_B: string = 'SPCPLAY PLAYLIST';
+    LIST_FILE_HEADER_B: utf8string = 'SPCPLAY PLAYLIST';
     LIST_FILE_HEADER_B_LEN = 16;
-    LIST_FILETYPE = 'lst';
-    SCRIPT700_FILENAME = '65816.700';
-    SCRIPT7SE_FILENAME = '65816.7SE';
-    SCRIPT700_FILETYPE = '700';
-    SCRIPT7SE_FILETYPE = '7SE';
-    SCRIPT700TXT_FILENAME = '65816.700.TXT';
-    SCRIPT7SETXT_FILENAME = '65816.7SE.TXT';
-    SCRIPT700TXT_FILETYPE = '700.TXT';
-    SCRIPT7SETXT_FILETYPE = '7SE.TXT';
+    LIST_FILETYPE: utf8string = 'lst';
+    SCRIPT700_FILENAME: utf8string = '65816.700';
+    SCRIPT7SE_FILENAME: utf8string = '65816.7SE';
+    SCRIPT700_FILETYPE: utf8string = '700';
+    SCRIPT7SE_FILETYPE: utf8string = '7SE';
+    SCRIPT700TXT_FILENAME: utf8string = '65816.700.TXT';
+    SCRIPT7SETXT_FILENAME: utf8string = '65816.7SE.TXT';
+    SCRIPT700TXT_FILETYPE: utf8string = '700.TXT';
+    SCRIPT7SETXT_FILETYPE: utf8string = '7SE.TXT';
 
 {$IFDEF SPCBPMTEST}
-    SPC_BPM_FILE = 'spc_bpm.dll';
+    SPC_BPM_FILE: utf8string = 'spc_bpm.dll';
 {$ENDIF}
 
     BITMAP_NAME = 'MAINBMP';
     ICON_NAME = 'MAINICON';
-    FILE_DEFAULT: string = 'FILE TRANSMIT WINDOW';
+    FILE_DEFAULT: utf8string = 'FILE TRANSMIT WINDOW';
     DRAG_START_THRESHOLD = 5;
     DRAG_LIMIT_THRESHOLD = 2;
     LIST_ADD_THRESHOLD = 297;
@@ -2778,157 +2811,157 @@ const
     WINDOW_WIDTH = 521;
     WINDOW_HEIGHT = 152;
 
-    WM_APP_MESSAGE = $8000;                                 // ’Ê’mƒƒbƒZ[ƒW
-    WM_APP_COMMAND = $8001;                                 // ƒ†[ƒUƒRƒ}ƒ“ƒh
+    WM_APP_MESSAGE = $8000;                                 // é€šçŸ¥ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
+    WM_APP_COMMAND = $8001;                                 // ãƒ¦ãƒ¼ã‚¶ã‚³ãƒãƒ³ãƒ‰
 
-    WM_APP_TRANSMIT = $00000000;                            // ƒtƒ@ƒCƒ‹–¼“]‘—     ($0000???X, X:AutoPlay, lParam:hWnd)
-    WM_APP_ACTIVATE = $00010000;                            // ƒAƒNƒeƒBƒu         ($0001????)
-    WM_APP_REDRAW = $00020000;                              // Ä•`‰æ             ($0002????)
-    WM_APP_SEEK = $00030000;                                // ƒV[ƒN             ($0003????)
-    WM_APP_NEXT_PLAY = $00040000;                           // Ÿ‚Ì‹È‚ğ‰‰‘t       ($0004????)
-    WM_APP_MINIMIZE = $00050000;                            // Å¬‰»—v‹         ($0005????)
-    WM_APP_REPEAT_TIME = $00060000;                         // ƒŠƒs[ƒgˆÊ’u       ($0006????)
-    WM_APP_START_TIME = $00061000;                          // ƒŠƒs[ƒgŠJnˆÊ’u   ($00061???)
-    WM_APP_LIMIT_TIME = $00062000;                          // ƒŠƒs[ƒgI—¹ˆÊ’u   ($00062???)
-    WM_APP_RESET_TIME = $00063000;                          // ƒŠƒs[ƒgˆÊ’u‰Šú‰» ($00063???)
-    WM_APP_DRAG_DONE = $00070000;                           // ƒhƒ‰ƒbƒOI—¹       ($0007????)
-    WM_APP_UPDATE_INFO = $00080000;                         // î•ñXV           ($0008???X, X:Redraw)
-    WM_APP_UPDATE_MENU = $00090000;                         // ƒƒjƒ…[XV       ($0009????)
-    WM_APP_WAVE_OUTPUT = $000A0000;                         // WAVE ‘‚«‚İ      ($000A??YX, X:Shift, Y:Quiet, lParam:hWnd)
-    WM_APP_TRY_RESUME = $000B0000;                          // ‰‰‘tÄŠJs       ($000B????)
+    WM_APP_TRANSMIT = $00000000;                            // ãƒ•ã‚¡ã‚¤ãƒ«åè»¢é€     ($0000???X, X:AutoPlay, lParam:hWnd)
+    WM_APP_ACTIVATE = $00010000;                            // ã‚¢ã‚¯ãƒ†ã‚£ãƒ–         ($0001????)
+    WM_APP_REDRAW = $00020000;                              // å†æç”»             ($0002????)
+    WM_APP_SEEK = $00030000;                                // ã‚·ãƒ¼ã‚¯             ($0003????)
+    WM_APP_NEXT_PLAY = $00040000;                           // æ¬¡ã®æ›²ã‚’æ¼”å¥       ($0004????)
+    WM_APP_MINIMIZE = $00050000;                            // æœ€å°åŒ–è¦æ±‚         ($0005????)
+    WM_APP_REPEAT_TIME = $00060000;                         // ãƒªãƒ”ãƒ¼ãƒˆä½ç½®       ($0006????)
+    WM_APP_START_TIME = $00061000;                          // ãƒªãƒ”ãƒ¼ãƒˆé–‹å§‹ä½ç½®   ($00061???)
+    WM_APP_LIMIT_TIME = $00062000;                          // ãƒªãƒ”ãƒ¼ãƒˆçµ‚äº†ä½ç½®   ($00062???)
+    WM_APP_RESET_TIME = $00063000;                          // ãƒªãƒ”ãƒ¼ãƒˆä½ç½®åˆæœŸåŒ– ($00063???)
+    WM_APP_DRAG_DONE = $00070000;                           // ãƒ‰ãƒ©ãƒƒã‚°çµ‚äº†       ($0007????)
+    WM_APP_UPDATE_INFO = $00080000;                         // æƒ…å ±æ›´æ–°           ($0008???X, X:Redraw)
+    WM_APP_UPDATE_MENU = $00090000;                         // ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ›´æ–°       ($0009????)
+    WM_APP_WAVE_OUTPUT = $000A0000;                         // WAVE æ›¸ãè¾¼ã¿      ($000A??YX, X:Shift, Y:Quiet, lParam:hWnd)
+    WM_APP_TRY_RESUME = $000B0000;                          // æ¼”å¥å†é–‹è©¦è¡Œ       ($000B????)
 
-    WM_APP_WAVE_PROC = $10000000;                           // WAVE Š„‚è‚İ      ($1000????)
-    WM_APP_SPC_PLAY = $10010000;                            // SPC ‰‰‘tŠJn       ($1001????)
-    WM_APP_SPC_PAUSE = $10020000;                           // SPC ˆê’â~       ($1002????)
-    WM_APP_SPC_RESUME = $10030000;                          // SPC ‰‰‘tÄŠJ       ($1003????)
-    WM_APP_SPC_RESET = $10040000;                           // SPC ‰‰‘tİ’è       ($1004????)
-    WM_APP_SPC_TIME = $10050000;                            // SPC ŠÔİ’è       ($1005????)
-    WM_APP_SPC_SEEK = $10060000;                            // SPC ƒV[ƒN         ($1006???X, X:Cache)
+    WM_APP_WAVE_PROC = $10000000;                           // WAVE å‰²ã‚Šè¾¼ã¿      ($1000????)
+    WM_APP_SPC_PLAY = $10010000;                            // SPC æ¼”å¥é–‹å§‹       ($1001????)
+    WM_APP_SPC_PAUSE = $10020000;                           // SPC ä¸€æ™‚åœæ­¢       ($1002????)
+    WM_APP_SPC_RESUME = $10030000;                          // SPC æ¼”å¥å†é–‹       ($1003????)
+    WM_APP_SPC_RESET = $10040000;                           // SPC æ¼”å¥è¨­å®š       ($1004????)
+    WM_APP_SPC_TIME = $10050000;                            // SPC æ™‚é–“è¨­å®š       ($1005????)
+    WM_APP_SPC_SEEK = $10060000;                            // SPC ã‚·ãƒ¼ã‚¯         ($1006???X, X:Cache)
 
-    WM_APP_FUNCTION = $F0000000;                            // ‹@”\İ’è           ($F000???X, X:Type 0 or 2)
-    WM_APP_GET_DSP = $F1000000;                             // DSP “Ç‚İæ‚è       ($F100??XX, XX:DSP Address)
-    WM_APP_SET_DSP = $F1010000;                             // DSP ‘‚«‚İ       ($F101??XX, XX:DSP Address, lParam:Value)
-    WM_APP_GET_PORT = $F1100000;                            // ƒ|[ƒg“Ç‚İæ‚è     ($F110???X, X:PORT Address)
-    WM_APP_SET_PORT = $F1110000;                            // ƒ|[ƒg‘‚«‚İ     ($F111???X, X:PORT Address, lParam:Value)
-    WM_APP_GET_RAM = $F1200000;                             // RAM “Ç‚İæ‚è       ($F120XXXX, XXXX:RAM Address)
-    WM_APP_SET_RAM = $F1210000;                             // RAM ‘‚«‚İ       ($F121XXXX, XXXX:RAM Address, lParam:Value)
-    WM_APP_GET_WORK = $F1300000;                            // ƒ[ƒN“Ç‚İæ‚è     ($F130???X, X:WORK Address)
-    WM_APP_SET_WORK = $F1310000;                            // ƒ[ƒN‘‚«‚İ     ($F131???X, X:WORK Address, lParam:Value)
-    WM_APP_GET_CMP = $F1400000;                             // ”äŠr’l“Ç‚İæ‚è     ($F140???X, X:CMP Address)
-    WM_APP_SET_CMP = $F1410000;                             // ”äŠr’l‘‚«‚İ     ($F141???X, X:CMP Address, lParam:Value)
-    WM_APP_GET_SPC = $F1500000;                             // SPC “Ç‚İæ‚è       ($F150???X, X:0=PC,1=Y+A,2=SP+X,3=PSW)
-    WM_APP_SET_SPC = $F1510000;                             // SPC ‘‚«‚İ       ($F151???X, X:0=PC,1=Y+A,2=SP+X,3=PSW, lParam:Value)
-    WM_APP_HALT = $F1600000;                                // HALT ƒXƒCƒbƒ`      ($F160????, lParam:1=SPC_RETURN, 2=SPC_HALT, 4=DSP_HALT, 8=SPC_NODSP)
-    WM_APP_BP_SET = $F4000000;                              // BreakPoint İ’è    ($F400XXXX, X=RAM Address, lParam:CBE Flags (0:UNSET))
-    WM_APP_BP_CLEAR = $F4010000;                            // BreakPoint ‘S‰ğœ  ($F401????)
-    WM_APP_NEXT_TICK = $F4100000;                           // Ÿ‚Ì–½—ß‚Å~‚ß‚é   ($F410????, lParam:0=CBE Flags)
-    WM_APP_DSP_CHEAT = $F5000000;                           // DSP ƒ`[ƒgİ’è     ($F500??XX, XX:DSP Address, lParam:Value (-1:UNSET))
-    WM_APP_DSP_THRU = $F5010000;                            // DSP ƒ`[ƒg‘S‰ğœ   ($F501????)
-    WM_APP_GET_MUTE = $F6000000;                            // ƒ~ƒ…[ƒgæ“¾       ($F60000??)
-    WM_APP_SET_MUTE = $F6010000;                            // ƒ~ƒ…[ƒgİ’è       ($F60100??)
-    WM_APP_STATUS = $FF000000;                              // ƒXƒe[ƒ^ƒXæ“¾     ($FF00????)
-    WM_APP_APPVER = $FF010000;                              // ƒo[ƒWƒ‡ƒ“æ“¾     ($FF01????)
-    WM_APP_EMU_APU = $FFFE0000;                             // ‹­§ƒGƒ~ƒ…ƒŒ[ƒg   ($FFFE????)
-    WM_APP_EMU_DEBUG = $FFFF0000;                           // SPC700 “]‘—ƒeƒXƒg  ($FFFF???X, X:Flag)
+    WM_APP_FUNCTION = $F0000000;                            // æ©Ÿèƒ½è¨­å®š           ($F000???X, X:Type 0 or 2)
+    WM_APP_GET_DSP = $F1000000;                             // DSP èª­ã¿å–ã‚Š       ($F100??XX, XX:DSP Address)
+    WM_APP_SET_DSP = $F1010000;                             // DSP æ›¸ãè¾¼ã¿       ($F101??XX, XX:DSP Address, lParam:Value)
+    WM_APP_GET_PORT = $F1100000;                            // ãƒãƒ¼ãƒˆèª­ã¿å–ã‚Š     ($F110???X, X:PORT Address)
+    WM_APP_SET_PORT = $F1110000;                            // ãƒãƒ¼ãƒˆæ›¸ãè¾¼ã¿     ($F111???X, X:PORT Address, lParam:Value)
+    WM_APP_GET_RAM = $F1200000;                             // RAM èª­ã¿å–ã‚Š       ($F120XXXX, XXXX:RAM Address)
+    WM_APP_SET_RAM = $F1210000;                             // RAM æ›¸ãè¾¼ã¿       ($F121XXXX, XXXX:RAM Address, lParam:Value)
+    WM_APP_GET_WORK = $F1300000;                            // ãƒ¯ãƒ¼ã‚¯èª­ã¿å–ã‚Š     ($F130???X, X:WORK Address)
+    WM_APP_SET_WORK = $F1310000;                            // ãƒ¯ãƒ¼ã‚¯æ›¸ãè¾¼ã¿     ($F131???X, X:WORK Address, lParam:Value)
+    WM_APP_GET_CMP = $F1400000;                             // æ¯”è¼ƒå€¤èª­ã¿å–ã‚Š     ($F140???X, X:CMP Address)
+    WM_APP_SET_CMP = $F1410000;                             // æ¯”è¼ƒå€¤æ›¸ãè¾¼ã¿     ($F141???X, X:CMP Address, lParam:Value)
+    WM_APP_GET_SPC = $F1500000;                             // SPC èª­ã¿å–ã‚Š       ($F150???X, X:0=PC,1=Y+A,2=SP+X,3=PSW)
+    WM_APP_SET_SPC = $F1510000;                             // SPC æ›¸ãè¾¼ã¿       ($F151???X, X:0=PC,1=Y+A,2=SP+X,3=PSW, lParam:Value)
+    WM_APP_HALT = $F1600000;                                // HALT ã‚¹ã‚¤ãƒƒãƒ      ($F160????, lParam:1=SPC_RETURN, 2=SPC_HALT, 4=DSP_HALT, 8=SPC_NODSP)
+    WM_APP_BP_SET = $F4000000;                              // BreakPoint è¨­å®š    ($F400XXXX, X=RAM Address, lParam:CBE Flags (0:UNSET))
+    WM_APP_BP_CLEAR = $F4010000;                            // BreakPoint å…¨è§£é™¤  ($F401????)
+    WM_APP_NEXT_TICK = $F4100000;                           // æ¬¡ã®å‘½ä»¤ã§æ­¢ã‚ã‚‹   ($F410????, lParam:0=CBE Flags)
+    WM_APP_DSP_CHEAT = $F5000000;                           // DSP ãƒãƒ¼ãƒˆè¨­å®š     ($F500??XX, XX:DSP Address, lParam:Value (-1:UNSET))
+    WM_APP_DSP_THRU = $F5010000;                            // DSP ãƒãƒ¼ãƒˆå…¨è§£é™¤   ($F501????)
+    WM_APP_GET_MUTE = $F6000000;                            // ãƒŸãƒ¥ãƒ¼ãƒˆå–å¾—       ($F60000??)
+    WM_APP_SET_MUTE = $F6010000;                            // ãƒŸãƒ¥ãƒ¼ãƒˆè¨­å®š       ($F60100??)
+    WM_APP_STATUS = $FF000000;                              // ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹å–å¾—     ($FF00????)
+    WM_APP_APPVER = $FF010000;                              // ãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—     ($FF01????)
+    WM_APP_EMU_APU = $FFFE0000;                             // å¼·åˆ¶ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ãƒˆ   ($FFFE????)
+    WM_APP_EMU_DEBUG = $FFFF0000;                           // SPC700 è»¢é€ãƒ†ã‚¹ãƒˆ  ($FFFF???X, X:Flag)
 
-    DRAW_INFO_ALWAYS = $1;                                  // í‚É•`‰æ
+    DRAW_INFO_ALWAYS = $1;                                  // å¸¸ã«æç”»
 
-    FILE_TYPE_NOTEXIST = $1;                                // ‘¶İ‚µ‚È‚¢
-    FILE_TYPE_NOTREAD = $2;                                 // “Ç‚İ‚İ•s‰Â
-    FILE_TYPE_UNKNOWN = $3;                                 // •s–¾‚ÈŒ`®
-    FILE_TYPE_SPC = $10;                                    // SPC ƒtƒ@ƒCƒ‹
-    FILE_TYPE_LIST_A = $11;                                 // ƒvƒŒƒCƒŠƒXƒgƒtƒ@ƒCƒ‹ TYPE-A
-    FILE_TYPE_LIST_B = $12;                                 // ƒvƒŒƒCƒŠƒXƒgƒtƒ@ƒCƒ‹ TYPE-B
-    FILE_TYPE_FOLDER = $13;                                 // ƒtƒHƒ‹ƒ_
+    FILE_TYPE_NOTEXIST = $1;                                // å­˜åœ¨ã—ãªã„
+    FILE_TYPE_NOTREAD = $2;                                 // èª­ã¿è¾¼ã¿ä¸å¯
+    FILE_TYPE_UNKNOWN = $3;                                 // ä¸æ˜ãªå½¢å¼
+    FILE_TYPE_SPC = $10;                                    // SPC ãƒ•ã‚¡ã‚¤ãƒ«
+    FILE_TYPE_LIST_A = $11;                                 // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ« TYPE-A
+    FILE_TYPE_LIST_B = $12;                                 // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ« TYPE-B
+    FILE_TYPE_FOLDER = $13;                                 // ãƒ•ã‚©ãƒ«ãƒ€
     FILE_TYPE_SCRIPT700 = $14;                              // Script700
 
-    FUNCTION_TYPE_SEPARATE = $1;                            // ¶‰EŠgU“x
-    FUNCTION_TYPE_FEEDBACK = $2;                            // ƒtƒB[ƒhƒoƒbƒN”½“]“x
-    FUNCTION_TYPE_SPEED = $3;                               // ‰‰‘t‘¬“x
-    FUNCTION_TYPE_AMP = $4;                                 // ‰¹—Ê
-    FUNCTION_TYPE_SEEK = $5;                                // ƒV[ƒN
-    FUNCTION_TYPE_NO_TIMER = $80000000;                     // ƒ^ƒCƒ}[İ’è‚È‚µ
+    FUNCTION_TYPE_SEPARATE = $1;                            // å·¦å³æ‹¡æ•£åº¦
+    FUNCTION_TYPE_FEEDBACK = $2;                            // ãƒ•ã‚£ãƒ¼ãƒ‰ãƒãƒƒã‚¯åè»¢åº¦
+    FUNCTION_TYPE_SPEED = $3;                               // æ¼”å¥é€Ÿåº¦
+    FUNCTION_TYPE_AMP = $4;                                 // éŸ³é‡
+    FUNCTION_TYPE_SEEK = $5;                                // ã‚·ãƒ¼ã‚¯
+    FUNCTION_TYPE_NO_TIMER = $80000000;                     // ã‚¿ã‚¤ãƒãƒ¼è¨­å®šãªã—
 
-    ID666_UNKNOWN = $0;                                     // •s–¾
-    ID666_TEXT = $1;                                        // ID666 ƒeƒLƒXƒgƒtƒH[ƒ}ƒbƒg
-    ID666_BINARY = $2;                                      // ID666 ƒoƒCƒiƒŠƒtƒH[ƒ}ƒbƒg
+    ID666_UNKNOWN = $0;                                     // ä¸æ˜
+    ID666_TEXT = $1;                                        // ID666 ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+    ID666_BINARY = $2;                                      // ID666 ãƒã‚¤ãƒŠãƒªãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 
-    INFO_INDICATOR = $0;                                    // ƒOƒ‰ƒtƒBƒbƒNƒCƒ“ƒWƒP[ƒ^
-    INFO_MIXER = $1;                                        // ƒ~ƒLƒT[î•ñ
-    INFO_CHANNEL_1 = $2;                                    // ƒ`ƒƒƒ“ƒlƒ‹î•ñ 1
-    INFO_CHANNEL_2 = $3;                                    // ƒ`ƒƒƒ“ƒlƒ‹î•ñ 2
-    INFO_CHANNEL_3 = $4;                                    // ƒ`ƒƒƒ“ƒlƒ‹î•ñ 3
-    INFO_CHANNEL_4 = $5;                                    // ƒ`ƒƒƒ“ƒlƒ‹î•ñ 4
-    INFO_SPC_1 = $6;                                        // SPC î•ñ 1
-    INFO_SPC_2 = $7;                                        // SPC î•ñ 2
-    INFO_SCRIPT700 = $8;                                    // Script700 ƒfƒoƒbƒO
+    INFO_INDICATOR = $0;                                    // ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿
+    INFO_MIXER = $1;                                        // ãƒŸã‚­ã‚µãƒ¼æƒ…å ±
+    INFO_CHANNEL_1 = $2;                                    // ãƒãƒ£ãƒ³ãƒãƒ«æƒ…å ± 1
+    INFO_CHANNEL_2 = $3;                                    // ãƒãƒ£ãƒ³ãƒãƒ«æƒ…å ± 2
+    INFO_CHANNEL_3 = $4;                                    // ãƒãƒ£ãƒ³ãƒãƒ«æƒ…å ± 3
+    INFO_CHANNEL_4 = $5;                                    // ãƒãƒ£ãƒ³ãƒãƒ«æƒ…å ± 4
+    INFO_SPC_1 = $6;                                        // SPC æƒ…å ± 1
+    INFO_SPC_2 = $7;                                        // SPC æƒ…å ± 2
+    INFO_SCRIPT700 = $8;                                    // Script700 ãƒ‡ãƒãƒƒã‚°
 
-    LIST_PLAY_INDEX_SELECTED = -1;                          // ƒvƒŒƒCƒŠƒXƒg‘I‘ğÏ‚İƒAƒCƒeƒ€
-    LIST_PLAY_INDEX_RANDOM = -2;                            // ƒvƒŒƒCƒŠƒXƒg‚©‚çƒ‰ƒ“ƒ_ƒ€‘I‘ğ
-    LIST_NEXT_PLAY_SELECT = $10000;                         // ƒvƒŒƒCƒŠƒXƒg‚©‚çƒAƒCƒeƒ€‘I‘ğ
-    LIST_NEXT_PLAY_CENTER = $20000;                         // ƒvƒŒƒCƒŠƒXƒg’†‰›‘I‘ğ
+    LIST_PLAY_INDEX_SELECTED = -1;                          // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆé¸æŠæ¸ˆã¿ã‚¢ã‚¤ãƒ†ãƒ 
+    LIST_PLAY_INDEX_RANDOM = -2;                            // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã‹ã‚‰ãƒ©ãƒ³ãƒ€ãƒ é¸æŠ
+    LIST_NEXT_PLAY_SELECT = $10000;                         // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ é¸æŠ
+    LIST_NEXT_PLAY_CENTER = $20000;                         // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆä¸­å¤®é¸æŠ
 
-    PLAY_TYPE_AUTO = $0;                                    // ‰‰‘t©“®‘I‘ğ
-    PLAY_TYPE_PLAY = $1;                                    // ‰‰‘tŠJn
-    PLAY_TYPE_PAUSE = $2;                                   // ˆê’â~
-    PLAY_TYPE_LIST = $3;                                    // ƒvƒŒƒCƒŠƒXƒg‚©‚çƒAƒCƒeƒ€‘I‘ğ
-    PLAY_TYPE_RANDOM = $4;                                  // ƒvƒŒƒCƒŠƒXƒg‚©‚çƒ‰ƒ“ƒ_ƒ€‘I‘ğ
+    PLAY_TYPE_AUTO = $0;                                    // æ¼”å¥è‡ªå‹•é¸æŠ
+    PLAY_TYPE_PLAY = $1;                                    // æ¼”å¥é–‹å§‹
+    PLAY_TYPE_PAUSE = $2;                                   // ä¸€æ™‚åœæ­¢
+    PLAY_TYPE_LIST = $3;                                    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã‹ã‚‰ã‚¢ã‚¤ãƒ†ãƒ é¸æŠ
+    PLAY_TYPE_RANDOM = $4;                                  // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã‹ã‚‰ãƒ©ãƒ³ãƒ€ãƒ é¸æŠ
 
-    PLAY_MAX_ENDLESS = $0;                                  // ƒGƒ“ƒhƒŒƒX
-    PLAY_MAX_ID666 = $1;                                    // ID666 İ’èŠÔ‚ğ—Dæ
-    PLAY_MAX_DEFAULT = $2;                                  // ƒfƒtƒHƒ‹ƒg‰‰‘tŠÔ‚ğ—Dæ
+    PLAY_MAX_ENDLESS = $0;                                  // ã‚¨ãƒ³ãƒ‰ãƒ¬ã‚¹
+    PLAY_MAX_ID666 = $1;                                    // ID666 è¨­å®šæ™‚é–“ã‚’å„ªå…ˆ
+    PLAY_MAX_DEFAULT = $2;                                  // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆæ¼”å¥æ™‚é–“ã‚’å„ªå…ˆ
 
-    PLAY_ORDER_STOP = $0;                                   // ’â~
-    PLAY_ORDER_NEXT = $1;                                   // Ÿ‚Ö
-    PLAY_ORDER_PREVIOUS = $2;                               // ‘O‚Ö
-    PLAY_ORDER_RANDOM = $3;                                 // ƒ‰ƒ“ƒ_ƒ€
-    PLAY_ORDER_SHUFFLE = $4;                                // ƒVƒƒƒbƒtƒ‹
-    PLAY_ORDER_REPEAT = $5;                                 // ƒŠƒs[ƒg
-    PLAY_ORDER_FIRST = $6;                                  // Å‰‚©‚ç
-    PLAY_ORDER_LAST = $7;                                   // ÅŒã‚©‚ç
+    PLAY_ORDER_STOP = $0;                                   // åœæ­¢
+    PLAY_ORDER_NEXT = $1;                                   // æ¬¡ã¸
+    PLAY_ORDER_PREVIOUS = $2;                               // å‰ã¸
+    PLAY_ORDER_RANDOM = $3;                                 // ãƒ©ãƒ³ãƒ€ãƒ 
+    PLAY_ORDER_SHUFFLE = $4;                                // ã‚·ãƒ£ãƒƒãƒ•ãƒ«
+    PLAY_ORDER_REPEAT = $5;                                 // ãƒªãƒ”ãƒ¼ãƒˆ
+    PLAY_ORDER_FIRST = $6;                                  // æœ€åˆã‹ã‚‰
+    PLAY_ORDER_LAST = $7;                                   // æœ€å¾Œã‹ã‚‰
 
-    READY_INITIALIZE = $0;                                  // ‰Šú‰»’†
-    READY_ACTIVE = $1;                                      // Às’†
-    READY_INACTIVE = $2;                                    // •\¦’â~’†
+    READY_INITIALIZE = $0;                                  // åˆæœŸåŒ–ä¸­
+    READY_ACTIVE = $1;                                      // å®Ÿè¡Œä¸­
+    READY_INACTIVE = $2;                                    // è¡¨ç¤ºåœæ­¢ä¸­
 
-    REDRAW_OFF = $0;                                        // Ä•`‰æ‚È‚µ
-    REDRAW_LOCK_CRITICAL = $1;                              // •`‰æƒƒbƒN (‹­§)
-    REDRAW_LOCK_READY = $2;                                 // •`‰æƒƒbƒN (Ÿ‰ñ•`‰æ‹–‰Â)
-    REDRAW_ON = $4;                                         // Ä•`‰æ‚ ‚è
+    REDRAW_OFF = $0;                                        // å†æç”»ãªã—
+    REDRAW_LOCK_CRITICAL = $1;                              // æç”»ãƒ­ãƒƒã‚¯ (å¼·åˆ¶)
+    REDRAW_LOCK_READY = $2;                                 // æç”»ãƒ­ãƒƒã‚¯ (æ¬¡å›æç”»è¨±å¯)
+    REDRAW_ON = $4;                                         // å†æç”»ã‚ã‚Š
 
-    STATIC_SEEKBAR_TOP = 24;                                // ƒV[ƒNƒo[ŒŸoˆÊ’u (ã)
-    STATIC_SEEKBAR_BOTTOM = 35;                             // ƒV[ƒNƒo[ŒŸoˆÊ’u (‰º)
+    STATIC_SEEKBAR_TOP = 24;                                // ã‚·ãƒ¼ã‚¯ãƒãƒ¼æ¤œå‡ºä½ç½® (ä¸Š)
+    STATIC_SEEKBAR_BOTTOM = 35;                             // ã‚·ãƒ¼ã‚¯ãƒãƒ¼æ¤œå‡ºä½ç½® (ä¸‹)
 
-    STATUS_OPEN = $1;                                       // Open ƒtƒ‰ƒO
-    STATUS_PLAY = $2;                                       // Play ƒtƒ‰ƒO
-    STATUS_PAUSE = $4;                                      // Pause ƒtƒ‰ƒO
+    STATUS_OPEN = $1;                                       // Open ãƒ•ãƒ©ã‚°
+    STATUS_PLAY = $2;                                       // Play ãƒ•ãƒ©ã‚°
+    STATUS_PAUSE = $4;                                      // Pause ãƒ•ãƒ©ã‚°
 
-    TIMER_ID_READY = $1;                                    // €”õŠ®—¹
-    TIMER_ID_OPTION_DISPLAY = $2;                           // ƒIƒvƒVƒ‡ƒ“î•ñ•\¦
-    TIMER_ID_OPTION_LOCK = $3;                              // ƒIƒvƒVƒ‡ƒ“•ÏXƒƒbƒN
-    TIMER_ID_REDRAW_RESUME = $4;                            // ƒTƒXƒyƒ“ƒh•œ‹AŒã‚ÌƒEƒBƒ“ƒhƒEÄ•`‰æ
-    TIMER_INTERVAL_READY = 0;                               // €”õŠ®—¹‚Ü‚Å‚Ì’x‰„ŠÔ
-    TIMER_INTERVAL_OPTION_DISPLAY = 1000;                   // ƒIƒvƒVƒ‡ƒ“î•ñ•\¦‚ÌŠÔ
-    TIMER_INTERVAL_OPTION_LOCK = 300;                       // ƒIƒvƒVƒ‡ƒ“•ÏXƒƒbƒN‚ÌŠÔ
-    TIMER_INTERVAL_REDRAW_RESUME = 1000;                    // ƒTƒXƒyƒ“ƒh•œ‹AŒã‚ÌƒEƒBƒ“ƒhƒEÄ•`‰æ‚ÌŠÔ
+    TIMER_ID_READY = $1;                                    // æº–å‚™å®Œäº†
+    TIMER_ID_OPTION_DISPLAY = $2;                           // ã‚ªãƒ—ã‚·ãƒ§ãƒ³æƒ…å ±è¡¨ç¤º
+    TIMER_ID_OPTION_LOCK = $3;                              // ã‚ªãƒ—ã‚·ãƒ§ãƒ³å¤‰æ›´ãƒ­ãƒƒã‚¯
+    TIMER_ID_REDRAW_RESUME = $4;                            // ã‚µã‚¹ãƒšãƒ³ãƒ‰å¾©å¸°å¾Œã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†æç”»
+    TIMER_INTERVAL_READY = 0;                               // æº–å‚™å®Œäº†ã¾ã§ã®é…å»¶æ™‚é–“
+    TIMER_INTERVAL_OPTION_DISPLAY = 1000;                   // ã‚ªãƒ—ã‚·ãƒ§ãƒ³æƒ…å ±è¡¨ç¤ºã®æ™‚é–“
+    TIMER_INTERVAL_OPTION_LOCK = 300;                       // ã‚ªãƒ—ã‚·ãƒ§ãƒ³å¤‰æ›´ãƒ­ãƒƒã‚¯ã®æ™‚é–“
+    TIMER_INTERVAL_REDRAW_RESUME = 1000;                    // ã‚µã‚¹ãƒšãƒ³ãƒ‰å¾©å¸°å¾Œã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†æç”»ã®æ™‚é–“
 
-    TITLE_HIDE = $0;                                        // ”ñ•\¦
-    TITLE_NORMAL = $100;                                    // •W€
-    TITLE_MINIMIZE = $200;                                  // Å¬‰»
-    TITLE_ALWAYS_FLAG = $FF00;                              // •W€ + Å¬‰»
-    TITLE_INFO_SEPARATE = $1;                               // ¶‰EŠgU“x
-    TITLE_INFO_FEEDBACK = $2;                               // ƒtƒB[ƒhƒoƒbƒN”½“]“x
-    TITLE_INFO_SPEED = $3;                                  // ‰‰‘t‘¬“x
-    TITLE_INFO_AMP = $4;                                    // ‰¹—Ê
-    TITLE_INFO_SEEK = $5;                                   // ƒV[ƒN
+    TITLE_HIDE = $0;                                        // éè¡¨ç¤º
+    TITLE_NORMAL = $100;                                    // æ¨™æº–
+    TITLE_MINIMIZE = $200;                                  // æœ€å°åŒ–
+    TITLE_ALWAYS_FLAG = $FF00;                              // æ¨™æº– + æœ€å°åŒ–
+    TITLE_INFO_SEPARATE = $1;                               // å·¦å³æ‹¡æ•£åº¦
+    TITLE_INFO_FEEDBACK = $2;                               // ãƒ•ã‚£ãƒ¼ãƒ‰ãƒãƒƒã‚¯åè»¢åº¦
+    TITLE_INFO_SPEED = $3;                                  // æ¼”å¥é€Ÿåº¦
+    TITLE_INFO_AMP = $4;                                    // éŸ³é‡
+    TITLE_INFO_SEEK = $5;                                   // ã‚·ãƒ¼ã‚¯
 
-    THEME_DEFAULT = $0;                                     // ƒfƒtƒHƒ‹ƒg
-    THEME_DARK = $1;                                        // ƒ_[ƒNƒ‚[ƒh
+    THEME_DEFAULT = $0;                                     // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ
+    THEME_DARK = $1;                                        // ãƒ€ãƒ¼ã‚¯ãƒ¢ãƒ¼ãƒ‰
 
-    WAVE_DEVICE_SET_ONLY = $0;                              // ƒfƒoƒCƒX ID ‘I‘ğ‚Ì‚İ
-    WAVE_DEVICE_UPDATE_LIST = $1;                           // ƒfƒoƒCƒXˆê——‚ğXV
-    WAVE_DEVICE_UPDATE_SELECT = $2;                         // ‘I‘ğƒfƒoƒCƒX‚ğXV
-    WAVE_DEVICE_INITIALIZE = $3;                            // ‰Šú‰»
+    WAVE_DEVICE_SET_ONLY = $0;                              // ãƒ‡ãƒã‚¤ã‚¹ ID é¸æŠã®ã¿
+    WAVE_DEVICE_UPDATE_LIST = $1;                           // ãƒ‡ãƒã‚¤ã‚¹ä¸€è¦§ã‚’æ›´æ–°
+    WAVE_DEVICE_UPDATE_SELECT = $2;                         // é¸æŠãƒ‡ãƒã‚¤ã‚¹ã‚’æ›´æ–°
+    WAVE_DEVICE_INITIALIZE = $3;                            // åˆæœŸåŒ–
 
     WAVE_FORMAT_TYPE_SIZE = 2;
     WAVE_FORMAT_TYPE_ARRAY: array[0..WAVE_FORMAT_TYPE_SIZE - 1] of longword = (WAVE_FORMAT_DIRECT, NULL);
@@ -2937,25 +2970,25 @@ const
     WAVE_FORMAT_INDEX_EXTENSIBLE = 0;
     WAVE_FORMAT_INDEX_PCM = 1;
 
-    WAVE_PROC_GRAPH_ONLY = $0;                              // ƒCƒ“ƒWƒP[ƒ^‚Ì‚İ•`‰æ
-    WAVE_PROC_NO_GRAPH = $FFFF;                             // ƒCƒ“ƒWƒP[ƒ^‚ğ•`‰æ‚µ‚È‚¢
-    WAVE_PROC_WRITE_WAVE = $10000;                          // ƒTƒEƒ“ƒhƒoƒbƒtƒ@‘‚«‚İ
-    WAVE_PROC_WRITE_INIT = $20000;                          // Ä¶‚Ì‰Šú‰»
+    WAVE_PROC_GRAPH_ONLY = $0;                              // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã®ã¿æç”»
+    WAVE_PROC_NO_GRAPH = $FFFF;                             // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’æç”»ã—ãªã„
+    WAVE_PROC_WRITE_WAVE = $10000;                          // ã‚µã‚¦ãƒ³ãƒ‰ãƒãƒƒãƒ•ã‚¡æ›¸ãè¾¼ã¿
+    WAVE_PROC_WRITE_INIT = $20000;                          // å†ç”Ÿæ™‚ã®åˆæœŸåŒ–
 
-    WAVE_MESSAGE_MAX_COUNT = 1;                             // WAVE ƒƒbƒZ[ƒWÅ‘å‘—M”
+    WAVE_MESSAGE_MAX_COUNT = 1;                             // WAVE ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æœ€å¤§é€ä¿¡æ•°
 
-    WAVE_THREAD_SUSPEND = $0;                               // ’â~ó‘Ô
-    WAVE_THREAD_RUNNING = $1;                               // Àsó‘Ô
-    WAVE_THREAD_DEVICE_OPENED = $2;                         // ƒfƒoƒCƒX‚ÌƒI[ƒvƒ“Š®—¹
-    WAVE_THREAD_DEVICE_CLOSED = $4;                         // ƒfƒoƒCƒX‚ÌƒNƒ[ƒYŠ®—¹
+    WAVE_THREAD_SUSPEND = $0;                               // åœæ­¢çŠ¶æ…‹
+    WAVE_THREAD_RUNNING = $1;                               // å®Ÿè¡ŒçŠ¶æ…‹
+    WAVE_THREAD_DEVICE_OPENED = $2;                         // ãƒ‡ãƒã‚¤ã‚¹ã®ã‚ªãƒ¼ãƒ—ãƒ³å®Œäº†
+    WAVE_THREAD_DEVICE_CLOSED = $4;                         // ãƒ‡ãƒã‚¤ã‚¹ã®ã‚¯ãƒ­ãƒ¼ã‚ºå®Œäº†
 
-    COLOR_BAR_NUM = 6;                                      // ƒCƒ“ƒWƒP[ƒ^ƒo[‚Ì”
+    COLOR_BAR_NUM = 6;                                      // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ãƒãƒ¼ã®æ•°
     COLOR_BAR_NUM_X3 = 18;
     COLOR_BAR_NUM_X7 = 42;
-    COLOR_BAR_WIDTH = 7;                                    // ƒCƒ“ƒWƒP[ƒ^ƒo[‚ÌÅ‘å•
-    COLOR_BAR_TOP = 48;                                     // ƒCƒ“ƒWƒP[ƒ^ƒo[‚Ì•`‰æˆÊ’u
-    COLOR_BAR_TOP_FRAME = 45;                               // ƒtƒŒ[ƒ€‚Ì•`‰æˆÊ’u
-    COLOR_BAR_HEIGHT = 48;                                  // ƒCƒ“ƒWƒP[ƒ^ƒo[‚Ì‚‚³
+    COLOR_BAR_WIDTH = 7;                                    // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ãƒãƒ¼ã®æœ€å¤§å¹…
+    COLOR_BAR_TOP = 48;                                     // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ãƒãƒ¼ã®æç”»ä½ç½®
+    COLOR_BAR_TOP_FRAME = 45;                               // ãƒ•ãƒ¬ãƒ¼ãƒ ã®æç”»ä½ç½®
+    COLOR_BAR_HEIGHT = 48;                                  // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ãƒãƒ¼ã®é«˜ã•
     COLOR_BAR_HEIGHT_M1 = 47;
     COLOR_BAR_HEIGHT_X2 = 96;
     COLOR_START_R: array[0..COLOR_BAR_NUM_X3 - 1] of byte = (  0, 172,   0, 172,   0, 102,   0, 224,   0, 212,   0, 120, 132, 255, 128, 255, 172, 224);
@@ -2965,45 +2998,45 @@ const
     COLOR_END_G:   array[0..COLOR_BAR_NUM_X3 - 1] of byte = ( 64,  48,  64,   0,   0,   0,  96,  80,  80,   0,   0,   0, 106, 106, 128,  36,  64,  48);
     COLOR_END_B:   array[0..COLOR_BAR_NUM_X3 - 1] of byte = (  0,   0, 160,   0, 128, 128,   0,   0, 160,   0, 128, 128,  48,  52, 164,  40, 192, 154);
 
-    COLOR_BRIGHT_FORE = 127500;                             // •¶šF‚Ì–¾‚é‚³‚Ìè‡’l
-    COLOR_BRIGHT_BACK = 180000;                             // ”wŒiF‚Ì–¾‚é‚³‚Ìè‡’l
+    COLOR_BRIGHT_FORE = 127500;                             // æ–‡å­—è‰²ã®æ˜ã‚‹ã•ã®é–¾å€¤
+    COLOR_BRIGHT_BACK = 180000;                             // èƒŒæ™¯è‰²ã®æ˜ã‚‹ã•ã®é–¾å€¤
 
-    COLOR_BAR_GREEN = 0;                                    // —Î
-    COLOR_BAR_ORANGE = 7;                                   // ƒIƒŒƒ“ƒW
-    COLOR_BAR_WATER = 14;                                   // …F
-    COLOR_BAR_RED = 21;                                     // Ô
-    COLOR_BAR_BLUE = 28;                                    // Â
-    COLOR_BAR_PURPLE = 35;                                  // ‡
+    COLOR_BAR_GREEN = 0;                                    // ç·‘
+    COLOR_BAR_ORANGE = 7;                                   // ã‚ªãƒ¬ãƒ³ã‚¸
+    COLOR_BAR_WATER = 14;                                   // æ°´è‰²
+    COLOR_BAR_RED = 21;                                     // èµ¤
+    COLOR_BAR_BLUE = 28;                                    // é’
+    COLOR_BAR_PURPLE = 35;                                  // ç´«
 
-    COLOR_DARK_BACK = $1C1C1C;                              // ƒ_[ƒNƒ‚[ƒh‚Ì”wŒiF
-    COLOR_DARK_DISABLED = $6D6D6D;                          // ƒ_[ƒNƒ‚[ƒh‚Ì•¶šF (–³Œø)
-    COLOR_DARK_INACTIVE = $949494;                          // ƒ_[ƒNƒ‚[ƒh‚Ì•¶šF (”ñƒAƒNƒeƒBƒu)
-    COLOR_DARK_LIGHT = $FFFFFF;                             // ƒ_[ƒNƒ‚[ƒh‚Ì•¶šF (ƒnƒCƒ‰ƒCƒg)
-    COLOR_DARK_MENU = $2C2C2C;                              // ƒ_[ƒNƒ‚[ƒh‚Ìƒƒjƒ…[”wŒiF
-    COLOR_DARK_TEXT = $ECECEC;                              // ƒ_[ƒNƒ‚[ƒh‚Ì•¶šF
+    COLOR_DARK_BACK = $1C1C1C;                              // ãƒ€ãƒ¼ã‚¯ãƒ¢ãƒ¼ãƒ‰ã®èƒŒæ™¯è‰²
+    COLOR_DARK_DISABLED = $6D6D6D;                          // ãƒ€ãƒ¼ã‚¯ãƒ¢ãƒ¼ãƒ‰ã®æ–‡å­—è‰² (ç„¡åŠ¹)
+    COLOR_DARK_INACTIVE = $949494;                          // ãƒ€ãƒ¼ã‚¯ãƒ¢ãƒ¼ãƒ‰ã®æ–‡å­—è‰² (éã‚¢ã‚¯ãƒ†ã‚£ãƒ–)
+    COLOR_DARK_LIGHT = $FFFFFF;                             // ãƒ€ãƒ¼ã‚¯ãƒ¢ãƒ¼ãƒ‰ã®æ–‡å­—è‰² (ãƒã‚¤ãƒ©ã‚¤ãƒˆ)
+    COLOR_DARK_MENU = $2C2C2C;                              // ãƒ€ãƒ¼ã‚¯ãƒ¢ãƒ¼ãƒ‰ã®ãƒ¡ãƒ‹ãƒ¥ãƒ¼èƒŒæ™¯è‰²
+    COLOR_DARK_TEXT = $ECECEC;                              // ãƒ€ãƒ¼ã‚¯ãƒ¢ãƒ¼ãƒ‰ã®æ–‡å­—è‰²
 
-    ORG_COLOR_BAR_GREEN = $10000 or COLOR_BAR_GREEN;        // —Î
-    ORG_COLOR_BAR_ORANGE = $10000 or COLOR_BAR_ORANGE;      // ƒIƒŒƒ“ƒW
-    ORG_COLOR_BAR_WATER = $10000 or COLOR_BAR_WATER;        // …F
-    ORG_COLOR_BAR_RED = $10000 or COLOR_BAR_RED;            // Ô
-    ORG_COLOR_BAR_BLUE = $10000 or COLOR_BAR_BLUE;          // Â
-    ORG_COLOR_BAR_PURPLE = $10000 or COLOR_BAR_PURPLE;      // ‡
+    ORG_COLOR_BAR_GREEN = $10000 or COLOR_BAR_GREEN;        // ç·‘
+    ORG_COLOR_BAR_ORANGE = $10000 or COLOR_BAR_ORANGE;      // ã‚ªãƒ¬ãƒ³ã‚¸
+    ORG_COLOR_BAR_WATER = $10000 or COLOR_BAR_WATER;        // æ°´è‰²
+    ORG_COLOR_BAR_RED = $10000 or COLOR_BAR_RED;            // èµ¤
+    ORG_COLOR_BAR_BLUE = $10000 or COLOR_BAR_BLUE;          // é’
+    ORG_COLOR_BAR_PURPLE = $10000 or COLOR_BAR_PURPLE;      // ç´«
 
-    ORG_COLOR_BTNFACE = COLOR_BTNFACE + 1;                  // ƒ{ƒ^ƒ“‚Ì”wŒiF
-    ORG_COLOR_BTNSHADOW = COLOR_BTNSHADOW + 1;              // ƒ{ƒ^ƒ“‚Ì˜güF
-    ORG_COLOR_BTNTEXT = COLOR_BTNTEXT + 1;                  // ƒ{ƒ^ƒ“‚Ì•¶šF
-    ORG_COLOR_GRAYTEXT = COLOR_GRAYTEXT + 1;                // –³Œø‚Ì•¶šF
-    ORG_COLOR_HIGHLIGHT = COLOR_HIGHLIGHT + 1;              // €–Ú‚Ì‘I‘ğF
-    ORG_COLOR_WINDOWTEXT = COLOR_WINDOWTEXT + 1;            // —LŒø‚Ì•¶šF
+    ORG_COLOR_BTNFACE = COLOR_BTNFACE + 1;                  // ãƒœã‚¿ãƒ³ã®èƒŒæ™¯è‰²
+    ORG_COLOR_BTNSHADOW = COLOR_BTNSHADOW + 1;              // ãƒœã‚¿ãƒ³ã®æ ç·šè‰²
+    ORG_COLOR_BTNTEXT = COLOR_BTNTEXT + 1;                  // ãƒœã‚¿ãƒ³ã®æ–‡å­—è‰²
+    ORG_COLOR_GRAYTEXT = COLOR_GRAYTEXT + 1;                // ç„¡åŠ¹æ™‚ã®æ–‡å­—è‰²
+    ORG_COLOR_HIGHLIGHT = COLOR_HIGHLIGHT + 1;              // é …ç›®ã®é¸æŠè‰²
+    ORG_COLOR_WINDOWTEXT = COLOR_WINDOWTEXT + 1;            // æœ‰åŠ¹æ™‚ã®æ–‡å­—è‰²
 
-    BITMAP_NUM = 53;                                        // ƒrƒbƒgƒ}ƒbƒv•¶š‚Ì”
-    BITMAP_NUM_WIDTH = 6;                                   // ƒrƒbƒgƒ}ƒbƒv•¶š‚Ì•
-    BITMAP_NUM_HEIGHT = 9;                                  // ƒrƒbƒgƒ}ƒbƒv•¶š‚Ì‚‚³
-    BITMAP_NUM_FONT = 2;                                    // ”’lƒtƒHƒ“ƒg‚Ìƒpƒ^[ƒ“”
+    BITMAP_NUM = 53;                                        // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—æ–‡å­—ã®æ•°
+    BITMAP_NUM_WIDTH = 6;                                   // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—æ–‡å­—ã®å¹…
+    BITMAP_NUM_HEIGHT = 9;                                  // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—æ–‡å­—ã®é«˜ã•
+    BITMAP_NUM_FONT = 2;                                    // æ•°å€¤ãƒ•ã‚©ãƒ³ãƒˆã®ãƒ‘ã‚¿ãƒ¼ãƒ³æ•°
     BITMAP_NUM_X6 = BITMAP_NUM * BITMAP_NUM_WIDTH;
     BITMAP_NUM_X6P6 = BITMAP_NUM_X6 + BITMAP_NUM_WIDTH;
     BITMAP_NUM_HEX_X6 = 16 * BITMAP_NUM_WIDTH;
-    BITMAP_MARK_HEIGHT = 3;                                 // ˆÊ’uƒ}[ƒN‚Ì‚‚³
+    BITMAP_MARK_HEIGHT = 3;                                 // ä½ç½®ãƒãƒ¼ã‚¯ã®é«˜ã•
     BITMAP_STRING_COLOR_LIGHT: array[0..BITMAP_NUM - 1] of longword =
         (ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT,
          ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT, ORG_COLOR_WINDOWTEXT,
@@ -3062,130 +3095,130 @@ const
     HexTable: array[0..15] of char = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F');
     BoolTable: array[0..1] of char = ('V', 'U');
 
-    CHANNEL_MONO = 1;                                       // ƒ‚ƒmƒ‰ƒ‹
-    CHANNEL_STEREO = 2;                                     // ƒXƒeƒŒƒI
+    CHANNEL_MONO = 1;                                       // ãƒ¢ãƒãƒ©ãƒ«
+    CHANNEL_STEREO = 2;                                     // ã‚¹ãƒ†ãƒ¬ã‚ª
 
-    BIT_8 = 1;                                              // 8 ƒrƒbƒg
-    BIT_16 = 2;                                             // 16 ƒrƒbƒg
-    BIT_24 = 3;                                             // 24 ƒrƒbƒg
-    BIT_32 = 4;                                             // 32 ƒrƒbƒg (int)
-    BIT_IEEE = -4;                                          // 32 ƒrƒbƒg (float)
+    BIT_8 = 1;                                              // 8 ãƒ“ãƒƒãƒˆ
+    BIT_16 = 2;                                             // 16 ãƒ“ãƒƒãƒˆ
+    BIT_24 = 3;                                             // 24 ãƒ“ãƒƒãƒˆ
+    BIT_32 = 4;                                             // 32 ãƒ“ãƒƒãƒˆ (int)
+    BIT_IEEE = -4;                                          // 32 ãƒ“ãƒƒãƒˆ (float)
 
-    INTER_NONE = 0;                                         // •âŠÔˆ—–³Œø
-    INTER_LINEAR = 1;                                       // üŒ`•âŠÔˆ—
-    INTER_CUBIC = 2;                                        // OŸ‹Èü•âŠÔˆ—
-    INTER_GAUSS = 3;                                        // À‹@ƒKƒEƒX•ª•z•âŠÔˆ—
-    INTER_SINC = 4;                                         // ƒVƒ“ƒNŠÖ”•âŠÔˆ—
-    INTER_GAUSS4 = 7;                                       // ƒKƒEƒXŠÖ”•âŠÔˆ—
+    INTER_NONE = 0;                                         // è£œé–“å‡¦ç†ç„¡åŠ¹
+    INTER_LINEAR = 1;                                       // ç·šå½¢è£œé–“å‡¦ç†
+    INTER_CUBIC = 2;                                        // ä¸‰æ¬¡æ›²ç·šè£œé–“å‡¦ç†
+    INTER_GAUSS = 3;                                        // å®Ÿæ©Ÿã‚¬ã‚¦ã‚¹åˆ†å¸ƒè£œé–“å‡¦ç†
+    INTER_SINC = 4;                                         // ã‚·ãƒ³ã‚¯é–¢æ•°è£œé–“å‡¦ç†
+    INTER_GAUSS4 = 7;                                       // ã‚¬ã‚¦ã‚¹é–¢æ•°è£œé–“å‡¦ç†
 
-    PITCH_NORMAL = 32000;                                   // •W€
+    PITCH_NORMAL = 32000;                                   // æ¨™æº–
     PITCH_OLDSBC = 32458;                                   // OLD Sound Blaster Card
     PITCH_OLDSNES = 32768;                                  // OLD ZSNES, Snes9x
 
-    SEPARATE_100 = 65536;                                   // 100 “
-    SEPARATE_000 = 0;                                       // 0 “
-    SEPARATE_010 = SEPARATE_100 * 10 div 100;               // 10 “
-    SEPARATE_020 = SEPARATE_100 * 20 div 100;               // 20 “
-    SEPARATE_025 = SEPARATE_100 * 25 div 100;               // 25 “
-    SEPARATE_030 = SEPARATE_100 * 30 div 100;               // 30 “
-    SEPARATE_033 = SEPARATE_100 * 33 div 100;               // 33 “
-    SEPARATE_040 = SEPARATE_100 * 40 div 100;               // 40 “
-    SEPARATE_050 = SEPARATE_100 * 50 div 100;               // 50 “
-    SEPARATE_060 = SEPARATE_100 * 60 div 100;               // 60 “
-    SEPARATE_067 = SEPARATE_100 * 67 div 100;               // 67 “
-    SEPARATE_070 = SEPARATE_100 * 70 div 100;               // 70 “
-    SEPARATE_075 = SEPARATE_100 * 75 div 100;               // 75 “
-    SEPARATE_080 = SEPARATE_100 * 80 div 100;               // 80 “
-    SEPARATE_090 = SEPARATE_100 * 90 div 100;               // 90 “
+    SEPARATE_100 = 65536;                                   // 100 ï¼…
+    SEPARATE_000 = 0;                                       // 0 ï¼…
+    SEPARATE_010 = SEPARATE_100 * 10 div 100;               // 10 ï¼…
+    SEPARATE_020 = SEPARATE_100 * 20 div 100;               // 20 ï¼…
+    SEPARATE_025 = SEPARATE_100 * 25 div 100;               // 25 ï¼…
+    SEPARATE_030 = SEPARATE_100 * 30 div 100;               // 30 ï¼…
+    SEPARATE_033 = SEPARATE_100 * 33 div 100;               // 33 ï¼…
+    SEPARATE_040 = SEPARATE_100 * 40 div 100;               // 40 ï¼…
+    SEPARATE_050 = SEPARATE_100 * 50 div 100;               // 50 ï¼…
+    SEPARATE_060 = SEPARATE_100 * 60 div 100;               // 60 ï¼…
+    SEPARATE_067 = SEPARATE_100 * 67 div 100;               // 67 ï¼…
+    SEPARATE_070 = SEPARATE_100 * 70 div 100;               // 70 ï¼…
+    SEPARATE_075 = SEPARATE_100 * 75 div 100;               // 75 ï¼…
+    SEPARATE_080 = SEPARATE_100 * 80 div 100;               // 80 ï¼…
+    SEPARATE_090 = SEPARATE_100 * 90 div 100;               // 90 ï¼…
 
-    FEEDBACK_100 = SEPARATE_100;                            // 100 “
-    FEEDBACK_000 = SEPARATE_000;                            // 0 “
-    FEEDBACK_010 = SEPARATE_010;                            // 10 “
-    FEEDBACK_020 = SEPARATE_020;                            // 20 “
-    FEEDBACK_025 = SEPARATE_025;                            // 25 “
-    FEEDBACK_030 = SEPARATE_030;                            // 30 “
-    FEEDBACK_033 = SEPARATE_033;                            // 33 “
-    FEEDBACK_040 = SEPARATE_040;                            // 40 “
-    FEEDBACK_050 = SEPARATE_050;                            // 50 “
-    FEEDBACK_060 = SEPARATE_060;                            // 60 “
-    FEEDBACK_067 = SEPARATE_067;                            // 67 “
-    FEEDBACK_070 = SEPARATE_070;                            // 70 “
-    FEEDBACK_075 = SEPARATE_075;                            // 75 “
-    FEEDBACK_080 = SEPARATE_080;                            // 80 “
-    FEEDBACK_090 = SEPARATE_090;                            // 90 “
+    FEEDBACK_100 = SEPARATE_100;                            // 100 ï¼…
+    FEEDBACK_000 = SEPARATE_000;                            // 0 ï¼…
+    FEEDBACK_010 = SEPARATE_010;                            // 10 ï¼…
+    FEEDBACK_020 = SEPARATE_020;                            // 20 ï¼…
+    FEEDBACK_025 = SEPARATE_025;                            // 25 ï¼…
+    FEEDBACK_030 = SEPARATE_030;                            // 30 ï¼…
+    FEEDBACK_033 = SEPARATE_033;                            // 33 ï¼…
+    FEEDBACK_040 = SEPARATE_040;                            // 40 ï¼…
+    FEEDBACK_050 = SEPARATE_050;                            // 50 ï¼…
+    FEEDBACK_060 = SEPARATE_060;                            // 60 ï¼…
+    FEEDBACK_067 = SEPARATE_067;                            // 67 ï¼…
+    FEEDBACK_070 = SEPARATE_070;                            // 70 ï¼…
+    FEEDBACK_075 = SEPARATE_075;                            // 75 ï¼…
+    FEEDBACK_080 = SEPARATE_080;                            // 80 ï¼…
+    FEEDBACK_090 = SEPARATE_090;                            // 90 ï¼…
 
-    SPEED_100 = 65536;                                      // 100 “
-    SPEED_001 = SPEED_100 *  100 div 10000;                 // 1 “
-    SPEED_005 = SPEED_100 *  500 div 10000;                 // 5 “
-    SPEED_010 = SPEED_100 * 1000 div 10000;                 // 10 “
-    SPEED_020 = SPEED_100 * 2000 div 10000;                 // 20 “
-    SPEED_025 = SPEED_100 * 2500 div 10000;                 // 25 “
-    SPEED_033 = SPEED_100 * 3333 div 10000;                 // 33 “
-    SPEED_040 = SPEED_100 * 4000 div 10000;                 // 40 “
-    SPEED_050 = SPEED_100 * 5000 div 10000;                 // 50 “
-    SPEED_067 = SPEED_100 * 6667 div 10000;                 // 67 “
-    SPEED_075 = SPEED_100 * 7500 div 10000;                 // 75 “
-    SPEED_080 = SPEED_100 * 8000 div 10000;                 // 80 “
-    SPEED_090 = SPEED_100 * 9000 div 10000;                 // 90 “
-    SPEED_110 = SPEED_100 *  110 div   100;                 // 110 “
-    SPEED_125 = SPEED_100 *  125 div   100;                 // 125 “
-    SPEED_133 = SPEED_100 *  133 div   100;                 // 133 “
-    SPEED_150 = SPEED_100 *  150 div   100;                 // 150 “
-    SPEED_200 = SPEED_100 *  200 div   100;                 // 200 “
-    SPEED_250 = SPEED_100 *  250 div   100;                 // 250 “
-    SPEED_300 = SPEED_100 *  300 div   100;                 // 300 “
-    SPEED_400 = SPEED_100 *  400 div   100;                 // 400 “
-    SPEED_500 = SPEED_100 *  500 div   100;                 // 500 “
-    SPEED_600 = SPEED_100 *  600 div   100;                 // 600 “
-    SPEED_700 = SPEED_100 *  700 div   100;                 // 700 “
-    SPEED_800 = SPEED_100 *  800 div   100;                 // 800 “
+    SPEED_100 = 65536;                                      // 100 ï¼…
+    SPEED_001 = SPEED_100 *  100 div 10000;                 // 1 ï¼…
+    SPEED_005 = SPEED_100 *  500 div 10000;                 // 5 ï¼…
+    SPEED_010 = SPEED_100 * 1000 div 10000;                 // 10 ï¼…
+    SPEED_020 = SPEED_100 * 2000 div 10000;                 // 20 ï¼…
+    SPEED_025 = SPEED_100 * 2500 div 10000;                 // 25 ï¼…
+    SPEED_033 = SPEED_100 * 3333 div 10000;                 // 33 ï¼…
+    SPEED_040 = SPEED_100 * 4000 div 10000;                 // 40 ï¼…
+    SPEED_050 = SPEED_100 * 5000 div 10000;                 // 50 ï¼…
+    SPEED_067 = SPEED_100 * 6667 div 10000;                 // 67 ï¼…
+    SPEED_075 = SPEED_100 * 7500 div 10000;                 // 75 ï¼…
+    SPEED_080 = SPEED_100 * 8000 div 10000;                 // 80 ï¼…
+    SPEED_090 = SPEED_100 * 9000 div 10000;                 // 90 ï¼…
+    SPEED_110 = SPEED_100 *  110 div   100;                 // 110 ï¼…
+    SPEED_125 = SPEED_100 *  125 div   100;                 // 125 ï¼…
+    SPEED_133 = SPEED_100 *  133 div   100;                 // 133 ï¼…
+    SPEED_150 = SPEED_100 *  150 div   100;                 // 150 ï¼…
+    SPEED_200 = SPEED_100 *  200 div   100;                 // 200 ï¼…
+    SPEED_250 = SPEED_100 *  250 div   100;                 // 250 ï¼…
+    SPEED_300 = SPEED_100 *  300 div   100;                 // 300 ï¼…
+    SPEED_400 = SPEED_100 *  400 div   100;                 // 400 ï¼…
+    SPEED_500 = SPEED_100 *  500 div   100;                 // 500 ï¼…
+    SPEED_600 = SPEED_100 *  600 div   100;                 // 600 ï¼…
+    SPEED_700 = SPEED_100 *  700 div   100;                 // 700 ï¼…
+    SPEED_800 = SPEED_100 *  800 div   100;                 // 800 ï¼…
 
-    AMP_100 = 65536;                                        // 100 “
-    AMP_005 = AMP_100 *  500 div 10000;                     // 5 “
-    AMP_010 = AMP_100 * 1000 div 10000;                     // 10 “
-    AMP_015 = AMP_100 * 1500 div 10000;                     // 15 “
-    AMP_020 = AMP_100 * 2000 div 10000;                     // 20 “
-    AMP_025 = AMP_100 * 2500 div 10000;                     // 25 “
-    AMP_033 = AMP_100 * 3333 div 10000;                     // 33 “
-    AMP_040 = AMP_100 * 4000 div 10000;                     // 40 “
-    AMP_050 = AMP_100 * 5000 div 10000;                     // 50 “
-    AMP_067 = AMP_100 * 6667 div 10000;                     // 67 “
-    AMP_075 = AMP_100 * 7500 div 10000;                     // 75 “
-    AMP_080 = AMP_100 * 8000 div 10000;                     // 80 “
-    AMP_090 = AMP_100 * 9000 div 10000;                     // 90 “
-    AMP_110 = AMP_100 *  110 div   100;                     // 110 “
-    AMP_125 = AMP_100 *  125 div   100;                     // 125 “
-    AMP_133 = AMP_100 *  133 div   100;                     // 133 “
-    AMP_150 = AMP_100 *  150 div   100;                     // 150 “
-    AMP_200 = AMP_100 *  200 div   100;                     // 200 “
-    AMP_250 = AMP_100 *  250 div   100;                     // 250 “
-    AMP_300 = AMP_100 *  300 div   100;                     // 300 “
-    AMP_400 = AMP_100 *  400 div   100;                     // 400 “
+    AMP_100 = 65536;                                        // 100 ï¼…
+    AMP_005 = AMP_100 *  500 div 10000;                     // 5 ï¼…
+    AMP_010 = AMP_100 * 1000 div 10000;                     // 10 ï¼…
+    AMP_015 = AMP_100 * 1500 div 10000;                     // 15 ï¼…
+    AMP_020 = AMP_100 * 2000 div 10000;                     // 20 ï¼…
+    AMP_025 = AMP_100 * 2500 div 10000;                     // 25 ï¼…
+    AMP_033 = AMP_100 * 3333 div 10000;                     // 33 ï¼…
+    AMP_040 = AMP_100 * 4000 div 10000;                     // 40 ï¼…
+    AMP_050 = AMP_100 * 5000 div 10000;                     // 50 ï¼…
+    AMP_067 = AMP_100 * 6667 div 10000;                     // 67 ï¼…
+    AMP_075 = AMP_100 * 7500 div 10000;                     // 75 ï¼…
+    AMP_080 = AMP_100 * 8000 div 10000;                     // 80 ï¼…
+    AMP_090 = AMP_100 * 9000 div 10000;                     // 90 ï¼…
+    AMP_110 = AMP_100 *  110 div   100;                     // 110 ï¼…
+    AMP_125 = AMP_100 *  125 div   100;                     // 125 ï¼…
+    AMP_133 = AMP_100 *  133 div   100;                     // 133 ï¼…
+    AMP_150 = AMP_100 *  150 div   100;                     // 150 ï¼…
+    AMP_200 = AMP_100 *  200 div   100;                     // 200 ï¼…
+    AMP_250 = AMP_100 *  250 div   100;                     // 250 ï¼…
+    AMP_300 = AMP_100 *  300 div   100;                     // 300 ï¼…
+    AMP_400 = AMP_100 *  400 div   100;                     // 400 ï¼…
 
-    OPTION_LOWPASS = $1;                                    // À‹@‚Æ“¯‚¶ƒ[ƒpƒXƒtƒBƒ‹ƒ^
-    OPTION_OLDSMP = $2;                                     // ŒÃ‚¢ ADPCM ƒfƒR[ƒ_‚ğg—p
-    OPTION_SURROUND = $4;                                   // ‹tˆÊ‘ŠƒTƒ‰ƒEƒ“ƒh‹­§
-    OPTION_REVERSE = $8;                                    // ¶‰E”½“]
-    OPTION_NOECHO = $10;                                    // ƒGƒR[–³Œø
-    OPTION_NOPMOD = $20;                                    // ƒsƒbƒ`ƒ‚ƒWƒ…ƒŒ[ƒVƒ‡ƒ“–³Œø
-    OPTION_NOPREAD = $40;                                   // ƒsƒbƒ`ƒxƒ“ƒh–³Œø
-    OPTION_NOFIR = $80;                                     // FIR ƒtƒBƒ‹ƒ^–³Œø
-    OPTION_BASSBOOST = $100;                                // BASS BOOST (’á‰¹‹­’²)
-    OPTION_NOENV = $200;                                    // ƒGƒ“ƒxƒ[ƒv–³Œø
-    OPTION_NONOISE = $400;                                  // ƒmƒCƒY”­‰¹w’è–³Œø
-    OPTION_ECHOFIR = $800;                                  // À‹@‚É‹ß‚¢ƒGƒR[/FIR ˆ—
-    OPTION_NOSURROUND = $1000;                              // ƒTƒ‰ƒEƒ“ƒh–³Œø
-    OPTION_ENVSPEED = $2000;                                // ƒGƒ“ƒxƒ[ƒv‘¬“x”ä‚ğ“¯Šú
-    OPTION_NOPLIMIT = $4000;                                // ƒsƒbƒ`§ŒÀ–³Œø
-    OPTION_NOMAIN = $8000;                                  // ƒƒCƒ“–³Œø
-    OPTION_FLOATOUT = $40000000;                            // 32 ƒrƒbƒg (float) ‚Åo—ÍƒŒƒxƒ‹‚ğİ’è
-    OPTION_NOEARSAFE = $80000000;                           // ƒCƒ„[ƒZ[ƒt–³Œø
+    OPTION_LOWPASS = $1;                                    // å®Ÿæ©Ÿã¨åŒã˜ãƒ­ãƒ¼ãƒ‘ã‚¹ãƒ•ã‚£ãƒ«ã‚¿
+    OPTION_OLDSMP = $2;                                     // å¤ã„ ADPCM ãƒ‡ã‚³ãƒ¼ãƒ€ã‚’ä½¿ç”¨
+    OPTION_SURROUND = $4;                                   // é€†ä½ç›¸ã‚µãƒ©ã‚¦ãƒ³ãƒ‰å¼·åˆ¶
+    OPTION_REVERSE = $8;                                    // å·¦å³åè»¢
+    OPTION_NOECHO = $10;                                    // ã‚¨ã‚³ãƒ¼ç„¡åŠ¹
+    OPTION_NOPMOD = $20;                                    // ãƒ”ãƒƒãƒãƒ¢ã‚¸ãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ç„¡åŠ¹
+    OPTION_NOPREAD = $40;                                   // ãƒ”ãƒƒãƒãƒ™ãƒ³ãƒ‰ç„¡åŠ¹
+    OPTION_NOFIR = $80;                                     // FIR ãƒ•ã‚£ãƒ«ã‚¿ç„¡åŠ¹
+    OPTION_BASSBOOST = $100;                                // BASS BOOST (ä½éŸ³å¼·èª¿)
+    OPTION_NOENV = $200;                                    // ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—ç„¡åŠ¹
+    OPTION_NONOISE = $400;                                  // ãƒã‚¤ã‚ºç™ºéŸ³æŒ‡å®šç„¡åŠ¹
+    OPTION_ECHOFIR = $800;                                  // å®Ÿæ©Ÿã«è¿‘ã„ã‚¨ã‚³ãƒ¼/FIR å‡¦ç†
+    OPTION_NOSURROUND = $1000;                              // ã‚µãƒ©ã‚¦ãƒ³ãƒ‰ç„¡åŠ¹
+    OPTION_ENVSPEED = $2000;                                // ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—é€Ÿåº¦æ¯”ã‚’åŒæœŸ
+    OPTION_NOPLIMIT = $4000;                                // ãƒ”ãƒƒãƒåˆ¶é™ç„¡åŠ¹
+    OPTION_NOMAIN = $8000;                                  // ãƒ¡ã‚¤ãƒ³ç„¡åŠ¹
+    OPTION_FLOATOUT = $40000000;                            // 32 ãƒ“ãƒƒãƒˆ (float) ã§å‡ºåŠ›ãƒ¬ãƒ™ãƒ«ã‚’è¨­å®š
+    OPTION_NOEARSAFE = $80000000;                           // ã‚¤ãƒ¤ãƒ¼ã‚»ãƒ¼ãƒ•ç„¡åŠ¹
 
-    LOCALE_AUTO = $0;                                       // ©“®
-    LOCALE_JA = $1;                                         // “ú–{Œê
-    LOCALE_EN = $2;                                         // ‰pŒê
+    LOCALE_AUTO = $0;                                       // è‡ªå‹•
+    LOCALE_JA = $1;                                         // æ—¥æœ¬èª
+    LOCALE_EN = $2;                                         // è‹±èª
 
-    SHIFT_KEY_SEEK = $1;                                    // ƒV[ƒN‚Æ‰‰‘t‘¬“x•ÏX‚ÌƒL[ƒ{[ƒhƒVƒ‡[ƒgƒJƒbƒg‚ğ”½“]
+    SHIFT_KEY_SEEK = $1;                                    // ã‚·ãƒ¼ã‚¯ã¨æ¼”å¥é€Ÿåº¦å¤‰æ›´ã®ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã‚’åè»¢
 
     MENU_FILE = 1;
     MENU_SETUP = 2;
@@ -3202,7 +3235,7 @@ const
     MENU_FILE_STOP = MENU_FILE_PLAY_BASE + 3;
     MENU_FILE_EXIT = 190;
     MENU_SETUP_DEVICE = 10;
-    MENU_SETUP_DEVICE_BASE = 1000; // +90 (ID ‚Í 1099 ‚Ü‚Å—\–ñÏ‚İ)
+    MENU_SETUP_DEVICE_BASE = 1000; // +90 (ID ã¯ 1099 ã¾ã§äºˆç´„æ¸ˆã¿)
     MENU_SETUP_CHANNEL = 20;
     MENU_SETUP_CHANNEL_SIZE = 2;
     MENU_SETUP_CHANNEL_BASE = 200;
@@ -3380,377 +3413,378 @@ const
     STR_MENU_SETUP_PER_INTEGER: array[0..30] of longword =
         (0, 0, 1, 5, 10, 15, 20, 25, 30, 33, 40, 50, 60, 67, 70, 75, 80, 90, 100, 110, 125, 133, 150, 200, 250, 300, 400, 500, 600, 700, 800);
 
-    LANGUAGE_NUM = 2;                                       // ƒƒP[ƒ‹”
-    ERROR_SNESAPU: array[0..1] of string = ('SNESAPU.DLL ‚Ì‰Šú‰»‚É¸”s‚µ‚Ü‚µ‚½B', 'Initializing SNESAPU.DLL is failed.');
-    ERROR_CHECKSUM: array[0..1] of string = ('ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ì‹N“®‚É¸”s‚µ‚Ü‚µ‚½B', 'Initializing application is failed.');
-    ERROR_FILE_READ: array[0..1] of string = ('ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ‚É¸”s‚µ‚Ü‚µ‚½B', 'Reading selected file is failed.');
-    ERROR_FILE_WRITE: array[0..1] of string = ('ƒtƒ@ƒCƒ‹‚Ì‘‚«‚İ‚É¸”s‚µ‚Ü‚µ‚½B', 'Writing selected file is failed.');
-    ERROR_DEVICE: array[0..1] of string = ('ƒTƒEƒ“ƒh ƒfƒoƒCƒX‚Ì‰Šú‰»‚É¸”s‚µ‚Ü‚µ‚½B', 'Initializing selected sound device is failed.');
-    ERROR_CODE_1: array[0..1] of string = (CRLF + '(ƒGƒ‰[ ', CRLF + '(ERROR ');
-    ERROR_CODE_2: array[0..1] of string = (')', ')');
-    WARN_CLEAR_PLAYLIST: array[0..1] of string = (
-        'ƒvƒŒƒCƒŠƒXƒg‚ğƒNƒŠƒA‚µ‚Ü‚·‚©?' + CRLF + '¦ ‚±‚Ì‘€ì‚ğs‚¤‚ÆAŒ³‚É‚Í–ß‚¹‚Ü‚¹‚ñB',
+    LANGUAGE_NUM = 2;                                       // ãƒ­ã‚±ãƒ¼ãƒ«æ•°
+    ERROR_SNESAPU: array[0..1] of utf8string = ('SNESAPU.DLL ã®åˆæœŸåŒ–ã«å¤±æ•—ã—ã¾ã—ãŸã€‚', 'Initializing SNESAPU.DLL is failed.');
+    ERROR_CHECKSUM: array[0..1] of utf8string = ('ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®èµ·å‹•ã«å¤±æ•—ã—ã¾ã—ãŸã€‚', 'Initializing application is failed.');
+    ERROR_FILE_READ: array[0..1] of utf8string = ('ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿ã«å¤±æ•—ã—ã¾ã—ãŸã€‚', 'Reading selected file is failed.');
+    ERROR_FILE_WRITE: array[0..1] of utf8string = ('ãƒ•ã‚¡ã‚¤ãƒ«ã®æ›¸ãè¾¼ã¿ã«å¤±æ•—ã—ã¾ã—ãŸã€‚', 'Writing selected file is failed.');
+    ERROR_DEVICE: array[0..1] of utf8string = ('ã‚µã‚¦ãƒ³ãƒ‰ ãƒ‡ãƒã‚¤ã‚¹ã®åˆæœŸåŒ–ã«å¤±æ•—ã—ã¾ã—ãŸã€‚', 'Initializing selected sound device is failed.');
+    ERROR_CODE_1: array[0..1] of utf8string = (CRLF + '(ã‚¨ãƒ©ãƒ¼ ', CRLF + '(ERROR ');
+    ERROR_CODE_2: array[0..1] of utf8string = (')', ')');
+    WARN_CLEAR_PLAYLIST: array[0..1] of utf8string = (
+        'ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢ã—ã¾ã™ã‹?' + CRLF + 'â€» ã“ã®æ“ä½œã‚’è¡Œã†ã¨ã€å…ƒã«ã¯æˆ»ã›ã¾ã›ã‚“ã€‚',
         'Are you sure you want to clear your playlist?' + CRLF + '* This action cannot be reversed.');
-    WARN_WAVE_SIZE_1: array[0..1] of string = (
-        'WAVE ƒTƒEƒ“ƒh ƒtƒ@ƒCƒ‹‚ğì¬‚µ‚Ü‚·‚©?' + CRLF + '¦ ƒtƒ@ƒCƒ‹ ƒTƒCƒY‚ÍÅ‘å–ñ ',
+    WARN_WAVE_SIZE_1: array[0..1] of utf8string = (
+        'WAVE ã‚µã‚¦ãƒ³ãƒ‰ ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆã—ã¾ã™ã‹?' + CRLF + 'â€» ãƒ•ã‚¡ã‚¤ãƒ« ã‚µã‚¤ã‚ºã¯æœ€å¤§ç´„ ',
         'Are you sure you want to create a WAVE file?' + CRLF + '* Maximum size of created file will be about ');
-    WARN_WAVE_SIZE_2: array[0..1] of string = (
-        'MB ‚Å‚·B' + CRLF + '¦ ì¬‚ªŠ®—¹‚·‚é‚Ü‚ÅŠÔ‚ª‚©‚©‚éê‡‚ª‚ ‚è‚Ü‚·B ì¬’†‚Í‘€ì‚Å‚«‚Ü‚¹‚ñB',
+    WARN_WAVE_SIZE_2: array[0..1] of utf8string = (
+        'MB ã§ã™ã€‚' + CRLF + 'â€» ä½œæˆãŒå®Œäº†ã™ã‚‹ã¾ã§æ™‚é–“ãŒã‹ã‹ã‚‹å ´åˆãŒã‚ã‚Šã¾ã™ã€‚ ä½œæˆä¸­ã¯æ“ä½œã§ãã¾ã›ã‚“ã€‚',
         'MB.' + CRLF + '* Processing might take time until completed, and you cannot cancel processing.');
-    INFO_WAVE_FINISH_1: array[0..1] of string = (
-        'WAVE ƒTƒEƒ“ƒh ƒtƒ@ƒCƒ‹‚ğì¬‚µ‚Ü‚µ‚½B' + CRLF + '¦ ƒtƒ@ƒCƒ‹ ƒTƒCƒY‚Í–ñ ',
+    INFO_WAVE_FINISH_1: array[0..1] of utf8string = (
+        'WAVE ã‚µã‚¦ãƒ³ãƒ‰ ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆã—ã¾ã—ãŸã€‚' + CRLF + 'â€» ãƒ•ã‚¡ã‚¤ãƒ« ã‚µã‚¤ã‚ºã¯ç´„ ',
         'WAVE file was created successfully.' + CRLF + '* Size of file is about ');
-    INFO_WAVE_FINISH_2: array[0..1] of string = (
-        'MB ‚Å‚·B',
+    INFO_WAVE_FINISH_2: array[0..1] of utf8string = (
+        'MB ã§ã™ã€‚',
         'MB.');
-    DIALOG_OPEN_FILTER: array[0..1] of string = (
-        'SNES SPC700 ƒTƒEƒ“ƒh (*.spc)' + NULLCHAR + '*.spc;*.sp0;*.sp1;*.sp2;*.sp3;*.sp4;*.sp5;*.sp6;*.sp7;*.sp8;*.sp9' + NULLCHAR +
-        'ƒvƒŒƒCƒŠƒXƒg (*.lst)' + NULLCHAR + '*.lst' + NULLCHAR +
-        'SPC, ƒvƒŒƒCƒŠƒXƒg (*.spc; *.lst)' + NULLCHAR + '*.spc;*.sp0;*.sp1;*.sp2;*.sp3;*.sp4;*.sp5;*.sp6;*.sp7;*.sp8;*.sp9;*.lst' + NULLCHAR,
+    DIALOG_OPEN_FILTER: array[0..1] of utf8string = (
+        'SNES SPC700 ã‚µã‚¦ãƒ³ãƒ‰ (*.spc)' + NULLCHAR + '*.spc;*.sp0;*.sp1;*.sp2;*.sp3;*.sp4;*.sp5;*.sp6;*.sp7;*.sp8;*.sp9' + NULLCHAR +
+        'ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆ (*.lst)' + NULLCHAR + '*.lst' + NULLCHAR +
+        'SPC, ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆ (*.spc; *.lst)' + NULLCHAR + '*.spc;*.sp0;*.sp1;*.sp2;*.sp3;*.sp4;*.sp5;*.sp6;*.sp7;*.sp8;*.sp9;*.lst' + NULLCHAR,
         'SNES SPC700 sound (*.spc)' + NULLCHAR + '*.spc;*.sp0;*.sp1;*.sp2;*.sp3;*.sp4;*.sp5;*.sp6;*.sp7;*.sp8;*.sp9' + NULLCHAR +
         'Playlist (*.lst)' + NULLCHAR + '*.lst' + NULLCHAR +
         'SPC, Playlist (*.spc; *.lst)' + NULLCHAR + '*.spc;*.sp0;*.sp1;*.sp2;*.sp3;*.sp4;*.sp5;*.sp6;*.sp7;*.sp8;*.sp9;*.lst' + NULLCHAR);
-    DIALOG_SCRIPT700_FILTER: array[0..1] of string = (
+    DIALOG_SCRIPT700_FILTER: array[0..1] of utf8string = (
         'Script700 (*.700; *.7se)' + NULLCHAR + '*.700;*.7se;*.700.txt;*.7se.txt' + NULLCHAR,
         'Script700 (*.700; *.7se)' + NULLCHAR + '*.700;*.7se;*.700.txt;*.7se.txt' + NULLCHAR);
-    DIALOG_ALL_FILTER: array[0..1] of string = (
-        '‚·‚×‚Ä‚Ìƒtƒ@ƒCƒ‹ (*.*)' + NULLCHAR + '*.*' + NULLCHAR,
+    DIALOG_ALL_FILTER: array[0..1] of utf8string = (
+        'ã™ã¹ã¦ã®ãƒ•ã‚¡ã‚¤ãƒ« (*.*)' + NULLCHAR + '*.*' + NULLCHAR,
         'All Files (*.*)' + NULLCHAR + '*.*' + NULLCHAR);
     DIALOG_OPEN_DEFAULT = 3;
-    DIALOG_LIST_FILTER: array[0..1] of string = (
-        'ƒvƒŒƒCƒŠƒXƒg (*.lst)' + NULLCHAR + '*.lst' + NULLCHAR,
+    DIALOG_LIST_FILTER: array[0..1] of utf8string = (
+        'ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆ (*.lst)' + NULLCHAR + '*.lst' + NULLCHAR,
         'Playlist (*.lst)' + NULLCHAR + '*.lst' + NULLCHAR);
-    DIALOG_WAVE_FILTER: array[0..1] of string = (
-        'WAVE ƒTƒEƒ“ƒh (*.wav)' + NULLCHAR + '*.wav' + NULLCHAR,
+    DIALOG_WAVE_FILTER: array[0..1] of utf8string = (
+        'WAVE ã‚µã‚¦ãƒ³ãƒ‰ (*.wav)' + NULLCHAR + '*.wav' + NULLCHAR,
         'WAVE Sound (*.wav)' + NULLCHAR + '*.wav' + NULLCHAR);
-    DIALOG_SNAP_FILTER: array[0..1] of string = (
-        'ƒXƒiƒbƒvƒVƒ‡ƒbƒg (*.spc)' + NULLCHAR + '*.spc' + NULLCHAR,
+    DIALOG_SNAP_FILTER: array[0..1] of utf8string = (
+        'ã‚¹ãƒŠãƒƒãƒ—ã‚·ãƒ§ãƒƒãƒˆ (*.spc)' + NULLCHAR + '*.spc' + NULLCHAR,
         'SPC Snapshot (*.spc)' + NULLCHAR + '*.spc' + NULLCHAR);
     DIALOG_SAVE_DEFAULT = 1;
-    STR_MENU_FILE: array[0..1] of pchar = ('ƒtƒ@ƒCƒ‹(&F)', '&File');
-    STR_MENU_SETUP: array[0..1] of pchar = ('İ’è(&S)', '&Settings');
-    STR_MENU_LIST: array[0..1] of pchar = ('ƒvƒŒƒCƒŠƒXƒg(&P)', '&Playlist');
-    STR_MENU_FILE_EXIT: array[0..1] of pchar = ('I—¹(&X)', 'E&xit');
-    STR_MENU_SETUP_DEVICE: array[0..1] of pchar = ('ƒTƒEƒ“ƒh ƒfƒoƒCƒX(&D)', 'Sound &Devices');
-    STR_MENU_SETUP_DEVICE_MAPPER: array[0..1] of pchar = ('ƒVƒXƒeƒ€İ’è‚ğg—p(&D)', 'System &Default');
-    STR_MENU_SETUP_CHANNEL: array[0..1] of pchar = ('ƒ`ƒƒƒ“ƒlƒ‹(&C)', '&Channels');
-    STR_MENU_SETUP_BIT: array[0..1] of pchar = ('ƒrƒbƒg(&B)', '&Bit');
-    STR_MENU_SETUP_RATE: array[0..1] of pchar = ('ƒTƒ“ƒvƒŠƒ“ƒO ƒŒ[ƒg(&R)', 'Sampling &Rate');
-    STR_MENU_SETUP_INTER: array[0..1] of pchar = ('•âŠÔˆ—(&I)', '&Interpolation');
-    STR_MENU_SETUP_PITCH: array[0..1] of pchar = ('ƒsƒbƒ`(&P)', '&Pitch');
-    STR_MENU_SETUP_PITCH_KEY: array[0..1] of pchar = ('‰¹’öƒL[(&K)', '&Key Shift');
-    STR_MENU_SETUP_PITCH_PLUS: array[0..1] of string = ('{&', '+ &');
-    STR_MENU_SETUP_PITCH_MINUS: array[0..1] of string = ('|&', '- &');
-    STR_MENU_SETUP_PITCH_ZERO: pchar = ' &0 ';
-    STR_MENU_SETUP_PITCH_ASYNC: array[0..1] of pchar = ('‰‰‘t‘¬“x”ä‚Æ“¯Šú(&M)', '&Multiply by &Speed');
-    STR_MENU_SETUP_SEPARATE: array[0..1] of pchar = ('¶‰EŠgU“x(&E)', 'Stereo S&eparator');
-    STR_MENU_SETUP_FEEDBACK: array[0..1] of pchar = ('ƒtƒB[ƒhƒoƒbƒN”½“]“x(&F)', '&Feedback Mixer');
-    STR_MENU_SETUP_SPEED: array[0..1] of pchar = ('‰‰‘t‘¬“x(&S)', '&Speed');
-    STR_MENU_SETUP_AMP: array[0..1] of pchar = ('‰¹—Ê(&V)', '&Volume');
-    STR_MENU_SETUP_MUTE: array[0..1] of pchar = ('ƒ`ƒƒƒ“ƒlƒ‹ ƒ~ƒ…[ƒg(&M)', 'Channel &Mute');
-    STR_MENU_SETUP_NOISE: array[0..1] of pchar = ('ƒ`ƒƒƒ“ƒlƒ‹ ƒmƒCƒY(&N)', 'Channel &Noise');
-    STR_MENU_SETUP_SWITCH_CHANNEL: array[0..1] of pchar = ('ƒ`ƒƒƒ“ƒlƒ‹ ', 'Channel ');
-    STR_MENU_SETUP_OPTION: array[0..1] of pchar = ('Šg’£İ’è(&X)', 'E&xpansion Flags');
-    STR_MENU_SETUP_TIME: array[0..1] of pchar = ('‰‰‘tŠÔ(&T)', 'Play &Time');
-    STR_MENU_SETUP_TIME_DISABLE: array[0..1] of pchar = ('–³Œø/ƒGƒ“ƒhƒŒƒX(&D)', '&Disable/Endless');
-    STR_MENU_SETUP_TIME_ID666: array[0..1] of pchar = ('&ID666 ŠÔİ’è‚ğ—Dæ', 'Enable &ID666 Time');
-    STR_MENU_SETUP_TIME_DEFAULT: array[0..1] of pchar = ('í‚ÉŠù’èŠÔ‚ğg—p(&E)', 'Always D&efault Time');
-    STR_MENU_SETUP_TIME_START: array[0..1] of pchar = ('ŠJnˆÊ’u‚ğİ’è(&S)', 'Set &Start Position Mark');
-    STR_MENU_SETUP_TIME_LIMIT: array[0..1] of pchar = ('I—¹ˆÊ’u‚ğİ’è(&L)', 'Set &Limit Position Mark');
-    STR_MENU_SETUP_TIME_RESET: array[0..1] of pchar = ('ˆÊ’u‚ğƒŠƒZƒbƒg(&R)', '&Reset Position Marks');
-    STR_MENU_SETUP_ORDER: array[0..1] of pchar = ('‰‰‘t‡˜(&O)', 'Play &Order');
-    STR_MENU_SETUP_INFO: array[0..1] of pchar = ('î•ñ•\¦(&A)', 'I&nformation Viewer');
-    STR_MENU_SETUP_INFO_RESET: array[0..1] of pchar = ('–³‰¹ƒ`ƒƒƒ“ƒlƒ‹”ñ•\¦(&H)', '&Hide Muted Channels');
-    STR_MENU_SETUP_SEEK: array[0..1] of pchar = ('ƒV[ƒNŠÔ(&K)', 'See&k Time');
-    STR_MENU_SETUP_SEEK_FAST: array[0..1] of pchar = ('‚‘¬ƒV[ƒN(&F)', '&Fast Seek');
-    STR_MENU_SETUP_SEEK_ASYNC: array[0..1] of pchar = ('‰‰‘t‘¬“x”ä‚Æ“¯Šú(&M)', '&Multiply by Speed');
-    STR_MENU_SETUP_PRIORITY: array[0..1] of pchar = ('ˆ——Dæ“x(&U)', 'CP&U Priority');
-    STR_MENU_SETUP_OTHERS: array[0..1] of pchar = ('‚»‚Ì‘¼İ’è(&H)', 'Ot&her Flags');
-    STR_MENU_SETUP_TOPMOST: array[0..1] of pchar = ('í‚Éè‘O‚É•\¦(&W)', 'Al&ways on Top');
-    STR_MENU_SETUP_NOSLEEP: array[0..1] of pchar = ('‰‰‘t’†‚É‰æ–ÊƒIƒt‚ğ—}§(&D)', 'Not Turn Off &Display');
-    STR_MENU_LIST_PLAY: array[0..1] of pchar = ('‰‰‘tŠJn(&P)', '&Play');
-    STR_MENU_LIST_PLAY_SELECT: array[0..1] of pchar = ('‘I‘ğ€–Ú(&S)', '&Selected Item');
-    STR_MENU_FILE_OPEN_SUB: array[0..1] of array[0..MENU_FILE_OPEN_SIZE - 1] of pchar = (
-        ('ŠJ‚­(&O)...', '•Û‘¶(&S)...'),
+    STR_MENU_FILE: array[0..1] of utf8string = ('ãƒ•ã‚¡ã‚¤ãƒ«(&F)', '&File');
+    STR_MENU_SETUP: array[0..1] of utf8string = ('è¨­å®š(&S)', '&Settings');
+    STR_MENU_LIST: array[0..1] of utf8string = ('ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆ(&P)', '&Playlist');
+    STR_MENU_FILE_EXIT: array[0..1] of utf8string = ('çµ‚äº†(&X)', 'E&xit');
+    STR_MENU_SETUP_DEVICE: array[0..1] of utf8string = ('ã‚µã‚¦ãƒ³ãƒ‰ ãƒ‡ãƒã‚¤ã‚¹(&D)', 'Sound &Devices');
+    STR_MENU_SETUP_DEVICE_MAPPER: array[0..1] of utf8string = ('ã‚·ã‚¹ãƒ†ãƒ è¨­å®šã‚’ä½¿ç”¨(&D)', 'System &Default');
+    STR_MENU_SETUP_DEVICE_UNKNOWN: array[0..1] of utf8string = ('ä¸æ˜ãªãƒ‡ãƒã‚¤ã‚¹', 'Unknown device');
+    STR_MENU_SETUP_CHANNEL: array[0..1] of utf8string = ('ãƒãƒ£ãƒ³ãƒãƒ«(&C)', '&Channels');
+    STR_MENU_SETUP_BIT: array[0..1] of utf8string = ('ãƒ“ãƒƒãƒˆ(&B)', '&Bit');
+    STR_MENU_SETUP_RATE: array[0..1] of utf8string = ('ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚° ãƒ¬ãƒ¼ãƒˆ(&R)', 'Sampling &Rate');
+    STR_MENU_SETUP_INTER: array[0..1] of utf8string = ('è£œé–“å‡¦ç†(&I)', '&Interpolation');
+    STR_MENU_SETUP_PITCH: array[0..1] of utf8string = ('ãƒ”ãƒƒãƒ(&P)', '&Pitch');
+    STR_MENU_SETUP_PITCH_KEY: array[0..1] of utf8string = ('éŸ³ç¨‹ã‚­ãƒ¼(&K)', '&Key Shift');
+    STR_MENU_SETUP_PITCH_PLUS: array[0..1] of utf8string = ('ï¼‹&', '+ &');
+    STR_MENU_SETUP_PITCH_MINUS: array[0..1] of utf8string = ('ï¼&', '- &');
+    STR_MENU_SETUP_PITCH_ZERO: utf8string = ' &0 ';
+    STR_MENU_SETUP_PITCH_ASYNC: array[0..1] of utf8string = ('æ¼”å¥é€Ÿåº¦æ¯”ã¨åŒæœŸ(&M)', '&Multiply by &Speed');
+    STR_MENU_SETUP_SEPARATE: array[0..1] of utf8string = ('å·¦å³æ‹¡æ•£åº¦(&E)', 'Stereo S&eparator');
+    STR_MENU_SETUP_FEEDBACK: array[0..1] of utf8string = ('ãƒ•ã‚£ãƒ¼ãƒ‰ãƒãƒƒã‚¯åè»¢åº¦(&F)', '&Feedback Mixer');
+    STR_MENU_SETUP_SPEED: array[0..1] of utf8string = ('æ¼”å¥é€Ÿåº¦(&S)', '&Speed');
+    STR_MENU_SETUP_AMP: array[0..1] of utf8string = ('éŸ³é‡(&V)', '&Volume');
+    STR_MENU_SETUP_MUTE: array[0..1] of utf8string = ('ãƒãƒ£ãƒ³ãƒãƒ« ãƒŸãƒ¥ãƒ¼ãƒˆ(&M)', 'Channel &Mute');
+    STR_MENU_SETUP_NOISE: array[0..1] of utf8string = ('ãƒãƒ£ãƒ³ãƒãƒ« ãƒã‚¤ã‚º(&N)', 'Channel &Noise');
+    STR_MENU_SETUP_SWITCH_CHANNEL: array[0..1] of utf8string = ('ãƒãƒ£ãƒ³ãƒãƒ« ', 'Channel ');
+    STR_MENU_SETUP_OPTION: array[0..1] of utf8string = ('æ‹¡å¼µè¨­å®š(&X)', 'E&xpansion Flags');
+    STR_MENU_SETUP_TIME: array[0..1] of utf8string = ('æ¼”å¥æ™‚é–“(&T)', 'Play &Time');
+    STR_MENU_SETUP_TIME_DISABLE: array[0..1] of utf8string = ('ç„¡åŠ¹/ã‚¨ãƒ³ãƒ‰ãƒ¬ã‚¹(&D)', '&Disable/Endless');
+    STR_MENU_SETUP_TIME_ID666: array[0..1] of utf8string = ('&ID666 æ™‚é–“è¨­å®šã‚’å„ªå…ˆ', 'Enable &ID666 Time');
+    STR_MENU_SETUP_TIME_DEFAULT: array[0..1] of utf8string = ('å¸¸ã«æ—¢å®šæ™‚é–“ã‚’ä½¿ç”¨(&E)', 'Always D&efault Time');
+    STR_MENU_SETUP_TIME_START: array[0..1] of utf8string = ('é–‹å§‹ä½ç½®ã‚’è¨­å®š(&S)', 'Set &Start Position Mark');
+    STR_MENU_SETUP_TIME_LIMIT: array[0..1] of utf8string = ('çµ‚äº†ä½ç½®ã‚’è¨­å®š(&L)', 'Set &Limit Position Mark');
+    STR_MENU_SETUP_TIME_RESET: array[0..1] of utf8string = ('ä½ç½®ã‚’ãƒªã‚»ãƒƒãƒˆ(&R)', '&Reset Position Marks');
+    STR_MENU_SETUP_ORDER: array[0..1] of utf8string = ('æ¼”å¥é †åº(&O)', 'Play &Order');
+    STR_MENU_SETUP_INFO: array[0..1] of utf8string = ('æƒ…å ±è¡¨ç¤º(&A)', 'I&nformation Viewer');
+    STR_MENU_SETUP_INFO_RESET: array[0..1] of utf8string = ('ç„¡éŸ³ãƒãƒ£ãƒ³ãƒãƒ«éè¡¨ç¤º(&H)', '&Hide Muted Channels');
+    STR_MENU_SETUP_SEEK: array[0..1] of utf8string = ('ã‚·ãƒ¼ã‚¯æ™‚é–“(&K)', 'See&k Time');
+    STR_MENU_SETUP_SEEK_FAST: array[0..1] of utf8string = ('é«˜é€Ÿã‚·ãƒ¼ã‚¯(&F)', '&Fast Seek');
+    STR_MENU_SETUP_SEEK_ASYNC: array[0..1] of utf8string = ('æ¼”å¥é€Ÿåº¦æ¯”ã¨åŒæœŸ(&M)', '&Multiply by Speed');
+    STR_MENU_SETUP_PRIORITY: array[0..1] of utf8string = ('å‡¦ç†å„ªå…ˆåº¦(&U)', 'CP&U Priority');
+    STR_MENU_SETUP_OTHERS: array[0..1] of utf8string = ('ãã®ä»–è¨­å®š(&H)', 'Ot&her Flags');
+    STR_MENU_SETUP_TOPMOST: array[0..1] of utf8string = ('å¸¸ã«æ‰‹å‰ã«è¡¨ç¤º(&W)', 'Al&ways on Top');
+    STR_MENU_SETUP_NOSLEEP: array[0..1] of utf8string = ('æ¼”å¥ä¸­ã«ç”»é¢ã‚ªãƒ•ã‚’æŠ‘åˆ¶(&D)', 'Not Turn Off &Display');
+    STR_MENU_LIST_PLAY: array[0..1] of utf8string = ('æ¼”å¥é–‹å§‹(&P)', '&Play');
+    STR_MENU_LIST_PLAY_SELECT: array[0..1] of utf8string = ('é¸æŠé …ç›®(&S)', '&Selected Item');
+    STR_MENU_FILE_OPEN_SUB: array[0..1] of array[0..MENU_FILE_OPEN_SIZE - 1] of utf8string = (
+        ('é–‹ã(&O)...', 'ä¿å­˜(&S)...'),
         ('&Open...', '&Save...'));
-    STR_MENU_FILE_PLAY_SUB: array[0..1] of array[0..MENU_FILE_PLAY_SIZE - 1] of pchar = (
-        ('‰‰‘tŠJn(&P)', 'ˆê’â~(&P)', 'Å‰‚©‚ç‰‰‘t(&R)', '‰‰‘t’â~(&T)'),
+    STR_MENU_FILE_PLAY_SUB: array[0..1] of array[0..MENU_FILE_PLAY_SIZE - 1] of utf8string = (
+        ('æ¼”å¥é–‹å§‹(&P)', 'ä¸€æ™‚åœæ­¢(&P)', 'æœ€åˆã‹ã‚‰æ¼”å¥(&R)', 'æ¼”å¥åœæ­¢(&T)'),
         ('&Play', '&Pause', '&Restart', 'S&top'));
-    STR_MENU_SETUP_MUTE_NOISE_ALL_SUB: array[0..1] of array[0..MENU_SETUP_MUTE_NOISE_ALL_SIZE - 1] of pchar = (
-        ('‚·‚×‚ÄƒIƒ“(&E)', '‚·‚×‚ÄƒIƒt(&D)', '‚·‚×‚Ä”½“](&R)'),
+    STR_MENU_SETUP_MUTE_NOISE_ALL_SUB: array[0..1] of array[0..MENU_SETUP_MUTE_NOISE_ALL_SIZE - 1] of utf8string = (
+        ('ã™ã¹ã¦ã‚ªãƒ³(&E)', 'ã™ã¹ã¦ã‚ªãƒ•(&D)', 'ã™ã¹ã¦åè»¢(&R)'),
         ('&Enable All', '&Disable All', '&Reverse All'));
-    STR_MENU_LIST_EDIT_SUB: array[0..1] of array[0..MENU_LIST_EDIT_SIZE - 1] of pchar = (
-        ('’Ç‰Á(&A)', '‘}“ü(&I)', 'íœ(&R)', 'ƒNƒŠƒA(&C)'),
+    STR_MENU_LIST_EDIT_SUB: array[0..1] of array[0..MENU_LIST_EDIT_SIZE - 1] of utf8string = (
+        ('è¿½åŠ (&A)', 'æŒ¿å…¥(&I)', 'å‰Šé™¤(&R)', 'ã‚¯ãƒªã‚¢(&C)'),
         ('&Append', '&Insert', '&Remove', '&Clear'));
-    STR_MENU_LIST_MOVE_SUB: array[0..1] of array[0..MENU_LIST_MOVE_SIZE - 1] of pchar = (
-        ('ã‚Ö(&U)', '‰º‚Ö(&D)'),
+    STR_MENU_LIST_MOVE_SUB: array[0..1] of array[0..MENU_LIST_MOVE_SIZE - 1] of utf8string = (
+        ('ä¸Šã¸(&U)', 'ä¸‹ã¸(&D)'),
         ('Move &Up', 'Move &Down'));
-    STR_MENU_SETUP_TIP: array[0..1] of array[0..11] of pchar = (
-        ('', '[•W€]', '[¬‡]', '[ŠgU]', '[”½“]]', '[’x]', '[‘¬]', '[¬]', '[‘å]', '[‹É’x]', '[‹É‘¬]', '[‹É¬]'),
+    STR_MENU_SETUP_TIP: array[0..1] of array[0..11] of utf8string = (
+        ('', '[æ¨™æº–]', '[æ··åˆ]', '[æ‹¡æ•£]', '[åè»¢]', '[é…]', '[é€Ÿ]', '[å°]', '[å¤§]', '[æ¥µé…]', '[æ¥µé€Ÿ]', '[æ¥µå°]'),
         ('', '[Normal]', '[Mix]', '[Separate]', '[Reverse]', '[Slow]', '[Fast]', '[Low]', '[High]', '[Very Slow]', '[Very Fast]', '[Very Low]'));
-    STR_MENU_SETUP_CHANNEL_SUB: array[0..1] of array[0..MENU_SETUP_CHANNEL_SIZE - 1] of pchar = (
-        ('&1 ƒ`ƒƒƒ“ƒlƒ‹  (ƒ‚ƒmƒ‰ƒ‹)', '&2 ƒ`ƒƒƒ“ƒlƒ‹  (ƒXƒeƒŒƒI)'),
+    STR_MENU_SETUP_CHANNEL_SUB: array[0..1] of array[0..MENU_SETUP_CHANNEL_SIZE - 1] of utf8string = (
+        ('&1 ãƒãƒ£ãƒ³ãƒãƒ«  (ãƒ¢ãƒãƒ©ãƒ«)', '&2 ãƒãƒ£ãƒ³ãƒãƒ«  (ã‚¹ãƒ†ãƒ¬ã‚ª)'),
         ('&1 Channel  (Monaural)', '&2 Channels  (Stereo)'));
-    STR_MENU_SETUP_BIT_SUB: array[0..1] of array[0..MENU_SETUP_BIT_SIZE - 1] of pchar = (
-        ('&8 ƒrƒbƒg', Concat('&16 ƒrƒbƒg', #9, '[•W€]'), '&24 ƒrƒbƒg', '&32 ƒrƒbƒg  (int)', Concat('&32 ƒrƒbƒg  (float)', #9, '[‚‰¹¿]')),
+    STR_MENU_SETUP_BIT_SUB: array[0..1] of array[0..MENU_SETUP_BIT_SIZE - 1] of utf8string = (
+        ('&8 ãƒ“ãƒƒãƒˆ', Concat('&16 ãƒ“ãƒƒãƒˆ', #9, '[æ¨™æº–]'), '&24 ãƒ“ãƒƒãƒˆ', '&32 ãƒ“ãƒƒãƒˆ  (int)', Concat('&32 ãƒ“ãƒƒãƒˆ  (float)', #9, '[é«˜éŸ³è³ª]')),
         ('&8-Bit', Concat('&16-Bit', #9, '[Normal]'), '&24-Bit', '&32-Bit  (int)', Concat('&32-Bit  (float)', #9, '[HQ]')));
-    STR_MENU_SETUP_RATE_SUB: array[0..1] of array[0..MENU_SETUP_RATE_SIZE - 1] of pchar = (
+    STR_MENU_SETUP_RATE_SUB: array[0..1] of array[0..MENU_SETUP_RATE_SIZE - 1] of utf8string = (
         ('&8,000 Hz', '&10,000 Hz', '&11,025 Hz', '&12,000 Hz', '&16,000 Hz', '&20,000 Hz', '&22,050 Hz', '&24,000 Hz',
-         Concat('&32,000 Hz', #9, '[•W€]'), '&40,000 Hz', Concat('&44,100 Hz', #9, '[CD]'), Concat('&48,000 Hz', #9, '[DVD]'),
+         Concat('&32,000 Hz', #9, '[æ¨™æº–]'), '&40,000 Hz', Concat('&44,100 Hz', #9, '[CD]'), Concat('&48,000 Hz', #9, '[DVD]'),
          '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz'),
         ('&8,000 Hz', '&10,000 Hz', '&11,025 Hz', '&12,000 Hz', '&16,000 Hz', '&20,000 Hz', '&22,050 Hz', '&24,000 Hz',
          Concat('&32,000 Hz', #9, '[Normal]'), '&40,000 Hz', Concat('&44,100 Hz', #9, '[CD]'), Concat('&48,000 Hz', #9, '[DVD]'),
          '&64,000 Hz', '&80,000 Hz', '&88,200 Hz', '&96,000 Hz'));
-    STR_MENU_SETUP_INTER_SUB: array[0..1] of array[0..MENU_SETUP_INTER_SIZE - 1] of pchar = (
-        ('–³Œø(&D)', 'üŒ`•âŠÔ(&L)', 'OŸƒXƒvƒ‰ƒCƒ“•âŠÔ(&C)', Concat('À‹@ƒKƒEƒX•ª•z•âŠÔ(&G)', #9, '[•W€]'),
-         Concat('ƒVƒ“ƒNŠÖ”•âŠÔ(&S)', #9, '[‚‰¹¿]'), 'ƒKƒEƒXŠÖ”•âŠÔ(&A)'),
+    STR_MENU_SETUP_INTER_SUB: array[0..1] of array[0..MENU_SETUP_INTER_SIZE - 1] of utf8string = (
+        ('ç„¡åŠ¹(&D)', 'ç·šå½¢è£œé–“(&L)', 'ä¸‰æ¬¡ã‚¹ãƒ—ãƒ©ã‚¤ãƒ³è£œé–“(&C)', Concat('å®Ÿæ©Ÿã‚¬ã‚¦ã‚¹åˆ†å¸ƒè£œé–“(&G)', #9, '[æ¨™æº–]'),
+         Concat('ã‚·ãƒ³ã‚¯é–¢æ•°è£œé–“(&S)', #9, '[é«˜éŸ³è³ª]'), 'ã‚¬ã‚¦ã‚¹é–¢æ•°è£œé–“(&A)'),
         ('&Disable', '&Liner', '&Cubic Spline', Concat('SNES &Gaussian Table', #9, '[Normal]'),
          Concat('&Sinc Function', #9, '[HQ]'), 'G&aussian Function'));
-    STR_MENU_SETUP_PITCH_SUB: array[0..1] of array[0..MENU_SETUP_PITCH_SIZE - 1] of pchar = (
-        ('•W€(&N)', '‰ß‹‚Ì &Sound Blaster ŒİŠ·', '‰ß‹‚Ì &ZSNES, Snes9x ŒİŠ·'),
+    STR_MENU_SETUP_PITCH_SUB: array[0..1] of array[0..MENU_SETUP_PITCH_SIZE - 1] of utf8string = (
+        ('æ¨™æº–(&N)', 'éå»ã® &Sound Blaster äº’æ›', 'éå»ã® &ZSNES, Snes9x äº’æ›'),
         ('&Normal', 'OLD &Sound Blaster Card', 'OLD &ZSNES, Snes9x'));
-    STR_MENU_SETUP_OPTION_SUB: array[0..1] of array[0..MENU_SETUP_OPTION_SIZE - 1] of pchar = (
-        ('À‹@ƒ[ƒpƒX ƒtƒBƒ‹ƒ^(&L)', 'À‹@ƒGƒR[/FIR ˆ—(&C)', NULLPOINTER, '&BASS BOOST', '‰ß‹‚Ì &ADPCM ƒfƒR[ƒ_', '‹tˆÊ‘ŠƒTƒ‰ƒEƒ“ƒh‹­§(&S)',
-         '¶‰E”½“](&R)', 'ƒGƒ“ƒxƒ[ƒv‘¬“x”ä‚ğ“¯Šú(&Y)', NULLPOINTER, 'ƒTƒ‰ƒEƒ“ƒh–³Œø(&U)', 'ƒƒCƒ“–³Œø(&M)', 'ƒGƒR[–³Œø(&E)',
-         '&FIR ƒtƒBƒ‹ƒ^–³Œø', 'ƒsƒbƒ` ƒ‚ƒWƒ…ƒŒ[ƒVƒ‡ƒ“–³Œø(&P)', 'ƒsƒbƒ` ƒxƒ“ƒh–³Œø(&I)', 'ƒsƒbƒ` ƒŠƒ~ƒbƒg–³Œø(&T)', 'ƒGƒ“ƒxƒ[ƒv–³Œø(&V)', 'ƒmƒCƒY”­‰¹w’è–³Œø(&N)'),
-        ('SNES &Low-Pass Filter', 'SNES E&cho/FIR Method', NULLPOINTER, '&BASS BOOST', 'Old &ADPCM Decoder', 'Opposite-Phase &Surround',
-         '&Reverse Stereo', 'S&ynchronize Envelope with Speed', NULLPOINTER, 'Disable S&urround', 'Disable &Main', 'Disable &Echo',
+    STR_MENU_SETUP_OPTION_SUB: array[0..1] of array[0..MENU_SETUP_OPTION_SIZE - 1] of utf8string = (
+        ('å®Ÿæ©Ÿãƒ­ãƒ¼ãƒ‘ã‚¹ ãƒ•ã‚£ãƒ«ã‚¿(&L)', 'å®Ÿæ©Ÿã‚¨ã‚³ãƒ¼/FIR å‡¦ç†(&C)', '', '&BASS BOOST', 'éå»ã® &ADPCM ãƒ‡ã‚³ãƒ¼ãƒ€', 'é€†ä½ç›¸ã‚µãƒ©ã‚¦ãƒ³ãƒ‰å¼·åˆ¶(&S)',
+         'å·¦å³åè»¢(&R)', 'ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—é€Ÿåº¦æ¯”ã‚’åŒæœŸ(&Y)', '', 'ã‚µãƒ©ã‚¦ãƒ³ãƒ‰ç„¡åŠ¹(&U)', 'ãƒ¡ã‚¤ãƒ³ç„¡åŠ¹(&M)', 'ã‚¨ã‚³ãƒ¼ç„¡åŠ¹(&E)',
+         '&FIR ãƒ•ã‚£ãƒ«ã‚¿ç„¡åŠ¹', 'ãƒ”ãƒƒãƒ ãƒ¢ã‚¸ãƒ¥ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ç„¡åŠ¹(&P)', 'ãƒ”ãƒƒãƒ ãƒ™ãƒ³ãƒ‰ç„¡åŠ¹(&I)', 'ãƒ”ãƒƒãƒ ãƒªãƒŸãƒƒãƒˆç„¡åŠ¹(&T)', 'ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—ç„¡åŠ¹(&V)', 'ãƒã‚¤ã‚ºç™ºéŸ³æŒ‡å®šç„¡åŠ¹(&N)'),
+        ('SNES &Low-Pass Filter', 'SNES E&cho/FIR Method', '', '&BASS BOOST', 'Old &ADPCM Decoder', 'Opposite-Phase &Surround',
+         '&Reverse Stereo', 'S&ynchronize Envelope with Speed', '', 'Disable S&urround', 'Disable &Main', 'Disable &Echo',
          'Disable &FIR Filter', 'Disable &Pitch Modulation', 'Disable P&itch Bend', 'Disable Pi&tch Limit', 'Disable En&velope', 'Disable &Noise Flags'));
-    STR_MENU_SETUP_ORDER_SUB: array[0..1] of array[0..MENU_SETUP_ORDER_SIZE - 1] of pchar = (
-        ('‰‰‘t’â~(&S)', 'Ÿ‚Ö(&N)', '‘O‚Ö(&P)', 'ƒ‰ƒ“ƒ_ƒ€(&M)', 'ƒVƒƒƒbƒtƒ‹(&H)', 'ƒŠƒs[ƒg(&R)'),
+    STR_MENU_SETUP_ORDER_SUB: array[0..1] of array[0..MENU_SETUP_ORDER_SIZE - 1] of utf8string = (
+        ('æ¼”å¥åœæ­¢(&S)', 'æ¬¡ã¸(&N)', 'å‰ã¸(&P)', 'ãƒ©ãƒ³ãƒ€ãƒ (&M)', 'ã‚·ãƒ£ãƒƒãƒ•ãƒ«(&H)', 'ãƒªãƒ”ãƒ¼ãƒˆ(&R)'),
         ('&Stop', '&Next Item', '&Previous Item', 'Rando&m', 'S&huffle', '&Repeat'));
-    STR_MENU_SETUP_INFO_SUB: array[0..1] of array[0..MENU_SETUP_INFO_SIZE - 1] of pchar = (
-        ('ƒOƒ‰ƒtƒBƒbƒN ƒCƒ“ƒWƒP[ƒ^(&G)', '&DSP/BPM î•ñ', 'ƒ`ƒƒƒ“ƒlƒ‹î•ñ 1 (&C)', 'ƒ`ƒƒƒ“ƒlƒ‹î•ñ 2 (&A)', 'ƒ`ƒƒƒ“ƒlƒ‹î•ñ 3 (&N)',
-         'ƒ`ƒƒƒ“ƒlƒ‹î•ñ 4 (&E)', '&SPC î•ñ 1', 'S&PC î•ñ 2', 'Script&700 ƒfƒoƒbƒO'),
+    STR_MENU_SETUP_INFO_SUB: array[0..1] of array[0..MENU_SETUP_INFO_SIZE - 1] of utf8string = (
+        ('ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿(&G)', '&DSP/BPM æƒ…å ±', 'ãƒãƒ£ãƒ³ãƒãƒ«æƒ…å ± 1 (&C)', 'ãƒãƒ£ãƒ³ãƒãƒ«æƒ…å ± 2 (&A)', 'ãƒãƒ£ãƒ³ãƒãƒ«æƒ…å ± 3 (&N)',
+         'ãƒãƒ£ãƒ³ãƒãƒ«æƒ…å ± 4 (&E)', '&SPC æƒ…å ± 1', 'S&PC æƒ…å ± 2', 'Script&700 ãƒ‡ãƒãƒƒã‚°'),
         ('&Graphic Indicator', '&DSP/BPM', '&Channel 1', 'Ch&annel 2', 'Cha&nnel 3',
          'Chann&el 4', '&SPC Tags 1', 'S&PC Tags 2', 'Script&700 Debug'));
-    STR_MENU_SETUP_SEEK_SUB: array[0..1] of array[0..MENU_SETUP_SEEK_SIZE - 1] of pchar = (
-        ('&1 •b', '&2 •b', '&3 •b', '&4 •b', '&5 •b', '1&0 •b'),
+    STR_MENU_SETUP_SEEK_SUB: array[0..1] of array[0..MENU_SETUP_SEEK_SIZE - 1] of utf8string = (
+        ('&1 ç§’', '&2 ç§’', '&3 ç§’', '&4 ç§’', '&5 ç§’', '1&0 ç§’'),
         ('&1 s', '&2 s', '&3 s', '&4 s', '&5 s', '&10 s'));
-    STR_MENU_SETUP_PRIORITY_SUB: array[0..1] of array[0..MENU_SETUP_PRIORITY_SIZE - 1] of pchar = (
-        ('ƒŠƒAƒ‹ƒ^ƒCƒ€(&R)', '‚(&H)', '•W€ˆÈã(&A)', '•W€(&N)', '•W€ˆÈ‰º(&B)', '’á(&L)'),
+    STR_MENU_SETUP_PRIORITY_SUB: array[0..1] of array[0..MENU_SETUP_PRIORITY_SIZE - 1] of utf8string = (
+        ('ãƒªã‚¢ãƒ«ã‚¿ã‚¤ãƒ (&R)', 'é«˜(&H)', 'æ¨™æº–ä»¥ä¸Š(&A)', 'æ¨™æº–(&N)', 'æ¨™æº–ä»¥ä¸‹(&B)', 'ä½(&L)'),
         ('&Realtime', '&High', '&Above Normal', '&Normal', '&Below Normal', '&Low'));
-    STR_MENU_LIST_PLAY_SUB: array[0..1] of array[0..MENU_LIST_PLAY_SIZE - 1] of pchar = (
-        ('Ÿ‚Ö(&N)', '‘O‚Ö(&P)', 'ƒ‰ƒ“ƒ_ƒ€(&M)', 'ƒVƒƒƒbƒtƒ‹(&H)', 'Å‰‚©‚ç(&F)', 'ÅŒã‚©‚ç(&L)'),
+    STR_MENU_LIST_PLAY_SUB: array[0..1] of array[0..MENU_LIST_PLAY_SIZE - 1] of utf8string = (
+        ('æ¬¡ã¸(&N)', 'å‰ã¸(&P)', 'ãƒ©ãƒ³ãƒ€ãƒ (&M)', 'ã‚·ãƒ£ãƒƒãƒ•ãƒ«(&H)', 'æœ€åˆã‹ã‚‰(&F)', 'æœ€å¾Œã‹ã‚‰(&L)'),
         ('&Next Item', '&Previous Item', 'Rando&m', 'S&huffle', '&First Item', '&Last Item'));
-    STR_MENU_SETUP_PERCENT: array[0..1] of string = (' “', ' %');
-    STR_MENU_SETUP_SEC1: array[0..1] of string = (' •b', ' s');
-    STR_MENU_SETUP_SEC2: array[0..1] of string = (' sec', ' s  ');
-    STR_MENU_SETUP_MSEC: array[0..1] of string = (' ms', ' ms');
-    STR_BUTTON_OPEN = 'OPEN';
-    STR_BUTTON_SAVE = 'SAVE';
-    STR_BUTTON_PLAY = 'PLAY';
-    STR_BUTTON_RESTART = 'RESTART';
-    STR_BUTTON_PAUSE = 'PAUSE';
-    STR_BUTTON_STOP = 'STOP';
-    STR_BUTTON_SLOW = 'SP-';
-    STR_BUTTON_FAST = 'SP+';
-    STR_BUTTON_AMPD = 'VL-';
-    STR_BUTTON_AMPU = 'VL+';
-    STR_BUTTON_BACK = 'REW';
-    STR_BUTTON_NEXT = 'FF';
-    STR_BUTTON_APPEND = 'APPEND';
-    STR_BUTTON_INSERT = 'INSERT';
-    STR_BUTTON_REMOVE = 'REMOVE';
-    STR_BUTTON_CLEAR = 'CLEAR';
-    STR_BUTTON_UP: array[0..1] of pchar = ('£', 'UP');
-    STR_BUTTON_DOWN: array[0..1] of pchar = ('¥', 'DN');
-    TITLE_NAME_UNKNOWN = 'Unknown';
-    TITLE_NAME_SEPARATOR: array[0..1] of string = (' / ', ' / ');
-    TITLE_NAME_HEADER: array[0..1] of string = (' [', ' [');
-    TITLE_NAME_FOOTER: array[0..1] of string = (']', ']');
-    TITLE_MAIN_HEADER: array[0..1] of string = (' - ', ' - ');
-    TITLE_INFO_HEADER: array[0..1] of string = ('s ', '< ');
-    TITLE_INFO_FOOTER: array[0..1] of string = (' t', ' >');
-    TITLE_INFO_SEPARATE_HEADER: array[0..1] of string = ('¶‰EŠgU“x ', 'Separate ');
-    TITLE_INFO_FEEDBACK_HEADER: array[0..1] of string = ('ƒtƒB[ƒhƒoƒbƒN”½“]“x ', 'Echo Feedback ');
-    TITLE_INFO_SPEED_HEADER: array[0..1] of string = ('‰‰‘t‘¬“x ', 'Speed ');
-    TITLE_INFO_AMP_HEADER: array[0..1] of string = ('‰¹—Ê ', 'Volume ');
-    TITLE_INFO_SEEK_HEADER: array[0..1] of string = ('ƒV[ƒN ', 'Seek ');
-    TITLE_INFO_PLUS: array[0..1] of string = ('{', '+');
-    TITLE_INFO_MINUS: array[0..1] of string = ('|', '-');
-    TITLE_INFO_MULTIPLE: array[0..1] of string = (' ~ ', '  x');
-    TITLE_INFO_PERCENT: array[0..1] of string = (' “', ' %');
-    TITLE_INFO_FILE_APPEND: array[0..1] of string = ('ƒtƒ@ƒCƒ‹“Ç’†... ', 'Loading... ');
-    TITLE_INFO_FILE_HEADER: array[0..1] of string = ('ƒtƒ@ƒCƒ‹ì¬’†... ', 'Storing... ');
-    TITLE_INFO_FILE_PROC: array[0..1] of string = (' “Š®—¹', ' % completed');
+    STR_MENU_SETUP_PERCENT: array[0..1] of utf8string = (' ï¼…', ' %');
+    STR_MENU_SETUP_SEC1: array[0..1] of utf8string = (' ç§’', ' s');
+    STR_MENU_SETUP_SEC2: array[0..1] of utf8string = (' sec', ' s  ');
+    STR_MENU_SETUP_MSEC: array[0..1] of utf8string = (' ms', ' ms');
+    STR_BUTTON_OPEN: utf8string = 'OPEN';
+    STR_BUTTON_SAVE: utf8string = 'SAVE';
+    STR_BUTTON_PLAY: utf8string = 'PLAY';
+    STR_BUTTON_RESTART: utf8string = 'RESTART';
+    STR_BUTTON_PAUSE: utf8string = 'PAUSE';
+    STR_BUTTON_STOP: utf8string = 'STOP';
+    STR_BUTTON_SLOW: utf8string = 'SP-';
+    STR_BUTTON_FAST: utf8string = 'SP+';
+    STR_BUTTON_AMPD: utf8string = 'VL-';
+    STR_BUTTON_AMPU: utf8string = 'VL+';
+    STR_BUTTON_BACK: utf8string = 'REW';
+    STR_BUTTON_NEXT: utf8string = 'FF';
+    STR_BUTTON_APPEND: utf8string = 'APPEND';
+    STR_BUTTON_INSERT: utf8string = 'INSERT';
+    STR_BUTTON_REMOVE: utf8string = 'REMOVE';
+    STR_BUTTON_CLEAR: utf8string = 'CLEAR';
+    STR_BUTTON_UP: array[0..1] of utf8string = ('â–²', 'UP');
+    STR_BUTTON_DOWN: array[0..1] of utf8string = ('â–¼', 'DN');
+    TITLE_NAME_UNKNOWN: utf8string = 'Unknown';
+    TITLE_NAME_SEPARATOR: array[0..1] of utf8string = (' / ', ' / ');
+    TITLE_NAME_HEADER: array[0..1] of utf8string = (' [', ' [');
+    TITLE_NAME_FOOTER: array[0..1] of utf8string = (']', ']');
+    TITLE_MAIN_HEADER: array[0..1] of utf8string = (' - ', ' - ');
+    TITLE_INFO_HEADER: array[0..1] of utf8string = ('ã€Š ', '< ');
+    TITLE_INFO_FOOTER: array[0..1] of utf8string = (' ã€‹', ' >');
+    TITLE_INFO_SEPARATE_HEADER: array[0..1] of utf8string = ('å·¦å³æ‹¡æ•£åº¦ ', 'Separate ');
+    TITLE_INFO_FEEDBACK_HEADER: array[0..1] of utf8string = ('ãƒ•ã‚£ãƒ¼ãƒ‰ãƒãƒƒã‚¯åè»¢åº¦ ', 'Echo Feedback ');
+    TITLE_INFO_SPEED_HEADER: array[0..1] of utf8string = ('æ¼”å¥é€Ÿåº¦ ', 'Speed ');
+    TITLE_INFO_AMP_HEADER: array[0..1] of utf8string = ('éŸ³é‡ ', 'Volume ');
+    TITLE_INFO_SEEK_HEADER: array[0..1] of utf8string = ('ã‚·ãƒ¼ã‚¯ ', 'Seek ');
+    TITLE_INFO_PLUS: array[0..1] of utf8string = ('ï¼‹', '+');
+    TITLE_INFO_MINUS: array[0..1] of utf8string = ('ï¼', '-');
+    TITLE_INFO_MULTIPLE: array[0..1] of utf8string = (' Ã— ', '  x');
+    TITLE_INFO_PERCENT: array[0..1] of utf8string = (' ï¼…', ' %');
+    TITLE_INFO_FILE_APPEND: array[0..1] of utf8string = ('ãƒ•ã‚¡ã‚¤ãƒ«èª­è¾¼ä¸­... ', 'Loading... ');
+    TITLE_INFO_FILE_HEADER: array[0..1] of utf8string = ('ãƒ•ã‚¡ã‚¤ãƒ«ä½œæˆä¸­... ', 'Storing... ');
+    TITLE_INFO_FILE_PROC: array[0..1] of utf8string = (' ï¼…å®Œäº†', ' % completed');
 
 
 // *************************************************************************************************************************************************************
-// ƒOƒ[ƒoƒ‹•Ï”‚ÌéŒ¾
+// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®å®£è¨€
 // *************************************************************************************************************************************************************
 
 var
     Apu: TAPU;                                              // APU
     Spc: TSPC;                                              // SPC
-    Wave: record                                            // ‰¹ºƒf[ƒ^
-        dwEmuSize: longword;                                    // ƒGƒ~ƒ…ƒŒ[ƒgƒTƒCƒY
-        dwBufSize: longword;                                    // ƒoƒbƒtƒ@ƒTƒCƒY
-        lpData: array of pointer;                               // ƒoƒbƒtƒ@‚Ìƒ|ƒCƒ“ƒ^
-        dwHandle: longword;                                     // ƒfƒoƒCƒXƒnƒ“ƒhƒ‹
-        Format: TWAVEFORMATEXTENSIBLE;                          // ƒtƒH[ƒ}ƒbƒg
-        Header: array of TWAVEHDR;                              // ƒwƒbƒ_
-        Apu: array of TAPUDATA;                                 // APU ƒf[ƒ^
-        dwTimeout: array[0..7] of longword;                     // ƒCƒ“ƒWƒP[ƒ^ƒŠƒZƒbƒg‚Ìƒ^ƒCƒ€ƒAƒEƒgƒoƒbƒtƒ@
-        dwIndex: longword;                                      // APU ƒf[ƒ^ƒCƒ“ƒfƒbƒNƒX
-        dwLastIndex: longword;                                  // APU ƒf[ƒ^ÅŒã‚ÌƒCƒ“ƒfƒbƒNƒX
+    Wave: record                                            // éŸ³å£°ãƒ‡ãƒ¼ã‚¿
+        dwEmuSize: longword;                                    // ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ãƒˆã‚µã‚¤ã‚º
+        dwBufSize: longword;                                    // ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
+        lpData: array of pointer;                               // ãƒãƒƒãƒ•ã‚¡ã®ãƒã‚¤ãƒ³ã‚¿
+        dwHandle: longword;                                     // ãƒ‡ãƒã‚¤ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+        Format: TWAVEFORMATEXTENSIBLE;                          // ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+        Header: array of TWAVEHDR;                              // ãƒ˜ãƒƒãƒ€
+        Apu: array of TAPUDATA;                                 // APU ãƒ‡ãƒ¼ã‚¿
+        dwTimeout: array[0..7] of longword;                     // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ãƒªã‚»ãƒƒãƒˆã®ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆãƒãƒƒãƒ•ã‚¡
+        dwIndex: longword;                                      // APU ãƒ‡ãƒ¼ã‚¿ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+        dwLastIndex: longword;                                  // APU ãƒ‡ãƒ¼ã‚¿æœ€å¾Œã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
     end;
-    Status: record                                          // ƒXƒe[ƒ^ƒX
-        ccClass: CCLASS;                                        // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚ÌƒNƒ‰ƒX
-        cfMain: CWINDOWMAIN;                                    // ƒƒCƒ“ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX
-        hInstance: longword;                                    // ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹
-        OsVersionInfo: TOSVERSIONINFO;                          // ƒVƒXƒeƒ€ƒo[ƒWƒ‡ƒ“î•ñ
-        dwChannel: longword;                                    // ƒ`ƒƒƒ“ƒlƒ‹
-        dwBit: longint;                                         // ƒrƒbƒg
-        dwRate: longword;                                       // ƒTƒ“ƒvƒŠƒ“ƒOƒŒ[ƒg
-        dwLanguage: longword;                                   // Œ¾Œê
-        hDCWindow: longword;                                    // ƒEƒBƒ“ƒhƒE‘S‘Ì‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚Ìƒnƒ“ƒhƒ‹
-        hDCStatic: longword;                                    // î•ñ•\¦ƒEƒBƒ“ƒhƒE‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚Ìƒnƒ“ƒhƒ‹
-        hDCVolumeBuffer: longword;                              // ƒCƒ“ƒWƒP[ƒ^‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚Ìƒnƒ“ƒhƒ‹
-        hBitmapVolume: longword;                                // ƒCƒ“ƒWƒP[ƒ^‚Ìƒrƒbƒgƒ}ƒbƒv‚Ìƒnƒ“ƒhƒ‹
-        hDCStringBuffer: longword;                              // •¶š‰æ‘œ‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚Ìƒnƒ“ƒhƒ‹
-        hBitmapString: longword;                                // •¶š‰æ‘œ‚Ìƒrƒbƒgƒ}ƒbƒv‚Ìƒnƒ“ƒhƒ‹
-        hPowerNotify: longword;                                 // “dŒ¹İ’è’Ê’mƒCƒxƒ“ƒg‚Ìƒnƒ“ƒhƒ‹
-        hSuspendNotify: longword;                               // ƒTƒXƒyƒ“ƒh’Ê’mƒCƒxƒ“ƒg‚Ìƒnƒ“ƒhƒ‹
-        lpStaticProc: pointer;                                  // î•ñ•\¦‚ÌƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ‚Ìƒ|ƒCƒ“ƒ^
-        dwThreadHandle: longword;                               // ƒXƒŒƒbƒhƒnƒ“ƒhƒ‹
-        dwThreadID: longword;                                   // ƒXƒŒƒbƒh ID
-        dwThreadStatus: longword;                               // ƒXƒŒƒbƒhó‘Ô
-        dwThreadIdle: longword;                                 // ƒXƒŒƒbƒhƒAƒCƒhƒ‹ƒJƒEƒ“ƒg
-        dwWaveMessage: longword;                                // ƒƒbƒZ[ƒW‘—MÏ‚İƒJƒEƒ“ƒg
-        bOpen: longbool;                                        // Open ƒtƒ‰ƒO
-        bPlay: longbool;                                        // Play ƒtƒ‰ƒO
-        bPause: longbool;                                       // Pause ƒtƒ‰ƒO
-        lpCurrentPath: pointer;                                 // ƒJƒŒƒ“ƒgƒpƒX
-        lpCurrentSize: longword;                                // ƒJƒŒƒ“ƒgƒpƒX‚ÌƒTƒCƒY
-        lpSPCFile: pointer;                                     // SPC ƒtƒ@ƒCƒ‹ƒpƒX
-        lpSPCDir: pointer;                                      // SPC ƒfƒBƒŒƒNƒgƒŠƒpƒX
-        lpSPCName: pointer;                                     // SPC ƒtƒ@ƒCƒ‹–¼
-        lpOpenPath: pointer;                                    // ƒtƒ@ƒCƒ‹“ÇƒtƒHƒ‹ƒ_ƒoƒbƒtƒ@
-        lpSavePath: pointer;                                    // ƒtƒ@ƒCƒ‹•Û‘¶ƒtƒHƒ‹ƒ_ƒoƒbƒtƒ@
-        dwFocusHandle: longword;                                // ƒtƒH[ƒJƒXƒnƒ“ƒhƒ‹
-        dwDeviceNum: longword;                                  // ƒfƒoƒCƒX”
-        sDeviceName: array of string;                           // ƒfƒoƒCƒX–¼
-        dwAPUPlayTime: longword;                                // Ä¶ŠÔ
-        dwAPUFadeTime: longword;                                // ƒtƒF[ƒhƒAƒEƒgŠÔ
-        dwDefaultTimeout: longword;                             // Ÿ‚Ì‹È‚ÉˆÚ‚éŠÔ
-        dwNextTimeout: longword;                                // Ÿ‚Ì‹È‚ÉˆÚ‚éŠÔ (İ’è)
-        dwMuteTimeout: longword;                                // Ÿ‚Ì‹È‚ÉˆÚ‚éŠÔ (‹­§)
-        dwMuteCounter: longword;                                // Ÿ‚Ì‹È‚ÉˆÚ‚é“®ì‚ğ‹Ö~‚·‚éƒJƒEƒ“ƒ^
-        dwNextCache: longword;                                  // Ÿ‚ÌƒLƒƒƒbƒVƒ…ŠÔ
-        bNextDefault: longbool;                                 // ƒfƒtƒHƒ‹ƒg‚ÌŠÔ‚ğg—p
-        bSPCRestart: longbool;                                  // Å‰‚©‚ç‰‰‘t
-        bSPCRefresh: longbool;                                  // ‰‰‘tó‘Ô‚ğ‰Šú‰»
+    Status: record                                          // ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
+        ccClass: CCLASS;                                        // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã®ã‚¯ãƒ©ã‚¹
+        cfMain: CWINDOWMAIN;                                    // ãƒ¡ã‚¤ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹
+        hInstance: longword;                                    // ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+        OsVersionInfo: TRTLOSVERSIONINFOW;                      // ã‚·ã‚¹ãƒ†ãƒ ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±
+        dwChannel: longword;                                    // ãƒãƒ£ãƒ³ãƒãƒ«
+        dwBit: longint;                                         // ãƒ“ãƒƒãƒˆ
+        dwRate: longword;                                       // ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ¬ãƒ¼ãƒˆ
+        dwLanguage: longword;                                   // è¨€èª
+        hDCWindow: longword;                                    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å…¨ä½“ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®ãƒãƒ³ãƒ‰ãƒ«
+        hDCStatic: longword;                                    // æƒ…å ±è¡¨ç¤ºã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®ãƒãƒ³ãƒ‰ãƒ«
+        hDCVolumeBuffer: longword;                              // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®ãƒãƒ³ãƒ‰ãƒ«
+        hBitmapVolume: longword;                                // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã®ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®ãƒãƒ³ãƒ‰ãƒ«
+        hDCStringBuffer: longword;                              // æ–‡å­—ç”»åƒã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®ãƒãƒ³ãƒ‰ãƒ«
+        hBitmapString: longword;                                // æ–‡å­—ç”»åƒã®ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®ãƒãƒ³ãƒ‰ãƒ«
+        hPowerNotify: longword;                                 // é›»æºè¨­å®šé€šçŸ¥ã‚¤ãƒ™ãƒ³ãƒˆã®ãƒãƒ³ãƒ‰ãƒ«
+        hSuspendNotify: longword;                               // ã‚µã‚¹ãƒšãƒ³ãƒ‰é€šçŸ¥ã‚¤ãƒ™ãƒ³ãƒˆã®ãƒãƒ³ãƒ‰ãƒ«
+        lpStaticProc: pointer;                                  // æƒ…å ±è¡¨ç¤ºã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã®ãƒã‚¤ãƒ³ã‚¿
+        dwThreadHandle: longword;                               // ã‚¹ãƒ¬ãƒƒãƒ‰ãƒãƒ³ãƒ‰ãƒ«
+        dwThreadID: longword;                                   // ã‚¹ãƒ¬ãƒƒãƒ‰ ID
+        dwThreadStatus: longword;                               // ã‚¹ãƒ¬ãƒƒãƒ‰çŠ¶æ…‹
+        dwThreadIdle: longword;                                 // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚¢ã‚¤ãƒ‰ãƒ«ã‚«ã‚¦ãƒ³ãƒˆ
+        dwWaveMessage: longword;                                // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸é€ä¿¡æ¸ˆã¿ã‚«ã‚¦ãƒ³ãƒˆ
+        bOpen: longbool;                                        // Open ãƒ•ãƒ©ã‚°
+        bPlay: longbool;                                        // Play ãƒ•ãƒ©ã‚°
+        bPause: longbool;                                       // Pause ãƒ•ãƒ©ã‚°
+        sCurrentPath: utf8string;                                   // ã‚«ãƒ¬ãƒ³ãƒˆãƒ‘ã‚¹
+        lpCurrentSize: longword;                                // ã‚«ãƒ¬ãƒ³ãƒˆãƒ‘ã‚¹ã®ã‚µã‚¤ã‚º
+        sSPCFile: utf8string;                                       // SPC ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+        sSPCDir: utf8string;                                        // SPC ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹
+        sSPCName: utf8string;                                       // SPC ãƒ•ã‚¡ã‚¤ãƒ«å
+        sOpenPath: utf8string;                                      // ãƒ•ã‚¡ã‚¤ãƒ«èª­è¾¼ãƒ•ã‚©ãƒ«ãƒ€ãƒãƒƒãƒ•ã‚¡
+        sSavePath: utf8string;                                      // ãƒ•ã‚¡ã‚¤ãƒ«ä¿å­˜ãƒ•ã‚©ãƒ«ãƒ€ãƒãƒƒãƒ•ã‚¡
+        dwFocusHandle: longword;                                // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ãƒãƒ³ãƒ‰ãƒ«
+        dwDeviceNum: longword;                                  // ãƒ‡ãƒã‚¤ã‚¹æ•°
+        sDeviceName: array of utf8string;                       // ãƒ‡ãƒã‚¤ã‚¹å
+        dwAPUPlayTime: longword;                                // å†ç”Ÿæ™‚é–“
+        dwAPUFadeTime: longword;                                // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“
+        dwDefaultTimeout: longword;                             // æ¬¡ã®æ›²ã«ç§»ã‚‹æ™‚é–“
+        dwNextTimeout: longword;                                // æ¬¡ã®æ›²ã«ç§»ã‚‹æ™‚é–“ (è¨­å®š)
+        dwMuteTimeout: longword;                                // æ¬¡ã®æ›²ã«ç§»ã‚‹æ™‚é–“ (å¼·åˆ¶)
+        dwMuteCounter: longword;                                // æ¬¡ã®æ›²ã«ç§»ã‚‹å‹•ä½œã‚’ç¦æ­¢ã™ã‚‹ã‚«ã‚¦ãƒ³ã‚¿
+        dwNextCache: longword;                                  // æ¬¡ã®ã‚­ãƒ£ãƒƒã‚·ãƒ¥æ™‚é–“
+        bNextDefault: longbool;                                 // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®æ™‚é–“ã‚’ä½¿ç”¨
+        bSPCRestart: longbool;                                  // æœ€åˆã‹ã‚‰æ¼”å¥
+        bSPCRefresh: longbool;                                  // æ¼”å¥çŠ¶æ…‹ã‚’åˆæœŸåŒ–
         bShiftButton: longbool;                                 // Shift
         bCtrlButton: longbool;                                  // Ctrl
         bBreakButton: longbool;                                 // Break
-        bChangePlay: longbool;                                  // ‰‰‘t•ÏXƒtƒ‰ƒO
-        bChangeShift: longbool;                                 // Shift ƒL[•ÏXƒtƒ‰ƒO
-        bOptionLock: longbool;                                  // ƒIƒvƒVƒ‡ƒ“ƒƒbƒN
-        bWaveWrite: longbool;                                   // WAVE ‘‚«‚İƒtƒ‰ƒO
-        dwReady: longword;                                      // €”õŠ®—¹ƒtƒ‰ƒO
-        dwTitle: longword;                                      // ƒ^ƒCƒgƒ‹ƒtƒ‰ƒO
-        dwInfo: longint;                                        // î•ñƒtƒ‰ƒO
-        dwRedrawInfo: longword;                                 // Ä•`‰æƒtƒ‰ƒO
-        dwMenuFlags: longword;                                  // ‘I‘ğ‚³‚ê‚½ƒƒjƒ…[î•ñ
-        dwLastTime: longword;                                   // ÅŒã‚Ì‰‰‘tŠÔ
-        bTimeRepeat: longbool;                                  // ‹æŠÔƒŠƒs[ƒgƒtƒ‰ƒO
-        dwPlayOrder: longword;                                  // ‹æŠÔƒŠƒs[ƒg‚·‚é‘O‚Ì‰‰‘t‡˜
-        dwStartTime: longword;                                  // ƒŠƒs[ƒgŠJnˆÊ’u
-        dwLastStartTime: longword;                              // ÅŒã‚ÌƒŠƒs[ƒgŠJnˆÊ’u
-        dwLimitTime: longword;                                  // ƒŠƒs[ƒgI—¹ˆÊ’u
-        dwLastLimitTime: longword;                              // ÅŒã‚ÌƒŠƒs[ƒgI—¹ˆÊ’u
-        dwTuningAddress: longword;                              // TUNING ƒpƒ‰ƒ[ƒ^‚ÌŠJnƒAƒhƒŒƒX
-        dwTuningSize: longword;                                 // TUNING ƒpƒ‰ƒ[ƒ^‚ÌƒTƒCƒY
-        dwOpenFilterIndex: longint;                             // ƒtƒ@ƒCƒ‹ƒ^ƒCƒv‚ÌƒCƒ“ƒfƒbƒNƒX (Open)
-        dwSaveFilterIndex: longint;                             // ƒtƒ@ƒCƒ‹ƒ^ƒCƒv‚ÌƒCƒ“ƒfƒbƒNƒX (Save)
-        DblClickPoint: TPOINT;                                  // ƒ_ƒuƒ‹ƒNƒŠƒbƒNˆÊ’u
-        DragPoint: TPOINT;                                      // ƒhƒ‰ƒbƒOŠJnˆÊ’u
-        bDropCancel: longbool;                                  // ƒhƒƒbƒv‹Ö~ƒtƒ‰ƒO
-        dwScale: longint;                                       // •\¦”{—¦
-        BreakPoint: array[0..65535] of byte;                    // ƒuƒŒƒCƒNƒ|ƒCƒ“ƒgƒXƒCƒbƒ`
-        dwNextTick: longword;                                   // Ÿ‚Ì–½—ßÀsƒXƒCƒbƒ`
-        DSPCheat: array[0..127] of word;                        // DSP ƒ`[ƒg
-        bEmuDebug: longbool;                                    // “]‘—ƒeƒXƒgƒ‚[ƒh
-        dwNoSleepTime: longword;                                // ƒXƒŠ[ƒv‰ğœŠÔ
-        NowLevel: TLEVEL;                                       // Œ»İ‚ÌƒŒƒxƒ‹
-        LastLevel: TLEVEL;                                      // ÅŒã‚ÌƒŒƒxƒ‹
-        NumCache: array[0..287] of byte;                        // ƒfƒWƒ^ƒ‹•¶šƒLƒƒƒbƒVƒ… (48x6)
-        SPCCache: array of TSPCCACHE;                           // ƒV[ƒNƒLƒƒƒbƒVƒ…
-        Script700: TSCRIPT700DATA;                              // Script700 ƒf[ƒ^
-        Tempo: TTEMPO;                                          // ƒeƒ“ƒ|
-        hBackBrush: longword;                                   // ”wŒiFƒuƒ‰ƒV‚Ìƒnƒ“ƒhƒ‹
-        hTextBrush: longword;                                   // •¶šFƒuƒ‰ƒV‚Ìƒnƒ“ƒhƒ‹
-        hMenuBrush: longword;                                   // ƒƒjƒ…[”wŒiFƒuƒ‰ƒV‚Ìƒnƒ“ƒhƒ‹
+        bChangePlay: longbool;                                  // æ¼”å¥å¤‰æ›´ãƒ•ãƒ©ã‚°
+        bChangeShift: longbool;                                 // Shift ã‚­ãƒ¼å¤‰æ›´ãƒ•ãƒ©ã‚°
+        bOptionLock: longbool;                                  // ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãƒ­ãƒƒã‚¯
+        bWaveWrite: longbool;                                   // WAVE æ›¸ãè¾¼ã¿ãƒ•ãƒ©ã‚°
+        dwReady: longword;                                      // æº–å‚™å®Œäº†ãƒ•ãƒ©ã‚°
+        dwTitle: longword;                                      // ã‚¿ã‚¤ãƒˆãƒ«ãƒ•ãƒ©ã‚°
+        dwInfo: longint;                                        // æƒ…å ±ãƒ•ãƒ©ã‚°
+        dwRedrawInfo: longword;                                 // å†æç”»ãƒ•ãƒ©ã‚°
+        dwMenuFlags: longword;                                  // é¸æŠã•ã‚ŒãŸãƒ¡ãƒ‹ãƒ¥ãƒ¼æƒ…å ±
+        dwLastTime: longword;                                   // æœ€å¾Œã®æ¼”å¥æ™‚é–“
+        bTimeRepeat: longbool;                                  // åŒºé–“ãƒªãƒ”ãƒ¼ãƒˆãƒ•ãƒ©ã‚°
+        dwPlayOrder: longword;                                  // åŒºé–“ãƒªãƒ”ãƒ¼ãƒˆã™ã‚‹å‰ã®æ¼”å¥é †åº
+        dwStartTime: longword;                                  // ãƒªãƒ”ãƒ¼ãƒˆé–‹å§‹ä½ç½®
+        dwLastStartTime: longword;                              // æœ€å¾Œã®ãƒªãƒ”ãƒ¼ãƒˆé–‹å§‹ä½ç½®
+        dwLimitTime: longword;                                  // ãƒªãƒ”ãƒ¼ãƒˆçµ‚äº†ä½ç½®
+        dwLastLimitTime: longword;                              // æœ€å¾Œã®ãƒªãƒ”ãƒ¼ãƒˆçµ‚äº†ä½ç½®
+        dwTuningAddress: longword;                              // TUNING ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®é–‹å§‹ã‚¢ãƒ‰ãƒ¬ã‚¹
+        dwTuningSize: longword;                                 // TUNING ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚º
+        dwOpenFilterIndex: longint;                             // ãƒ•ã‚¡ã‚¤ãƒ«ã‚¿ã‚¤ãƒ—ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ (Open)
+        dwSaveFilterIndex: longint;                             // ãƒ•ã‚¡ã‚¤ãƒ«ã‚¿ã‚¤ãƒ—ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ (Save)
+        DblClickPoint: TPOINT;                                  // ãƒ€ãƒ–ãƒ«ã‚¯ãƒªãƒƒã‚¯ä½ç½®
+        DragPoint: TPOINT;                                      // ãƒ‰ãƒ©ãƒƒã‚°é–‹å§‹ä½ç½®
+        bDropCancel: longbool;                                  // ãƒ‰ãƒ­ãƒƒãƒ—ç¦æ­¢ãƒ•ãƒ©ã‚°
+        dwScale: longint;                                       // è¡¨ç¤ºå€ç‡
+        BreakPoint: array[0..65535] of byte;                    // ãƒ–ãƒ¬ã‚¤ã‚¯ãƒã‚¤ãƒ³ãƒˆã‚¹ã‚¤ãƒƒãƒ
+        dwNextTick: longword;                                   // æ¬¡ã®å‘½ä»¤å®Ÿè¡Œã‚¹ã‚¤ãƒƒãƒ
+        DSPCheat: array[0..127] of word;                        // DSP ãƒãƒ¼ãƒˆ
+        bEmuDebug: longbool;                                    // è»¢é€ãƒ†ã‚¹ãƒˆãƒ¢ãƒ¼ãƒ‰
+        dwNoSleepTime: longword;                                // ã‚¹ãƒªãƒ¼ãƒ—è§£é™¤æ™‚é–“
+        NowLevel: TLEVEL;                                       // ç¾åœ¨ã®ãƒ¬ãƒ™ãƒ«
+        LastLevel: TLEVEL;                                      // æœ€å¾Œã®ãƒ¬ãƒ™ãƒ«
+        NumCache: array[0..287] of byte;                        // ãƒ‡ã‚¸ã‚¿ãƒ«æ–‡å­—ã‚­ãƒ£ãƒƒã‚·ãƒ¥ (48x6)
+        SPCCache: array of TSPCCACHE;                           // ã‚·ãƒ¼ã‚¯ã‚­ãƒ£ãƒƒã‚·ãƒ¥
+        Script700: TSCRIPT700DATA;                              // Script700 ãƒ‡ãƒ¼ã‚¿
+        Tempo: TTEMPO;                                          // ãƒ†ãƒ³ãƒ
+        hBackBrush: longword;                                   // èƒŒæ™¯è‰²ãƒ–ãƒ©ã‚·ã®ãƒãƒ³ãƒ‰ãƒ«
+        hTextBrush: longword;                                   // æ–‡å­—è‰²ãƒ–ãƒ©ã‚·ã®ãƒãƒ³ãƒ‰ãƒ«
+        hMenuBrush: longword;                                   // ãƒ¡ãƒ‹ãƒ¥ãƒ¼èƒŒæ™¯è‰²ãƒ–ãƒ©ã‚·ã®ãƒãƒ³ãƒ‰ãƒ«
 {$IFDEF CONTEXT}
-        dwContextSize: longword;                                // SNESAPU ƒRƒ“ƒeƒLƒXƒgƒTƒCƒY
-        lpContext: pointer;                                     // SNESAPU ƒRƒ“ƒeƒLƒXƒgƒf[ƒ^‚Ìƒ|ƒCƒ“ƒ^
+        dwContextSize: longword;                                // SNESAPU ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚µã‚¤ã‚º
+        lpContext: pointer;                                     // SNESAPU ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆãƒ‡ãƒ¼ã‚¿ã®ãƒã‚¤ãƒ³ã‚¿
 {$ENDIF}
 {$IFDEF ITASKBARLIST3}
-        ITaskbarList3: TITASKBARLIST3;                          // ITaskbarList3 ƒCƒ“ƒ^[ƒtƒFƒCƒX
+        ITaskbarList3: TITASKBARLIST3;                          // ITaskbarList3 ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹
 {$ENDIF}
     end;
-    Option: record                                          // ƒIƒvƒVƒ‡ƒ“
-        dwAmp: longword;                                        // ‰¹—Ê
-        dwBit: longint;                                         // ƒrƒbƒg
-        dwBmpFont: longword;                                    // ”’lƒtƒHƒ“ƒg
-        bBPM: longbool;                                         // ƒeƒ“ƒ|‰ğÍ
-        dwBufferNum: longword;                                  // ƒoƒbƒtƒ@”
-        dwBufferTime: longword;                                 // ƒoƒbƒtƒ@ŠÔ
-        dwCacheDiff: longword;                                  // ƒV[ƒNƒLƒƒƒbƒVƒ…“K—p·•ª
-        dwCacheInt: longword;                                   // ƒV[ƒNƒLƒƒƒbƒVƒ…•Û‘¶ŠÔŠu
-        dwCacheKOn: longword;                                   // ƒV[ƒNƒLƒƒƒbƒVƒ… KON è‡’l
-        dwCacheNum: longword;                                   // ƒV[ƒNƒLƒƒƒbƒVƒ…”
-        dwChannel: longword;                                    // ƒ`ƒƒƒ“ƒlƒ‹
-        dwDeviceID: longint;                                    // ƒfƒoƒCƒX ID
-        sDeviceName: string;                                    // ƒfƒoƒCƒX–¼
-        dwDrawInfo: longword;                                   // î•ñ•`‰æƒtƒ‰ƒO
-        bEarSafe: longbool;                                     // ƒCƒ„[ƒZ[ƒt
-        dwFadeTime: longword;                                   // ƒfƒtƒHƒ‹ƒgƒtƒF[ƒhƒAƒEƒgŠÔ
-        dwFeedback: longword;                                   // ƒtƒB[ƒhƒoƒbƒN”½“]“x
-        sFontName: string;                                      // ƒtƒHƒ“ƒg–¼
-        dwHideTime: longword;                                   // ƒfƒtƒHƒ‹ƒgƒŠƒZƒbƒgŠÔ
-        dwInfo: longword;                                       // î•ñ•\¦
-        dwInter: longword;                                      // •âŠÔˆ—
-        dwLanguage: longword;                                   // Œ¾Œê
-        dwListHeight: longword;                                 // ƒvƒŒƒCƒŠƒXƒg‚Ì‚‚³
-        dwListMax: longint;                                     // ƒvƒŒƒCƒŠƒXƒg“o˜^Å‘åŒ”
-        dwMute: longword;                                       // ƒ`ƒƒƒ“ƒlƒ‹ƒ}ƒXƒN
-        dwNextTime: longword;                                   // ƒfƒtƒHƒ‹ƒgØ‚è‘Ö‚¦ŠÔ
-        dwNoise: longword;                                      // ƒ`ƒƒƒ“ƒlƒ‹ƒmƒCƒY
-        dwNoSleep: longword;                                    // ƒXƒŠ[ƒv‰ğœ
-        dwOption: longword;                                     // Šg’£İ’è
-        dwPitch: longword;                                      // ƒsƒbƒ`
-        bPitchAsync: longbool;                                  // ƒsƒbƒ`F‰‰‘t‘¬“x‚Æ“¯Šú
-        dwPlayTime: longword;                                   // ƒfƒtƒHƒ‹ƒg‰‰‘tŠÔ
-        dwPlayMax: longint;                                     // Å‘å‰‰‘tŠÔ
-        dwPlayOrder: longword;                                  // ‰‰‘t‡˜
-        dwPriority: longword;                                   // Šî–{—Dæ“x
-        dwRate: longword;                                       // ƒTƒ“ƒvƒŠƒ“ƒOƒŒ[ƒg
-        dwScale: longint;                                       // •\¦”{—¦
-        dwSeekBar: longword;                                    // ƒGƒ“ƒhƒŒƒXƒV[ƒNƒo[ŠÔ
-        bSeekFast: longbool;                                    // ‚‘¬ƒV[ƒN
-        dwSeekMax: longword;                                    // ƒV[ƒN‰Â”\ŠÔ
-        bSeekAsync: longbool;                                   // ƒV[ƒNŠÔF‰‰‘t‘¬“x‚Æ“¯Šú
-        dwSeekTime: longword;                                   // ƒV[ƒNŠÔ
-        dwSeparate: longword;                                   // ¶‰EŠgU“x
-        dwShiftKey: longword;                                   // ƒVƒtƒgƒL[“®ì
-        dwSpeedBas: longword;                                   // ‰‰‘t‘¬“x
-        dwSpeedTun: longint;                                    // ‰‰‘t‘¬“x”÷’²®
-        dwTheme: longword;                                      // ƒe[ƒ}
-        bTopMost: longbool;                                     // í‚Éè‘O‚É•\¦
-        dwTimerOptionDisplay: longword;                         // ƒIƒvƒVƒ‡ƒ“î•ñ•\¦‚ÌŠÔ
-        dwTimerOptionLock: longword;                            // ƒIƒvƒVƒ‡ƒ“•ÏXƒƒbƒN‚ÌŠÔ
-        dwTimerRedrawResume: longword;                          // ƒTƒXƒyƒ“ƒh•œ‹AŒã‚ÌƒEƒBƒ“ƒhƒEÄ•`‰æ‚ÌŠÔ
-        dwVolumeColor: longword;                                // ƒCƒ“ƒWƒP[ƒ^‚ÌF
-        bVolumeReset: longbool;                                 // –³‰¹ƒ`ƒƒƒ“ƒlƒ‹”ñ•\¦
-        dwVolumeSpeed: longword;                                // ƒCƒ“ƒWƒP[ƒ^‚ÌŒ¸Š‘¬“x
-        dwWaitTime: longword;                                   // ƒfƒtƒHƒ‹ƒgƒEƒFƒCƒgŠÔ
-        dwWaveBlank: longint;                                   // WAVE ‚ÌÅ‰‚Ì‹ó”’ŠÔ
-        dwWaveFormat: longword;                                 // WAVE ƒtƒH[ƒ}ƒbƒg
+    Option: record                                          // ã‚ªãƒ—ã‚·ãƒ§ãƒ³
+        dwAmp: longword;                                        // éŸ³é‡
+        dwBit: longint;                                         // ãƒ“ãƒƒãƒˆ
+        dwBmpFont: longword;                                    // æ•°å€¤ãƒ•ã‚©ãƒ³ãƒˆ
+        bBPM: longbool;                                         // ãƒ†ãƒ³ãƒè§£æ
+        dwBufferNum: longword;                                  // ãƒãƒƒãƒ•ã‚¡æ•°
+        dwBufferTime: longword;                                 // ãƒãƒƒãƒ•ã‚¡æ™‚é–“
+        dwCacheDiff: longword;                                  // ã‚·ãƒ¼ã‚¯ã‚­ãƒ£ãƒƒã‚·ãƒ¥é©ç”¨å·®åˆ†
+        dwCacheInt: longword;                                   // ã‚·ãƒ¼ã‚¯ã‚­ãƒ£ãƒƒã‚·ãƒ¥ä¿å­˜é–“éš”
+        dwCacheKOn: longword;                                   // ã‚·ãƒ¼ã‚¯ã‚­ãƒ£ãƒƒã‚·ãƒ¥ KON é–¾å€¤
+        dwCacheNum: longword;                                   // ã‚·ãƒ¼ã‚¯ã‚­ãƒ£ãƒƒã‚·ãƒ¥æ•°
+        dwChannel: longword;                                    // ãƒãƒ£ãƒ³ãƒãƒ«
+        dwDeviceID: longint;                                    // ãƒ‡ãƒã‚¤ã‚¹ ID
+        sDeviceName: utf8string;                                    // ãƒ‡ãƒã‚¤ã‚¹å
+        dwDrawInfo: longword;                                   // æƒ…å ±æç”»ãƒ•ãƒ©ã‚°
+        bEarSafe: longbool;                                     // ã‚¤ãƒ¤ãƒ¼ã‚»ãƒ¼ãƒ•
+        dwFadeTime: longword;                                   // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“
+        dwFeedback: longword;                                   // ãƒ•ã‚£ãƒ¼ãƒ‰ãƒãƒƒã‚¯åè»¢åº¦
+        sFontName: utf8string;                                      // ãƒ•ã‚©ãƒ³ãƒˆå
+        dwHideTime: longword;                                   // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒªã‚»ãƒƒãƒˆæ™‚é–“
+        dwInfo: longword;                                       // æƒ…å ±è¡¨ç¤º
+        dwInter: longword;                                      // è£œé–“å‡¦ç†
+        dwLanguage: longword;                                   // è¨€èª
+        dwListHeight: longword;                                 // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®é«˜ã•
+        dwListMax: longint;                                     // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆç™»éŒ²æœ€å¤§ä»¶æ•°
+        dwMute: longword;                                       // ãƒãƒ£ãƒ³ãƒãƒ«ãƒã‚¹ã‚¯
+        dwNextTime: longword;                                   // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆåˆ‡ã‚Šæ›¿ãˆæ™‚é–“
+        dwNoise: longword;                                      // ãƒãƒ£ãƒ³ãƒãƒ«ãƒã‚¤ã‚º
+        dwNoSleep: longword;                                    // ã‚¹ãƒªãƒ¼ãƒ—è§£é™¤
+        dwOption: longword;                                     // æ‹¡å¼µè¨­å®š
+        dwPitch: longword;                                      // ãƒ”ãƒƒãƒ
+        bPitchAsync: longbool;                                  // ãƒ”ãƒƒãƒï¼šæ¼”å¥é€Ÿåº¦ã¨åŒæœŸ
+        dwPlayTime: longword;                                   // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆæ¼”å¥æ™‚é–“
+        dwPlayMax: longint;                                     // æœ€å¤§æ¼”å¥æ™‚é–“
+        dwPlayOrder: longword;                                  // æ¼”å¥é †åº
+        dwPriority: longword;                                   // åŸºæœ¬å„ªå…ˆåº¦
+        dwRate: longword;                                       // ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ¬ãƒ¼ãƒˆ
+        dwScale: longint;                                       // è¡¨ç¤ºå€ç‡
+        dwSeekBar: longword;                                    // ã‚¨ãƒ³ãƒ‰ãƒ¬ã‚¹æ™‚ã‚·ãƒ¼ã‚¯ãƒãƒ¼æ™‚é–“
+        bSeekFast: longbool;                                    // é«˜é€Ÿã‚·ãƒ¼ã‚¯
+        dwSeekMax: longword;                                    // ã‚·ãƒ¼ã‚¯å¯èƒ½æ™‚é–“
+        bSeekAsync: longbool;                                   // ã‚·ãƒ¼ã‚¯æ™‚é–“ï¼šæ¼”å¥é€Ÿåº¦ã¨åŒæœŸ
+        dwSeekTime: longword;                                   // ã‚·ãƒ¼ã‚¯æ™‚é–“
+        dwSeparate: longword;                                   // å·¦å³æ‹¡æ•£åº¦
+        dwShiftKey: longword;                                   // ã‚·ãƒ•ãƒˆã‚­ãƒ¼å‹•ä½œ
+        dwSpeedBas: longword;                                   // æ¼”å¥é€Ÿåº¦
+        dwSpeedTun: longint;                                    // æ¼”å¥é€Ÿåº¦å¾®èª¿æ•´
+        dwTheme: longword;                                      // ãƒ†ãƒ¼ãƒ
+        bTopMost: longbool;                                     // å¸¸ã«æ‰‹å‰ã«è¡¨ç¤º
+        dwTimerOptionDisplay: longword;                         // ã‚ªãƒ—ã‚·ãƒ§ãƒ³æƒ…å ±è¡¨ç¤ºã®æ™‚é–“
+        dwTimerOptionLock: longword;                            // ã‚ªãƒ—ã‚·ãƒ§ãƒ³å¤‰æ›´ãƒ­ãƒƒã‚¯ã®æ™‚é–“
+        dwTimerRedrawResume: longword;                          // ã‚µã‚¹ãƒšãƒ³ãƒ‰å¾©å¸°å¾Œã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†æç”»ã®æ™‚é–“
+        dwVolumeColor: longword;                                // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã®è‰²
+        bVolumeReset: longbool;                                 // ç„¡éŸ³ãƒãƒ£ãƒ³ãƒãƒ«éè¡¨ç¤º
+        dwVolumeSpeed: longword;                                // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã®æ¸›è¡°é€Ÿåº¦
+        dwWaitTime: longword;                                   // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚¦ã‚§ã‚¤ãƒˆæ™‚é–“
+        dwWaveBlank: longint;                                   // WAVE ã®æœ€åˆã®ç©ºç™½æ™‚é–“
+        dwWaveFormat: longword;                                 // WAVE ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
     end;
-    CriticalSectionThread: TCRITICALSECTION;                // ƒXƒŒƒbƒh‚ÌƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“
-    CriticalSectionStatic: TCRITICALSECTION;                // î•ñ•\¦ƒEƒBƒ“ƒhƒE‚ÌƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“
+    CriticalSectionThread: TCRITICALSECTION;                // ã‚¹ãƒ¬ãƒƒãƒ‰ã®ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³
+    CriticalSectionStatic: TCRITICALSECTION;                // æƒ…å ±è¡¨ç¤ºã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³
     KSDATAFORMAT_SUBTYPE_IEEE_FLOAT: TGUID;                 // KSDATAFORMAT_SUBTYPE_IEEE_FLOAT
     KSDATAFORMAT_SUBTYPE_PCM: TGUID;                        // KSDATAFORMAT_SUBTYPE_PCM
     IID_IDropSource: TGUID;                                 // IID_IDropSource
@@ -3761,58 +3795,62 @@ var
     CLSID_TaskbarList: TGUID;                               // CLSID_TaskbarList
     IID_ITaskbarList3: TGUID;                               // IID_ITaskbarList3
 {$ENDIF}
+    StrToPtrBuffer: record                                  // StrToPtr ãƒ¡ãƒ¢ãƒª
+        wsBuffer: array[0..31] of widestring;                   // æ–‡å­—åˆ—ãƒã‚¤ãƒ³ã‚¿
+        dwCurrent: longword;                                    // ç¾åœ¨ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
+    end;
 
 
 // *************************************************************************************************************************************************************
-// Win32 API ‚ÌéŒ¾
+// Win32 API ã®å®£è¨€
 // *************************************************************************************************************************************************************
 
-function  API_AppendMenu(hMenu: longword; uFlags: longword; uIDNewItem: longword; lpNewItem: pointer): longbool; stdcall; external 'user32.dll' name 'AppendMenuA';
+function  API_AppendMenu(hMenu: longword; uFlags: longword; uIDNewItem: longword; lpNewItem: pointer): longbool; stdcall; external 'user32.dll' name 'AppendMenuW';
 function  API_BitBlt(hdcDest: longword; nXDest: longint; nYDest: longint; nWidthDest: longint; nHeightDest: longint; hdcSrc: longword; nXSrc: longint; nYSrc: longint; dwRop: longword): longbool; stdcall; external 'gdi32.dll' name 'BitBlt';
-function  API_CallWindowProc(lpPrevWndFunc: pointer; hWnd: longword; msg: longword; wParam: longword; lParam: longword): longword; stdcall; external 'user32.dll' name 'CallWindowProcA';
+function  API_CallWindowProc(lpPrevWndFunc: pointer; hWnd: longword; msg: longword; wParam: longword; lParam: longword): longword; stdcall; external 'user32.dll' name 'CallWindowProcW';
 function  API_CheckMenuItem(hMenu: longword; uID: longword; uCheck: longword): longword; stdcall; external 'user32.dll' name 'CheckMenuItem';
 function  API_CloseHandle(hObject: longword): longbool; stdcall; external 'kernel32.dll' name 'CloseHandle';
 function  API_CreateBitmap(nWidth: longint; nHeight: longint; nPlanes: longint; nBitCount: longint; lpBits: pointer): longword; stdcall; external 'gdi32.dll' name 'CreateBitmap';
 function  API_CreateCompatibleBitmap(hDC: longword; nWidth: longint; nHeight: longint): longword; stdcall; external 'gdi32.dll' name 'CreateCompatibleBitmap';
 function  API_CreateCompatibleDC(hDC: longword): longword; stdcall; external 'gdi32.dll' name 'CreateCompatibleDC';
-function  API_CreateFile(lpFileName: pointer; dwDesiredAccess: longword; dwShareMode: longword; lpSecurityAttributes: pointer; dwCreationDisposition: longword; dwFlagsAndAttributes: longword; hTemplateFile: longword): longword; stdcall; external 'kernel32.dll' name 'CreateFileA';
-function  API_CreateFont(nHeight: longint; nWidth: longint; nEscapement: longint; nOrientation: longint; fnWeight: longint; fdwItalic: longword; fdwUnderline: longword; fdwStrikeOut: longword; fdwCharSet: longword; fdwOutputPrecision: longword; fdwClipPrecision: longword; fdwQuality: longword; fdwPitchAndFamily: longword; lpszFace: pointer): longword; stdcall; external 'gdi32.dll' name 'CreateFontA';
+function  API_CreateFile(lpFileName: pointer; dwDesiredAccess: longword; dwShareMode: longword; lpSecurityAttributes: pointer; dwCreationDisposition: longword; dwFlagsAndAttributes: longword; hTemplateFile: longword): longword; stdcall; external 'kernel32.dll' name 'CreateFileW';
+function  API_CreateFont(nHeight: longint; nWidth: longint; nEscapement: longint; nOrientation: longint; fnWeight: longint; fdwItalic: longword; fdwUnderline: longword; fdwStrikeOut: longword; fdwCharSet: longword; fdwOutputPrecision: longword; fdwClipPrecision: longword; fdwQuality: longword; fdwPitchAndFamily: longword; lpszFace: pointer): longword; stdcall; external 'gdi32.dll' name 'CreateFontW';
 function  API_CreateMenu(): longword; stdcall; external 'user32.dll' name 'CreateMenu';
 function  API_CreatePopupMenu(): longword; stdcall; external 'user32.dll' name 'CreatePopupMenu';
 function  API_CreateSolidBrush(color: longword): longword; stdcall; external 'gdi32.dll' name 'CreateSolidBrush';
 function  API_CreateThread(lpThreadAttributes: pointer; dwStackSize: longword; lpStartAddress: pointer; lpParameter: pointer; dwCreationFlags: longword; lpThreadId: pointer): longword; stdcall; external 'kernel32.dll' name 'CreateThread';
-function  API_CreateWindowEx(dwExStyle: longword; lpClassName: pointer; lpWindowName: pointer; dwStyle: longword; x: longint; y: longint; nWidth: longint; nHeight: longint; hWndParent: longword; hMenu: longword; hThisInstance: longword; lpParam: pointer): longword; stdcall; external 'user32.dll' name 'CreateWindowExA';
-function  API_DefWindowProc(hWnd: longword; msg: longword; wParam: longword; lParam: longword): longword; stdcall; external 'user32.dll' name 'DefWindowProcA';
+function  API_CreateWindowEx(dwExStyle: longword; lpClassName: pointer; lpWindowName: pointer; dwStyle: longword; x: longint; y: longint; nWidth: longint; nHeight: longint; hWndParent: longword; hMenu: longword; hThisInstance: longword; lpParam: pointer): longword; stdcall; external 'user32.dll' name 'CreateWindowExW';
+function  API_DefWindowProc(hWnd: longword; msg: longword; wParam: longword; lParam: longword): longword; stdcall; external 'user32.dll' name 'DefWindowProcW';
 procedure API_DeleteCriticalSection(lpCriticalSection: pointer); stdcall; external 'kernel32.dll' name 'DeleteCriticalSection';
 function  API_DeleteDC(hDC: longword): longbool; stdcall; external 'gdi32.dll' name 'DeleteDC';
 function  API_DeleteMenu(hMenu: longword; uPosition: longword; uFlags: longword): longbool; stdcall; external 'user32.dll' name 'DeleteMenu';
 function  API_DeleteObject(hObject: longword): longbool; stdcall; external 'gdi32.dll' name 'DeleteObject';
 function  API_DestroyMenu(hMenu: longword): longbool; stdcall; external 'user32.dll' name 'DestroyMenu';
 function  API_DestroyWindow(hWnd: longword): longbool; stdcall; external 'user32.dll' name 'DestroyWindow';
-function  API_DispatchMessage(lpMsg: pointer): longword; stdcall; external 'user32.dll' name 'DispatchMessageA';
+function  API_DispatchMessage(lpMsg: pointer): longword; stdcall; external 'user32.dll' name 'DispatchMessageW';
 function  API_DoDragDrop(pDataObject: pointer; pDropSource: pointer; dwOKEffects: longword; pdwEffect: pointer): longword; stdcall; external 'ole32.dll' name 'DoDragDrop';
 procedure API_DragFinish(hDrop: longword); stdcall; external 'shell32.dll' name 'DragFinish';
-function  API_DragQueryFile(hDrop: longword; iFile: longword; lpszFile: pointer; cch: longword): longword; stdcall; external 'shell32.dll' name 'DragQueryFileA';
+function  API_DragQueryFile(hDrop: longword; iFile: longword; lpszFile: pointer; cch: longword): longword; stdcall; external 'shell32.dll' name 'DragQueryFileW';
 function  API_DragQueryPoint(hDrop: longword; ppt: pointer): longword; stdcall; external 'shell32.dll' name 'DragQueryPoint';
 function  API_DrawMenuBar(hWnd: longword): longbool; stdcall; external 'user32.dll' name 'DrawMenuBar';
-function  API_DrawText(hDC: longword; lpchText: pointer; cchText: longint; lprc: pointer; format: longword): longint; stdcall; external 'user32.dll' name 'DrawTextA';
+function  API_DrawText(hDC: longword; lpchText: pointer; cchText: longint; lprc: pointer; format: longword): longint; stdcall; external 'user32.dll' name 'DrawTextW';
 function  API_EnableMenuItem(hMenu: longword; uID: longword; uEnable: longword): longbool; stdcall; external 'user32.dll' name 'EnableMenuItem';
 function  API_EnableWindow(hWnd: longword; bEnable: longbool): longbool; stdcall; external 'user32.dll' name 'EnableWindow';
 procedure API_EnterCriticalSection(lpCriticalSection: pointer); stdcall; external 'kernel32.dll' name 'EnterCriticalSection';
 procedure API_FillMemory(Destination: pointer; Length: longword; Fill: byte); stdcall; external 'kernel32.dll' name 'RtlFillMemory';
 function  API_FillRect(hDC: longword; lprc: pointer; hbr: longword): longint; stdcall; external 'user32.dll' name 'FillRect';
 function  API_FindClose(hFindFile: longword): longbool; stdcall; external 'kernel32.dll' name 'FindClose';
-function  API_FindFirstFile(lpFileName: pointer; lpFindFileData: pointer): longword; stdcall; external 'kernel32.dll' name 'FindFirstFileA';
-function  API_FindNextFile(hFindFile: longword; lpFindFileData: pointer): longbool; stdcall; external 'kernel32.dll' name 'FindNextFileA';
-function  API_FindWindowEx(hwndParent: longword; hwndChildAfter: longword; lpClassName: pointer; lpWindowName: pointer): longword; stdcall; external 'user32.dll' name 'FindWindowExA';
+function  API_FindFirstFile(lpFileName: pointer; lpFindFileData: pointer): longword; stdcall; external 'kernel32.dll' name 'FindFirstFileW';
+function  API_FindNextFile(hFindFile: longword; lpFindFileData: pointer): longbool; stdcall; external 'kernel32.dll' name 'FindNextFileW';
+function  API_FindWindowEx(hwndParent: longword; hwndChildAfter: longword; lpClassName: pointer; lpWindowName: pointer): longword; stdcall; external 'user32.dll' name 'FindWindowExW';
 function  API_FreeLibrary(hModule: longword): longbool; stdcall; external 'kernel32.dll' name 'FreeLibrary';
 function  API_GetClientRect(hWnd: longword; lpRect: pointer): longbool; stdcall; external 'user32.dll' name 'GetClientRect';
-function  API_GetCommandLine(): pointer; stdcall; external 'kernel32.dll' name 'GetCommandLineA';
+function  API_GetCommandLine(): pointer; stdcall; external 'kernel32.dll' name 'GetCommandLineW';
 function  API_GetCurrentProcess(): longword; stdcall; external 'kernel32.dll' name 'GetCurrentProcess';
 function  API_GetDC(hWnd: longword): longword; stdcall; external 'user32.dll' name 'GetDC';
-function  API_GetFileAttributes(lpFileName: pointer): longword; stdcall; external 'kernel32.dll' name 'GetFileAttributesA';
+function  API_GetFileAttributes(lpFileName: pointer): longword; stdcall; external 'kernel32.dll' name 'GetFileAttributesW';
 function  API_GetFileSize(hFile: longword; pFileSizeHigh: pointer): longword; stdcall; external 'kernel32.dll' name 'GetFileSize';
-function  API_GetFileTitle(lpszFile: pointer; lpszTitle: pointer; cbBuf: word): shortint; stdcall; external 'comdlg32.dll' name 'GetFileTitleA';
+function  API_GetFileTitle(lpszFile: pointer; lpszTitle: pointer; cbBuf: word): shortint; stdcall; external 'comdlg32.dll' name 'GetFileTitleW';
 function  API_GetFocus(): longword; stdcall; external 'user32.dll' name 'GetFocus';
 function  API_GetForegroundWindow(): longword; stdcall; external 'user32.dll' name 'GetForegroundWindow';
 function  API_GetKeyboardState(lpKeyState: pointer): longbool; stdcall; external 'user32.dll' name 'GetKeyboardState';
@@ -3820,31 +3858,30 @@ function  API_GetLastError(): longword; stdcall; external 'kernel32.dll' name 'G
 function  API_GetMenuBarInfo(hWnd: longword; idObject: longword; idItem: longword; pmbi: pointer): longbool; stdcall; external 'user32.dll' name 'GetMenuBarInfo';
 function  API_GetMenuItemInfo(hMenu: longword; item: longword; fByPosition: longbool; lpmii: pointer): longbool; stdcall; external 'user32.dll' name 'GetMenuItemInfoW';
 function  API_GetMenuState(hMenu: longword; uID: longword; uFlags: longword): longword; stdcall; external 'user32.dll' name 'GetMenuState';
-function  API_GetMessage(lpMsg: pointer; hWnd: longword; wMessageFilterMin: longword; wMessageFilterMax: longword): longbool; stdcall; external 'user32.dll' name 'GetMessageA';
-function  API_GetModuleFileName(hModule: longword; lpFileName: pointer; nSize: longword): longword; stdcall; external 'kernel32.dll' name 'GetModuleFileNameA';
+function  API_GetMessage(lpMsg: pointer; hWnd: longword; wMessageFilterMin: longword; wMessageFilterMax: longword): longbool; stdcall; external 'user32.dll' name 'GetMessageW';
+function  API_GetModuleFileName(hModule: longword; lpFileName: pointer; nSize: longword): longword; stdcall; external 'kernel32.dll' name 'GetModuleFileNameW';
 function  API_GetMonitorInfo(hMonitor: longword; lpmi: pointer): longbool; stdcall; external 'user32.dll' name 'GetMonitorInfoA';
 function  API_GetNextDlgTabItem(hDlg: longword; hCtl: longword; bPrevious: longbool): longword; stdcall; external 'user32.dll' name 'GetNextDlgTabItem';
-function  API_GetOpenFileName(lpofn: pointer): longbool; stdcall; external 'comdlg32.dll' name 'GetOpenFileNameA';
+function  API_GetOpenFileName(lpofn: pointer): longbool; stdcall; external 'comdlg32.dll' name 'GetOpenFileNameW';
 function  API_GetPixel(hDC: longword; x: longint; y: longint): longword; stdcall; external 'gdi32.dll' name 'GetPixel';
 function  API_GetPriorityClass(hProcess: longword): longword; stdcall; external 'kernel32.dll' name 'GetPriorityClass';
 function  API_GetProcAddress(hModule: longword; lpProcName: pointer): pointer; stdcall; external 'kernel32.dll' name 'GetProcAddress';
-function  API_GetSaveFileName(lpofn: pointer): longbool; stdcall; external 'comdlg32.dll' name 'GetSaveFileNameA';
+function  API_GetSaveFileName(lpofn: pointer): longbool; stdcall; external 'comdlg32.dll' name 'GetSaveFileNameW';
 function  API_GetUserDefaultLCID(): longword; stdcall; external 'kernel32.dll' name 'GetUserDefaultLCID';
 function  API_GetSysColor(nIndex: longint): longword; stdcall; external 'user32.dll' name 'GetSysColor';
 function  API_GetSysColorBrush(nIndex: longint): longword; stdcall; external 'user32.dll' name 'GetSysColorBrush';
 function  API_GetSystemMenu(hWnd: longword; bRevert: longbool): longword; stdcall; external 'user32.dll' name 'GetSystemMenu';
 function  API_GetSystemMetrics(nIndex: longint): longint; stdcall; external 'user32.dll' name 'GetSystemMetrics';
-function  API_GetVersionEx(lpVersionInfo: pointer): longbool; stdcall; external 'kernel32.dll' name 'GetVersionExA';
 function  API_GetWindowDC(hWnd: longword): longword; stdcall; external 'user32.dll' name 'GetWindowDC';
 function  API_GetWindowLong(hWnd: longword; nIndex: longint): longword; stdcall; external 'user32.dll' name 'GetWindowLongA';
 function  API_GetWindowPlacement(hWnd: longword; lpwndpl: pointer): longbool; stdcall; external 'user32.dll' name 'GetWindowPlacement';
 function  API_GetWindowRect(hWnd: longword; lpRect: pointer): longbool; stdcall; external 'user32.dll' name 'GetWindowRect';
-function  API_GetWindowText(hWnd: longword; lpString: pointer; nMaxCount: longint): longint; stdcall; external 'user32.dll' name 'GetWindowTextA';
+function  API_GetWindowText(hWnd: longword; lpString: pointer; nMaxCount: longint): longint; stdcall; external 'user32.dll' name 'GetWindowTextW';
 function  API_GdiFlush(): longbool; stdcall; external 'gdi32.dll' name 'GdiFlush';
 function  API_GlobalAlloc(uFlags: longword; dwBytes: longword): longword; stdcall; external 'kernel32.dll' name 'GlobalAlloc';
 function  API_GlobalFree(hMem: longword): longword; stdcall; external 'kernel32.dll' name 'GlobalFree';
 procedure API_InitializeCriticalSection(lpCriticalSection: pointer); stdcall; external 'kernel32.dll' name 'InitializeCriticalSection';
-function  API_InsertMenu(hMenu: longword; uPosition: longword; uFlags: longword; uIDNewItem: longword; lpNewItem: pointer): longbool; stdcall; external 'user32.dll' name 'InsertMenuA';
+function  API_InsertMenu(hMenu: longword; uPosition: longword; uFlags: longword; uIDNewItem: longword; lpNewItem: pointer): longbool; stdcall; external 'user32.dll' name 'InsertMenuW';
 function  API_InterlockedDecrement(lpAddend: pointer): longword; stdcall; external 'kernel32.dll' name 'InterlockedDecrement';
 function  API_InterlockedIncrement(lpAddend: pointer): longword; stdcall; external 'kernel32.dll' name 'InterlockedIncrement';
 function  API_InvalidateRect(hWnd: longword; lpRect: pointer; bErase: longbool): longbool; stdcall; external 'user32.dll' name 'InvalidateRect';
@@ -3854,10 +3891,9 @@ procedure API_LeaveCriticalSection(lpCriticalSection: pointer); stdcall; externa
 function  API_LoadBitmap(hThisInstance: longword; lpBitmapName: pointer): longword; stdcall; external 'user32.dll' name 'LoadBitmapA';
 function  API_LoadCursor(hThisInstance: longword; lpCursorName: pointer): longword; stdcall; external 'user32.dll' name 'LoadCursorA';
 function  API_LoadIcon(hThisInstance: longword; lpIconName: pointer): longword; stdcall; external 'user32.dll' name 'LoadIconA';
-function  API_LoadLibraryEx(lpLibFileName: pointer; hFile: longword; dwFlags: longword): longword; stdcall; external 'kernel32.dll' name 'LoadLibraryExA';
-function  API_MakeSureDirectoryPathExists(lpPath: pointer): longbool; stdcall; external 'imagehlp.dll' name 'MakeSureDirectoryPathExists';
-function  API_MapFileAndCheckSum(Filename: pointer; HeaderSum: pointer; CheckSum: pointer): longword; stdcall; external 'imagehlp.dll' name 'MapFileAndCheckSumA';
-function  API_MessageBox(hWnd: longword; lpText: pointer; lpCaption: pointer; uType: longword): longint; stdcall; external 'user32.dll' name 'MessageBoxA';
+function  API_LoadLibraryEx(lpLibFileName: pointer; hFile: longword; dwFlags: longword): longword; stdcall; external 'kernel32.dll' name 'LoadLibraryExW';
+function  API_MapFileAndCheckSum(Filename: pointer; HeaderSum: pointer; CheckSum: pointer): longword; stdcall; external 'imagehlp.dll' name 'MapFileAndCheckSumW';
+function  API_MessageBox(hWnd: longword; lpText: pointer; lpCaption: pointer; uType: longword): longint; stdcall; external 'user32.dll' name 'MessageBoxW';
 function  API_MonitorFromRect(lprc: pointer; dwFlags: longword): longword; stdcall; external 'user32.dll' name 'MonitorFromRect';
 procedure API_MoveMemory(Destination: pointer; Source: pointer; Length: longword); stdcall; external 'kernel32.dll' name 'RtlMoveMemory';
 function  API_MoveWindow(hWnd: longword; x: longint; y: longint; nWidth: longint; nHeight: longint; bRepaint: longbool): longbool; stdcall; external 'user32.dll' name 'MoveWindow';
@@ -3865,16 +3901,17 @@ function  API_MultiByteToWideChar(dwCodePage: longword; dwFlags: longword; lpMul
 function  API_OleDuplicateData(hSrc: longword; cfFormat: word; uiFlags: longword): longword; stdcall; external 'ole32.dll' name 'OleDuplicateData';
 function  API_OleInitialize(pvReserved: pointer): longword; stdcall; external 'ole32.dll' name 'OleInitialize';
 procedure API_OleUninitialize(); stdcall; external 'ole32.dll' name 'OleUninitialize';
-function  API_PeekMessage(lpMsg: pointer; hWnd: longword; wMessageFilterMin: longword; wMessageFilterMax: longword; wRemoveMsg: longword): longbool; stdcall; external 'user32.dll' name 'PeekMessageA';
-function  API_PostMessage(hWnd: longword; msg: longword; wParam: longword; lParam: longword): longbool; stdcall; external 'user32.dll' name 'PostMessageA';
-function  API_PostThreadMessage(idThread: longword; msg: longword; wParam: longword; lParam: longword): longbool; stdcall; external 'user32.dll' name 'PostThreadMessageA';
+function  API_PeekMessage(lpMsg: pointer; hWnd: longword; wMessageFilterMin: longword; wMessageFilterMax: longword; wRemoveMsg: longword): longbool; stdcall; external 'user32.dll' name 'PeekMessageW';
+function  API_PostMessage(hWnd: longword; msg: longword; wParam: longword; lParam: longword): longbool; stdcall; external 'user32.dll' name 'PostMessageW';
+function  API_PostThreadMessage(idThread: longword; msg: longword; wParam: longword; lParam: longword): longbool; stdcall; external 'user32.dll' name 'PostThreadMessageW';
 function  API_ReadFile(hFile: longword; lpBuffer: pointer; nNumberOfBytesToRead: longword; lpNumberOfBytesRead: pointer; lpOverlapped: pointer): longbool; stdcall; external 'kernel32.dll' name 'ReadFile';
 function  API_RedrawWindow(hWnd: longword; lprcUpdate: pointer; hrgnUpdate: longword; flags: longword): longint; stdcall; external 'user32.dll' name 'RedrawWindow';
-function  API_RegisterClassEx(lpwcx: pointer): smallint; stdcall; external 'user32.dll' name 'RegisterClassExA';
+function  API_RegisterClassEx(lpwcx: pointer): smallint; stdcall; external 'user32.dll' name 'RegisterClassExW';
 function  API_ReleaseDC(hWnd: longword; hDC: longword): longint; stdcall; external 'user32.dll' name 'ReleaseDC';
 procedure API_ReleaseStgMedium(lpStgMedium: pointer); stdcall; external 'ole32.dll' name 'ReleaseStgMedium';
+function  API_RtlGetVersion(lpVersionInfo: pointer): longbool; stdcall; external 'ntdll.dll' name 'RtlGetVersion';
 function  API_SelectObject(hDC: longword; hGdiObj: longword): longword; stdcall; external 'gdi32.dll' name 'SelectObject';
-function  API_SendMessage(hWnd: longword; msg: longword; wParam: longword; lParam: longword): longword; stdcall; external 'user32.dll' name 'SendMessageA';
+function  API_SendMessage(hWnd: longword; msg: longword; wParam: longword; lParam: longword): longword; stdcall; external 'user32.dll' name 'SendMessageW';
 function  API_SetBkColor(hDC: longword; crColor: longword): longword; stdcall; external 'gdi32.dll' name 'SetBkColor';
 function  API_SetClassLong(hWnd: longword; nIndex: longint; dwNewLong: longword): longword; stdcall; external 'user32.dll' name 'SetClassLongA';
 function  API_SetEndOfFile(hFile: longword): longbool; stdcall; external 'kernel32.dll' name 'SetEndOfFile';
@@ -3890,15 +3927,16 @@ function  API_SetTimer(hWnd: longword; uIDEvent: longword; uElapse: longword; lp
 function  API_SetWindowLong(hWnd: longword; nIndex: longint; dwNewLong: longword): longword; stdcall; external 'user32.dll' name 'SetWindowLongA';
 function  API_SetWindowPlacement(hWnd: longword; lpwndpl: pointer): longbool; stdcall; external 'user32.dll' name 'SetWindowPlacement';
 function  API_SetWindowPos(hWnd: longword; hWndInsertAfter: longword; x: longint; y: longint; cx: longint; cy: longint; uFlags: longword): longbool; stdcall; external 'user32.dll' name 'SetWindowPos';
-function  API_SetWindowText(hWnd: longword; lpString: pointer): longbool; stdcall; external 'user32.dll' name 'SetWindowTextA';
+function  API_SetWindowText(hWnd: longword; lpString: pointer): longbool; stdcall; external 'user32.dll' name 'SetWindowTextW';
+function  API_SHCreateDirectoryEx(hWnd: longword; pszPath: pointer; psa: pointer): longbool; stdcall; external 'shell32.dll' name 'SHCreateDirectoryExW';
 procedure API_Sleep(dwMilliseconds: longword); stdcall; external 'kernel32.dll' name 'Sleep';
 function  API_StretchBlt(hdcDest: longword; nXDest: longint; nYDest: longint; nWidthDest: longint; nHeightDest: longint; hdcSrc: longword; nXSrc: longint; nYSrc: longint; nWidthSrc: longint; nHeightSrc: longint; dwRop: longword): longbool; stdcall; external 'gdi32.dll' name 'StretchBlt';
 function  API_SystemParametersInfo(uAction: longword; uParam: longword; pParam: pointer; fWinIni: longword): longbool; stdcall; external 'user32.dll' name 'SystemParametersInfoA';
 function  API_TranslateMessage(lpMsg: pointer): longbool; stdcall; external 'user32.dll' name 'TranslateMessage';
-function  API_UnregisterClass(lpClassName: pointer; hThisInstance: longword): longbool; stdcall; external 'user32.dll' name 'UnregisterClassA';
+function  API_UnregisterClass(lpClassName: pointer; hThisInstance: longword): longbool; stdcall; external 'user32.dll' name 'UnregisterClassW';
 function  API_UpdateWindow(hWnd: longword): longbool; stdcall; external 'user32.dll' name 'UpdateWindow';
 function  API_waveOutClose(hwo: longword): longword; stdcall; external 'winmm.dll' name 'waveOutClose';
-function  API_waveOutGetDevCaps(uDeviceID: longword; pwoc: pointer; cbwoc: longword): longword; stdcall; external 'winmm.dll' name 'waveOutGetDevCapsA';
+function  API_waveOutGetDevCaps(uDeviceID: longword; pwoc: pointer; cbwoc: longword): longword; stdcall; external 'winmm.dll' name 'waveOutGetDevCapsW';
 function  API_waveOutGetNumDevs(): longword; stdcall; external 'winmm.dll' name 'waveOutGetNumDevs';
 function  API_waveOutOpen(phwo: pointer; uDeviceID: longword; pwfx: pointer; dwCallback: longword; dwCallbackInstance: longword; fdwOpen: longword): longword; stdcall; external 'winmm.dll' name 'waveOutOpen';
 function  API_waveOutPause(hwo: longword): longword stdcall; external 'winmm.dll' name 'waveOutPause';
@@ -3907,6 +3945,7 @@ function  API_waveOutReset(hwo: longword): longword; stdcall; external 'winmm.dl
 function  API_waveOutRestart(hwo: longword): longword; stdcall; external 'winmm.dll' name 'waveOutRestart';
 function  API_waveOutUnprepareHeader(hwo: longword; pwh: pointer; cbwh: longword): longword; stdcall; external 'winmm.dll' name 'waveOutUnprepareHeader';
 function  API_waveOutWrite(hwo: longword; pwh: pointer; cbwh: longword): longword; stdcall; external 'winmm.dll' name 'waveOutWrite';
+function  API_WideCharToMultiByte(dwCodePage: longword; dwFlags: longword; lpWideCharStr: pointer; cchWideChar: longint; lpMultiByteStr: pointer; cchMultiByte: longint; lpDefaultChar: pointer; lpUsedDefaultChar: pointer): longint; stdcall; external 'kernel32.dll' name 'WideCharToMultiByte';
 function  API_WriteFile(hFile: longword; lpBuffer: pointer; nNumberOfBytesToRead: longword; lpNumberOfBytesRead: pointer; lpOverlapped: pointer): longbool; stdcall; external 'kernel32.dll' name 'WriteFile';
 procedure API_ZeroMemory(Destination: pointer; Length: longword); stdcall; external 'kernel32.dll' name 'RtlZeroMemory';
 {$IFDEF ITASKBARLIST3}
@@ -3920,11 +3959,11 @@ function  API_timeGetTime(): longword; stdcall; external 'winmm.dll' name 'timeG
 
 
 // *************************************************************************************************************************************************************
-// ŠO•”Šg’£ƒR[ƒh
+// å¤–éƒ¨æ‹¡å¼µã‚³ãƒ¼ãƒ‰
 // *************************************************************************************************************************************************************
 
 // ================================================================================
-// API_TransparentBlt - TransparentBlt ‚Ì 32bit ƒJƒ‰[‘Î‰”Å
+// API_TransparentBlt - TransparentBlt ã® 32bit ã‚«ãƒ©ãƒ¼å¯¾å¿œç‰ˆ
 // ================================================================================
 procedure API_TransparentBlt(hdcDest: longword; nXDest: longint; nYDest: longint; nWidthDest: longint; nHeightDest: longint; hdcSrc: longword; nXSrc: longint;
     nYSrc: longint; nWidthSrc: longint; nHeightSrc: longint; crTransparent: longword);
@@ -3935,12 +3974,12 @@ var
     hBitmapMaskDest: longword;
     dwOriginalColor: longword;
 begin
-    // ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ğì¬
+    // ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’ä½œæˆ
     hDCMaskBase := API_CreateCompatibleDC(hdcDest);
     hBitmapMaskBase := API_SelectObject(hDCMaskBase, API_CreateBitmap(nWidthDest, nHeightDest, 1, 1, NULLPOINTER));
     hDCMaskDest := API_CreateCompatibleDC(hdcDest);
     hBitmapMaskDest := API_SelectObject(hDCMaskDest, API_CreateCompatibleBitmap(hdcDest, nWidthDest, nHeightDest));
-    // “§‰ßF•”•ª‚ğœ‚¢‚Ä‰æ‘œ‚ğƒRƒs[
+    // é€éè‰²éƒ¨åˆ†ã‚’é™¤ã„ã¦ç”»åƒã‚’ã‚³ãƒ”ãƒ¼
     API_StretchBlt(hDCMaskDest, 0, 0, nWidthDest, nHeightDest, hdcSrc, 0, 0, nWidthSrc, nHeightSrc, SRCCOPY);
     dwOriginalColor := API_SetBkColor(hDCMaskDest, crTransparent);
     API_BitBlt(hDCMaskBase, 0, 0, nWidthDest, nHeightDest, hDCMaskDest, 0, 0, SRCCOPY);
@@ -3949,43 +3988,85 @@ begin
     API_BitBlt(hDCMaskBase, 0, 0, nWidthDest, nHeightDest, hDCMaskBase, 0, 0, NOTSRCCOPY);
     API_BitBlt(hDCMaskDest, 0, 0, nWidthDest, nHeightDest, hDCMaskBase, 0, 0, SRCAND);
     API_BitBlt(hdcDest, nXDest, nYDest, nWidthDest, nHeightDest, hDCMaskDest, 0, 0, SRCPAINT);
-    // ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ğíœ
+    // ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’å‰Šé™¤
     API_DeleteObject(API_SelectObject(hDCMaskBase, hBitmapMaskBase));
     API_DeleteDC(hDCMaskBase);
     API_DeleteObject(API_SelectObject(hDCMaskDest, hBitmapMaskDest));
     API_DeleteDC(hDCMaskDest);
-    // GDI •`‰æ‚ğƒtƒ‰ƒbƒVƒ…
+    // GDI æç”»ã‚’ãƒ•ãƒ©ãƒƒã‚·ãƒ¥
     API_GdiFlush();
 end;
 
 // ================================================================================
-// Exists - ƒtƒHƒ‹ƒ_Eƒtƒ@ƒCƒ‹‘¶İƒ`ƒFƒbƒN
+// StrToPtr - æ–‡å­—åˆ—ã‚’ãƒã‚¤ãƒ³ã‚¿ã«å¤‰æ›
 // ================================================================================
-function Exists(lpPath: pointer; dwFileMode: longword): longbool;
+function StrToPtr(const S: utf8string): pointer;
+var
+    dwCurrent: longint;
+    dwLast: longint;
+begin
+    dwCurrent := StrToPtrBuffer.dwCurrent;
+    dwLast := Length(StrToPtrBuffer.wsBuffer) - 1;
+    StrToPtrBuffer.wsBuffer[dwCurrent] := widestring(S);
+    result := pwidechar(StrToPtrBuffer.wsBuffer[dwCurrent]);
+    if dwCurrent >= dwLast then dwCurrent := 0 else Inc(dwCurrent);
+    StrToPtrBuffer.dwCurrent := dwCurrent;
+end;
+
+// ================================================================================
+// Exists - ãƒ•ã‚©ãƒ«ãƒ€ãƒ»ãƒ•ã‚¡ã‚¤ãƒ«å­˜åœ¨ãƒã‚§ãƒƒã‚¯
+// ================================================================================
+function Exists(const sPath: utf8string; dwFileMode: longword): longbool;
 var
     dwResult: longword;
 begin
     result := false;
-    dwResult := API_GetFileAttributes(lpPath);
+    dwResult := API_GetFileAttributes(StrToPtr(sPath));
     if dwResult = INVALID_HANDLE_VALUE then exit;
     result := longbool((dwResult xor dwFileMode) and FILE_ATTRIBUTE_DIRECTORY);
 end;
 
 // ================================================================================
-// GetSize - •¶š—ñƒoƒbƒtƒ@‚Ìg—pƒoƒCƒg”æ“¾
+// GetAnsiSize - Ansi æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡ã®ä½¿ç”¨ãƒã‚¤ãƒˆæ•°å–å¾—
 // ================================================================================
-function GetSize(lpBuffer: pointer; dwMax: longword): longword;
+function GetAnsiSize(P: pointer; Max: longword): longword;
 var
-    dwOffset: longword;
+    O: longword;
 begin
-    // ‰Šú‰»
     result := 0;
-    dwOffset := longword(lpBuffer);
-    while bytebool(pointer(dwOffset + result)^) and (result < dwMax) do Inc(result);
+    O := longword(P);
+    while bytebool(pointer(O + result)^) and (result < Max) do Inc(result);
 end;
 
 // ================================================================================
-// IntToHex - ”’l‚ğ•¶š—ñ‚É•ÏŠ·
+// GetWideSize - Wide æ–‡å­—åˆ—ãƒãƒƒãƒ•ã‚¡ã®ä½¿ç”¨ãƒã‚¤ãƒˆæ•°å–å¾—
+// ================================================================================
+function GetWideSize(P: pointer; Max: longword): longword;
+var
+    O: longword;
+begin
+    result := 0;
+    O := longword(P);
+    while wordbool(pointer(O + result)^) and (result < Max) do Inc(result, 2);
+end;
+
+// ================================================================================
+// CopyStrToWidePtr - æ–‡å­—åˆ—ã‚’ Wide æ–‡å­—åˆ—ã®ãƒã‚¤ãƒ³ã‚¿ã«å¤‰æ›
+// ================================================================================
+function CopyStrToWidePtr(P: pointer; Max: longword; const S: utf8string): longword;
+var
+    WS: widestring;
+    Size: longword;
+begin
+    WS := widestring(S);
+    Size := GetWideSize(pwidechar(WS), Length(WS) shl 1);
+    if Size > Max then Size := Max;
+    API_MoveMemory(P, pwidechar(WS), Size);
+    result := Size;
+end;
+
+// ================================================================================
+// IntToHex - æ•°å€¤ã‚’æ–‡å­—åˆ—ã«å¤‰æ›
 // ================================================================================
 function IntToHex(var StrData: TSTRDATA; X: longword; Len: longword): longword;
 var
@@ -4006,7 +4087,7 @@ begin
 end;
 
 // ================================================================================
-// IntToStr - ”’l‚ğ•¶š—ñ‚É•ÏŠ·
+// IntToStr - æ•°å€¤ã‚’æ–‡å­—åˆ—ã«å¤‰æ›
 // ================================================================================
 function IntToStr(var StrData: TSTRDATA; X: longword; Len: longword): longword; overload;
 var
@@ -4027,9 +4108,9 @@ begin
 end;
 
 // ================================================================================
-// IntToStr - ”’l‚ğ•¶š—ñ‚É•ÏŠ·
+// IntToStr - æ•°å€¤ã‚’æ–‡å­—åˆ—ã«å¤‰æ›
 // ================================================================================
-function IntToStr(X: longword): string; overload;
+function IntToStr(X: longword): utf8string; overload;
 var
     I: longword;
 begin
@@ -4048,9 +4129,9 @@ begin
 end;
 
 // ================================================================================
-// IntToStr - ”’l‚ğ•¶š—ñ‚É•ÏŠ·
+// IntToStr - æ•°å€¤ã‚’æ–‡å­—åˆ—ã«å¤‰æ›
 // ================================================================================
-function IntToStr(X: longint): string; overload;
+function IntToStr(X: longint): utf8string; overload;
 var
     I: longword;
 begin
@@ -4071,7 +4152,7 @@ begin
 end;
 
 // ================================================================================
-// IsEqualsGUID - GUID ”äŠr
+// IsEqualsGUID - GUID æ¯”è¼ƒ
 // ================================================================================
 function IsEqualsGUID(S: TGUID; D: TGUID): longbool;
 var
@@ -4082,9 +4163,15 @@ begin
 end;
 
 // ================================================================================
-// IsSingleByte - 1 ƒoƒCƒg•¶š”äŠr
+// IsSingleByte - 1 ãƒã‚¤ãƒˆæ–‡å­—æ¯”è¼ƒ
 // ================================================================================
-function IsSingleByte(const S: string; X: longword; const Match: char): longbool;
+{$IFDEF FREEPASCAL}
+function IsSingleByte(const S: utf8string; X: longword; const Match: char): longbool;
+begin
+    result := char(S[X]) = Match;
+end;
+{$ELSE}
+function IsSingleByte(const S: utf8string; X: longword; const Match: char): longbool;
 var
     X1: longword;
     X2: longword;
@@ -4102,19 +4189,20 @@ begin
     if not result and (X >= 3) and     (((B2 >= $81) and (B2 <= $9F)) or ((B2 >= $E0) and (B2 <= $FC)))
     and (((B1 >= $40) and (B1 <= $7E)) or ((B1 >= $80) and (B1 <= $FC))) then result := true;
 end;
+{$ENDIF}
 
 // ================================================================================
-// IsPathSeparator - ƒtƒ@ƒCƒ‹ƒpƒX‚Ì‹æØ‚è•¶š‚ğ”äŠr
+// IsPathSeparator - ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã®åŒºåˆ‡ã‚Šæ–‡å­—ã‚’æ¯”è¼ƒ
 // ================================================================================
-function IsPathSeparator(const S: string; X: longword): longbool;
+function IsPathSeparator(const S: utf8string; X: longword): longbool;
 begin
     result := IsSingleByte(S, X, '\') or IsSingleByte(S, X, '/');
 end;
 
 // ================================================================================
-// GetPosSeparator - ÅŒã‚ª‹æØ‚è•¶š‚ÌˆÊ’u‚ğæ“¾
+// GetPosSeparator - æœ€å¾ŒãŒåŒºåˆ‡ã‚Šæ–‡å­—ã®ä½ç½®ã‚’å–å¾—
 // ================================================================================
-function GetPosSeparator(const S: string): longint;
+function GetPosSeparator(const S: utf8string): longint;
 var
     I: longword;
     J: longword;
@@ -4125,7 +4213,7 @@ begin
 end;
 
 // ================================================================================
-// Log10 - Log ‚ğŒvZ
+// Log10 - Log ã‚’è¨ˆç®—
 // ================================================================================
 function Log10(X: double): double;
 begin
@@ -4133,7 +4221,7 @@ begin
 end;
 
 // ================================================================================
-// Max - A, B ‚Ì‚¤‚¿‘å‚«‚¢’l‚ğæ“¾
+// Max - A, B ã®ã†ã¡å¤§ãã„å€¤ã‚’å–å¾—
 // ================================================================================
 function Max(A: longint; B: longint): longint;
 begin
@@ -4141,7 +4229,7 @@ begin
 end;
 
 // ================================================================================
-// Min - A, B ‚Ì‚¤‚¿¬‚³‚¢’l‚ğæ“¾
+// Min - A, B ã®ã†ã¡å°ã•ã„å€¤ã‚’å–å¾—
 // ================================================================================
 function Min(A: longint; B: longint): longint;
 begin
@@ -4149,35 +4237,78 @@ begin
 end;
 
 // ================================================================================
-// ChrToStr - ƒLƒƒƒ‰ƒNƒ^‚Ì“®“I”z—ñ‚ğ•¶š—ñ‚É•ÏŠ·
+// AnsiToStr - ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ã®å‹•çš„é…åˆ—ã‚’æ–‡å­—åˆ—ã«å¤‰æ›
 // ================================================================================
-function ChrToStr(var C: array of char): string;
+function AnsiToStr(var C: array of char): utf8string;
 var
-    S: string;
+    S: ansistring;
 begin
-    // NOTE: Free Pascal ‚Ìê‡Achar Œ^‚Ì“®“I”z—ñ‚ğ string ‚ÉƒLƒƒƒXƒg‚·‚é‚½‚ß‚É‚ÍA
-    // SetString ‚ğg—p‚µ‚È‚¢‚ÆA•¶š—ñ‚ª³‚µ‚­Œ‹‡‚³‚ê‚È‚¢‚È‚Ç‚Ì•s‹ï‡‚ª”­¶‚·‚é
-    SetString(S, pchar(@C[0]), GetSize(@C[0], SizeOf(C)));
+    // NOTE: Free Pascal ã®å ´åˆã€char å‹ã®å‹•çš„é…åˆ—ã‚’ string ã«ã‚­ãƒ£ã‚¹ãƒˆã™ã‚‹ãŸã‚ã«ã¯ã€
+    // SetString ã‚’ä½¿ç”¨ã—ãªã„ã¨ã€æ–‡å­—åˆ—ãŒæ­£ã—ãçµåˆã•ã‚Œãªã„ãªã©ã®ä¸å…·åˆãŒç™ºç”Ÿã™ã‚‹
+    SetString(S, pchar(@C[0]), GetAnsiSize(@C[0], SizeOf(C)));
+    result := utf8string(S);
+end;
+
+// ================================================================================
+// ChrToStr - ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ã®å‹•çš„é…åˆ—ã‚’æ–‡å­—åˆ—ã«å¤‰æ›
+// ================================================================================
+function ChrToStr(var C: array of char): utf8string; overload;
+var
+    S: utf8string;
+begin
+    // NOTE: Free Pascal ã®å ´åˆã€char å‹ã®å‹•çš„é…åˆ—ã‚’ string ã«ã‚­ãƒ£ã‚¹ãƒˆã™ã‚‹ãŸã‚ã«ã¯ã€
+    // SetString ã‚’ä½¿ç”¨ã—ãªã„ã¨ã€æ–‡å­—åˆ—ãŒæ­£ã—ãçµåˆã•ã‚Œãªã„ãªã©ã®ä¸å…·åˆãŒç™ºç”Ÿã™ã‚‹
+    SetString(S, pchar(@C[0]), GetAnsiSize(@C[0], SizeOf(C)));
     result := S;
 end;
 
 // ================================================================================
-// PtrToStr - ƒLƒƒƒ‰ƒNƒ^”z—ñ‚Ìƒ|ƒCƒ“ƒ^‚ğ•¶š—ñ‚É•ÏŠ·
+// ChrToStr - ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ã®å‹•çš„é…åˆ—ã‚’æ–‡å­—åˆ—ã«å¤‰æ›
 // ================================================================================
-function PtrToStr(P: pointer): string;
+function ChrToStr(var C: array of widechar): utf8string; overload;
 var
-    S: string;
+    S: widestring;
 begin
-    // NOTE: Free Pascal ‚Ìê‡Aƒ|ƒCƒ“ƒ^‚©‚ç string ‚ÉƒLƒƒƒXƒg‚·‚é‚½‚ß‚É‚ÍA
-    // SetString ‚ğg—p‚µ‚È‚¢‚ÆA•¶š—ñ‚ª³‚µ‚­Œ‹‡‚³‚ê‚È‚¢‚È‚Ç‚Ì•s‹ï‡‚ª”­¶‚·‚é
-    SetString(S, pchar(P), GetSize(P, 4096));
-    result := S;
+    // NOTE: Free Pascal ã®å ´åˆã€char å‹ã®å‹•çš„é…åˆ—ã‚’ string ã«ã‚­ãƒ£ã‚¹ãƒˆã™ã‚‹ãŸã‚ã«ã¯ã€
+    // SetString ã‚’ä½¿ç”¨ã—ãªã„ã¨ã€æ–‡å­—åˆ—ãŒæ­£ã—ãçµåˆã•ã‚Œãªã„ãªã©ã®ä¸å…·åˆãŒç™ºç”Ÿã™ã‚‹
+    SetString(S, pwidechar(@C[0]), Length(C));
+    result := utf8string(S);
+    // NOTE: Free Pascal ã®å ´åˆã€æ–‡å­—åˆ—ã®é•·ã•ãŒ Length(C) ã¨åŒã˜ã«ãªã‚‹ãŸã‚ã€
+    // Ansi ã®ã‚µã‚¤ã‚ºã§è¨­å®šã—ãªãŠã™
+    SetLength(result, GetAnsiSize(pchar(result), Length(result)));
 end;
 
 // ================================================================================
-// StrToInt - •¶š—ñ‚ğ”’l‚É•ÏŠ·
+// PtrToStr - ã‚­ãƒ£ãƒ©ã‚¯ã‚¿é…åˆ—ã®ãƒã‚¤ãƒ³ã‚¿ã‚’æ–‡å­—åˆ—ã«å¤‰æ›
 // ================================================================================
-function StrToInt(const S: string; Def: longint): longint; overload;
+function PtrToStr(P: pointer): utf8string;
+var
+    Size: longword;
+    C: array of widechar;
+{$IFNDEF FREEPASCAL}
+    S: widestring;
+{$ENDIF}
+begin
+    Size := GetWideSize(P, BUFFER_SIZE_PATH);
+    SetLength(C, Size);
+    API_MoveMemory(@C[0], P, Size);
+{$IFDEF FREEPASCAL}
+    result := ChrToStr(C);
+{$ELSE}
+    // NOTE: Boland Delphi ã®å ´åˆã€char ã®å‹•çš„é…åˆ—ã‚’å¼•æ•°ã«æ¸¡ã›ãªã„ã®ã§ã€
+    // ã“ã“ã§ç›´æ¥ SetString ã‚’å‘¼ã³å‡ºã™
+    SetString(S, pwidechar(@C[0]), Length(C));
+    result := string(S);
+    // NOTE: Boland Delphi ã®å ´åˆã€æ–‡å­—åˆ—ã®é•·ã•ãŒ Length(C) ã¨åŒã˜ã«ãªã‚‹ãŸã‚ã€
+    // Ansi ã®ã‚µã‚¤ã‚ºã§è¨­å®šã—ãªãŠã™
+    SetLength(result, GetAnsiSize(pchar(result), Length(result)));
+{$ENDIF}
+end;
+
+// ================================================================================
+// StrToInt - æ–‡å­—åˆ—ã‚’æ•°å€¤ã«å¤‰æ›
+// ================================================================================
+function StrToInt(const S: utf8string; Def: longint): longint; overload;
 var
     I: longword;
     Sign: longbool;
@@ -4202,9 +4333,9 @@ begin
 end;
 
 // ================================================================================
-// StrToInt - •¶š—ñ‚ğ”’l‚É•ÏŠ·
+// StrToInt - æ–‡å­—åˆ—ã‚’æ•°å€¤ã«å¤‰æ›
 // ================================================================================
-function StrToInt(const S: string; Def: longword): longword; overload;
+function StrToInt(const S: utf8string; Def: longword): longword; overload;
 var
     I: longword;
     Size: longword;
@@ -4224,9 +4355,9 @@ begin
 end;
 
 // ================================================================================
-// Trim - ‹ó”’œ‹
+// Trim - ç©ºç™½é™¤å»
 // ================================================================================
-function Trim(const S: string): string;
+function Trim(const S: utf8string): utf8string;
 var
     I: longint;
     J: longint;
@@ -4243,14 +4374,14 @@ end;
 
 
 // *************************************************************************************************************************************************************
-// ƒƒCƒ“ƒvƒƒV[ƒWƒƒ
+// ãƒ¡ã‚¤ãƒ³ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 // *************************************************************************************************************************************************************
 
 // ================================================================================
-// WriteLog - ƒfƒoƒbƒOƒƒOo—Í
+// WriteLog - ãƒ‡ãƒãƒƒã‚°ãƒ­ã‚°å‡ºåŠ›
 // ================================================================================
 {$IFDEF DEBUGLOG}
-procedure _WriteLog(const S: string);
+procedure _WriteLog(const S: utf8string);
 var
     tf: textfile;
 begin
@@ -4262,7 +4393,7 @@ end;
 {$ENDIF}
 
 // ================================================================================
-// SNESAPUCallback - SNESAPU ƒR[ƒ‹ƒoƒbƒN
+// SNESAPUCallback - SNESAPU ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯
 // ================================================================================
 function _SNESAPUCallback(dwEffect: longword; dwAddr: longword; dwValue: longword; lpData: pointer): longword; stdcall;
 var
@@ -4270,36 +4401,33 @@ var
 
 procedure IncludeScript700File(dwAddr: longword);
 var
-    I: longword;
-    J: longword;
     lpBuffer: pointer;
+    sPath: utf8string;
 begin
-    // ƒoƒbƒtƒ@‚ÌƒTƒCƒY‚ğæ“¾
-    I := GetSize(Status.lpSPCDir, 1024);
-    J := GetSize(lpData, 1024);
-    if I + J > 1024 then exit;
-    // ƒoƒbƒtƒ@‚ğŠm•Û
-    GetMem(lpBuffer, 1024);
-    // ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ‚ğƒRƒs[
-    API_ZeroMemory(lpBuffer, 1024);
-    API_MoveMemory(lpBuffer, Status.lpSPCDir, I);
-    API_MoveMemory(pointer(longword(lpBuffer) + I), lpData, J);
-    // Script700 ‚ğƒ[ƒh
-    Status.cfMain.LoadScript700(lpBuffer, dwAddr);
-    // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-    FreeMem(lpBuffer, 1024);
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+    GetMem(lpBuffer, BUFFER_SIZE_PATH);
+    // ãƒ‘ã‚¹ã‚’ Wide æ–‡å­—åˆ—ã«å¤‰æ›
+    API_MultiByteToWideChar(CP_ACP, NULL, lpData, -1, lpBuffer, (BUFFER_SIZE_PATH shr 1) - 1);
+    // ãƒ‘ã‚¹ã‚’å–å¾—
+    sPath := Concat(Status.sSPCDir, PtrToStr(lpBuffer));
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+    FreeMem(lpBuffer, BUFFER_SIZE_PATH);
+    // ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºãŒè¶…ãˆã¦ã„ã‚‹å ´åˆã¯çµ‚äº†
+    if Length(sPath) >= BUFFER_SIZE_PATH then exit;
+    // Script700 ã‚’ãƒ­ãƒ¼ãƒ‰
+    Status.cfMain.LoadScript700(sPath, dwAddr);
 end;
 
 procedure RequestBreakPoint();
 begin
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
     API_EnterCriticalSection(@CriticalSectionThread);
-    // ƒR[ƒ‹ƒoƒbƒN‚ğ’Ç‰Áİ’è
+    // ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’è¿½åŠ è¨­å®š
     Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_S700FCH);
-    // BreakPoint İ’è
+    // BreakPoint è¨­å®š
     if longbool(dwAddr and $10000) then API_ZeroMemory(@Status.BreakPoint, 65536)
     else Status.BreakPoint[dwAddr and $FFFF] := dwValue and $FF or $80;
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
     API_LeaveCriticalSection(@CriticalSectionThread);
 end;
 
@@ -4322,26 +4450,26 @@ var
     DspVoice: ^TDSPVOICE;
     History: TTEMPOHISTORY;
 begin
-    // ƒeƒ“ƒ|‰ğÍ‚ª–³Œø‚Èê‡‚ÍI—¹
+    // ãƒ†ãƒ³ãƒè§£æãŒç„¡åŠ¹ãªå ´åˆã¯çµ‚äº†
     Tempo := @Status.Tempo;
     if Tempo.bDisable then exit;
-    // V‚µ‚­ KON ‚³‚ê‚½ƒ`ƒƒƒ“ƒlƒ‹‚ğæ“¾
+    // æ–°ã—ã KON ã•ã‚ŒãŸãƒãƒ£ãƒ³ãƒãƒ«ã‚’å–å¾—
     cKOn := dwValue;
     cEnable := (cKOn xor Tempo.cKOn) and cKOn;
     Tempo.cKOn := cKOn;
-    // V‚µ‚­ KON ‚³‚ê‚½ƒ`ƒƒƒ“ƒlƒ‹‚ª‚È‚¢ê‡‚ÍI—¹
+    // æ–°ã—ã KON ã•ã‚ŒãŸãƒãƒ£ãƒ³ãƒãƒ«ãŒãªã„å ´åˆã¯çµ‚äº†
     if not bytebool(cEnable) then exit;
-    // Šeƒ`ƒƒƒ“ƒlƒ‹‚ÌÅ‘å‰¹—Ê‚ğæ“¾
+    // å„ãƒãƒ£ãƒ³ãƒãƒ«ã®æœ€å¤§éŸ³é‡ã‚’å–å¾—
     T64Count := Apu.T64Count^;
     cKOn := 1;
     for I := 0 to 7 do begin
         if bytebool(cEnable and cKOn) then begin
-            // •½‹Ï‰¹—Ê‚ğæ“¾
+            // å¹³å‡éŸ³é‡ã‚’å–å¾—
             DspVoice := @Apu.DspReg.Voice[I];
             dwScan2 := Abs(shortint(DspVoice.VolumeLeft)) + Abs(shortint(DspVoice.VolumeRight));
             cValue := (dwScan2 shr 1) + (dwScan2 and 1);
             Tempo.Volume[I] := cValue;
-            // ”­‰¹—š—ğ‚ğ‹L˜^
+            // ç™ºéŸ³å±¥æ­´ã‚’è¨˜éŒ²
             if bytebool(cValue) then begin
                 History.cChannel := I;
                 History.cSource := DspVoice.SoundSourcePlayBack;
@@ -4349,23 +4477,23 @@ begin
                 History.wPitch := DspVoice.Pitch;
                 Tempo.History[Tempo.dwHistory].qwHash := History.qwHash;
                 Tempo.dwHistory := (Tempo.dwHistory + 1) and 15;
-            // –³‰¹‚ğœŠO
+            // ç„¡éŸ³ã‚’é™¤å¤–
             end else cEnable := cEnable xor cKOn;
         end;
         Inc(cKOn, cKOn);
     end;
-    // ‰ğÍ‘ÎÛ‚Ìƒ`ƒƒƒ“ƒlƒ‹‚ª‚È‚¢ê‡‚ÍI—¹
+    // è§£æå¯¾è±¡ã®ãƒãƒ£ãƒ³ãƒãƒ«ãŒãªã„å ´åˆã¯çµ‚äº†
     if not bytebool(cEnable) then exit;
-    // Šeƒ`ƒƒƒ“ƒlƒ‹‚ÌŠÔ¬•ª‚ğæ“¾
+    // å„ãƒãƒ£ãƒ³ãƒãƒ«ã®æ™‚é–“æˆåˆ†ã‚’å–å¾—
     cKOn := 1;
     for I := 0 to 7 do begin
         if bytebool(cEnable and cKOn) then begin
-            // ‘O‰ñ KON ‚ÌŠÔ·•ª‚©‚çƒeƒ“ƒ|‚ğŒvZ
+            // å‰å› KON ã®æ™‚é–“å·®åˆ†ã‹ã‚‰ãƒ†ãƒ³ãƒã‚’è¨ˆç®—
             dwCount1 := Tempo.T64Count[I];
             if longbool(dwCount1) then begin
                 dwBPM := T64Count - dwCount1;
                 if longbool(dwBPM) then dwBPM := 7680000 div dwBPM; // 60(bpm) * 64000(1sec) * 2
-                // d‚İ‚Ã‚¯
+                // é‡ã¿ã¥ã‘
                 if (dwBPM >= 521) and (dwBPM <= 800) then Inc(Tempo.Count[(dwBPM shr 2) + ((dwBPM shr 1) and 1)]);
                 if (dwBPM >= 240) and (dwBPM <= 520) then Inc(Tempo.Count[(dwBPM shr 2) + ((dwBPM shr 1) and 1)], 2);
                 if (dwBPM >= 261) and (dwBPM <= 400) then Inc(Tempo.Count[(dwBPM shr 1) + (dwBPM and 1)], 2);
@@ -4376,7 +4504,7 @@ begin
                 if (dwBPM >=  30) and (dwBPM <=  65) then Inc(Tempo.Count[dwBPM + dwBPM], 5);
             end;
             Tempo.T64Count[I] := T64Count;
-            // ‹^—ƒGƒR[‚ğœŠO
+            // ç–‘ä¼¼ã‚¨ã‚³ãƒ¼ã‚’é™¤å¤–
             DspVoice := @Apu.DspReg.Voice[I];
             for dwCount1 := 0 to 15 do begin
                 History.qwHash := Tempo.History[dwCount1].qwHash;
@@ -4390,29 +4518,29 @@ begin
         end;
         Inc(cKOn, cKOn);
     end;
-    // ‰ğÍ‘ÎÛ‚Ìƒ`ƒƒƒ“ƒlƒ‹‚ª‚È‚¢ê‡‚ÍI—¹
+    // è§£æå¯¾è±¡ã®ãƒãƒ£ãƒ³ãƒãƒ«ãŒãªã„å ´åˆã¯çµ‚äº†
     if not bytebool(cEnable) then exit;
-    // ‰ğÍŠî€‚Æ‚È‚éƒeƒ“ƒ|‚Ì”ÍˆÍ‚ğŒvZ
+    // è§£æåŸºæº–ã¨ãªã‚‹ãƒ†ãƒ³ãƒã®ç¯„å›²ã‚’è¨ˆç®—
     dwCount3 := T64Count - Tempo.dwKOnTime;
     if dwCount3 >= 4800 then begin // 75ms (max 800bpm)
-        // KON ”‚ğƒJƒEƒ“ƒg
+        // KON æ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆ
         Tempo.dwKOnTime := T64Count;
         Inc(Tempo.cKOnCount);
-        // ‹È‘S‘Ì‚Ìƒeƒ“ƒ|‚ğŒvZ
+        // æ›²å…¨ä½“ã®ãƒ†ãƒ³ãƒã‚’è¨ˆç®—
         dwBPM := 7680000 div dwCount3; // 60(bpm) * 64000(1sec) * 2
         dwBPM := (dwBPM shr 1) + (dwBPM and 1);
         while longbool(dwBPM) and (dwBPM <= 56) do Inc(dwBPM, dwBPM);
         while longbool(dwBPM) and (dwBPM >= 204) do dwBPM := dwBPM shr 1;
         if dwBPM < 60 then dwBPM := 60;
         if dwBPM > 200 then dwBPM := 200;
-        // Å¬ƒeƒ“ƒ|‚ğŒvZ
+        // æœ€å°ãƒ†ãƒ³ãƒã‚’è¨ˆç®—
         if dwBPM <= 70 then dwCount1 := 64 else dwCount1 := dwBPM - 6;
         if bytebool(Tempo.cMinBPM) then begin
             dwScan2 := Tempo.cMinBPM;
             if (dwCount1 <= dwScan2) or ((T64Count - Tempo.dwMinTime) >= 480000) then Tempo.dwMinTime := T64Count // 7.5sec
             else dwCount1 := dwScan2 + 1;
         end;
-        // Å‘åƒeƒ“ƒ|‚ğŒvZ
+        // æœ€å¤§ãƒ†ãƒ³ãƒã‚’è¨ˆç®—
         if dwCount1 >= 184 then if dwBPM >= 194 then dwCount2 := 200 else dwCount2 := dwBPM + 6
         else if dwBPM >= 190 then dwCount2 := 196 else dwCount2 := dwBPM + 6;
         if bytebool(Tempo.cMaxBPM) then begin
@@ -4421,37 +4549,37 @@ begin
             else dwCount2 := dwScan2 - (Tempo.cKOnCount and 1);
         end;
         if dwCount2 <= 76 then dwCount1 := 60;
-        // ‰ğÍŠî€”ÍˆÍ‚ğŠm’è
+        // è§£æåŸºæº–ç¯„å›²ã‚’ç¢ºå®š
         Tempo.cMinBPM := dwCount1;
         Tempo.cMaxBPM := dwCount2;
     end else begin
-        // ‰ğÍŠî€”ÍˆÍ‚ª–¢Œˆ’è‚Ìê‡‚ÍA‰¼İ’è
+        // è§£æåŸºæº–ç¯„å›²ãŒæœªæ±ºå®šã®å ´åˆã¯ã€ä»®è¨­å®š
         if not bytebool(Tempo.cMinBPM) then Tempo.cMinBPM := 120;
         if not bytebool(Tempo.cMaxBPM) then Tempo.cMaxBPM := 140;
         dwCount1 := Tempo.cMinBPM;
         dwCount2 := Tempo.cMaxBPM;
     end;
-    // ‰ğÍŠJn‚©‚ç‹K’èŠÔ‚ªŒo‰ß‚µ‚Ä‚¢‚È‚¢ê‡‚ÍI—¹
+    // è§£æé–‹å§‹ã‹ã‚‰è¦å®šæ™‚é–“ãŒçµŒéã—ã¦ã„ãªã„å ´åˆã¯çµ‚äº†
     dwScan2 := T64Count - Tempo.dwStartTime;
     if dwScan2 < 64000 then exit; // 1sec
-    // ‰ğÍŠî€”ÍˆÍ‚ğ•â³
+    // è§£æåŸºæº–ç¯„å›²ã‚’è£œæ­£
     cEnable := $31; // 1-4
     if dwCount2 >= 140 then begin
         cValue := ((dwCount2 * 6553) shr 16) - (longword(dwCount2 >= 170) and 1) - 4; // max * 0.1 - (4 or 5)
         if not bytebool(Tempo.cKOnCountOld) and (Tempo.cKOnCount <= cValue) then begin
-            // ‰‰ñ‰ğÍ‚É”­‰¹‰ñ”‚ª­‚È‚¢ê‡AÅ¬ƒeƒ“ƒ|‚ÌŠî€”ÍˆÍ‚ğ 1/2 ‚Éİ’è
+            // åˆå›è§£ææ™‚ã«ç™ºéŸ³å›æ•°ãŒå°‘ãªã„å ´åˆã€æœ€å°ãƒ†ãƒ³ãƒã®åŸºæº–ç¯„å›²ã‚’ 1/2 ã«è¨­å®š
             dwCount1 := dwCount1 shr 1;
             if dwCount1 < 64 then dwCount1 := 64;
             cEnable := $41; // A-D
         end else if bytebool(Tempo.cKOnCountOld) and (Tempo.cKOnCountOld <= cValue) then begin
-            // ‘O‰ñ‰ğÍ‚É”­‰¹‰ñ”‚ª­‚È‚¢ê‡AÅ¬EÅ‘åƒeƒ“ƒ|‚ÌŠî€”ÍˆÍ‚ğ 1/2 ‚Éİ’è
+            // å‰å›è§£ææ™‚ã«ç™ºéŸ³å›æ•°ãŒå°‘ãªã„å ´åˆã€æœ€å°ãƒ»æœ€å¤§ãƒ†ãƒ³ãƒã®åŸºæº–ç¯„å›²ã‚’ 1/2 ã«è¨­å®š
             dwCount1 := dwCount1 shr 1;
             dwCount2 := (dwCount2 shr 1) + 3; // min 73
             if dwCount1 < 64 then dwCount1 := 64;
             if dwCount2 < 127 then dwCount2 := 127;
             cEnable := $41; // A-D
         end else if dwCount1 <= (Tempo.cBPM + 12) then begin
-            // Å¬ƒeƒ“ƒ|‚ÌŠî€”ÍˆÍ‚ÌÅ‘å’l‚ğAŒ»İ’l‚Ì­‚µè‘O‚Éİ’è
+            // æœ€å°ãƒ†ãƒ³ãƒã®åŸºæº–ç¯„å›²ã®æœ€å¤§å€¤ã‚’ã€ç¾åœ¨å€¤ã®å°‘ã—æ‰‹å‰ã«è¨­å®š
             dwBPM := Tempo.cBPM - 2;
             if dwCount1 > dwBPM then begin
                 dwCount1 := dwBPM;
@@ -4460,7 +4588,7 @@ begin
             end;
         end;
     end;
-    // ‰ğÍŠî€”ÍˆÍ“à‚ÅoŒ»‰ñ”‚ªÅ‚à‘½‚¢ƒeƒ“ƒ|‚ğæ“¾
+    // è§£æåŸºæº–ç¯„å›²å†…ã§å‡ºç¾å›æ•°ãŒæœ€ã‚‚å¤šã„ãƒ†ãƒ³ãƒã‚’å–å¾—
     dwScan1 := 0;
     dwScan2 := 0;
     cBPM1 := dwCount1;
@@ -4473,7 +4601,7 @@ begin
             Tempo.cMode := cEnable;
         end;
     end;
-    // ƒeƒ“ƒ|‚Ì•½‹Ï’l‚ğŒvZ‚µ‚Ä’†‰›’l‚ğ•â³
+    // ãƒ†ãƒ³ãƒã®å¹³å‡å€¤ã‚’è¨ˆç®—ã—ã¦ä¸­å¤®å€¤ã‚’è£œæ­£
     dwScan2 := dwScan1;
     Dec(dwScan1, 5);
     Inc(dwScan2, 5);
@@ -4490,17 +4618,17 @@ begin
         dwBPM := dwBPM div dwCount1;
         dwBPM := (dwBPM shr 1) + (dwBPM and 1);
     end;
-    // O”qEO˜A•„‚ğl—¶‚µ‚Ä’†‰›’l‚ğ•â³
+    // ä¸‰æ‹å­ãƒ»ä¸‰é€£ç¬¦ã‚’è€ƒæ…®ã—ã¦ä¸­å¤®å€¤ã‚’è£œæ­£
     if (dwBPM >= 96) and ((dwBPM <= 128) or (dwBPM >= 176)) and (dwCount1 >= 16) then begin
         dwScan1 := ((dwBPM shl (1 + (longword(dwBPM <= 150) and 1))) * 21845) shr 16; // x2/3 or x4/3
         if longbool(Tempo.dwTripleTime) or ((dwScan1 >= Tempo.cMinBPM) and (dwScan1 <= Tempo.cMaxBPM)) then begin
-            // V‚µ‚¢’†‰›’l‚ğŒvZ
+            // æ–°ã—ã„ä¸­å¤®å€¤ã‚’è¨ˆç®—
             dwScan2 := dwScan1;
             Dec(dwScan1, 5);
             Inc(dwScan2, 5);
             if dwScan1 < 60 then dwScan1 := 60;
             if dwScan2 > 200 then dwScan2 := 200;
-            cValue := dwBPM; // ƒoƒbƒNƒAƒbƒv
+            cValue := dwBPM; // ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—
             dwBPM := 0;
             dwCount2 := 0;
             for I := dwScan1 to dwScan2 do begin
@@ -4508,7 +4636,7 @@ begin
                 Inc(dwBPM, longword(I + I) * dwCount3);
                 Inc(dwCount2, dwCount3);
             end;
-            // O˜A•„ŒŸo‚Ìd‚İŠî€’l
+            // ä¸‰é€£ç¬¦æ¤œå‡ºã®é‡ã¿åŸºæº–å€¤
             dwCount3 := 30;
             if longbool(Tempo.dwTripleTime) then dwCount3 := 10;
             if (dwCount2 >= dwCount3) and (dwCount2 >= (dwCount1 shr 3)) then begin
@@ -4518,18 +4646,18 @@ begin
                 Tempo.cMode := cEnable + 1;
                 Tempo.dwTripleTime := 640000; // 10sec
             end else begin
-                dwBPM := cValue; // •œŒ³
+                dwBPM := cValue; // å¾©å…ƒ
             end;
         end;
     end;
-    // ƒeƒ“ƒ|‚ª„‘ª‚Å‚«‚È‚©‚Á‚½ê‡ (‰‰ñ‚Ì‚İ)
+    // ãƒ†ãƒ³ãƒãŒæ¨æ¸¬ã§ããªã‹ã£ãŸå ´åˆ (åˆå›ã®ã¿)
     if not bytebool(Tempo.cBPM) and not longbool(dwBPM) then begin
         if (cBPM2 - cBPM1) <= 20 then begin
-            // ƒeƒ“ƒ|‰ğÍ”ÍˆÍ‚ÌŒë·‚©‚ç„‘ª
+            // ãƒ†ãƒ³ãƒè§£æç¯„å›²ã®èª¤å·®ã‹ã‚‰æ¨æ¸¬
             dwBPM := (cBPM1 + cBPM2) shr 1;
             Tempo.cMode := cEnable + 2;
         end else begin
-            // ƒeƒ“ƒ|‰ğÍ”ÍˆÍ‚ÌŒë·‚ª‘å‚«‚¢ê‡A‘S”ÍˆÍ‚©‚ç„‘ª
+            // ãƒ†ãƒ³ãƒè§£æç¯„å›²ã®èª¤å·®ãŒå¤§ãã„å ´åˆã€å…¨ç¯„å›²ã‹ã‚‰æ¨æ¸¬
             dwScan2 := 0;
             for I := 60 to 200 do begin
                 dwCount3 := Tempo.Count[I];
@@ -4547,26 +4675,26 @@ begin
             end;
         end;
     end;
-    // ƒeƒ“ƒ|‚ğ„‘ªÏ‚İ‚ÅA‰ğÍŠJn‚©‚ç‹K’èŠÔ‚ªŒo‰ß‚µ‚½ê‡A‰ğÍŒ‹‰Ê‚ğƒNƒŠƒA
+    // ãƒ†ãƒ³ãƒã‚’æ¨æ¸¬æ¸ˆã¿ã§ã€è§£æé–‹å§‹ã‹ã‚‰è¦å®šæ™‚é–“ãŒçµŒéã—ãŸå ´åˆã€è§£æçµæœã‚’ã‚¯ãƒªã‚¢
     dwCount2 := T64Count - Tempo.dwStartTime;
     if bytebool(Tempo.cBPM) and ((dwCount1 >= 600) or (dwCount2 >= 240000) // 3.75sec
             or (Tempo.cBPM < cBPM1) or (Tempo.cBPM > cBPM2)) then begin
-        // KON ƒJƒEƒ“ƒg‚ğŠwK
+        // KON ã‚«ã‚¦ãƒ³ãƒˆã‚’å­¦ç¿’
         if (Tempo.cBPM < cBPM1) or (Tempo.cBPM > cBPM2) then begin
             if longbool(dwBPM) and ((dwCount1 >= 30) or (dwCount2 >= 120000)) then Tempo.cBPM := dwBPM // 1.875sec
             else if not bytebool(Tempo.cKOnCountOld) then Tempo.cBPM := dwBPM;
-            Tempo.cKOnCountOld := 0; // ŠwKƒŠƒZƒbƒg
+            Tempo.cKOnCountOld := 0; // å­¦ç¿’ãƒªã‚»ãƒƒãƒˆ
         end else begin
             if longbool(dwBPM) and (dwCount1 >= 30) then Tempo.cBPM := dwBPM;
             Tempo.cKOnCountOld := Tempo.cKOnCount;
             if cEnable = $41 then Dec(Tempo.cKOnCountOld) else Inc(Tempo.cKOnCountOld);
         end;
-        // ‰Šú‰»
+        // åˆæœŸåŒ–
         Tempo.cKOnCount := 0;
         Tempo.dwStartTime := T64Count;
         if Tempo.dwTripleTime > dwCount2 then Dec(Tempo.dwTripleTime, dwCount2) else Tempo.dwTripleTime := 0;
         API_ZeroMemory(@Tempo.Count, SizeOf(Tempo.Count));
-        // ƒeƒ“ƒ|‚Ì—h‚ê‚ğ–h~
+        // ãƒ†ãƒ³ãƒã®æºã‚Œã‚’é˜²æ­¢
         if (dwBPM >= Tempo.cMinBPM) and (dwBPM <= Tempo.cMaxBPM) then begin
             dwCount3 := Tempo.Count[dwBPM] shr 2;
             if T64Count < 720000 then dwCount3 := dwCount3 shr 1; // 11.25sec
@@ -4575,10 +4703,10 @@ begin
         end;
         exit;
     end;
-    // Œ”‚ªŠî€’lˆÈãA‚Ü‚½‚ÍA‹K’èŠÔŒo‰ßŒã‚Ìƒeƒ“ƒ|‚ğ„‘ª’l‚Æ‚µ‚Ä‹L˜^
+    // ä»¶æ•°ãŒåŸºæº–å€¤ä»¥ä¸Šã€ã¾ãŸã¯ã€è¦å®šæ™‚é–“çµŒéå¾Œã®ãƒ†ãƒ³ãƒã‚’æ¨æ¸¬å€¤ã¨ã—ã¦è¨˜éŒ²
     if longbool(dwBPM) and ((dwCount1 >= 60) or (dwCount2 >= 240000)) then begin // 3.75sec
         Tempo.cBPM := dwBPM;
-        // ƒeƒ“ƒ|‚Ì—h‚ê‚ğ–h~
+        // ãƒ†ãƒ³ãƒã®æºã‚Œã‚’é˜²æ­¢
         if (dwBPM >= Tempo.cMinBPM) and (dwBPM <= Tempo.cMaxBPM) then Inc(Tempo.Count[dwBPM], 2);
         exit;
     end;
@@ -4615,20 +4743,20 @@ begin
 end;
 
 // ================================================================================
-// WindowProc - ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+// WindowProc - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 // ================================================================================
 function _WindowProc(hWnd: longword; msg: longword; wParam: longword; lParam: longword): longword; stdcall;
 var
     dwDef: longword;
 begin
-    // ƒƒbƒZ[ƒWˆ—
+    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†
     dwDef := 0;
     result := Status.cfMain.WindowProc(hWnd, msg, wParam, lParam, dwDef);
     if not longbool(dwDef) then result := API_DefWindowProc(hWnd, msg, wParam, lParam);
 end;
 
 // ================================================================================
-// WinMain - ƒEƒBƒ“ƒhƒEƒƒCƒ“ŠÖ”
+// WinMain - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ¡ã‚¤ãƒ³é–¢æ•°
 // ================================================================================
 function _WinMain(hThisInstance: longword; hPrevInstance: longword; lpArgs: pointer; nCmdShow: longint): longword; stdcall;
 var
@@ -4640,113 +4768,115 @@ var
     dwKeyCode: longword;
     API_SetDllDirectory: function(lpPathName: pointer): longbool; stdcall;
 begin
-    // KERNEL32.DLL ‚ğƒ[ƒh
-    dwBuffer := API_LoadLibraryEx(pchar('kernel32.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    // æ–‡å­—åˆ—ãƒã‚¤ãƒ³ã‚¿ãƒãƒƒãƒ•ã‚¡ã‚’åˆæœŸåŒ–
+    StrToPtrBuffer.dwCurrent := 0;
+    // KERNEL32.DLL ã‚’ãƒ­ãƒ¼ãƒ‰
+    dwBuffer := API_LoadLibraryEx(StrToPtr('kernel32.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if longbool(dwBuffer) then begin
-        // ŒŸõƒpƒX‚©‚çƒJƒŒƒ“ƒgƒpƒX‚ğíœ (for Windows XP SP1)
+        // æ¤œç´¢ãƒ‘ã‚¹ã‹ã‚‰ã‚«ãƒ¬ãƒ³ãƒˆãƒ‘ã‚¹ã‚’å‰Šé™¤ (for Windows XP SP1 ä»¥é™)
         @API_SetDllDirectory := API_GetProcAddress(dwBuffer, pchar('SetDllDirectoryA'));
         if longbool(@API_SetDllDirectory) then API_SetDllDirectory(pchar(''));
-        // DLL ‚ğ‰ğ•ú
+        // DLL ã‚’è§£æ”¾
         API_FreeLibrary(dwBuffer);
     end;
-    // wParam ‚ğ‰Šú‰»
+    // wParam ã‚’åˆæœŸåŒ–
     Msg.wParam := 0;
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğì¬
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’ä½œæˆ
     API_InitializeCriticalSection(@CriticalSectionThread);
     API_InitializeCriticalSection(@CriticalSectionStatic);
-    // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚ğì¬
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã‚’ä½œæˆ
     Status.ccClass := CCLASS.Create();
-    Status.ccClass.CreateClass(@_WindowProc, hThisInstance, pchar(CLASS_NAME), CS_HREDRAW or CS_VREDRAW or CS_OWNDC, pchar(ICON_NAME),
+    Status.ccClass.CreateClass(@_WindowProc, hThisInstance, CLASS_NAME, CS_HREDRAW or CS_VREDRAW or CS_OWNDC, pchar(ICON_NAME),
         NULLPOINTER, IDC_ARROW, ORG_COLOR_BTNFACE);
-    // ƒEƒBƒ“ƒhƒE‚ğì¬
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ä½œæˆ
     cfMain := CWINDOWMAIN.Create();
     Status.cfMain := cfMain;
-    dwBuffer := cfMain.CreateWindow(hThisInstance, pchar(CLASS_NAME), lpArgs);
-    // ‹N“®‚É¬Œ÷‚µ‚½ê‡
+    dwBuffer := cfMain.CreateWindow(hThisInstance, CLASS_NAME, lpArgs);
+    // èµ·å‹•ã«æˆåŠŸã—ãŸå ´åˆ
     if not longbool(dwBuffer) then begin
-        // ƒEƒBƒ“ƒhƒE‚ğæ“¾
+        // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’å–å¾—
         cwWindowMain := cfMain.cwWindowMain;
-        // ƒƒbƒZ[ƒW‚ğó‚¯æ‚é‚Ü‚Å‘Ò‹@‚·‚éB WM_QUIT ‚Ìê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+        // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å—ã‘å–ã‚‹ã¾ã§å¾…æ©Ÿã™ã‚‹ã€‚ WM_QUIT ã®å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
         while API_GetMessage(@Msg, NULL, NULL, NULL) do begin
-            // ‰Šú‰»
+            // åˆæœŸåŒ–
             bTransmitMsg := true;
-            // ƒƒbƒZ[ƒWˆ—
+            // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†
             case Msg.msg of
-                WM_SYSKEYDOWN: begin // Alt ƒL[ + ”CˆÓ‚ÌƒL[
+                WM_SYSKEYDOWN: begin // Alt ã‚­ãƒ¼ + ä»»æ„ã®ã‚­ãƒ¼
                     dwKeyCode := Msg.wParam and $FF;
                     case dwKeyCode of
-                        VK_UP: cfMain.ListUp(); // Alt + ª ƒL[
-                        VK_DOWN: cfMain.ListDown(); // Alt + « ƒL[
-                        VK_LEFT: cfMain.SetFunction(-1, FUNCTION_TYPE_AMP); // Alt + © ƒL[
-                        VK_RIGHT: cfMain.SetFunction(1, FUNCTION_TYPE_AMP); // Alt + ¨ ƒL[
+                        VK_UP: cfMain.ListUp(); // Alt + â†‘ ã‚­ãƒ¼
+                        VK_DOWN: cfMain.ListDown(); // Alt + â†“ ã‚­ãƒ¼
+                        VK_LEFT: cfMain.SetFunction(-1, FUNCTION_TYPE_AMP); // Alt + â† ã‚­ãƒ¼
+                        VK_RIGHT: cfMain.SetFunction(1, FUNCTION_TYPE_AMP); // Alt + â†’ ã‚­ãƒ¼
                     end;
                 end;
-                WM_KEYDOWN: begin // ”CˆÓ‚ÌƒL[
-                    // ƒƒbƒZ[ƒW‚ğ“]‘—‚µ‚È‚¢
+                WM_KEYDOWN: begin // ä»»æ„ã®ã‚­ãƒ¼
+                    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è»¢é€ã—ãªã„
                     bTransmitMsg := false;
-                    // Ctrl ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éê‡
+                    // Ctrl ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆ
                     dwKeyCode := Msg.wParam and $FF;
                     if Status.bCtrlButton then case dwKeyCode of
-                        VK_B: cfMain.ListNextPlay(PLAY_ORDER_NEXT, LIST_NEXT_PLAY_SELECT); // Ctrl + B ƒL[
-                        VK_C: cfMain.SPCPlay(PLAY_TYPE_PAUSE); // Ctrl + C ƒL[
-                        VK_O: cwWindowMain.PostMessage(WM_APP_COMMAND, MENU_FILE_OPEN, Msg.lParam); // Ctrl + O ƒL[
-                        VK_P: cfMain.SPCPlay(PLAY_TYPE_AUTO); // Ctrl + P ƒL[
-                        VK_Q: cwWindowMain.PostMessage(WM_QUIT, NULL, NULL); // Ctrl + Q ƒL[
-                        VK_R: cfMain.SPCStop(true); // Ctrl + R ƒL[
-                        VK_S: cwWindowMain.PostMessage(WM_APP_COMMAND, MENU_FILE_SAVE, Msg.lParam); // Ctrl + S ƒL[
-                        VK_T, VK_V: cfMain.SPCStop(false); // Ctrl + T, V ƒL[
-                        VK_X: cfMain.SPCPlay(PLAY_TYPE_PLAY); // Ctrl + X ƒL[
-                        VK_Z: cfMain.ListNextPlay(PLAY_ORDER_PREVIOUS, LIST_NEXT_PLAY_SELECT); // Ctrl + Z ƒL[
-                        VK_OEM_COMMA: cwWindowMain.PostMessage(WM_APP_COMMAND, MENU_SETUP_TIME_START, Msg.lParam); // Ctrl + , ƒL[
-                        VK_OEM_PERIOD: cwWindowMain.PostMessage(WM_APP_COMMAND, MENU_SETUP_TIME_LIMIT, Msg.lParam); // Ctrl + . ƒL[
-                        VK_OEM_2: cwWindowMain.PostMessage(WM_APP_COMMAND, MENU_SETUP_TIME_RESET, Msg.lParam); // Ctrl + / ƒL[
-                        VK_DELETE: cfMain.ListClear(true); // Ctrl + Del ƒL[
-                        VK_UP: cfMain.ListUp(); // Ctrl + ª ƒL[
-                        VK_DOWN: cfMain.ListDown(); // Ctrl + « ƒL[
+                        VK_B: cfMain.ListNextPlay(PLAY_ORDER_NEXT, LIST_NEXT_PLAY_SELECT); // Ctrl + B ã‚­ãƒ¼
+                        VK_C: cfMain.SPCPlay(PLAY_TYPE_PAUSE); // Ctrl + C ã‚­ãƒ¼
+                        VK_O: cwWindowMain.PostMessage(WM_APP_COMMAND, MENU_FILE_OPEN, Msg.lParam); // Ctrl + O ã‚­ãƒ¼
+                        VK_P: cfMain.SPCPlay(PLAY_TYPE_AUTO); // Ctrl + P ã‚­ãƒ¼
+                        VK_Q: cwWindowMain.PostMessage(WM_QUIT, NULL, NULL); // Ctrl + Q ã‚­ãƒ¼
+                        VK_R: cfMain.SPCStop(true); // Ctrl + R ã‚­ãƒ¼
+                        VK_S: cwWindowMain.PostMessage(WM_APP_COMMAND, MENU_FILE_SAVE, Msg.lParam); // Ctrl + S ã‚­ãƒ¼
+                        VK_T, VK_V: cfMain.SPCStop(false); // Ctrl + T, V ã‚­ãƒ¼
+                        VK_X: cfMain.SPCPlay(PLAY_TYPE_PLAY); // Ctrl + X ã‚­ãƒ¼
+                        VK_Z: cfMain.ListNextPlay(PLAY_ORDER_PREVIOUS, LIST_NEXT_PLAY_SELECT); // Ctrl + Z ã‚­ãƒ¼
+                        VK_OEM_COMMA: cwWindowMain.PostMessage(WM_APP_COMMAND, MENU_SETUP_TIME_START, Msg.lParam); // Ctrl + , ã‚­ãƒ¼
+                        VK_OEM_PERIOD: cwWindowMain.PostMessage(WM_APP_COMMAND, MENU_SETUP_TIME_LIMIT, Msg.lParam); // Ctrl + . ã‚­ãƒ¼
+                        VK_OEM_2: cwWindowMain.PostMessage(WM_APP_COMMAND, MENU_SETUP_TIME_RESET, Msg.lParam); // Ctrl + / ã‚­ãƒ¼
+                        VK_DELETE: cfMain.ListClear(true); // Ctrl + Del ã‚­ãƒ¼
+                        VK_UP: cfMain.ListUp(); // Ctrl + â†‘ ã‚­ãƒ¼
+                        VK_DOWN: cfMain.ListDown(); // Ctrl + â†“ ã‚­ãƒ¼
                         VK_LEFT: if Status.bShiftButton or (Option.dwShiftKey = SHIFT_KEY_SEEK) then cfMain.SetFunction(-1, FUNCTION_TYPE_SEEK)
-                            else cfMain.SetFunction(-1, FUNCTION_TYPE_SPEED); // Ctrl + © ƒL[
+                            else cfMain.SetFunction(-1, FUNCTION_TYPE_SPEED); // Ctrl + â† ã‚­ãƒ¼
                         VK_RIGHT: if Status.bShiftButton or (Option.dwShiftKey = SHIFT_KEY_SEEK) then cfMain.SetFunction(1, FUNCTION_TYPE_SEEK)
-                            else cfMain.SetFunction(1, FUNCTION_TYPE_SPEED); // Ctrl + ¨ ƒL[
-                        VK_RETURN: cfMain.SPCPlay(PLAY_TYPE_RANDOM); // Ctrl + Enter ƒL[
+                            else cfMain.SetFunction(1, FUNCTION_TYPE_SPEED); // Ctrl + â†’ ã‚­ãƒ¼
+                        VK_RETURN: cfMain.SPCPlay(PLAY_TYPE_RANDOM); // Ctrl + Enter ã‚­ãƒ¼
 {$IFDEF CONTEXT}
-                        VK_OEM_PLUS: begin // Ctrl + ; ƒL[
-                            // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+                        VK_OEM_PLUS: begin // Ctrl + ; ã‚­ãƒ¼
+                            // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
                             API_EnterCriticalSection(@CriticalSectionStatic);
-                            // SNESAPU ƒRƒ“ƒeƒLƒXƒg‚ğ‰ğ•ú
+                            // SNESAPU ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’è§£æ”¾
                             if longbool(Status.lpContext) then FreeMem(Status.lpContext, Status.dwContextSize);
-                            // SNESAPU ƒRƒ“ƒeƒLƒXƒg‚ğæ“¾
+                            // SNESAPU ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—
                             Status.dwContextSize := Apu.GetSNESAPUContextSize();
-                            cwWindowMain.SetCaption(pchar(IntToStr(Status.dwContextSize)));
+                            cwWindowMain.SetCaption(IntToStr(Status.dwContextSize));
                             GetMem(Status.lpContext, Status.dwContextSize);
-                            cwWindowMain.SetCaption(pchar(IntToStr(longword(Status.lpContext))));
+                            cwWindowMain.SetCaption(IntToStr(longword(Status.lpContext)));
                             Apu.GetSNESAPUContext(Status.lpContext);
-                            // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+                            // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
                             API_LeaveCriticalSection(@CriticalSectionStatic);
                         end;
-                        VK_OEM_1: begin // Ctrl + : ƒL[
-                            // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+                        VK_OEM_1: begin // Ctrl + : ã‚­ãƒ¼
+                            // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
                             API_EnterCriticalSection(@CriticalSectionStatic);
-                            // SNESAPU ƒRƒ“ƒeƒLƒXƒg‚ğİ’è
+                            // SNESAPU ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®š
                             if longbool(Status.lpContext) then Apu.SetSNESAPUContext(Status.lpContext);
-                            // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+                            // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
                             API_LeaveCriticalSection(@CriticalSectionStatic);
                         end;
 {$ENDIF}
                         else Msg.wParam := Msg.wParam or $100;
                     end;
-                    // ƒL[ƒ}ƒbƒv‚ğ‘‚«Š·‚¦
+                    // ã‚­ãƒ¼ãƒãƒƒãƒ—ã‚’æ›¸ãæ›ãˆ
                     if not Status.bCtrlButton and Status.bShiftButton then case dwKeyCode of
-                        VK_UP: dwKeyCode := VK_NUMPAD8; // ª ƒL[
-                        VK_DOWN: dwKeyCode := VK_NUMPAD2; // « ƒL[
+                        VK_UP: dwKeyCode := VK_NUMPAD8; // â†‘ ã‚­ãƒ¼
+                        VK_DOWN: dwKeyCode := VK_NUMPAD2; // â†“ ã‚­ãƒ¼
                     end;
-                    // ƒL[‚ªˆ—‚³‚ê‚Ä‚¢‚È‚¢ê‡
+                    // ã‚­ãƒ¼ãŒå‡¦ç†ã•ã‚Œã¦ã„ãªã„å ´åˆ
                     if not Status.bCtrlButton or longbool(Msg.wParam and $100) then case dwKeyCode of
-                        VK_ESCAPE: cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_MINIMIZE, NULL); // ESC ƒL[
-                        VK_TAB: cfMain.SetTabFocus(Msg.hWnd, not Status.bShiftButton); // Tab ƒL[
-                        VK_SHIFT: cfMain.SetChangeFunction(true); // Shift ƒL[
-                        VK_CONTROL: Status.bCtrlButton := true; // Ctrl ƒL[
-                        VK_F1..VK_F9: begin // F1 ` F9 ƒL[
-                            // ƒ`ƒƒƒ“ƒlƒ‹ƒ}ƒXƒN‚ğİ’è
+                        VK_ESCAPE: cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_MINIMIZE, NULL); // ESC ã‚­ãƒ¼
+                        VK_TAB: cfMain.SetTabFocus(Msg.hWnd, not Status.bShiftButton); // Tab ã‚­ãƒ¼
+                        VK_SHIFT: cfMain.SetChangeFunction(true); // Shift ã‚­ãƒ¼
+                        VK_CONTROL: Status.bCtrlButton := true; // Ctrl ã‚­ãƒ¼
+                        VK_F1..VK_F9: begin // F1 ï½ F9 ã‚­ãƒ¼
+                            // ãƒãƒ£ãƒ³ãƒãƒ«ãƒã‚¹ã‚¯ã‚’è¨­å®š
                             if dwKeyCode = VK_F9 then begin
                                 if Status.bCtrlButton then Option.dwMute := $0
                                 else Option.dwMute := Option.dwMute xor $FF;
@@ -4754,57 +4884,57 @@ begin
                                 if Status.bCtrlButton then Option.dwMute := (1 shl (dwKeyCode - VK_F1)) xor $FF
                                 else Option.dwMute := Option.dwMute xor (1 shl (dwKeyCode - VK_F1));
                             end;
-                            // İ’è‚ğƒŠƒZƒbƒg
+                            // è¨­å®šã‚’ãƒªã‚»ãƒƒãƒˆ
                             cfMain.SPCReset(false);
                         end;
-                        VK_F12, VK_PAUSE: begin // F12, Break/Pause ƒL[
-                            // ƒtƒ‰ƒO‚ğİ’è
+                        VK_F12, VK_PAUSE: begin // F12, Break/Pause ã‚­ãƒ¼
+                            // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
                             Status.bBreakButton := not Status.bBreakButton;
-                            // î•ñ‚ğXV
+                            // æƒ…å ±ã‚’æ›´æ–°
                             cfMain.UpdateInfo(false);
-                            // ƒCƒ“ƒWƒP[ƒ^‚ğÄ•`‰æ
+                            // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’å†æç”»
                             cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
                         end;
-                        VK_INSERT: cfMain.ListAdd(0); // Insert ƒL[
-                        VK_DELETE: cfMain.ListDelete(); // Delete ƒL[
+                        VK_INSERT: cfMain.ListAdd(0); // Insert ã‚­ãƒ¼
+                        VK_DELETE: cfMain.ListDelete(); // Delete ã‚­ãƒ¼
                         VK_LEFT: if Status.bShiftButton then if Option.dwShiftKey = SHIFT_KEY_SEEK then cfMain.SetFunction(-1, FUNCTION_TYPE_SPEED)
-                            else cfMain.SetFunction(-1, FUNCTION_TYPE_SEEK) else cfMain.SetChangeInfo(false, -1); // © ƒL[
+                            else cfMain.SetFunction(-1, FUNCTION_TYPE_SEEK) else cfMain.SetChangeInfo(false, -1); // â† ã‚­ãƒ¼
                         VK_RIGHT: if Status.bShiftButton then if Option.dwShiftKey = SHIFT_KEY_SEEK then cfMain.SetFunction(1, FUNCTION_TYPE_SPEED)
-                            else cfMain.SetFunction(1, FUNCTION_TYPE_SEEK) else cfMain.SetChangeInfo(false, 1); // ¨ ƒL[
+                            else cfMain.SetFunction(1, FUNCTION_TYPE_SEEK) else cfMain.SetChangeInfo(false, 1); // â†’ ã‚­ãƒ¼
                         VK_RETURN: if Status.bShiftButton then cfMain.SPCPlay(PLAY_TYPE_RANDOM)
-                            else cfMain.SPCPlay(PLAY_TYPE_LIST); // Enter ƒL[
-                        VK_NUMPAD1, VK_NUMPAD3: cfMain.SetFunction(dwKeyCode - VK_NUMPAD2, FUNCTION_TYPE_SPEED); // ƒeƒ“ƒL[ 1, 3
-                        VK_NUMPAD2: cfMain.ListNextPlay(PLAY_ORDER_NEXT, LIST_NEXT_PLAY_SELECT); // ƒeƒ“ƒL[ 2
-                        VK_NUMPAD4, VK_NUMPAD6: cfMain.SetFunction(dwKeyCode - VK_NUMPAD5, FUNCTION_TYPE_SEEK); // ƒeƒ“ƒL[ 4, 6
-                        VK_NUMPAD5: cfMain.SPCPlay(PLAY_TYPE_AUTO); // ƒeƒ“ƒL[ 5
-                        VK_NUMPAD7, VK_NUMPAD9: cfMain.SetFunction(dwKeyCode - VK_NUMPAD8, FUNCTION_TYPE_SEPARATE); // ƒeƒ“ƒL[ 7, 9
-                        VK_NUMPAD8: cfMain.ListNextPlay(PLAY_ORDER_PREVIOUS, LIST_NEXT_PLAY_SELECT); // ƒeƒ“ƒL[ 8
-                        VK_NUMPAD0: cfMain.SPCStop(false); // ƒeƒ“ƒL[ 0
-                        VK_ADD, VK_SUBTRACT: cfMain.SetFunction($6C - dwKeyCode, FUNCTION_TYPE_AMP); // ƒeƒ“ƒL[ +, -
-                        VK_DIVIDE, VK_MULTIPLY: cfMain.SetFunction(1 - ((dwKeyCode and $1) shl 1), FUNCTION_TYPE_FEEDBACK); // ƒeƒ“ƒL[ /, *
-                        VK_DECIMAL: cfMain.SPCStop(true); // ƒeƒ“ƒL[ .
-                        VK_SPACE: bTransmitMsg := true; // Space ƒL[
-                        else if not Status.bCtrlButton then begin // ‚»‚Ì‘¼‚ÌƒL[ (ƒvƒŒƒCƒŠƒXƒgã‚Å‘€ì‚µ‚½‚Æ‚«‚Æ“¯‚¶ˆ—‚ğs‚¤)
+                            else cfMain.SPCPlay(PLAY_TYPE_LIST); // Enter ã‚­ãƒ¼
+                        VK_NUMPAD1, VK_NUMPAD3: cfMain.SetFunction(dwKeyCode - VK_NUMPAD2, FUNCTION_TYPE_SPEED); // ãƒ†ãƒ³ã‚­ãƒ¼ 1, 3
+                        VK_NUMPAD2: cfMain.ListNextPlay(PLAY_ORDER_NEXT, LIST_NEXT_PLAY_SELECT); // ãƒ†ãƒ³ã‚­ãƒ¼ 2
+                        VK_NUMPAD4, VK_NUMPAD6: cfMain.SetFunction(dwKeyCode - VK_NUMPAD5, FUNCTION_TYPE_SEEK); // ãƒ†ãƒ³ã‚­ãƒ¼ 4, 6
+                        VK_NUMPAD5: cfMain.SPCPlay(PLAY_TYPE_AUTO); // ãƒ†ãƒ³ã‚­ãƒ¼ 5
+                        VK_NUMPAD7, VK_NUMPAD9: cfMain.SetFunction(dwKeyCode - VK_NUMPAD8, FUNCTION_TYPE_SEPARATE); // ãƒ†ãƒ³ã‚­ãƒ¼ 7, 9
+                        VK_NUMPAD8: cfMain.ListNextPlay(PLAY_ORDER_PREVIOUS, LIST_NEXT_PLAY_SELECT); // ãƒ†ãƒ³ã‚­ãƒ¼ 8
+                        VK_NUMPAD0: cfMain.SPCStop(false); // ãƒ†ãƒ³ã‚­ãƒ¼ 0
+                        VK_ADD, VK_SUBTRACT: cfMain.SetFunction($6C - dwKeyCode, FUNCTION_TYPE_AMP); // ãƒ†ãƒ³ã‚­ãƒ¼ +, -
+                        VK_DIVIDE, VK_MULTIPLY: cfMain.SetFunction(1 - ((dwKeyCode and $1) shl 1), FUNCTION_TYPE_FEEDBACK); // ãƒ†ãƒ³ã‚­ãƒ¼ /, *
+                        VK_DECIMAL: cfMain.SPCStop(true); // ãƒ†ãƒ³ã‚­ãƒ¼ .
+                        VK_SPACE: bTransmitMsg := true; // Space ã‚­ãƒ¼
+                        else if not Status.bCtrlButton then begin // ãã®ä»–ã®ã‚­ãƒ¼ (ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆä¸Šã§æ“ä½œã—ãŸã¨ãã¨åŒã˜å‡¦ç†ã‚’è¡Œã†)
                             Msg.hWnd := cfMain.cwPlayList.hWnd;
                             bTransmitMsg := true;
                         end;
                     end;
-                    // wParam ‚ğ•œŒ³
+                    // wParam ã‚’å¾©å…ƒ
                     Msg.wParam := dwKeyCode;
                 end;
-                WM_KEYUP: begin // ”CˆÓ‚ÌƒL[
-                    // ƒ^ƒCƒ}[‚ğ‰ğœ
+                WM_KEYUP: begin // ä»»æ„ã®ã‚­ãƒ¼
+                    // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤
                     if Status.bOptionLock then API_KillTimer(cwWindowMain.hWnd, TIMER_ID_OPTION_LOCK);
-                    // ƒIƒvƒVƒ‡ƒ“İ’èƒƒbƒN‚ğ‰ğœ
+                    // ã‚ªãƒ—ã‚·ãƒ§ãƒ³è¨­å®šãƒ­ãƒƒã‚¯ã‚’è§£é™¤
                     Status.bOptionLock := false;
-                    // ƒL[‚ğ”»•Ê
+                    // ã‚­ãƒ¼ã‚’åˆ¤åˆ¥
                     dwKeyCode := Msg.wParam and $FF;
                     case dwKeyCode of
-                        VK_SHIFT: cfMain.SetChangeFunction(true); // Shift ƒL[
-                        VK_CONTROL: Status.bCtrlButton := false; // Ctrl ƒL[
+                        VK_SHIFT: cfMain.SetChangeFunction(true); // Shift ã‚­ãƒ¼
+                        VK_CONTROL: Status.bCtrlButton := false; // Ctrl ã‚­ãƒ¼
                     end;
                 end;
-                WM_LBUTTONDOWN, WM_LBUTTONDBLCLK: begin // ¶ƒ{ƒ^ƒ“
+                WM_LBUTTONDOWN, WM_LBUTTONDBLCLK: begin // å·¦ãƒœã‚¿ãƒ³
                     if Msg.hWnd = cfMain.cwStaticMain.hWnd then begin
                         Status.DblClickPoint.x := Msg.lParam and $FFFF;
                         Status.DblClickPoint.y := Msg.lParam shr 16;
@@ -4813,12 +4943,12 @@ begin
                     end else if Msg.hWnd = cfMain.cwPlayList.hWnd then begin
                         cfMain.DragFile(Msg.msg, Msg.wParam, Msg.lParam);
                     end else if (Msg.msg = WM_LBUTTONDBLCLK) and longbool(API_GetWindowLong(Msg.hWnd, GWL_STYLE) and BS_OWNERDRAW) then begin
-                        // NOTE: BS_OWNERDRAW ‚Ìê‡ABS_NOTIFY ‚ª©“®“I‚ÉƒZƒbƒg‚³‚êAƒ{ƒ^ƒ“‚Ìƒ_ƒuƒ‹ƒNƒŠƒbƒN‚ª
-                        // ‹@”\‚µ‚Ä‚µ‚Ü‚¤‚½‚ßAWM_LBUTTONDBLCLK ‚ğ WM_LBUTTONDOWN ‚É‹­§“I‚É•ÏX‚·‚é
+                        // NOTE: BS_OWNERDRAW ã®å ´åˆã€BS_NOTIFY ãŒè‡ªå‹•çš„ã«ã‚»ãƒƒãƒˆã•ã‚Œã€ãƒœã‚¿ãƒ³ã®ãƒ€ãƒ–ãƒ«ã‚¯ãƒªãƒƒã‚¯ãŒ
+                        // æ©Ÿèƒ½ã—ã¦ã—ã¾ã†ãŸã‚ã€WM_LBUTTONDBLCLK ã‚’ WM_LBUTTONDOWN ã«å¼·åˆ¶çš„ã«å¤‰æ›´ã™ã‚‹
                         Msg.msg := WM_LBUTTONDOWN;
                     end;
                 end;
-                WM_RBUTTONDOWN, WM_RBUTTONDBLCLK: begin // ‰Eƒ{ƒ^ƒ“
+                WM_RBUTTONDOWN, WM_RBUTTONDBLCLK: begin // å³ãƒœã‚¿ãƒ³
                     if Msg.hWnd = cfMain.cwStaticMain.hWnd then begin
                         Status.DblClickPoint.x := Msg.lParam and $FFFF;
                         Status.DblClickPoint.y := Msg.lParam shr 16;
@@ -4829,76 +4959,76 @@ begin
                     end;
                     cfMain.SetChangeFunction(true);
                 end;
-                WM_MBUTTONDOWN, WM_MBUTTONDBLCLK: begin // ’†‰›ƒ{ƒ^ƒ“
+                WM_MBUTTONDOWN, WM_MBUTTONDBLCLK: begin // ä¸­å¤®ãƒœã‚¿ãƒ³
                     if Msg.hWnd = cfMain.cwStaticMain.hWnd then begin
                         Status.DblClickPoint.x := Msg.lParam and $FFFF;
                         Status.DblClickPoint.y := Msg.lParam shr 16;
                         cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_RESET_TIME, Msg.lParam);
                     end;
                 end;
-                WM_RBUTTONUP: cfMain.SetChangeFunction(true); // ‰Eƒ{ƒ^ƒ“
+                WM_RBUTTONUP: cfMain.SetChangeFunction(true); // å³ãƒœã‚¿ãƒ³
                 WM_XBUTTONDOWN, WM_XBUTTONDBLCLK: if Status.bShiftButton xor longbool(Msg.wParam and $40) then cfMain.SetChangeInfo(false, -1)
-                    else cfMain.SetChangeInfo(false, 1); // Šg’£ƒ{ƒ^ƒ“
-                WM_MOUSEMOVE: if Msg.hWnd = cfMain.cwPlayList.hWnd then begin // ƒ}ƒEƒXˆÚ“®
+                    else cfMain.SetChangeInfo(false, 1); // æ‹¡å¼µãƒœã‚¿ãƒ³
+                WM_MOUSEMOVE: if Msg.hWnd = cfMain.cwPlayList.hWnd then begin // ãƒã‚¦ã‚¹ç§»å‹•
                     cfMain.DragFile(Msg.msg, Msg.wParam, Msg.lParam);
-                    Msg.msg := WM_LBUTTONUP; // ˆÚ“®‚ğƒLƒƒƒ“ƒZƒ‹
+                    Msg.msg := WM_LBUTTONUP; // ç§»å‹•ã‚’ã‚­ãƒ£ãƒ³ã‚»ãƒ«
                 end;
-                WM_MOUSEWHEEL: // ƒzƒC[ƒ‹FCtrl ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éê‡‚ÍˆÚ“®A Ctrl ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍƒXƒNƒ[ƒ‹
+                WM_MOUSEWHEEL: // ãƒ›ã‚¤ãƒ¼ãƒ«ï¼šCtrl ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ç§»å‹•ã€ Ctrl ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ãªã„å ´åˆã¯ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«
                     if Status.bCtrlButton then
                         if longbool(Msg.wParam and $80000000) then cfMain.ListDown()
                         else cfMain.ListUp()
                     else Msg.hWnd := cfMain.cwPlayList.hWnd;
             end;
-            // ƒƒbƒZ[ƒW‚ğ“]‘—‚·‚éê‡
+            // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è»¢é€ã™ã‚‹å ´åˆ
             if bTransmitMsg then begin
-                // ‰¼‘zƒL[ƒƒbƒZ[ƒW‚ğ•¶šƒƒbƒZ[ƒW‚É•ÏŠ·
+                // ä»®æƒ³ã‚­ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’æ–‡å­—ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã«å¤‰æ›
                 API_TranslateMessage(@Msg);
-                // ƒƒbƒZ[ƒW‚ğƒEƒBƒ“ƒhƒE‚É‘—M
+                // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«é€ä¿¡
                 API_DispatchMessage(@Msg);
             end;
         end;
-        // ƒEƒBƒ“ƒhƒE‚ğíœ
+        // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’å‰Šé™¤
         cfMain.DeleteWindow();
     end;
-    // ƒƒCƒ“ƒNƒ‰ƒX‚ğ‰ğ•ú
+    // ãƒ¡ã‚¤ãƒ³ã‚¯ãƒ©ã‚¹ã‚’è§£æ”¾
     cfMain.Free();
-    // ƒEƒBƒ“ƒhƒEƒNƒ‰ƒX‚ğíœ
-    Status.ccClass.DeleteClass(hThisInstance, pchar(CLASS_NAME));
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¯ãƒ©ã‚¹ã‚’å‰Šé™¤
+    Status.ccClass.DeleteClass(hThisInstance, CLASS_NAME);
     Status.ccClass.Free();
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğíœ
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’å‰Šé™¤
     API_DeleteCriticalSection(@CriticalSectionThread);
     API_DeleteCriticalSection(@CriticalSectionStatic);
-    // wParam ‚ğ•Ô‹p
+    // wParam ã‚’è¿”å´
     result := Msg.wParam;
 end;
 
 // ================================================================================
-// StaticProc - ƒ‰ƒxƒ‹ƒvƒƒV[ƒWƒƒ
+// StaticProc - ãƒ©ãƒ™ãƒ«ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 // ================================================================================
 function _StaticProc(hWnd: longword; msg: longword; wParam: longword; lParam: longword): longword; stdcall;
 begin
-    // ƒVƒXƒeƒ€‚ªÄ•`‰æ‚ğŠJn‚·‚éê‡
+    // ã‚·ã‚¹ãƒ†ãƒ ãŒå†æç”»ã‚’é–‹å§‹ã™ã‚‹å ´åˆ
     if msg = WM_PAINT then begin
-        // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+        // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
         API_EnterCriticalSection(@CriticalSectionStatic);
-        // Ä•`‰æ‚ğƒƒbƒN (WM_PAINT ’†‚É“Æ©‚Å•`‰æ‚·‚é‚ÆƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ª”j‰ó‚³‚ê‚é)
+        // å†æç”»ã‚’ãƒ­ãƒƒã‚¯ (WM_PAINT ä¸­ã«ç‹¬è‡ªã§æç”»ã™ã‚‹ã¨ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆãŒç ´å£Šã•ã‚Œã‚‹)
         Status.dwRedrawInfo := Status.dwRedrawInfo or REDRAW_LOCK_CRITICAL or REDRAW_LOCK_READY;
-        // ƒfƒtƒHƒ‹ƒg‚ÌƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ‚ğŒÄ‚Ño‚·
+        // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã‚’å‘¼ã³å‡ºã™
         result := API_CallWindowProc(Status.lpStaticProc, hWnd, msg, wParam, lParam);
-        // ƒCƒ“ƒWƒP[ƒ^‚ÌÄ•`‰æ‚ğ—\–ñ
+        // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã®å†æç”»ã‚’äºˆç´„
         Status.cfMain.cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
-        // Ä•`‰æ‚ÌƒƒbƒN‚ğˆê•”‰ğœ
+        // å†æç”»ã®ãƒ­ãƒƒã‚¯ã‚’ä¸€éƒ¨è§£é™¤
         Status.dwRedrawInfo := Status.dwRedrawInfo xor REDRAW_LOCK_CRITICAL;
-        // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+        // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
         API_LeaveCriticalSection(@CriticalSectionStatic);
     end else begin
-        // ƒfƒtƒHƒ‹ƒg‚ÌƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ‚ğŒÄ‚Ño‚·
+        // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã‚’å‘¼ã³å‡ºã™
         result := API_CallWindowProc(Status.lpStaticProc, hWnd, msg, wParam, lParam);
     end;
 end;
 
 // ================================================================================
-// WaveThread - ƒXƒŒƒbƒhƒvƒƒV[ƒWƒƒ
+// WaveThread - ã‚¹ãƒ¬ãƒƒãƒ‰ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
 // ================================================================================
 function _WaveThread(lpData: longword): longint; stdcall;
 var
@@ -4906,188 +5036,188 @@ var
     cwWindowMain: CWINDOW;
     Msg: TMSG;
 begin
-    // ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹‚ğæ“¾
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
     cfMain := Status.cfMain;
     cwWindowMain := cfMain.cwWindowMain;
-    // ƒƒbƒZ[ƒWƒLƒ…[‚ğì¬
+    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚­ãƒ¥ãƒ¼ã‚’ä½œæˆ
     API_PeekMessage(@Msg, NULL, WM_USER, WM_USER, NULL);
-    // €”õŠ®—¹
+    // æº–å‚™å®Œäº†
     Status.dwThreadStatus := WAVE_THREAD_RUNNING;
-    // ƒƒbƒZ[ƒW‚ğó‚¯æ‚é‚Ü‚Å‘Ò‹@‚·‚éB WM_QUIT ‚Ìê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å—ã‘å–ã‚‹ã¾ã§å¾…æ©Ÿã™ã‚‹ã€‚ WM_QUIT ã®å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
     while API_GetMessage(@Msg, NULL, NULL, NULL) do case Msg.msg of
-        MM_WOM_DONE: begin // ƒfƒoƒCƒX‚ÌÄ¶‚ªI—¹‚µ‚½
-            // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+        MM_WOM_DONE: begin // ãƒ‡ãƒã‚¤ã‚¹ã®å†ç”ŸãŒçµ‚äº†ã—ãŸ
+            // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
             API_EnterCriticalSection(@CriticalSectionThread);
-            // ƒfƒoƒCƒXƒvƒƒV[ƒWƒƒ‚ğŒÄ‚Ño‚·
+            // ãƒ‡ãƒã‚¤ã‚¹ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã‚’å‘¼ã³å‡ºã™
             if Status.bPlay then begin
-                // Ÿ‚Ì‰¹ºƒf[ƒ^‚ğì¬‚µ‚ÄƒfƒoƒCƒX‚É“]‘—
+                // æ¬¡ã®éŸ³å£°ãƒ‡ãƒ¼ã‚¿ã‚’ä½œæˆã—ã¦ãƒ‡ãƒã‚¤ã‚¹ã«è»¢é€
                 cfMain.WaveProc(WAVE_PROC_WRITE_WAVE);
-                // ƒŠƒtƒŒƒbƒVƒ…—p‚Ì‹óƒƒbƒZ[ƒW‚ğ‘—M (for wine)
+                // ãƒªãƒ•ãƒ¬ãƒƒã‚·ãƒ¥ç”¨ã®ç©ºãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’é€ä¿¡ (for wine)
                 if longbool(Status.dwWaveMessage) then begin
                     cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_WAVE_PROC, NULL);
                     Dec(Status.dwWaveMessage);
                 end;
-                // ƒXƒŠ[ƒv—}§ƒƒbƒZ[ƒW‚ğ‘—M
+                // ã‚¹ãƒªãƒ¼ãƒ—æŠ‘åˆ¶ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’é€ä¿¡
                 if longbool(Option.dwNoSleep) then begin
                     Inc(Status.dwNoSleepTime, Option.dwBufferTime);
                     if Status.dwNoSleepTime >= NO_SLEEP_INTERVAL then API_SetThreadExecutionState(Option.dwNoSleep and $FFFF);
                     while Status.dwNoSleepTime >= NO_SLEEP_INTERVAL do Dec(Status.dwNoSleepTime, NO_SLEEP_INTERVAL);
                 end;
             end else Dec(Status.dwThreadIdle);
-            // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+            // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
             API_LeaveCriticalSection(@CriticalSectionThread);
         end;
         WM_APP_MESSAGE: case Msg.wParam of
-            WM_APP_SPC_PLAY: begin // ‰‰‘tŠJn
-                // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+            WM_APP_SPC_PLAY: begin // æ¼”å¥é–‹å§‹
+                // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
                 API_EnterCriticalSection(@CriticalSectionThread);
-                // ƒŠƒs[ƒgŠJnˆÊ’u‚ªİ’è‚³‚ê‚Ä‚¢‚éê‡‚ÍƒV[ƒN
+                // ãƒªãƒ”ãƒ¼ãƒˆé–‹å§‹ä½ç½®ãŒè¨­å®šã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ã‚·ãƒ¼ã‚¯
                 if Status.bWaveWrite and Status.bTimeRepeat and longbool(Status.dwStartTime) then cfMain.SPCSeek(Status.dwStartTime, true);
-                // ‰‰‘tŠJn
+                // æ¼”å¥é–‹å§‹
                 cfMain.WaveStart();
-                // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+                // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
                 API_LeaveCriticalSection(@CriticalSectionThread);
             end;
-            WM_APP_SPC_PAUSE: if Status.bWaveWrite and cfMain.WavePause() then begin // ˆê’â~
-                // ƒƒjƒ…[‚ğXV
+            WM_APP_SPC_PAUSE: if Status.bWaveWrite and cfMain.WavePause() then begin // ä¸€æ™‚åœæ­¢
+                // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
                 cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_UPDATE_MENU, NULL);
-                // ƒCƒ“ƒWƒP[ƒ^‚ğƒŠƒZƒbƒg
+                // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’ãƒªã‚»ãƒƒãƒˆ
                 cfMain.ResetInfo(true);
             end;
-            WM_APP_SPC_RESUME: if Status.bWaveWrite and cfMain.WaveResume() then begin // ‰‰‘tÄŠJ
-                // ƒƒjƒ…[‚ğXV
+            WM_APP_SPC_RESUME: if Status.bWaveWrite and cfMain.WaveResume() then begin // æ¼”å¥å†é–‹
+                // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
                 cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_UPDATE_MENU, NULL);
-                // ƒCƒ“ƒWƒP[ƒ^‚ğƒŠƒZƒbƒg
+                // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’ãƒªã‚»ãƒƒãƒˆ
                 cfMain.ResetInfo(true);
             end;
-            WM_APP_SPC_RESET: if Status.bWaveWrite then begin // ‰‰‘tİ’è
-                // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+            WM_APP_SPC_RESET: if Status.bWaveWrite then begin // æ¼”å¥è¨­å®š
+                // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
                 API_EnterCriticalSection(@CriticalSectionThread);
-                // SPC ‰‰‘tİ’è
+                // SPC æ¼”å¥è¨­å®š
                 cfMain.SPCOption();
-                // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+                // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
                 API_LeaveCriticalSection(@CriticalSectionThread);
             end;
-            WM_APP_SPC_TIME: if Status.bWaveWrite then begin // ŠÔİ’è
-                // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+            WM_APP_SPC_TIME: if Status.bWaveWrite then begin // æ™‚é–“è¨­å®š
+                // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
                 API_EnterCriticalSection(@CriticalSectionThread);
-                // SPC ‰‰‘tİ’è
+                // SPC æ¼”å¥è¨­å®š
                 cfMain.SPCTime(false, false, true);
-                // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+                // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
                 API_LeaveCriticalSection(@CriticalSectionThread);
             end;
-            WM_APP_SPC_SEEK, WM_APP_SPC_SEEK + 1: if Status.bWaveWrite then begin // ƒV[ƒN
-                // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+            WM_APP_SPC_SEEK, WM_APP_SPC_SEEK + 1: if Status.bWaveWrite then begin // ã‚·ãƒ¼ã‚¯
+                // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
                 API_EnterCriticalSection(@CriticalSectionThread);
-                // SPC ƒV[ƒN
+                // SPC ã‚·ãƒ¼ã‚¯
                 cfMain.SPCSeek(Msg.lParam, longbool(Msg.wParam and $1));
-                // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+                // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
                 API_LeaveCriticalSection(@CriticalSectionThread);
             end;
         end;
-        MM_WOM_OPEN: Status.dwThreadStatus := Status.dwThreadStatus or WAVE_THREAD_DEVICE_OPENED; // ƒfƒoƒCƒX‚ªƒI[ƒvƒ“‚³‚ê‚½
-        MM_WOM_CLOSE: Status.dwThreadStatus := Status.dwThreadStatus or WAVE_THREAD_DEVICE_CLOSED; // ƒfƒoƒCƒX‚ªƒNƒ[ƒY‚³‚ê‚½
+        MM_WOM_OPEN: Status.dwThreadStatus := Status.dwThreadStatus or WAVE_THREAD_DEVICE_OPENED; // ãƒ‡ãƒã‚¤ã‚¹ãŒã‚ªãƒ¼ãƒ—ãƒ³ã•ã‚ŒãŸ
+        MM_WOM_CLOSE: Status.dwThreadStatus := Status.dwThreadStatus or WAVE_THREAD_DEVICE_CLOSED; // ãƒ‡ãƒã‚¤ã‚¹ãŒã‚¯ãƒ­ãƒ¼ã‚ºã•ã‚ŒãŸ
     end;
-    // ˆ—I—¹
+    // å‡¦ç†çµ‚äº†
     Status.dwThreadStatus := WAVE_THREAD_SUSPEND;
-    // wParam ‚ğ•Ô‹p
+    // wParam ã‚’è¿”å´
     result := Msg.wParam;
 end;
 
 // ================================================================================
-// OLEIDropSourceAddRef - IDropSource ƒCƒ“ƒ^[ƒtƒFƒCƒXQÆ
+// OLEIDropSourceAddRef - IDropSource ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹å‚ç…§
 // ================================================================================
 function _OLEIDropSourceAddRef(lpDropSource: pointer): longword; stdcall;
 var
     IDropSource: ^TIDROPSOURCE;
 begin
-    // QÆƒJƒEƒ“ƒg‚ğƒCƒ“ƒNƒŠƒƒ“ƒg
+    // å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆã‚’ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
     IDropSource := lpDropSource;
     result := API_InterlockedIncrement(@IDropSource.dwRefCnt);
 end;
 
 // ================================================================================
-// OLEIDropSourceRelease - IDropSource ƒCƒ“ƒ^[ƒtƒFƒCƒX‰ğ•ú
+// OLEIDropSourceRelease - IDropSource ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹è§£æ”¾
 // ================================================================================
 function _OLEIDropSourceRelease(lpDropSource: pointer): longword; stdcall;
 var
     IDropSource: ^TIDROPSOURCE;
 begin
-    // QÆƒJƒEƒ“ƒg‚ğƒfƒNƒŠƒƒ“ƒg
+    // å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆã‚’ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
     IDropSource := lpDropSource;
     result := API_InterlockedDecrement(@IDropSource.dwRefCnt);
-    // QÆƒJƒEƒ“ƒg‚ª 0 ‚Å‚È‚¢ê‡‚ÍI—¹
+    // å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆãŒ 0 ã§ãªã„å ´åˆã¯çµ‚äº†
     if longbool(result) then exit;
-    // ƒƒ‚ƒŠ‚ğ‰ğ•ú
+    // ãƒ¡ãƒ¢ãƒªã‚’è§£æ”¾
     API_GlobalFree(longword(IDropSource.lpVtbl));
     API_GlobalFree(longword(IDropSource));
 end;
 
 // ================================================================================
-// OLEIDropSourceQueryInterface - IDropSource ƒCƒ“ƒ^[ƒtƒFƒCƒX‰Šú‰»
+// OLEIDropSourceQueryInterface - IDropSource ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹åˆæœŸåŒ–
 // ================================================================================
 function _OLEIDropSourceQueryInterface(lpDropSource: pointer; priid: pointer; lplpDropSource: pointer): longword; stdcall;
 var
     Guid: ^TGUID;
     DblPointer: ^TDBLPOINTER;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     Guid := priid;
     DblPointer := lplpDropSource;
-    // —v‹‚³‚ê‚½ GUID ‚ğŠm”F
+    // è¦æ±‚ã•ã‚ŒãŸ GUID ã‚’ç¢ºèª
     if IsEqualsGUID(Guid^, IID_IDropSource) or IsEqualsGUID(Guid^, IID_IUnknown) then begin
-        // IDropSource ‚Ì GUID ‚ğ—v‹‚³‚ê‚½ê‡‚ÍƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^‚ğİ’è
+        // IDropSource ã® GUID ã‚’è¦æ±‚ã•ã‚ŒãŸå ´åˆã¯ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿ã‚’è¨­å®š
         DblPointer.p := lpDropSource;
         _OLEIDropSourceAddRef(lpDropSource);
         result := S_OK;
     end else begin
-        // ‚»‚Ì‘¼‚Ì GUID ‚ğ—v‹‚³‚ê‚½ê‡‚Í‘¶İ‚µ‚È‚¢î•ñ‚ğİ’è
+        // ãã®ä»–ã® GUID ã‚’è¦æ±‚ã•ã‚ŒãŸå ´åˆã¯å­˜åœ¨ã—ãªã„æƒ…å ±ã‚’è¨­å®š
         DblPointer.p := NULLPOINTER;
         result := E_NOINTERFACE;
     end;
 end;
 
 // ================================================================================
-// OLEIDropSourceQueryContinueDrag - ƒhƒ‰ƒbƒO’†‚Ì‘€ì‚ğæ“¾
+// OLEIDropSourceQueryContinueDrag - ãƒ‰ãƒ©ãƒƒã‚°ä¸­ã®æ“ä½œã‚’å–å¾—
 // ================================================================================
 function _OLEIDropSourceQueryContinueDrag(lpDropSource: pointer; fEscapePressed: longbool; dwKeyState: longword): longword; stdcall;
 var
     dwKey: longword;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     dwKey := dwKeyState and (MK_LBUTTON or MK_RBUTTON);
     if fEscapePressed or (dwKey = (MK_LBUTTON or MK_RBUTTON)) then begin
-        // ƒhƒ‰ƒbƒO’†‚É ESC ƒL[‚ª‰Ÿ‚³‚ê‚½ê‡‚Íƒhƒ‰ƒbƒO‚ğƒLƒƒƒ“ƒZƒ‹
+        // ãƒ‰ãƒ©ãƒƒã‚°ä¸­ã« ESC ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸå ´åˆã¯ãƒ‰ãƒ©ãƒƒã‚°ã‚’ã‚­ãƒ£ãƒ³ã‚»ãƒ«
         result := DRAGDROP_S_CANCEL;
     end else if not longbool(dwKey) then begin
-        // ƒ}ƒEƒX‚Ìƒ{ƒ^ƒ“‚ª—£‚ê‚½ê‡‚ÍƒhƒƒbƒvÀs
+        // ãƒã‚¦ã‚¹ã®ãƒœã‚¿ãƒ³ãŒé›¢ã‚ŒãŸå ´åˆã¯ãƒ‰ãƒ­ãƒƒãƒ—å®Ÿè¡Œ
         result := DRAGDROP_S_DROP;
     end else result := S_OK;
 end;
 
 // ================================================================================
-// OLEIDropSourceGiveFeedback - ƒhƒ‰ƒbƒO’†‚Ìƒ}ƒEƒXƒJ[ƒ\ƒ‹æ“¾
+// OLEIDropSourceGiveFeedback - ãƒ‰ãƒ©ãƒƒã‚°ä¸­ã®ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«å–å¾—
 // ================================================================================
 function _OLEIDropSourceGiveFeedback(lpDropSource: pointer; dwEffect: longword): longword; stdcall;
 begin
-    // ƒfƒtƒHƒ‹ƒg‚ÌƒJ[ƒ\ƒ‹‚ğİ’è
+    // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚«ãƒ¼ã‚½ãƒ«ã‚’è¨­å®š
     result := DRAGDROP_S_USEDEFAULTCURSORS;
 end;
 
 // ================================================================================
-// OLEIDataObjectAddRef - IDataObject ƒCƒ“ƒ^[ƒtƒFƒCƒXQÆ
+// OLEIDataObjectAddRef - IDataObject ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹å‚ç…§
 // ================================================================================
 function _OLEIDataObjectAddRef(lpDataObject: pointer): longword; stdcall;
 var
     IDataObject: ^TIDATAOBJECT;
 begin
-    // QÆƒJƒEƒ“ƒg‚ğƒCƒ“ƒNƒŠƒƒ“ƒg
+    // å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆã‚’ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
     IDataObject := lpDataObject;
     result := API_InterlockedIncrement(@IDataObject.dwRefCnt);
 end;
 
 // ================================================================================
-// OLEIDataObjectRelease - IDataObject ƒCƒ“ƒ^[ƒtƒFƒCƒX‰ğ•ú
+// OLEIDataObjectRelease - IDataObject ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹è§£æ”¾
 // ================================================================================
 function _OLEIDataObjectRelease(lpDataObject: pointer): longword; stdcall;
 var
@@ -5095,18 +5225,18 @@ var
     IDataObject: ^TIDATAOBJECT;
     SelfObject: ^TDROPOBJECT;
 begin
-    // QÆƒJƒEƒ“ƒg‚ğƒfƒNƒŠƒƒ“ƒg
+    // å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆã‚’ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆ
     IDataObject := lpDataObject;
     result := API_InterlockedDecrement(@IDataObject.dwRefCnt);
-    // QÆƒJƒEƒ“ƒg‚ª 0 ‚Å‚È‚¢ê‡‚ÍI—¹
+    // å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆãŒ 0 ã§ãªã„å ´åˆã¯çµ‚äº†
     if longbool(result) then exit;
-    // ƒƒ‚ƒŠ‚ğ‰ğ•ú
+    // ãƒ¡ãƒ¢ãƒªã‚’è§£æ”¾
     for I := 0 to IDataObject.dwObjectCnt - 1 do begin
         SelfObject := @IDataObject.Objects[I];
         if not SelfObject.fRelease then continue;
         if longbool(SelfObject.FormatEtc) then API_GlobalFree(longword(SelfObject.FormatEtc));
         if longbool(SelfObject.StgMedium) then begin
-            // ƒRƒs[‚³‚ê‚½’Ç‰Á‚Ìƒf[ƒ^‚ğ‰ğ•ú
+            // ã‚³ãƒ”ãƒ¼ã•ã‚ŒãŸè¿½åŠ ã®ãƒ‡ãƒ¼ã‚¿ã‚’è§£æ”¾
             API_ReleaseStgMedium(SelfObject.StgMedium);
             API_GlobalFree(longword(SelfObject.StgMedium));
         end;
@@ -5117,31 +5247,31 @@ begin
 end;
 
 // ================================================================================
-// OLEIDataObjectQueryInterface - IDataObject ƒCƒ“ƒ^[ƒtƒFƒCƒX‰Šú‰»
+// OLEIDataObjectQueryInterface - IDataObject ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹åˆæœŸåŒ–
 // ================================================================================
 function _OLEIDataObjectQueryInterface(lpDataObject: pointer; priid: pointer; lplpDataObject: pointer): longword; stdcall;
 var
     Guid: ^TGUID;
     DblPointer: ^TDBLPOINTER;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     Guid := priid;
     DblPointer := lplpDataObject;
-    // —v‹‚³‚ê‚½ GUID ‚ğŠm”F
+    // è¦æ±‚ã•ã‚ŒãŸ GUID ã‚’ç¢ºèª
     if IsEqualsGUID(Guid^, IID_IDataObject) or IsEqualsGUID(Guid^, IID_IUnknown) then begin
-        // IDataObject ‚Ì GUID ‚ğ—v‹‚³‚ê‚½ê‡‚ÍƒNƒ‰ƒX‚Ìƒ|ƒCƒ“ƒ^‚ğİ’è
+        // IDataObject ã® GUID ã‚’è¦æ±‚ã•ã‚ŒãŸå ´åˆã¯ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿ã‚’è¨­å®š
         DblPointer.p := lpDataObject;
         _OLEIDataObjectAddRef(lpDataObject);
         result := S_OK;
     end else begin
-        // ‚»‚Ì‘¼‚Ì GUID ‚ğ—v‹‚³‚ê‚½ê‡‚Í‘¶İ‚µ‚È‚¢î•ñ‚ğİ’è
+        // ãã®ä»–ã® GUID ã‚’è¦æ±‚ã•ã‚ŒãŸå ´åˆã¯å­˜åœ¨ã—ãªã„æƒ…å ±ã‚’è¨­å®š
         DblPointer.p := NULLPOINTER;
         result := E_NOINTERFACE;
     end;
 end;
 
 // ================================================================================
-// _OLEIDataObjectCopyData - ƒhƒ‰ƒbƒO‘ÎÛƒf[ƒ^ƒRƒs[
+// _OLEIDataObjectCopyData - ãƒ‰ãƒ©ãƒƒã‚°å¯¾è±¡ãƒ‡ãƒ¼ã‚¿ã‚³ãƒ”ãƒ¼
 // ================================================================================
 function _OLEIDataObjectCopyData(lpDataObject: pointer; lpDestMedium: pointer; lpFormatEtc: pointer; lpSrcMedium: pointer): longword;
 var
@@ -5152,25 +5282,25 @@ var
     IDataObjectUnk: ^TIDATAOBJECTVTBL;
     AddRef: function(lpDataObject: pointer): longword;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     FormatEtc := lpFormatEtc;
     DestStgMedium := lpDestMedium;
     SrcStgMedium := lpSrcMedium;
-    // ƒtƒH[ƒ}ƒbƒgƒ^ƒCƒv‚ª NULL ‚Ìê‡‚ÍI—¹
+    // ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚¿ã‚¤ãƒ—ãŒ NULL ã®å ´åˆã¯çµ‚äº†
     if not longbool(SrcStgMedium.tymed) then begin
         result := E_INVALIDARG;
         exit;
     end;
-    // ƒf[ƒ^‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğƒRƒs[
+    // ãƒ‡ãƒ¼ã‚¿ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚³ãƒ”ãƒ¼
     handle := API_OleDuplicateData(SrcStgMedium.handle, FormatEtc.cfFormat, GMEM_FIXED);
-    // ƒCƒ“ƒXƒ^ƒ“ƒX‚ÌƒRƒs[‚É¸”s‚µ‚½ê‡‚ÍI—¹
+    // ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ã‚³ãƒ”ãƒ¼ã«å¤±æ•—ã—ãŸå ´åˆã¯çµ‚äº†
     if not longbool(handle) then begin
         result := E_OUTOFMEMORY;
         exit;
     end;
-    // ƒCƒ“ƒXƒ^ƒ“ƒX‚Ìƒnƒ“ƒhƒ‹‚ğİ’è
+    // ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®ãƒãƒ³ãƒ‰ãƒ«ã‚’è¨­å®š
     DestStgMedium.handle := handle;
-    // ƒtƒH[ƒ}ƒbƒgƒf[ƒ^‚ğƒRƒs[
+    // ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãƒ‡ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼
     DestStgMedium.tymed := SrcStgMedium.tymed;
     DestStgMedium.pUnkForRelease := SrcStgMedium.pUnkForRelease;
     if longbool(DestStgMedium.pUnkForRelease) then begin
@@ -5178,12 +5308,12 @@ begin
         AddRef := IDataObjectUnk.OLEIDataObjectAddRef;
         AddRef(IDataObjectUnk);
     end;
-    // I—¹
+    // çµ‚äº†
     result := S_OK;
 end;
 
 // ================================================================================
-// OLEIDataObjectGetData - ƒhƒ‰ƒbƒO‘ÎÛƒf[ƒ^æ“¾ (ƒf[ƒ^æ“¾Œ³‘¤ƒƒ‚ƒŠŠm•Û)
+// OLEIDataObjectGetData - ãƒ‰ãƒ©ãƒƒã‚°å¯¾è±¡ãƒ‡ãƒ¼ã‚¿å–å¾— (ãƒ‡ãƒ¼ã‚¿å–å¾—å…ƒå´ãƒ¡ãƒ¢ãƒªç¢ºä¿)
 // ================================================================================
 function _OLEIDataObjectGetData(lpDataObject: pointer; lpFormatEtc: pointer; lpStgMedium: pointer): longword; stdcall;
 var
@@ -5192,18 +5322,18 @@ var
     FormatEtc: ^TFORMATETC;
     SelfObject: ^TDROPOBJECT;
 begin
-    // ƒtƒH[ƒ}ƒbƒg’è‹`‚ª NULL ‚Ìê‡‚ÍI—¹
+    // ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå®šç¾©ãŒ NULL ã®å ´åˆã¯çµ‚äº†
     if not longbool(lpFormatEtc) or not longbool(lpStgMedium) then begin
         result := E_INVALIDARG;
         exit;
     end;
-    // —v‹‚³‚ê‚½ƒtƒH[ƒ}ƒbƒg‚ª–„‚ß‚İƒIƒuƒWƒFƒNƒg‚Å‚È‚¢ê‡‚ÍI—¹
+    // è¦æ±‚ã•ã‚ŒãŸãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãŒåŸ‹ã‚è¾¼ã¿ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã§ãªã„å ´åˆã¯çµ‚äº†
     FormatEtc := lpFormatEtc;
     if not longbool(FormatEtc.dwAspect and DVASPECT_CONTENT) then begin
         result := DV_E_DVASPECT;
         exit;
     end;
-    // —v‹‚³‚ê‚½ƒtƒH[ƒ}ƒbƒg‚ª‘z’è‚µ‚Ä‚¢‚éƒtƒH[ƒ}ƒbƒg‚ğŒŸõ
+    // è¦æ±‚ã•ã‚ŒãŸãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãŒæƒ³å®šã—ã¦ã„ã‚‹ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’æ¤œç´¢
     IDataObject := lpDataObject;
     SelfObject := NULLPOINTER;
     result := DV_E_FORMATETC;
@@ -5213,28 +5343,28 @@ begin
         and (FormatEtc.lindex = SelfObject.FormatEtc.lindex)
         and longbool(FormatEtc.dwAspect and SelfObject.FormatEtc.dwAspect)
         and longbool(FormatEtc.tymed and SelfObject.FormatEtc.tymed) then begin
-            // ‘z’è‚µ‚½ƒtƒH[ƒ}ƒbƒg
+            // æƒ³å®šã—ãŸãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
             result := S_OK;
             break;
         end;
     end;
-    // ƒtƒH[ƒ}ƒbƒg‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½ê‡‚ÍI—¹
+    // ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸå ´åˆã¯çµ‚äº†
     if result <> S_OK then exit;
-    // —v‹‚³‚ê‚½ƒf[ƒ^‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğƒRƒs[
+    // è¦æ±‚ã•ã‚ŒãŸãƒ‡ãƒ¼ã‚¿ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚³ãƒ”ãƒ¼
     result := _OLEIDataObjectCopyData(lpDataObject, lpStgMedium, SelfObject.FormatEtc, SelfObject.StgMedium);
 end;
 
 // ================================================================================
-// OLEIDataObjectGetDataHere - ƒhƒ‰ƒbƒO‘ÎÛƒf[ƒ^æ“¾ (ƒf[ƒ^’ñ‹ŸŒ³‘¤ƒƒ‚ƒŠŠm•Û)
+// OLEIDataObjectGetDataHere - ãƒ‰ãƒ©ãƒƒã‚°å¯¾è±¡ãƒ‡ãƒ¼ã‚¿å–å¾— (ãƒ‡ãƒ¼ã‚¿æä¾›å…ƒå´ãƒ¡ãƒ¢ãƒªç¢ºä¿)
 // ================================================================================
 function _OLEIDataObjectGetDataHere(lpDataObject: pointer; lpFormatEtc: pointer; lpStgMedium: pointer): longword; stdcall;
 begin
-    // –¢À‘•
+    // æœªå®Ÿè£…
     result := E_NOTIMPL;
 end;
 
 // ================================================================================
-// OLEIDataObjectQueryGetData - ƒhƒ‰ƒbƒO‘ÎÛƒf[ƒ^ƒtƒH[ƒ}ƒbƒgƒ`ƒFƒbƒN
+// OLEIDataObjectQueryGetData - ãƒ‰ãƒ©ãƒƒã‚°å¯¾è±¡ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãƒã‚§ãƒƒã‚¯
 // ================================================================================
 function _OLEIDataObjectQueryGetData(lpDataObject: pointer; lpFormatEtc: pointer): longword; stdcall;
 var
@@ -5243,18 +5373,18 @@ var
     FormatEtc: ^TFORMATETC;
     SelfObject: ^TDROPOBJECT;
 begin
-    // ƒtƒH[ƒ}ƒbƒg’è‹`‚ª NULL ‚Ìê‡‚ÍI—¹
+    // ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå®šç¾©ãŒ NULL ã®å ´åˆã¯çµ‚äº†
     if not longbool(lpFormatEtc) then begin
         result := E_INVALIDARG;
         exit;
     end;
-    // —v‹‚³‚ê‚½ƒtƒH[ƒ}ƒbƒg‚ª–„‚ß‚İƒIƒuƒWƒFƒNƒg‚Å‚È‚¢ê‡‚ÍI—¹
+    // è¦æ±‚ã•ã‚ŒãŸãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãŒåŸ‹ã‚è¾¼ã¿ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã§ãªã„å ´åˆã¯çµ‚äº†
     FormatEtc := lpFormatEtc;
     if not longbool(FormatEtc.dwAspect and DVASPECT_CONTENT) then begin
         result := DV_E_DVASPECT;
         exit;
     end;
-    // —v‹‚³‚ê‚½ƒtƒH[ƒ}ƒbƒg‚ª‘z’è‚µ‚Ä‚¢‚éƒtƒH[ƒ}ƒbƒg‚ğŒŸõ
+    // è¦æ±‚ã•ã‚ŒãŸãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãŒæƒ³å®šã—ã¦ã„ã‚‹ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’æ¤œç´¢
     IDataObject := lpDataObject;
     result := DV_E_FORMATETC;
     for I := 0 to IDataObject.dwObjectCnt - 1 do begin
@@ -5263,7 +5393,7 @@ begin
         and (FormatEtc.lindex = SelfObject.FormatEtc.lindex)
         and longbool(FormatEtc.dwAspect and SelfObject.FormatEtc.dwAspect)
         and longbool(FormatEtc.tymed and SelfObject.FormatEtc.tymed) then begin
-            // ‘z’è‚µ‚½ƒtƒH[ƒ}ƒbƒg
+            // æƒ³å®šã—ãŸãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
             result := S_OK;
             break;
         end;
@@ -5271,81 +5401,81 @@ begin
 end;
 
 // ================================================================================
-// OLEIDataObjectGetCanonicalFormatEtc - ’ñ‹ŸŒ³‚ÆŒİŠ·«‚Ì‚ ‚éƒtƒH[ƒ}ƒbƒg‚Ìæ“¾
+// OLEIDataObjectGetCanonicalFormatEtc - æä¾›å…ƒã¨äº’æ›æ€§ã®ã‚ã‚‹ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã®å–å¾—
 // ================================================================================
 function _OLEIDataObjectGetCanonicalFormatEtc(lpDataObject: pointer; lpFormatEtcIn: pointer; lpFormatEtcOut: pointer): longword; stdcall;
 begin
-    // –¢À‘•
+    // æœªå®Ÿè£…
     result := E_NOTIMPL;
 end;
 
 // ================================================================================
-// OLEIDataObjectSetData - ƒhƒ‰ƒbƒO‘ÎÛƒf[ƒ^İ’è
+// OLEIDataObjectSetData - ãƒ‰ãƒ©ãƒƒã‚°å¯¾è±¡ãƒ‡ãƒ¼ã‚¿è¨­å®š
 // ================================================================================
 function _OLEIDataObjectSetData(lpDataObject: pointer; lpFormatEtc: pointer; lpStgMedium: pointer; fRelease: longbool): longword; stdcall;
 var
     IDataObject: ^TIDATAOBJECT;
     SelfObject: ^TDROPOBJECT;
 begin
-    // ƒtƒH[ƒ}ƒbƒg’è‹`‚ª NULL ‚Ìê‡‚ÍI—¹
+    // ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå®šç¾©ãŒ NULL ã®å ´åˆã¯çµ‚äº†
     if not longbool(lpFormatEtc) or not longbool(lpStgMedium) then begin
         result := E_INVALIDARG;
         exit;
     end;
-    // ƒoƒbƒtƒ@ƒTƒCƒY‚ğŠm”F
+    // ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’ç¢ºèª
     IDataObject := lpDataObject;
     if IDataObject.dwObjectCnt >= longword(Length(IDataObject.Objects)) then begin
         result := E_OUTOFMEMORY;
         exit;
     end;
-    // ƒtƒH[ƒ}ƒbƒg’è‹`‚ğİ’è
+    // ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå®šç¾©ã‚’è¨­å®š
     SelfObject := @IDataObject.Objects[IDataObject.dwObjectCnt];
     API_InterlockedIncrement(@IDataObject.dwObjectCnt);
     SelfObject.FormatEtc := lpFormatEtc;
     SelfObject.fRelease := fRelease;
     if fRelease then begin
-        // ƒf[ƒ^‚ğƒRƒs[‚µ‚È‚¢
+        // ãƒ‡ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼ã—ãªã„
         SelfObject.StgMedium := lpStgMedium;
         result := S_OK;
     end else begin
-        // —v‹‚³‚ê‚½ƒf[ƒ^‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚ğƒRƒs[
+        // è¦æ±‚ã•ã‚ŒãŸãƒ‡ãƒ¼ã‚¿ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ã‚³ãƒ”ãƒ¼
         result := _OLEIDataObjectCopyData(lpDataObject, SelfObject.StgMedium, lpFormatEtc, lpStgMedium);
     end;
 end;
 
 // ================================================================================
-// OLEIDataObjectEnumFormatEtc - ’ñ‹ŸŒ³‚ªƒTƒ|[ƒg‚·‚éƒtƒH[ƒ}ƒbƒg‚Ì—ñ‹“
+// OLEIDataObjectEnumFormatEtc - æä¾›å…ƒãŒã‚µãƒãƒ¼ãƒˆã™ã‚‹ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã®åˆ—æŒ™
 // ================================================================================
 function _OLEIDataObjectEnumFormatEtc(lpDataObject: pointer; dwDirection: longword; lplpEnumFormatEtc: pointer): longword; stdcall;
 begin
-    // –¢À‘•
+    // æœªå®Ÿè£…
     result := E_NOTIMPL;
 end;
 
 // ================================================================================
-// OLEIDataObjectDAdvise - æ“¾Œ³‚Æ’ñ‹ŸŒ³‚Ì‘ŠŒİ’Ê’mİ’è
+// OLEIDataObjectDAdvise - å–å¾—å…ƒã¨æä¾›å…ƒã®ç›¸äº’é€šçŸ¥è¨­å®š
 // ================================================================================
 function _OLEIDataObjectDAdvise(lpDataObject: pointer; lpFormatEtc: pointer; dwAdvf: longword; lpAdvSink: pointer; pdwConnection: pointer): longword; stdcall;
 begin
-    // –¢ƒTƒ|[ƒg
+    // æœªã‚µãƒãƒ¼ãƒˆ
     result := OLE_E_ADVISENOTSUPPORTED;
 end;
 
 // ================================================================================
-// OLEIDataObjectDUnadvise - æ“¾Œ³‚Æ’ñ‹ŸŒ³‚Ì‘ŠŒİ’Ê’m‰ğœ
+// OLEIDataObjectDUnadvise - å–å¾—å…ƒã¨æä¾›å…ƒã®ç›¸äº’é€šçŸ¥è§£é™¤
 // ================================================================================
 function _OLEIDataObjectDUnadvise(lpDataObject: pointer; dwConnection: longword): longword; stdcall;
 begin
-    // –¢ƒTƒ|[ƒg
+    // æœªã‚µãƒãƒ¼ãƒˆ
     result := OLE_E_ADVISENOTSUPPORTED;
 end;
 
 // ================================================================================
-// OLEIDataObjectEnumDAdvise - æ“¾Œ³‚Æ’ñ‹ŸŒ³‚Ì‘ŠŒİ’Ê’m—ñ‹“
+// OLEIDataObjectEnumDAdvise - å–å¾—å…ƒã¨æä¾›å…ƒã®ç›¸äº’é€šçŸ¥åˆ—æŒ™
 // ================================================================================
 function _OLEIDataObjectEnumDAdvise(lpDataObject: pointer; lplpEnumAdvise: pointer): longword; stdcall;
 begin
-    // –¢ƒTƒ|[ƒg
+    // æœªã‚µãƒãƒ¼ãƒˆ
     result := OLE_E_ADVISENOTSUPPORTED;
 end;
 
@@ -5363,14 +5493,14 @@ end;
 
 
 // *************************************************************************************************************************************************************
-// CLASS ƒNƒ‰ƒX
+// CLASS ã‚¯ãƒ©ã‚¹
 // *************************************************************************************************************************************************************
 
 // ================================================================================
-// CreateClass - ƒNƒ‰ƒXì¬
+// CreateClass - ã‚¯ãƒ©ã‚¹ä½œæˆ
 // ================================================================================
-procedure CCLASS.CreateClass(lpWindowProc: pointer; hThisInstance: longword; lpClassName: pointer; dwStyle: longword; lpIcon: pointer; lpSmallIcon: pointer;
-    hCursor: longword; hbrBackground: longword);
+procedure CCLASS.CreateClass(lpWindowProc: pointer; hThisInstance: longword; const sClassName: utf8string; dwStyle: longword; lpIcon: pointer;
+    lpSmallIcon: pointer; hCursor: longword; hbrBackground: longword);
 var
     WndClassEx: TWNDCLASSEX;
 begin
@@ -5379,8 +5509,8 @@ begin
     WndClassEx.style := dwStyle;
     WndClassEx.lpfnWndProc := lpWindowProc;
     WndClassEx.hThisInstance := hThisInstance;
-    WndClassEx.lpszMenuName := pchar(longword(word(1)));
-    WndClassEx.lpszClassName := lpClassName;
+    WndClassEx.lpszMenuName := pwidechar(longword(word(1)));
+    WndClassEx.lpszClassName := StrToPtr(sClassName);
     if longbool(lpIcon) then WndClassEx.hIcon := API_LoadIcon(hThisInstance, lpIcon);
     if longbool(hCursor) then WndClassEx.hCursor := API_LoadCursor(NULL, pointer(hCursor));
     if longbool(hbrBackground) then WndClassEx.hbrBackground := hbrBackground;
@@ -5389,22 +5519,23 @@ begin
 end;
 
 // ================================================================================
-// DeleteClass - ƒNƒ‰ƒXíœ
+// DeleteClass - ã‚¯ãƒ©ã‚¹å‰Šé™¤
 // ================================================================================
-procedure CCLASS.DeleteClass(hThisInstance: longword; lpClassName: pointer);
+procedure CCLASS.DeleteClass(hThisInstance: longword; const sClassName: utf8string);
 begin
-    API_UnregisterClass(lpClassName, hThisInstance);
+    API_UnregisterClass(StrToPtr(sClassName), hThisInstance);
 end;
 
 
 // *************************************************************************************************************************************************************
-// FONT ƒNƒ‰ƒX
+// FONT ã‚¯ãƒ©ã‚¹
 // *************************************************************************************************************************************************************
 
 // ================================================================================
-// CreateFont - ƒtƒHƒ“ƒgì¬
+// CreateFont - ãƒ•ã‚©ãƒ³ãƒˆä½œæˆ
 // ================================================================================
-procedure CFONT.CreateFont(lpFontName: pointer; nHeight: longint; nWidth: longint; bBold: longbool; bItalic: longbool; bUnderLine: longbool; bStrike: longbool);
+procedure CFONT.CreateFont(const sFontName: utf8string; nHeight: longint; nWidth: longint; bBold: longbool; bItalic: longbool; bUnderLine: longbool;
+    bStrike: longbool);
 var
     Data: record
         nWeight: smallint;
@@ -5418,11 +5549,12 @@ begin
     if bItalic then Data.dwItalic := 1;
     if bUnderLine then Data.dwUnderLine := 1;
     if bStrike then Data.dwStrikeOut := 1;
-    hFont := API_CreateFont(nHeight, nWidth, NULL, NULL, Data.nWeight, Data.dwItalic, Data.dwUnderLine, Data.dwStrikeOut, 1, NULL, NULL, 2, 49, lpFontName);
+    hFont := API_CreateFont(nHeight, nWidth, NULL, NULL, Data.nWeight, Data.dwItalic, Data.dwUnderLine, Data.dwStrikeOut, 1, NULL, NULL, 2, 49,
+        StrToPtr(sFontName));
 end;
 
 // ================================================================================
-// DeleteFont - ƒtƒHƒ“ƒgíœ
+// DeleteFont - ãƒ•ã‚©ãƒ³ãƒˆå‰Šé™¤
 // ================================================================================
 procedure CFONT.DeleteFont();
 begin
@@ -5431,36 +5563,36 @@ end;
 
 
 // *************************************************************************************************************************************************************
-// MENU ƒNƒ‰ƒX
+// MENU ã‚¯ãƒ©ã‚¹
 // *************************************************************************************************************************************************************
 
 // ================================================================================
-// AppendMenu - ƒƒjƒ…[€–Ú’Ç‰Á
+// AppendMenu - ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®è¿½åŠ 
 // ================================================================================
-procedure CMENU.AppendMenu(dwID: longword; lpString: pointer);
+procedure CMENU.AppendMenu(dwID: longword; const sString: utf8string);
 begin
-    API_AppendMenu(hMenu, MF_STRING, dwID, lpString);
+    API_AppendMenu(hMenu, MF_STRING, dwID, StrToPtr(sString));
 end;
 
 // ================================================================================
-// AppendMenu - ƒƒjƒ…[€–Ú’Ç‰Á
+// AppendMenu - ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®è¿½åŠ 
 // ================================================================================
-procedure CMENU.AppendMenu(dwID: longword; lpString: pointer; bRadio: longbool);
+procedure CMENU.AppendMenu(dwID: longword; const sString: utf8string; bRadio: longbool);
 begin
-    if bRadio then API_AppendMenu(hMenu, MF_STRING or MF_RADIOCHECK, dwID, lpString)
-    else AppendMenu(dwID, lpString);
+    if bRadio then API_AppendMenu(hMenu, MF_STRING or MF_RADIOCHECK, dwID, StrToPtr(sString))
+    else AppendMenu(dwID, sString);
 end;
 
 // ================================================================================
-// AppendMenu - ƒƒjƒ…[€–Ú’Ç‰Á
+// AppendMenu - ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®è¿½åŠ 
 // ================================================================================
-procedure CMENU.AppendMenu(dwID: longword; lpString: pointer; hSubMenuID: longword);
+procedure CMENU.AppendMenu(dwID: longword; const sString: utf8string; hSubMenuID: longword);
 begin
-    API_AppendMenu(hMenu, MF_STRING or MF_POPUP, hSubMenuID, lpString);
+    API_AppendMenu(hMenu, MF_STRING or MF_POPUP, hSubMenuID, StrToPtr(sString));
 end;
 
 // ================================================================================
-// AppendSeparator - ƒƒjƒ…[ƒZƒpƒŒ[ƒ^’Ç‰Á
+// AppendSeparator - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚»ãƒ‘ãƒ¬ãƒ¼ã‚¿è¿½åŠ 
 // ================================================================================
 procedure CMENU.AppendSeparator();
 begin
@@ -5468,7 +5600,7 @@ begin
 end;
 
 // ================================================================================
-// CreateMenu - ƒƒjƒ…[ì¬
+// CreateMenu - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ä½œæˆ
 // ================================================================================
 procedure CMENU.CreateMenu();
 begin
@@ -5476,7 +5608,7 @@ begin
 end;
 
 // ================================================================================
-// CreatePopupMenu - ƒTƒuƒƒjƒ…[ì¬
+// CreatePopupMenu - ã‚µãƒ–ãƒ¡ãƒ‹ãƒ¥ãƒ¼ä½œæˆ
 // ================================================================================
 procedure CMENU.CreatePopupMenu();
 begin
@@ -5484,7 +5616,7 @@ begin
 end;
 
 // ================================================================================
-// DeleteMenu - ƒƒjƒ…[íœ
+// DeleteMenu - ãƒ¡ãƒ‹ãƒ¥ãƒ¼å‰Šé™¤
 // ================================================================================
 procedure CMENU.DeleteMenu();
 begin
@@ -5492,32 +5624,32 @@ begin
 end;
 
 // ================================================================================
-// InsertMenu - ƒƒjƒ…[€–Ú’Ç‰Á
+// InsertMenu - ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®è¿½åŠ 
 // ================================================================================
-procedure CMENU.InsertMenu(dwID: longword; dwAfterId: longword; lpString: pointer);
+procedure CMENU.InsertMenu(dwID: longword; dwAfterId: longword; const sString: utf8string);
 begin
-    API_InsertMenu(hMenu, dwAfterId, MF_BYCOMMAND or MF_STRING, dwID, lpString);
+    API_InsertMenu(hMenu, dwAfterId, MF_BYCOMMAND or MF_STRING, dwID, StrToPtr(sString));
 end;
 
 // ================================================================================
-// InsertMenu - ƒƒjƒ…[€–Ú’Ç‰Á
+// InsertMenu - ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®è¿½åŠ 
 // ================================================================================
-procedure CMENU.InsertMenu(dwID: longword; dwAfterId: longword; lpString: pointer; bRadio: longbool);
+procedure CMENU.InsertMenu(dwID: longword; dwAfterId: longword; const sString: utf8string; bRadio: longbool);
 begin
-    if bRadio then API_InsertMenu(hMenu, dwAfterId, MF_BYCOMMAND or MF_STRING or MF_RADIOCHECK, dwID, lpString)
-    else InsertMenu(dwID, dwAfterId, lpString);
+    if bRadio then API_InsertMenu(hMenu, dwAfterId, MF_BYCOMMAND or MF_STRING or MF_RADIOCHECK, dwID, StrToPtr(sString))
+    else InsertMenu(dwID, dwAfterId, sString);
 end;
 
 // ================================================================================
-// InsertMenu - ƒƒjƒ…[€–Ú’Ç‰Á
+// InsertMenu - ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®è¿½åŠ 
 // ================================================================================
-procedure CMENU.InsertMenu(dwID: longword; dwAfterId: longword; lpString: pointer; hSubMenuID: longword);
+procedure CMENU.InsertMenu(dwID: longword; dwAfterId: longword; const sString: utf8string; hSubMenuID: longword);
 begin
-    API_InsertMenu(hMenu, dwAfterId, MF_BYCOMMAND or MF_STRING or MF_POPUP, hSubMenuID, lpString);
+    API_InsertMenu(hMenu, dwAfterId, MF_BYCOMMAND or MF_STRING or MF_POPUP, hSubMenuID, StrToPtr(sString));
 end;
 
 // ================================================================================
-// InsertSeparator - ƒƒjƒ…[ƒZƒpƒŒ[ƒ^’Ç‰Á
+// InsertSeparator - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚»ãƒ‘ãƒ¬ãƒ¼ã‚¿è¿½åŠ 
 // ================================================================================
 procedure CMENU.InsertSeparator(dwId: longword);
 begin
@@ -5525,7 +5657,7 @@ begin
 end;
 
 // ================================================================================
-// RemoveMenu - ƒƒjƒ…[€–Úíœ
+// RemoveMenu - ãƒ¡ãƒ‹ãƒ¥ãƒ¼é …ç›®å‰Šé™¤
 // ================================================================================
 procedure CMENU.RemoveItem(dwId: longword);
 begin
@@ -5533,7 +5665,7 @@ begin
 end;
 
 // ================================================================================
-// SetMenuCheck - ƒƒjƒ…[ƒ`ƒFƒbƒNİ’è
+// SetMenuCheck - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒã‚§ãƒƒã‚¯è¨­å®š
 // ================================================================================
 procedure CMENU.SetMenuCheck(dwID: longword; bCheck: longbool);
 var
@@ -5547,7 +5679,7 @@ begin
 end;
 
 // ================================================================================
-// SetMenuEnable - ƒƒjƒ…[—LŒøİ’è
+// SetMenuEnable - ãƒ¡ãƒ‹ãƒ¥ãƒ¼æœ‰åŠ¹è¨­å®š
 // ================================================================================
 procedure CMENU.SetMenuEnable(dwID: longword; bEnable: longbool);
 var
@@ -5561,11 +5693,11 @@ end;
 
 
 // *************************************************************************************************************************************************************
-// MENUBAR ƒNƒ‰ƒX
+// MENUBAR ã‚¯ãƒ©ã‚¹
 // *************************************************************************************************************************************************************
 
 // ================================================================================
-// DrawMenuBar - ƒƒjƒ…[ƒo[•`‰æ
+// DrawMenuBar - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼æç”»
 // ================================================================================
 function CMENUBAR.DrawMenuBar(hWnd: longword; lParam: longword): longword;
 var
@@ -5574,28 +5706,28 @@ var
     MenuRect: TRECT;
     WindowRect: TRECT;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     UahMenu := pointer(lParam);
-    // ƒƒjƒ…[ƒo[‚ÌƒTƒCƒY‚ğæ“¾
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼ã®ã‚µã‚¤ã‚ºã‚’å–å¾—
     MenuBarInfo.cbSize := SizeOf(TMENUBARINFO);
     API_GetMenuBarInfo(hWnd, OBJID_MENU, NULL, @MenuBarInfo);
     API_MoveMemory(@MenuRect, @MenuBarInfo.rcBar, SizeOf(TRECT));
-    // ƒEƒBƒ“ƒhƒE‚ÌŠJnˆÊ’u•ªAˆÊ’u‚ğ•ÏX
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®é–‹å§‹ä½ç½®åˆ†ã€ä½ç½®ã‚’å¤‰æ›´
     API_GetWindowRect(hWnd, @WindowRect);
     Dec(MenuRect.left, WindowRect.left);
     Dec(MenuRect.right, WindowRect.left);
     Dec(MenuRect.top, WindowRect.top);
     Dec(MenuRect.bottom, WindowRect.top);
-    // •`‰æ
+    // æç”»
     API_FillRect(UahMenu.hDC, @MenuRect, Status.hMenuBrush);
-    // ƒƒjƒ…[‹«ŠE‚ğ•`‰æ
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼å¢ƒç•Œã‚’æç”»
     DrawMenuBorder(hWnd);
-    // ¬Œ÷
+    // æˆåŠŸ
     result := 1;
 end;
 
 // ================================================================================
-// DrawMenuBorder - ƒƒjƒ…[‹«ŠE•`‰æ
+// DrawMenuBorder - ãƒ¡ãƒ‹ãƒ¥ãƒ¼å¢ƒç•Œæç”»
 // ================================================================================
 procedure CMENUBAR.DrawMenuBorder(hWnd: longword);
 var
@@ -5603,23 +5735,23 @@ var
     MenuRect: TRECT;
     WindowRect: TRECT;
 begin
-    // ƒƒjƒ…[ƒo[‚ÌƒTƒCƒY‚ğæ“¾
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼ã®ã‚µã‚¤ã‚ºã‚’å–å¾—
     MenuBarInfo.cbSize := SizeOf(TMENUBARINFO);
     API_GetMenuBarInfo(hWnd, OBJID_MENU, NULL, @MenuBarInfo);
     API_MoveMemory(@MenuRect, @MenuBarInfo.rcBar, SizeOf(TRECT));
-    // ƒEƒBƒ“ƒhƒE‚ÌŠJnˆÊ’u•ªAˆÊ’u‚ğ•ÏX
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®é–‹å§‹ä½ç½®åˆ†ã€ä½ç½®ã‚’å¤‰æ›´
     API_GetWindowRect(hWnd, @WindowRect);
     Dec(MenuRect.left, WindowRect.left);
     Dec(MenuRect.right, WindowRect.left);
     Dec(MenuRect.bottom, WindowRect.top);
     MenuRect.top := MenuRect.bottom;
     Inc(MenuRect.bottom);
-    // •`‰æ
+    // æç”»
     API_FillRect(Status.hDCWindow, @MenuRect, Status.hMenuBrush);
 end;
 
 // ================================================================================
-// DrawMenuItem - ƒƒjƒ…[ƒAƒCƒeƒ€•`‰æ
+// DrawMenuItem - ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¢ã‚¤ãƒ†ãƒ æç”»
 // ================================================================================
 function CMENUBAR.DrawMenuItem(hWnd: longword; lParam: longword): longword;
 var
@@ -5631,37 +5763,38 @@ var
     hTheme: longword;
     MenuItemInfo: TMENUITEMINFO;
     Opts: TDTTOPTS;
-    API_DrawThemeTextEx: function(hTheme: longword; hDC: longword; iPartId: longint; iStateId: longint; pszText: pointer; cchText: longint; dwTextFlags: longword; pRect: pointer; pOptions: pointer): longword; stdcall;
+    API_DrawThemeTextEx: function(hTheme: longword; hDC: longword; iPartId: longint; iStateId: longint; pszText: pointer; cchText: longint;
+        dwTextFlags: longword; pRect: pointer; pOptions: pointer): longword; stdcall;
     API_OpenThemeData: function(hWnd: longword; pszClassList: pointer): longword; stdcall;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := 0;
-    // Windows Vista –¢–‚Ìê‡‚ÍI—¹
+    // Windows Vista æœªæº€ã®å ´åˆã¯çµ‚äº†
     if (Status.OsVersionInfo.dwMajorVersion < 6) then exit;
-    // UXTHEME.DLL ‚Ìƒ[ƒh‚É¸”s‚µ‚½ê‡‚ÍI—¹
-    hDLL := API_LoadLibraryEx(pchar('uxtheme.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    // UXTHEME.DLL ã®ãƒ­ãƒ¼ãƒ‰ã«å¤±æ•—ã—ãŸå ´åˆã¯çµ‚äº†
+    hDLL := API_LoadLibraryEx(StrToPtr('uxtheme.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if not longbool(hDLL) then exit;
-    // ƒƒjƒ…[ƒo[‚ğ•`‰æ
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒãƒ¼ã‚’æç”» (for Windows Vista ä»¥é™)
     @API_DrawThemeTextEx := API_GetProcAddress(hDLL, pchar('DrawThemeTextEx'));
     @API_OpenThemeData := API_GetProcAddress(hDLL, pchar('OpenThemeData'));
     if longbool(@API_DrawThemeTextEx) and longbool(@API_OpenThemeData) then begin
-        // ‰Šú‰»
+        // åˆæœŸåŒ–
         UahMenuItem := pointer(lParam);
-        // ƒoƒbƒtƒ@‚ğŠm•Û
+        // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
         GetMem(lpText, 256);
-        // ƒƒjƒ…[‚ÌƒeƒLƒXƒg‚ğæ“¾
+        // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—
         API_ZeroMemory(@MenuItemInfo, SizeOf(TMENUITEMINFO));
         MenuItemInfo.cbSize := SizeOf(TMENUITEMINFO);
         MenuItemInfo.fMask := MIIM_STRING;
         MenuItemInfo.dwTypeData := lpText;
-        MenuItemInfo.cch := 128; // ƒ}ƒ‹ƒ`ƒoƒCƒgl—¶
+        MenuItemInfo.cch := 128; // ãƒãƒ«ãƒãƒã‚¤ãƒˆè€ƒæ…®
         API_GetMenuItemInfo(UahMenuItem.Menu.hMenu, UahMenuItem.MenuItem.nPosition, true, @MenuItemInfo);
-        // •¶šFİ’è‚ğ€”õ
+        // æ–‡å­—è‰²è¨­å®šã‚’æº–å‚™
         dwFlags := DT_SINGLELINE or DT_CENTER or DT_VCENTER;
         API_ZeroMemory(@Opts, SizeOf(TDTTOPTS));
         Opts.cbSize := SizeOf(TDTTOPTS);
         Opts.dwFlags := 1; // DTT_TEXTCOLOR
-        // •¶šFE”wŒiF‚ğİ’è
+        // æ–‡å­—è‰²ãƒ»èƒŒæ™¯è‰²ã‚’è¨­å®š
         if longbool(UahMenuItem.Struct.itemState and (ODS_DISABLED or ODS_GRAYED)) then begin
             Opts.crText := COLOR_DARK_DISABLED;
             API_FillRect(UahMenuItem.Menu.hDC, @UahMenuItem.Struct.rcItem, Status.hMenuBrush);
@@ -5681,60 +5814,61 @@ begin
         if longbool(UahMenuItem.Struct.itemState and ODS_NOACCEL) then begin
             dwFlags := dwFlags or DT_HIDEPREFIX;
         end;
-        // •¶šF‚ğ“K—p
+        // æ–‡å­—è‰²ã‚’é©ç”¨
         wsData := 'Menu';
         hTheme := API_OpenThemeData(hWnd, pwidechar(wsData));
         API_DrawThemeTextEx(hTheme, UahMenuItem.Menu.hDC,
             $8, // MENU_BARITEM
             $1, // MBI_NORMAL
             lpText, MenuItemInfo.cch, dwFlags, @UahMenuItem.Struct.rcItem, @Opts);
-        // ƒoƒbƒtƒ@‚ğ‰ğ•ú
+        // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
         FreeMem(lpText, 256);
-        // ¬Œ÷
+        // æˆåŠŸ
         result := 1;
     end;
-    // DLL ‚ğ‰ğ•ú
+    // DLL ã‚’è§£æ”¾
     API_FreeLibrary(hDLL);
 end;
 
 
 // *************************************************************************************************************************************************************
-// WINDOW ƒNƒ‰ƒX
+// WINDOW ã‚¯ãƒ©ã‚¹
 // *************************************************************************************************************************************************************
 
 // ================================================================================
-// CreateItem - ƒEƒBƒ“ƒhƒEƒAƒCƒeƒ€ì¬
+// CreateItem - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¢ã‚¤ãƒ†ãƒ ä½œæˆ
 // ================================================================================
-procedure CWINDOW.CreateItem(hThisInstance: longword; hMainWnd: longword; hFont: longword; lpItemName: pointer; lpCaption: pointer; dwItemID: longword;
-    dwStylePlus: longword; dwStyleExPlus: longword; Box: TBOX);
+procedure CWINDOW.CreateItem(hThisInstance: longword; hMainWnd: longword; hFont: longword; const sItemName: utf8string; const sCaption: utf8string;
+    dwItemID: longword; dwStylePlus: longword; dwStyleExPlus: longword; Box: TBOX);
 var
     dwStyle: longword;
     dwStyleEx: longword;
 begin
     dwStyle := dwStylePlus or WS_CHILD;
     dwStyleEx := dwStyleExPlus;
-    hWnd := API_CreateWindowEx(dwStyleEx, lpItemName, lpCaption, dwStyle, Box.left, Box.top, Box.width, Box.height, hMainWnd, dwItemID,
-        hThisInstance, NULLPOINTER);
-    SendMessage(WM_SETFONT, hFont, NULL);
+    hWnd := API_CreateWindowEx(dwStyleEx, StrToPtr(sItemName), StrToPtr(sCaption), dwStyle,
+        Box.left, Box.top, Box.width, Box.height, hMainWnd, dwItemID, hThisInstance, NULLPOINTER);
+    SendMessage(WM_SETFONT, hFont);
 end;
 
 // ================================================================================
-// CreateWindow - ƒEƒBƒ“ƒhƒEì¬
+// CreateWindow - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½œæˆ
 // ================================================================================
-procedure CWINDOW.CreateWindow(hThisInstance: longword; lpClassName: pointer; lpWndName: pointer; dwStylePlus: longword; dwStyleExPlus: longword; Box: TBOX);
+procedure CWINDOW.CreateWindow(hThisInstance: longword; const sClassName: utf8string; const sWndName: utf8string; dwStylePlus: longword;
+    dwStyleExPlus: longword; Box: TBOX);
 var
     dwStyle: longword;
     dwStyleEx: longword;
 begin
     dwStyle := dwStylePlus or WS_OVERLAPPED;
     dwStyleEx := dwStyleExPlus;
-    hWnd := API_CreateWindowEx(dwStyleEx, lpClassName, lpWndName, dwStyle, Box.left, Box.top, Box.width, Box.height, NULL, NULL,
-        hThisInstance, NULLPOINTER);
+    hWnd := API_CreateWindowEx(dwStyleEx, StrToPtr(sClassName), StrToPtr(sWndName), dwStyle,
+        Box.left, Box.top, Box.width, Box.height, NULL, NULL, hThisInstance, NULLPOINTER);
     bMessageBox := false;
 end;
 
 // ================================================================================
-// DeleteWindow - ƒEƒBƒ“ƒhƒEíœ
+// DeleteWindow - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å‰Šé™¤
 // ================================================================================
 procedure CWINDOW.DeleteWindow();
 begin
@@ -5742,15 +5876,21 @@ begin
 end;
 
 // ================================================================================
-// GetCaption - ƒLƒƒƒvƒVƒ‡ƒ“æ“¾
+// GetCaption - ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³å–å¾—
 // ================================================================================
-function CWINDOW.GetCaption(lpCaption: pointer; nMaxCount: longint): longint;
+function CWINDOW.GetCaption(dwSize: longint): utf8string;
+var
+    lpBuffer: pointer;
 begin
-    result := API_GetWindowText(hWnd, lpCaption, nMaxCount);
+    GetMem(lpBuffer, dwSize);
+    API_ZeroMemory(lpBuffer, dwSize);
+    API_GetWindowText(hWnd, lpBuffer, dwSize);
+    result := PtrToStr(lpBuffer);
+    FreeMem(lpBuffer, dwSize);
 end;
 
 // ================================================================================
-// GetSystemMenu - ƒVƒXƒeƒ€ƒƒjƒ…[æ“¾
+// GetSystemMenu - ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒ‹ãƒ¥ãƒ¼å–å¾—
 // ================================================================================
 function CWINDOW.GetSystemMenu(): CMENU;
 begin
@@ -5759,7 +5899,7 @@ begin
 end;
 
 // ================================================================================
-// GetWindowRect - ’Êíó‘Ô‚ÌƒEƒBƒ“ƒhƒEƒTƒCƒYæ“¾
+// GetWindowRect - é€šå¸¸çŠ¶æ…‹ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºå–å¾—
 // ================================================================================
 function CWINDOW.GetWindowRect(lpRect: pointer): longbool;
 var
@@ -5772,7 +5912,7 @@ begin
 end;
 
 // ================================================================================
-// GetWindowStyle - ƒEƒBƒ“ƒhƒEƒXƒ^ƒCƒ‹æ“¾
+// GetWindowStyle - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¹ã‚¿ã‚¤ãƒ«å–å¾—
 // ================================================================================
 function CWINDOW.GetWindowStyle(): longword;
 begin
@@ -5780,7 +5920,7 @@ begin
 end;
 
 // ================================================================================
-// GetWindowStyleEx - Šg’£ƒEƒBƒ“ƒhƒEƒXƒ^ƒCƒ‹æ“¾
+// GetWindowStyleEx - æ‹¡å¼µã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚¹ã‚¿ã‚¤ãƒ«å–å¾—
 // ================================================================================
 function CWINDOW.GetWindowStyleEx(): longword;
 begin
@@ -5788,7 +5928,7 @@ begin
 end;
 
 // ================================================================================
-// Invalidate - ƒEƒBƒ“ƒhƒE•`‰æ—\–ñ
+// Invalidate - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦æç”»äºˆç´„
 // ================================================================================
 function CWINDOW.Invalidate(): longbool;
 begin
@@ -5796,18 +5936,26 @@ begin
 end;
 
 // ================================================================================
-// MessageBox - ƒƒbƒZ[ƒWƒ{ƒbƒNƒX•\¦
+// MessageBox - ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹è¡¨ç¤º
 // ================================================================================
-function CWINDOW.MessageBox(lpText: pointer; lpCaption: pointer; uType: longword): longint;
+function CWINDOW.MessageBox(const sText: utf8string): longint;
+begin
+    result := MessageBox(sText, DEFAULT_TITLE, NULL);
+end;
+
+// ================================================================================
+// MessageBox - ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹è¡¨ç¤º
+// ================================================================================
+function CWINDOW.MessageBox(const sText: utf8string; const sCaption: utf8string; uType: longword): longint;
 begin
     bMessageBox := true;
     API_SetForegroundWindow(hWnd);
-    result := API_MessageBox(hWnd, lpText, lpCaption, uType);
+    result := API_MessageBox(hWnd, StrToPtr(sText), StrToPtr(sCaption), uType);
     bMessageBox := false;
 end;
 
 // ================================================================================
-// PostMessage - ”ñ“¯ŠúƒƒbƒZ[ƒW‘—M
+// PostMessage - éåŒæœŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸é€ä¿¡
 // ================================================================================
 function CWINDOW.PostMessage(msg: longword; wParam: longword; lParam: longword): longbool;
 begin
@@ -5815,7 +5963,15 @@ begin
 end;
 
 // ================================================================================
-// SendMessage - “¯ŠúƒƒbƒZ[ƒW‘—M
+// SendMessage - åŒæœŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸é€ä¿¡
+// ================================================================================
+function CWINDOW.SendMessage(msg: longword; wParam: longword): longword;
+begin
+    result := API_SendMessage(hWnd, msg, wParam, longword(NULL));
+end;
+
+// ================================================================================
+// SendMessage - åŒæœŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸é€ä¿¡
 // ================================================================================
 function CWINDOW.SendMessage(msg: longword; wParam: longword; lParam: longword): longword;
 begin
@@ -5823,15 +5979,57 @@ begin
 end;
 
 // ================================================================================
-// SetCaption - ƒLƒƒƒvƒVƒ‡ƒ“İ’è
+// SendMessage - åŒæœŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸é€ä¿¡
 // ================================================================================
-procedure CWINDOW.SetCaption(lpCaption: pointer);
+function CWINDOW.SendMessage(msg: longword; wParam: longword; lParam: pointer): longword;
 begin
-    API_SetWindowText(hWnd, lpCaption);
+    result := API_SendMessage(hWnd, msg, wParam, longword(lParam));
 end;
 
 // ================================================================================
-// SetWindowEnable - ƒEƒBƒ“ƒhƒE—LŒøİ’è
+// SendMessage - åŒæœŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸é€ä¿¡ (Ansi äº’æ›)
+// ================================================================================
+function CWINDOW.SendMessageA(msg: longword; wParam: longword; lParam: pointer): longword;
+var
+    lpBuffer: pointer;
+    dwCount: longword;
+    dwSize: longword;
+begin
+    dwCount := API_MultiByteToWideChar(CP_ACP, NULL, lParam, -1, NULLPOINTER, NULL);
+    dwSize := dwCount + dwCount + 2; // NULL æ–‡å­—ã¯ã‚«ã‚¦ãƒ³ãƒˆã•ã‚Œã‚‹ãŒä¿é™ºã§ç¢ºä¿
+    GetMem(lpBuffer, dwSize);
+    API_ZeroMemory(lpBuffer, dwSize);
+    API_MultiByteToWideChar(CP_ACP, NULL, lParam, -1, lpBuffer, dwCount);
+    result := API_SendMessage(hWnd, msg, wParam, longword(lpBuffer));
+    FreeMem(lpBuffer, dwSize);
+end;
+
+// ================================================================================
+// SendMessage - åŒæœŸãƒ¡ãƒƒã‚»ãƒ¼ã‚¸é€ä¿¡ (Ansi äº’æ›)
+// ================================================================================
+function CWINDOW.SendMessageA(msg: longword; wParam: longword; lParam: pointer; dwParamSize: longword): longword;
+var
+    lpBuffer: pointer;
+    dwSize: longword;
+begin
+    GetMem(lpBuffer, BUFFER_SIZE_LPARAM);
+    result := API_SendMessage(hWnd, msg, wParam, longword(lpBuffer));
+    dwSize := API_WideCharToMultiByte(CP_ACP, NULL, lpBuffer, -1, NULLPOINTER, NULL, NULLPOINTER, NULLPOINTER);
+    if dwSize >= dwParamSize then dwSize := dwParamSize - 1;
+    API_WideCharToMultiByte(CP_ACP, NULL, lpBuffer, -1, lParam, dwSize, NULLPOINTER, NULLPOINTER);
+    FreeMem(lpBuffer, BUFFER_SIZE_LPARAM);
+end;
+
+// ================================================================================
+// SetCaption - ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³è¨­å®š
+// ================================================================================
+procedure CWINDOW.SetCaption(const sCaption: utf8string);
+begin
+    API_SetWindowText(hWnd, StrToPtr(sCaption));
+end;
+
+// ================================================================================
+// SetWindowEnable - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦æœ‰åŠ¹è¨­å®š
 // ================================================================================
 procedure CWINDOW.SetWindowEnable(bEnable: longbool);
 begin
@@ -5839,7 +6037,7 @@ begin
 end;
 
 // ================================================================================
-// SetWindowPosition - ƒEƒBƒ“ƒhƒEˆÊ’uİ’è
+// SetWindowPosition - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½ç½®è¨­å®š
 // ================================================================================
 procedure CWINDOW.SetWindowPosition(nLeft: longint; nTop: longint; nWidth: longint; nHeight: longint);
 begin
@@ -5847,7 +6045,7 @@ begin
 end;
 
 // ================================================================================
-// SetWindowShowStyle - ƒEƒBƒ“ƒhƒE•\¦ƒXƒ^ƒCƒ‹İ’è
+// SetWindowShowStyle - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦è¡¨ç¤ºã‚¹ã‚¿ã‚¤ãƒ«è¨­å®š
 // ================================================================================
 procedure CWINDOW.SetWindowShowStyle(nCmdShow: longint);
 var
@@ -5861,7 +6059,7 @@ begin
 end;
 
 // ================================================================================
-// SetWindowTopMost - ƒEƒBƒ“ƒhƒEÅ‘O–Ê•\¦İ’è
+// SetWindowTopMost - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦æœ€å‰é¢è¡¨ç¤ºè¨­å®š
 // ================================================================================
 procedure CWINDOW.SetWindowTopMost(bTopMost: longbool);
 var
@@ -5872,7 +6070,7 @@ begin
 end;
 
 // ================================================================================
-// UpdateWindow - ƒEƒBƒ“ƒhƒEXV
+// UpdateWindow - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦æ›´æ–°
 // ================================================================================
 procedure CWINDOW.UpdateWindow(bVisible: longbool);
 var
@@ -5885,14 +6083,14 @@ end;
 
 
 // *************************************************************************************************************************************************************
-// BUTTON ƒNƒ‰ƒX
+// BUTTON ã‚¯ãƒ©ã‚¹
 // *************************************************************************************************************************************************************
 
 // ================================================================================
-// CreateItem - ƒ{ƒ^ƒ“ì¬
+// CreateItem - ãƒœã‚¿ãƒ³ä½œæˆ
 // ================================================================================
-procedure CBUTTON.CreateItem(hThisInstance: longword; hMainWnd: longword; hFont: longword; lpItemName: pointer; lpCaption: pointer; dwItemID: longword;
-    dwStylePlus: longword; Box: TBOX);
+procedure CBUTTON.CreateItem(hThisInstance: longword; hMainWnd: longword; hFont: longword; const sItemName: utf8string; const sCaption: utf8string;
+    dwItemID: longword; dwStylePlus: longword; Box: TBOX);
 var
     dwStyle: longword;
     dwStyleEx: longword;
@@ -5904,13 +6102,13 @@ begin
         dwStyle := dwStylePlus or WS_CHILD;
         dwStyleEx := WS_EX_NOPARENTNOTIFY or WS_EX_STATICEDGE;
     end;
-    hWnd := API_CreateWindowEx(dwStyleEx, lpItemName, lpCaption, dwStyle, Box.left, Box.top, Box.width, Box.height, hMainWnd, dwItemID,
-        hThisInstance, NULLPOINTER);
-    SendMessage(WM_SETFONT, hFont, NULL);
+    hWnd := API_CreateWindowEx(dwStyleEx, StrToPtr(sItemName), StrToPtr(sCaption), dwStyle,
+        Box.left, Box.top, Box.width, Box.height, hMainWnd, dwItemID, hThisInstance, NULLPOINTER);
+    SendMessage(WM_SETFONT, hFont);
 end;
 
 // ================================================================================
-// DrawItem - ƒ{ƒ^ƒ“•`‰æ
+// DrawItem - ãƒœã‚¿ãƒ³æç”»
 // ================================================================================
 function CBUTTON.DrawItem(lParam: longword; bHighlight: longbool): longword;
 var
@@ -5926,26 +6124,26 @@ var
     lpText: pointer;
     Rect: TRECT;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     Struct := pointer(lParam);
     hWnd := Struct.hwndItem;
     bPushed := longbool(Struct.itemState and ODS_SELECTED);
     bFocused := longbool(Struct.itemState and ODS_FOCUS);
     bDisabled := longbool(Struct.itemState and ODS_DISABLED);
-    // ƒTƒCƒY‚ğæ“¾
+    // ã‚µã‚¤ã‚ºã‚’å–å¾—
     API_MoveMemory(@Rect, @Struct.rcItem, SizeOf(TRECT));
     dwWidth := Rect.right - Rect.left;
     dwHeight := Rect.bottom - Rect.top;
-    // ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ğì¬
+    // ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’ä½œæˆ
     hDC := API_CreateCompatibleDC(Struct.hDC);
     hBitmap := API_SelectObject(hDC, API_CreateCompatibleBitmap(Struct.hDC, dwWidth, dwHeight));
-    // ”wŒiF‚ğ•`‰æ
+    // èƒŒæ™¯è‰²ã‚’æç”»
     Rect.left := 0;
     Rect.top := 0;
     Rect.right := dwWidth;
     Rect.bottom := dwHeight;
     API_FillRect(hDC, @Rect, Status.hBackBrush);
-    // ŠO˜g‚ğ•`‰æ
+    // å¤–æ ã‚’æç”»
     Inc(Rect.left);   // 1
     Dec(Rect.right);  // width - 1
     API_FillRect(hDC, @Rect, ORG_COLOR_GRAYTEXT);
@@ -5954,7 +6152,7 @@ begin
     Inc(Rect.top);    // 1
     Dec(Rect.bottom); // height - 1
     API_FillRect(hDC, @Rect, ORG_COLOR_GRAYTEXT);
-    // ƒtƒH[ƒJƒX˜gü‚ğ•`‰æ
+    // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹æ ç·šã‚’æç”»
     Inc(Rect.left);   // 1
     Dec(Rect.right);  // width - 1
     if bPushed or bFocused then begin
@@ -5965,7 +6163,7 @@ begin
         Inc(Rect.top);    // 2
         Dec(Rect.bottom); // height - 2
     end;
-    // ˜gü“à•”‚Ì”wŒi‚ğ•`‰æ
+    // æ ç·šå†…éƒ¨ã®èƒŒæ™¯ã‚’æç”»
     if bPushed then begin
         API_FillRect(hDC, @Rect, ORG_COLOR_GRAYTEXT);
         API_SetBkColor(Struct.hDC, API_GetSysColor(COLOR_GRAYTEXT));
@@ -5976,39 +6174,39 @@ begin
         API_FillRect(hDC, @Rect, Status.hBackBrush);
         API_SetBkColor(Struct.hDC, COLOR_DARK_BACK);
     end;
-    // ƒ{ƒ^ƒ“‚É”wŒi‚ğƒRƒs[
+    // ãƒœã‚¿ãƒ³ã«èƒŒæ™¯ã‚’ã‚³ãƒ”ãƒ¼
     API_MoveMemory(@Rect, @Struct.rcItem, SizeOf(TRECT));
     API_BitBlt(Struct.hDC, Rect.left, Rect.top, dwWidth, dwHeight, hDC, 0, 0, SRCCOPY);
-    // ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ğ‰ğ•ú
+    // ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’è§£æ”¾
     API_DeleteObject(API_SelectObject(hDC, hBitmap));
     API_DeleteDC(hDC);
-    // ƒoƒbƒtƒ@‚ğŠm•Û
-    GetMem(lpText, 16);
-    // ƒeƒLƒXƒg‚ğæ“¾
-    API_GetWindowText(hWnd, lpText, 16);
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+    GetMem(lpText, BUFFER_SIZE_TITLE);
+    // ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—
+    API_GetWindowText(hWnd, lpText, COPY_SIZE_TITLE);
     if bPushed then begin
         Inc(Rect.left);
         Inc(Rect.top);
         Inc(Rect.right);
         Inc(Rect.bottom);
     end;
-    // ƒeƒLƒXƒg‚ğ•`‰æ
+    // ãƒ†ã‚­ã‚¹ãƒˆã‚’æç”»
     if bDisabled then API_SetTextColor(Struct.hDC, COLOR_DARK_DISABLED)
     else API_SetTextColor(Struct.hDC, COLOR_DARK_TEXT);
     API_DrawText(Struct.hDC, lpText, -1, @Rect, DT_SINGLELINE or DT_CENTER or DT_VCENTER);
-    // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-    FreeMem(lpText, 16);
-    // •`‰æ¬Œ÷
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+    FreeMem(lpText, BUFFER_SIZE_TITLE);
+    // æç”»æˆåŠŸ
     result := 1;
 end;
 
 
 // *************************************************************************************************************************************************************
-// WINDOWMAIN ƒNƒ‰ƒX
+// WINDOWMAIN ã‚¯ãƒ©ã‚¹
 // *************************************************************************************************************************************************************
 
 // ================================================================================
-// AppendList - ƒvƒŒƒCƒŠƒXƒg“o˜^
+// AppendList - ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆç™»éŒ²
 // ================================================================================
 procedure CWINDOWMAIN.AppendList();
 var
@@ -6026,131 +6224,131 @@ var
     lpFile: pointer;
     lpBuffer: pointer;
     lpTitle: pointer;
+    sPath: utf8string;
     pV: ^byte;
     SPCHdr: TSPCHDR;
     KeyState: TKEYSTATE;
 begin
-    // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€”‚ğæ“¾
-    dwFileCount := cwSortList.SendMessage(LB_GETCOUNT, NULL, NULL);
-    // ƒvƒŒƒCƒŠƒXƒg‚ÉƒAƒCƒeƒ€‚ª“o˜^‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍI—¹
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ æ•°ã‚’å–å¾—
+    dwFileCount := cwSortList.SendMessage(LB_GETCOUNT, NULL);
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã«ã‚¢ã‚¤ãƒ†ãƒ ãŒç™»éŒ²ã•ã‚Œã¦ã„ãªã„å ´åˆã¯çµ‚äº†
     if not longbool(dwFileCount) then exit;
-    // ƒL[ƒ{[ƒh‚Ìó‘Ô‚ğæ“¾ (Status.bShiftButton “™‚Å‚Íó‘Ô‚ğæ“¾•s‰Â)
+    // ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®çŠ¶æ…‹ã‚’å–å¾— (Status.bShiftButton ç­‰ã§ã¯çŠ¶æ…‹ã‚’å–å¾—ä¸å¯)
     API_GetKeyboardState(@KeyState);
-    // Ä•`‰æ‹Ö~
-    cwPlayList.SendMessage(WM_SETREDRAW, 0, NULL);
-    // Ctrl ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éê‡
+    // å†æç”»ç¦æ­¢
+    cwPlayList.SendMessage(WM_SETREDRAW, 0);
+    // Ctrl ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆ
     if bytebool(KeyState.k[VK_CONTROL] and $80) then begin
-        // ƒvƒŒƒCƒŠƒXƒg‚ğ‚·‚×‚ÄƒNƒŠƒA
-        cwFileList.SendMessage(LB_RESETCONTENT, NULL, NULL);
-        cwPlayList.SendMessage(LB_RESETCONTENT, NULL, NULL);
-        // ‘I‘ğ‚³‚ê‚Ä‚¢‚éƒAƒCƒeƒ€‚ğæ“¾
+        // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã‚’ã™ã¹ã¦ã‚¯ãƒªã‚¢
+        cwFileList.SendMessage(LB_RESETCONTENT, NULL);
+        cwPlayList.SendMessage(LB_RESETCONTENT, NULL);
+        // é¸æŠã•ã‚Œã¦ã„ã‚‹ã‚¢ã‚¤ãƒ†ãƒ ã‚’å–å¾—
         dwIndex := 0;
         dwCount := 0;
     end else begin
-        // ‘I‘ğ‚³‚ê‚Ä‚¢‚éƒAƒCƒeƒ€‚ğæ“¾
-        dwIndex := cwPlayList.SendMessage(LB_GETCURSEL, NULL, NULL);
-        dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL, NULL);
+        // é¸æŠã•ã‚Œã¦ã„ã‚‹ã‚¢ã‚¤ãƒ†ãƒ ã‚’å–å¾—
+        dwIndex := cwPlayList.SendMessage(LB_GETCURSEL, NULL);
+        dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL);
     end;
-    // Shift ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Í’Ç‰ÁA‰Ÿ‚³‚ê‚Ä‚¢‚éê‡‚Í‘}“ü
+    // Shift ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ãªã„å ´åˆã¯è¿½åŠ ã€æŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯æŒ¿å…¥
     bAdd := not bytebool(KeyState.k[VK_SHIFT] and $80) or not longbool(dwCount);
     if bAdd then dwSelect1 := dwCount else dwSelect1 := dwIndex;
     dwSelect2 := dwSelect1 - 1;
     bSelect := false;
-    // ƒoƒbƒtƒ@‚ğŠm•Û
-    GetMem(lpFile, 1024);
-    GetMem(lpBuffer, 1024);
-    GetMem(lpTitle, 33);
-    // ƒvƒŒƒCƒŠƒXƒg‚É’Ç‰Á
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+    GetMem(lpFile, BUFFER_SIZE_PATH);
+    GetMem(lpBuffer, BUFFER_SIZE_PATH);
+    GetMem(lpTitle, BUFFER_SIZE_TITLE);
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã«è¿½åŠ 
     for I := 0 to dwFileCount - 1 do begin
-        // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€”‚ªÅ‘å’lˆÈã‚Ìê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+        // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ æ•°ãŒæœ€å¤§å€¤ä»¥ä¸Šã®å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
         if dwCount >= Option.dwListMax then break;
-        // ƒtƒ@ƒCƒ‹–¼‚ğæ“¾
-        cwSortList.SendMessage(LB_GETTEXT, I, longword(lpFile));
-        // ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
+        // ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’è¶…ãˆã‚‹å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
+        if cwSortList.SendMessage(LB_GETTEXTLEN, I) >= BUFFER_SIZE_PATH then break;
+        // ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å–å¾—
+        cwSortList.SendMessage(LB_GETTEXT, I, lpFile);
+        sPath := PtrToStr(lpFile);
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
         hFile := INVALID_HANDLE_VALUE;
-        if IsSafePath(lpFile) then hFile := API_CreateFile(lpFile, GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
+        if IsSafePath(sPath) then hFile := API_CreateFile(lpFile, GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
             FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-        // ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚½ê‡‚Íƒ‹[ƒv‚ğÄŠJ
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ãŸå ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’å†é–‹
         if hFile = INVALID_HANDLE_VALUE then continue;
-        // ƒtƒ@ƒCƒ‹‚ğƒ[ƒh
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ­ãƒ¼ãƒ‰
         API_ReadFile(hFile, @SPCHdr, SizeOf(TSPCHDR), @dwReadSize, NULLPOINTER);
-        // ƒtƒ@ƒCƒ‹‚Ìƒ[ƒh‚É¸”s‚µ‚½ê‡‚Íƒ‹[ƒv‚ğÄŠJ
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ­ãƒ¼ãƒ‰ã«å¤±æ•—ã—ãŸå ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’å†é–‹
         if not longbool(dwReadSize) then continue;
-        // ƒtƒ@ƒCƒ‹‚ğ’Ç‰Á
-        if bAdd then cwFileList.SendMessage(LB_ADDSTRING, NULL, longword(lpFile))
-        else cwFileList.SendMessage(LB_INSERTSTRING, dwIndex + I, longword(lpFile));
-        // ID666 ƒtƒH[ƒ}ƒbƒgŒ`®‚ğæ“¾
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’è¿½åŠ 
+        if bAdd then cwFileList.SendMessage(LB_ADDSTRING, NULL, lpFile)
+        else cwFileList.SendMessage(LB_INSERTSTRING, dwIndex + I, lpFile);
+        // ID666 ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå½¢å¼ã‚’å–å¾—
         GetID666Format(SPCHdr);
-        // ƒ^ƒCƒgƒ‹‚ğæ“¾
+        // ã‚¿ã‚¤ãƒˆãƒ«ã‚’å–å¾—
         if not bytebool(SPCHdr.TagFormat) or not bytebool(SPCHdr.Title[0]) then begin
-            API_ZeroMemory(lpBuffer, 1024);
-            API_GetFileTitle(lpFile, lpBuffer, 1023);
-            API_ZeroMemory(lpTitle, 33);
-            API_MoveMemory(lpTitle, lpBuffer, 32);
+            GetFileTitle(sPath, lpTitle);
         end else begin
-            API_ZeroMemory(lpTitle, 33);
-            API_MoveMemory(lpTitle, @SPCHdr.Title[0], 32);
+            API_ZeroMemory(lpTitle, BUFFER_SIZE_TITLE);
+            API_MoveMemory(lpTitle, @SPCHdr.Title[0], COPY_SIZE_TITLE);
         end;
-        // ƒeƒLƒXƒg‚Ì§ŒäƒR[ƒh‚ğƒXƒy[ƒX‚É•ÏŠ·
+        // ãƒ†ã‚­ã‚¹ãƒˆã®åˆ¶å¾¡ã‚³ãƒ¼ãƒ‰ã‚’ã‚¹ãƒšãƒ¼ã‚¹ã«å¤‰æ›
         pV := lpTitle;
         for J := 0 to 31 do begin
             if ((pV^ > $0) and (pV^ < $20)) or (pV^ = $7F) then pV^ := $20;
             Inc(pV);
         end;
-        // ƒvƒŒƒCƒŠƒXƒg‚É’Ç‰Á
+        // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã«è¿½åŠ 
         if bAdd then begin
-            cwPlayList.SendMessage(LB_ADDSTRING, NULL, longword(lpTitle));
-            cwPlayList.SendMessage(LB_SETITEMDATA, dwCount, NULL);
+            cwPlayList.SendMessageA(LB_ADDSTRING, NULL, lpTitle);
+            cwPlayList.SendMessage(LB_SETITEMDATA, dwCount);
         end else begin
-            cwPlayList.SendMessage(LB_INSERTSTRING, dwIndex + I, longword(lpTitle));
-            cwPlayList.SendMessage(LB_SETITEMDATA, dwIndex + I, NULL);
+            cwPlayList.SendMessageA(LB_INSERTSTRING, dwIndex + I, lpTitle);
+            cwPlayList.SendMessage(LB_SETITEMDATA, dwIndex + I);
         end;
-        // ƒJ[ƒ\ƒ‹‘I‘ğ
+        // ã‚«ãƒ¼ã‚½ãƒ«é¸æŠ
         bSelect := true;
-        // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€”‚ğ’Ç‰Á
+        // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ æ•°ã‚’è¿½åŠ 
         Inc(dwCount);
         Inc(dwSelect2);
-        // ƒtƒ@ƒCƒ‹‚ğƒNƒ[ƒY
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¯ãƒ­ãƒ¼ã‚º
         API_CloseHandle(hFile);
     end;
-    // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-    FreeMem(lpFile, 1024);
-    FreeMem(lpBuffer, 1024);
-    FreeMem(lpTitle, 33);
-    // ƒ\[ƒg—pƒŠƒXƒg‚ğƒNƒŠƒA
-    cwSortList.SendMessage(LB_RESETCONTENT, NULL, NULL);
-    // Ä•`‰æ‹–‰Â
-    cwPlayList.SendMessage(WM_SETREDRAW, 1, NULL);
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+    FreeMem(lpFile, BUFFER_SIZE_PATH);
+    FreeMem(lpBuffer, BUFFER_SIZE_PATH);
+    FreeMem(lpTitle, BUFFER_SIZE_TITLE);
+    // ã‚½ãƒ¼ãƒˆç”¨ãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢
+    cwSortList.SendMessage(LB_RESETCONTENT, NULL);
+    // å†æç”»è¨±å¯
+    cwPlayList.SendMessage(WM_SETREDRAW, 1);
     cwPlayList.Invalidate();
-    // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€‚ğ‘I‘ğ
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ ã‚’é¸æŠ
     if bSelect then begin
-        cwPlayList.SendMessage(LB_SETCURSEL, dwSelect2, NULL);
-        cwPlayList.SendMessage(LB_SETCURSEL, dwSelect1, NULL);
+        cwPlayList.SendMessage(LB_SETCURSEL, dwSelect2);
+        cwPlayList.SendMessage(LB_SETCURSEL, dwSelect1);
     end;
-    // ƒƒjƒ…[‚ğXV
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
     UpdateMenu();
 end;
 
 // ================================================================================
-// CreateWindow - ƒEƒBƒ“ƒhƒEì¬
+// CreateWindow - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½œæˆ
 // ================================================================================
-function CWINDOWMAIN.CreateWindow(hThisInstance: longword; lpClassName: pointer; lpArgs: pointer): longword;
+function CWINDOWMAIN.CreateWindow(hThisInstance: longword; const sClassName: utf8string; lpArgs: pointer): longword;
 var
     I: longint;
     J: longint;
     K: longint;
+    hFile: longword;
     dwBuffer: longword;
-    sInfo: string;
-    fsFile: textfile;
-    sData: string;
-    sBuffer: string;
+    sInfo: utf8string;
+    sData: utf8string;
+    sBuffer: utf8string;
     cBuffer: array of char;
     lpBuffer: pointer;
-    lpString: pointer;
-    sEXEPath: string;
-    sCmdLine: string;
-    sChPath: string;
-    sFontName: string;
+    sEXEPath: utf8string;
+    sCmdLine: utf8string;
+    sChPath: utf8string;
+    sFontName: utf8string;
     dwLeft: longint;
     dwPlayDefault: longint;
     dwTop: longint;
@@ -6162,31 +6360,30 @@ var
     API_FlushMenuThemes: function(): longword; stdcall;
     API_RegisterPowerSettingNotification: function(hRecipient: longword; powerSettingGuid: pointer; flags: longword): longword; stdcall;
     API_RegisterSuspendResumeNotification: function(hRecipient: longword; flags: longword): longword; stdcall;
-    API_RtlGetVersion: function(lpVersionInfo: pointer): longbool; stdcall;
     API_SetPreferredAppMode: function(dwMode: longword): longword; stdcall;
     API_SetWindowTheme: function(hWnd: longword; pszSubAppName: pointer; pszSubIdList: pointer): longword; stdcall;
 {$IFDEF UACDROP}
     API_ChangeWindowMessageFilter: function(msg: longword; dwFlag: longword): longword; stdcall;
 {$ENDIF}
 
-function GetParameter(var dwStart: longint; dwLength: longint; bLast: longbool): string;
+function GetParameter(var dwStart: longint; dwLength: longint; bLast: longbool): utf8string;
 var
     I: longint;
     J: longint;
     K: longint;
     cEnd: char;
 begin
-    // ƒTƒCƒY‚ªƒI[ƒo[ƒtƒ[‚·‚éê‡
+    // ã‚µã‚¤ã‚ºãŒã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ã™ã‚‹å ´åˆ
     if dwStart > dwLength then begin
         result := '';
         exit;
     end;
-    // ƒXƒy[ƒX‚ğƒXƒLƒbƒv
+    // ã‚¹ãƒšãƒ¼ã‚¹ã‚’ã‚¹ã‚­ãƒƒãƒ—
     for I := dwStart to dwLength do if not IsSingleByte(sBuffer, I, ' ') then begin
         dwStart := I;
         break;
     end;
-    // Å‰‚Ì•¶š‚ğæ“¾
+    // æœ€åˆã®æ–‡å­—ã‚’å–å¾—
     if IsSingleByte(sBuffer, dwStart, '"') then begin
         cEnd := '"';
         Inc(dwStart);
@@ -6199,15 +6396,15 @@ begin
         if bLast then cEnd := NULLCHAR else cEnd := ' ';
         J := 0;
     end;
-    // ÅŒã‚Ì•¶š‚ğæ“¾
+    // æœ€å¾Œã®æ–‡å­—ã‚’å–å¾—
     K := dwLength + 1;
     for I := dwStart to dwLength do if IsSingleByte(sBuffer, I, cEnd) then begin
         K := I;
         break;
     end;
-    // •¶š‚ğæ“¾
+    // æ–‡å­—ã‚’å–å¾—
     result := Trim(Copy(sBuffer, dwStart, K - dwStart));
-    // ƒIƒtƒZƒbƒg‚ğæ“¾
+    // ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’å–å¾—
     dwStart := K + J;
 end;
 
@@ -6237,36 +6434,36 @@ begin
 end;
 
 {$IFNDEF TRY700A}{$IFNDEF TRY700W}{$IFDEF SIGNATURE}
-function CheckImageHash(const sPath: string; dwBase: longword): longword;
+function CheckImageHash(const sPath: utf8string; dwBase: longword): longword;
 var
     dwResult: longword;
     dwHeaderSum: longword;
     dwCheckSum: longword;
 begin
-    // ƒ`ƒFƒbƒNƒTƒ€‚ğæ“¾
+    // ãƒã‚§ãƒƒã‚¯ã‚µãƒ ã‚’å–å¾—
     sData := Concat(sChPath, sPath);
-    dwResult := API_MapFileAndCheckSum(pchar(sData), @dwHeaderSum, @dwCheckSum);
-    // ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚½ê‡‚ÍI—¹
+    dwResult := API_MapFileAndCheckSum(StrToPtr(sData), @dwHeaderSum, @dwCheckSum);
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ãŸå ´åˆã¯çµ‚äº†
     result := dwBase + dwResult;
     if longbool(dwResult) then exit;
-    // ƒ`ƒFƒbƒNƒTƒ€‚ªˆê’v‚µ‚È‚¢ê‡‚ÍI—¹
+    // ãƒã‚§ãƒƒã‚¯ã‚µãƒ ãŒä¸€è‡´ã—ãªã„å ´åˆã¯çµ‚äº†
     result := dwBase + 9;
     if dwHeaderSum <> dwCheckSum then exit;
-    // I—¹
+    // çµ‚äº†
     result := 0;
 end;
 {$ENDIF}{$ENDIF}{$ENDIF}
 
-procedure SetMenuTextAndTip(var cmMenu: CMENU; nSize: longint; dwBase: longint; MsgArray: array of pchar; bRadio: longbool); overload;
+procedure SetMenuTextAndTip(var cmMenu: CMENU; nSize: longint; dwBase: longint; MsgArray: array of utf8string; bRadio: longbool); overload;
 var
     I: longint;
 begin
-    // ƒƒjƒ…[‚ğì¬
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     cmMenu := CMENU.Create();
     cmMenu.CreatePopupMenu();
-    // ƒƒjƒ…[ƒeƒLƒXƒg‚ğİ’è
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®š
     for I := 0 to nSize - 1 do begin
-        if longbool(MsgArray[I]) then cmMenu.AppendMenu(dwBase + I, pchar(MsgArray[I]), bRadio)
+        if longbool(Length(MsgArray[I])) then cmMenu.AppendMenu(dwBase + I, MsgArray[I], bRadio)
         else cmMenu.AppendSeparator();
     end;
 end;
@@ -6275,15 +6472,15 @@ procedure SetMenuTextAndTip(var cmMenu: CMENU; nSize: longint; dwBase: longint; 
 var
     I: longint;
 begin
-    // ƒƒjƒ…[‚ğì¬
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     cmMenu := CMENU.Create();
     cmMenu.CreatePopupMenu();
-    // ƒƒjƒ…[ƒeƒLƒXƒg‚ğİ’è
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒ†ã‚­ã‚¹ãƒˆã‚’è¨­å®š
     for I := 0 to nSize - 1 do begin
         if longbool(PerIndex[I]) then begin
             sBuffer := Concat('&', IntToStr(STR_MENU_SETUP_PER_INTEGER[PerIndex[I]]), STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
             if longbool(TipIndex[I]) then sBuffer := Concat(sBuffer, #9, STR_MENU_SETUP_TIP[Status.dwLanguage][TipIndex[I]]);
-            cmMenu.AppendMenu(dwBase + I, pchar(sBuffer), true);
+            cmMenu.AppendMenu(dwBase + I, sBuffer, true);
         end else begin
             cmMenu.AppendSeparator();
         end;
@@ -6294,6 +6491,67 @@ function GetProcAddress(method: pchar): pointer;
 begin
     result := API_GetProcAddress(dwBuffer, method);
     if not longbool(result) then I := 2;
+end;
+
+function Eof(): longbool;
+begin
+    API_ReadFile(hFile, @dwBuffer, 4, @K, NULLPOINTER);
+    result := not longbool(K);
+    if result then exit;
+    dwBuffer := $FFFFFFFF; // è² ã®å€¤
+    if not result then API_SetFilePointer(hFile, -K, @dwBuffer, FILE_CURRENT);
+end;
+
+function Readln(): utf8string;
+var
+    I: longint;
+    dwPointer: longword;
+begin
+    // åˆæœŸåŒ–
+    J := 0;
+    K := 0;
+    dwPointer := 0;
+    SetLength(cBuffer, 32);
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿å–ã‚Š
+    while true do begin
+        // ãƒãƒƒãƒ•ã‚¡åˆ†ã‚’ä»®ã§èª­ã¿å–ã‚Š
+        API_ZeroMemory(@cBuffer[0], 32);
+        API_ReadFile(hFile, @cBuffer[0], 32, @dwBuffer, NULLPOINTER);
+        Inc(dwPointer, dwBuffer);
+        // æ”¹è¡Œã‚³ãƒ¼ãƒ‰ã‚’æ¤œç´¢
+        for I := 0 to 31 do if cBuffer[I] = LF then begin
+            J := I + 1;
+            break;
+        end;
+        // æ”¹è¡Œã‚³ãƒ¼ãƒ‰ãŒè¦‹ã¤ã‹ã£ãŸå ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
+        if J > 0 then begin
+            Inc(K, J);
+            break;
+        end;
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã®æœ€å¾Œã¾ã§èª­ã¿å–ã£ãŸå ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
+        Inc(K, dwBuffer);
+        if dwBuffer < 32 then break;
+    end;
+    // è¡ŒãŒæ¤œå‡ºã§ããªã„å ´åˆã¯ç©ºæ–‡å­—ã‚’è¿”å´
+    if not longbool(K) then begin
+        result := '';
+        exit;
+    end;
+    // èª­ã¿å–ã‚Šä½ç½®ã‚’ Readln å®Ÿè¡Œå‰ã«æˆ»ã™
+    dwBuffer := $FFFFFFFF; // è² ã®å€¤
+    API_SetFilePointer(hFile, -dwPointer, @dwBuffer, FILE_CURRENT);
+    // è¡Œã‚’èª­ã¿å–ã‚Š
+    SetLength(cBuffer, K);
+    API_ReadFile(hFile, @cBuffer[0], K, @dwBuffer, NULLPOINTER);
+    // æ”¹è¡Œã‚³ãƒ¼ãƒ‰ã®æ‰‹å‰ã¾ã§ã‚’æ–‡å­—åˆ—åŒ–ã—ã¦è¿”å´
+    for I := 0 to K - 1 do if (cBuffer[I] = CR) or (cBuffer[I] = LF) then cBuffer[I] := NULLCHAR;
+{$IFDEF FREEPASCAL}
+    result := ChrToStr(cBuffer);
+{$ELSE}
+    // NOTE: Boland Delphi ã®å ´åˆã€char ã®å‹•çš„é…åˆ—ã‚’ string ã«ã‚­ãƒ£ã‚¹ãƒˆã™ã‚‹å ´åˆã¯ã€
+    // ç›´æ¥ string() ã‚’ä½¿ç”¨ã™ã‚‹
+    result := string(cBuffer);
+{$ENDIF}
 end;
 
 function GetINIValue(dwDef: longint): longint; overload;
@@ -6309,21 +6567,20 @@ end;
 function ToBool(dwValue: longword): longbool;
 begin
 {$IFDEF FREEPASCAL}
-    // NOTE: Free Pascal ‚Ìê‡Alongword ‚ğ longbool ‚ÉƒLƒƒƒXƒg‚µ‚Ä‚àA
-    // “à•”“I‚É‚Í -1 or 0 ‚Å‚Í‚È‚­ dwValue ‚Ì’l‚ğ‚»‚Ì‚Ü‚Üg—p‚·‚é‚½‚ßA
-    // dwValue = 1 ‚Ì‚Æ‚«Alongbool(dwValue) and longbool(2) ‚ª false ˆµ‚¢‚É‚È‚é
-    // ŠmÀ‚É -1 or 0 ‚É•ÏŠ·‚·‚é‚±‚Æ‚ÅAã‹L”»’è‚ª³‚µ‚­ true ˆµ‚¢‚É‚È‚é
+    // NOTE: Free Pascal ã®å ´åˆã€longword ã‚’ longbool ã«ã‚­ãƒ£ã‚¹ãƒˆã—ã¦ã‚‚ã€
+    // å†…éƒ¨çš„ã«ã¯ -1 or 0 ã§ã¯ãªã dwValue ã®å€¤ã‚’ãã®ã¾ã¾ä½¿ç”¨ã™ã‚‹ãŸã‚ã€
+    // dwValue = 1 ã®ã¨ãã€longbool(dwValue) and longbool(2) ãŒ false æ‰±ã„ã«ãªã‚‹
+    // ç¢ºå®Ÿã« -1 or 0 ã«å¤‰æ›ã™ã‚‹ã“ã¨ã§ã€ä¸Šè¨˜åˆ¤å®šãŒæ­£ã—ã true æ‰±ã„ã«ãªã‚‹
     if longbool(dwValue) then result := true else result := false;
 {$ELSE}
-    // NOTE: Boland Delphi ‚Ìê‡Alongbool ‚ÉƒLƒƒƒXƒg‚·‚é‚ÆA
-    // “à•”“I‚É‚Í•K‚¸ -1 or 0 ‚É‚È‚é
-    // ‚½‚¾‚µA‚Ù‚Æ‚ñ‚Ç‚Ìê‡–³—p‚È•ÏŠ·‚Å‚ ‚é‚½‚ßAáŠ±ƒpƒtƒH[ƒ}ƒ“ƒX‚ªˆ«‰»‚·‚é
+    // NOTE: Boland Delphi ã®å ´åˆã€longbool ã«ã‚­ãƒ£ã‚¹ãƒˆã™ã‚‹ã¨ã€å†…éƒ¨çš„ã«ã¯å¿…ãš -1 or 0 ã«ãªã‚‹
+    // ãŸã ã—ã€ã»ã¨ã‚“ã©ã®å ´åˆç„¡ç”¨ãªå¤‰æ›ã§ã‚ã‚‹ãŸã‚ã€è‹¥å¹²ãƒ‘ãƒ•ã‚©ãƒ¼ãƒãƒ³ã‚¹ãŒæ‚ªåŒ–ã™ã‚‹
     result := longbool(dwValue);
 {$ENDIF}
 end;
 
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := 0;
     Randomize();
     Status.hBackBrush := NULL;
@@ -6332,95 +6589,77 @@ begin
 {$IFDEF DEBUGLOG}
     _WriteLog('initialize ---------------------------------------------------------------------');
 {$ENDIF}
-    // ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚ğæ“¾
-    lpBuffer := API_GetCommandLine();
-    J := GetSize(lpBuffer, 1023);
-    SetLength(cBuffer, J);
-    API_MoveMemory(@cBuffer[0], lpBuffer, J);
-{$IFDEF FREEPASCAL}
-    sBuffer := ChrToStr(cBuffer);
-{$ELSE}
-    // NOTE: Boland Delphi ‚Ìê‡Achar ‚Ì“®“I”z—ñ‚ğ string ‚ÉƒLƒƒƒXƒg‚·‚éê‡‚ÍA
-    // ’¼Ú string() ‚ğg—p‚·‚é
-    sBuffer := string(cBuffer);
-{$ENDIF}
-    // ƒpƒ‰ƒ[ƒ^‚ğæ“¾
+    // ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã‚’å–å¾—
+    sBuffer := PtrToStr(API_GetCommandLine());
+    // ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’å–å¾—
     I := 1;
+    J := Length(sBuffer);
     sEXEPath := GetParameter(I, J, false);
     sCmdLine := GetParameter(I, J, true);
-    // ƒEƒBƒ“ƒhƒE‚ğŒŸõ
-    hWndApp := API_FindWindowEx(NULL, NULL, lpClassName, NULLPOINTER);
-    // ƒEƒBƒ“ƒhƒE‚ªŒ©‚Â‚©‚Á‚½ê‡
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’æ¤œç´¢
+    hWndApp := API_FindWindowEx(NULL, NULL, StrToPtr(sClassName), NULLPOINTER);
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒè¦‹ã¤ã‹ã£ãŸå ´åˆ
     if longbool(hWndApp) then begin
-        // ƒEƒBƒ“ƒhƒE‚ğ“o˜^
+        // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç™»éŒ²
         cwWindowMain := CWINDOW.Create();
         cwWindowMain.hWnd := hWndApp;
-        // ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚ğˆ—
+        // ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã‚’å‡¦ç†
         if not longbool(Length(sCmdLine)) then begin
-            // ’ÊíƒTƒCƒY‚É•ÏX
+            // é€šå¸¸ã‚µã‚¤ã‚ºã«å¤‰æ›´
             if longbool(cwWindowMain.GetWindowStyle() and WS_MINIMIZE) then cwWindowMain.SetWindowShowStyle(SW_SHOWNORMAL);
-            // ƒEƒBƒ“ƒhƒE‚ğ‘O–Ê‚ÉˆÚ“®
+            // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’å‰é¢ã«ç§»å‹•
             API_SetForegroundWindow(hWndApp);
         end else begin
-            // ƒEƒBƒ“ƒhƒE‚ğŒŸõ
-            hWndApp := API_FindWindowEx(hWndApp, NULL, pchar(ITEM_STATIC), pchar(FILE_DEFAULT));
-            // ƒEƒBƒ“ƒhƒE‚ªŒ©‚Â‚©‚Á‚½ê‡
+            // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’æ¤œç´¢
+            hWndApp := API_FindWindowEx(hWndApp, NULL, StrToPtr(ITEM_STATIC), StrToPtr(FILE_DEFAULT));
+            // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒè¦‹ã¤ã‹ã£ãŸå ´åˆ
             if longbool(hWndApp) then begin
-                // ƒoƒbƒtƒ@‚ğŠm•Û
-                GetMem(lpBuffer, 1024);
-                // ƒoƒbƒtƒ@‚ÉƒRƒs[
-                API_ZeroMemory(lpBuffer, 1024);
-                lpString := pchar(sCmdLine);
-                API_MoveMemory(lpBuffer, lpString, Length(sCmdLine));
-                // ƒEƒBƒ“ƒhƒE‚ğ“o˜^
+                // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+                GetMem(lpBuffer, BUFFER_SIZE_PATH);
+                // ãƒãƒƒãƒ•ã‚¡ã«ã‚³ãƒ”ãƒ¼
+                API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
+                CopyStrToWidePtr(lpBuffer, BUFFER_SIZE_PATH, sCmdLine);
+                // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç™»éŒ²
                 cwStaticFile := CWINDOW.Create();
                 cwStaticFile.hWnd := hWndApp;
-                // ƒƒbƒZ[ƒW‚ğ‘—M
-                cwStaticFile.SendMessage(WM_SETTEXT, NULL, longword(lpBuffer));
+                // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’é€ä¿¡
+                cwStaticFile.SendMessage(WM_SETTEXT, NULL, lpBuffer);
                 cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_TRANSMIT or $1, hWndApp);
-                // ƒEƒBƒ“ƒhƒE‚ğ‰ğ•ú
+                // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’è§£æ”¾
                 cwStaticFile.Free();
-                // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-                FreeMem(lpBuffer, 1024);
+                // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+                FreeMem(lpBuffer, BUFFER_SIZE_PATH);
             end;
         end;
-        // ƒEƒBƒ“ƒhƒE‚ğ‰ğ•ú
+        // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’è§£æ”¾
         cwWindowMain.Free();
-        // ƒtƒ‰ƒO‚ğİ’è
+        // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
         Apu.hSNESAPU := NULL;
         result := 99;
-        // I—¹
+        // çµ‚äº†
         exit;
     end;
-    // ƒEƒBƒ“ƒhƒE‚ğì¬
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ä½œæˆ
     Status.dwFocusHandle := NULL;
     cwWindowMain := CWINDOW.Create();
-    cwWindowMain.CreateWindow(hThisInstance, lpClassName, pchar(DEFAULT_TITLE), WS_CLIPSIBLINGS or WS_DLGFRAME or WS_MINIMIZEBOX or WS_OVERLAPPED
+    cwWindowMain.CreateWindow(hThisInstance, sClassName, DEFAULT_TITLE, WS_CLIPSIBLINGS or WS_DLGFRAME or WS_MINIMIZEBOX or WS_OVERLAPPED
         or WS_SYSMENU, WS_EX_ACCEPTFILES or WS_EX_CONTROLPARENT or WS_EX_WINDOWEDGE, SimpleWindowBox(3000, 3000, 1024, 1024));
     hWndApp := cwWindowMain.hWnd;
-    // ƒoƒbƒtƒ@‚ğŠm•Û
-    GetMem(Status.lpCurrentPath, 1024);
-    GetMem(Status.lpSPCFile, 1024);
-    GetMem(Status.lpSPCDir, 1024);
-    GetMem(Status.lpSPCName, 1024);
-    GetMem(Status.lpOpenPath, 1024);
-    GetMem(Status.lpSavePath, 1024);
-    // ƒoƒbƒtƒ@‚ğŠm•Û
-    lpBuffer := Status.lpCurrentPath;
-    // EXE ƒtƒ@ƒCƒ‹–¼‚ğæ“¾
+    // EXE ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å–å¾—
     dwBuffer := GetPosSeparator(sEXEPath);
     if longbool(dwBuffer) then sEXEPath := Copy(sEXEPath, dwBuffer + 1, Length(sEXEPath));
     if (Length(sEXEPath) < 5) or (sEXEPath[Length(sEXEPath) - 3] <> '.') then sEXEPath := Concat(sEXEPath, '.exe');
-    // ƒJƒŒƒ“ƒgƒpƒX‚ğæ“¾
-    API_GetModuleFileName(hThisInstance, lpBuffer, 1024);
-    dwBuffer := GetPosSeparator(PtrToStr(lpBuffer));
-    if dwBuffer > 1024 then dwBuffer := 1024;
-    API_ZeroMemory(pointer(longword(lpBuffer) + dwBuffer), 1024 - dwBuffer);
-    API_MoveMemory(Status.lpOpenPath, lpBuffer, 1024);
-    API_MoveMemory(Status.lpSavePath, lpBuffer, 1024);
-    Status.lpCurrentSize := GetSize(lpBuffer, 1023);
-    sChPath := Copy(PtrToStr(lpBuffer), 1, Status.lpCurrentSize);
-    // ƒpƒ‰ƒ[ƒ^‚ğ‰Šú‰»
+    // ã‚«ãƒ¬ãƒ³ãƒˆãƒ‘ã‚¹ã‚’å–å¾—
+    GetMem(lpBuffer, BUFFER_SIZE_PATH);
+    API_GetModuleFileName(hThisInstance, lpBuffer, BUFFER_SIZE_PATH);
+    sChPath := PtrToStr(lpBuffer);
+    FreeMem(lpBuffer, BUFFER_SIZE_PATH);
+    // ã‚«ãƒ¬ãƒ³ãƒˆãƒ‘ã‚¹ã‚’è¨˜éŒ²
+    sChPath := Copy(sChPath, 1, GetPosSeparator(sChPath));
+    Status.sCurrentPath := sChPath;
+    Status.sOpenPath := sChPath;
+    Status.sSavePath := sChPath;
+    // ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’åˆæœŸåŒ–
     Wave.dwIndex := 0;
     Wave.dwLastIndex := 0;
     Status.hInstance := hThisInstance;
@@ -6457,7 +6696,7 @@ begin
     Status.dwContextSize := 0;
     Status.lpContext := NULLPOINTER;
 {$ENDIF}
-    // İ’è‚ğ‰Šú‰»
+    // è¨­å®šã‚’åˆæœŸåŒ–
     Option.dwAmp := AMP_100;
     Option.dwBit := BIT_16;
     Option.dwBmpFont := 0;
@@ -6518,15 +6757,15 @@ begin
     Option.dwWaitTime := 3000;
     Option.dwWaveBlank := 500;
     Option.dwWaveFormat := 0;
-    // INI ‚Ì‘¶İ‚ğƒ`ƒFƒbƒN
+    // INI ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
     sData := Concat(sChPath, INI_FILE);
-    if IsSafePath(pchar(sData)) and Exists(pchar(sData), $FFFFFFFF) then begin
-        // ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
-        AssignFile(fsFile, sData);
-        // ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚Ş
-        Reset(fsFile);
-        while not Eof(fsFile) do begin
-            Readln(fsFile, sData);
+    hFile := INVALID_HANDLE_VALUE;
+    if IsSafePath(sData) then hFile := API_CreateFile(StrToPtr(sData), GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    // INI ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿å–ã‚Š
+    if hFile <> INVALID_HANDLE_VALUE then begin
+        while not Eof() do begin
+            sData := Readln();
             sBuffer := Copy(sData, 1, BUFFER_LENGTH);
             if sBuffer = BUFFER_AMP_____ then Option.dwAmp := GetINIValue(Option.dwAmp);
             if sBuffer = BUFFER_BIT_____ then Option.dwBit := GetINIValue(Option.dwBit);
@@ -6589,48 +6828,48 @@ begin
             if sBuffer = BUFFER_WAVBLANK then Option.dwWaveBlank := GetINIValue(Option.dwWaveBlank);
             if sBuffer = BUFFER_WAVEFMT_ then Option.dwWaveFormat := GetINIValue(Option.dwWaveFormat);
         end;
-        // ƒtƒ@ƒCƒ‹‚ğƒNƒ[ƒY
-        CloseFile(fsFile);
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¯ãƒ­ãƒ¼ã‚º
+        API_CloseHandle(hFile);
     end;
-    // İ’è’l‚ğ’²® (BUFNUM)
+    // è¨­å®šå€¤ã‚’èª¿æ•´ (BUFNUM)
     if Option.dwBufferNum < 4 then Option.dwBufferNum := 4;
     if Option.dwBufferNum > 100 then Option.dwBufferNum := 100;
-    // İ’è’l‚ğ’²® (BUFTIME)
+    // è¨­å®šå€¤ã‚’èª¿æ•´ (BUFTIME)
     if Option.dwBufferTime < 10 then Option.dwBufferTime := 10;
     if Option.dwBufferTime > 5000 then Option.dwBufferTime := 5000;
-    // İ’è’l‚ğ’²® (CACHENUM)
+    // è¨­å®šå€¤ã‚’èª¿æ•´ (CACHENUM)
     if Option.dwCacheNum > 1000 then Option.dwCacheNum := 1000;
-    // İ’è’l‚ğ’²® (EARSAFE, OPTION)
+    // è¨­å®šå€¤ã‚’èª¿æ•´ (EARSAFE, OPTION)
     if longbool(Option.dwOption and OPTION_NOEARSAFE) then Option.bEarSafe := false;
 {$IFDEF FREEPASCAL}
     Option.dwOption := Option.dwOption and (OPTION_NOEARSAFE or OPTION_FLOATOUT xor -1);
 {$ELSE}
     Option.dwOption := Option.dwOption and not (OPTION_NOEARSAFE or OPTION_FLOATOUT);
 {$ENDIF}
-    // İ’è’l‚ğ’²® (LANGUAGE)
+    // è¨­å®šå€¤ã‚’èª¿æ•´ (LANGUAGE)
     if longbool(Option.dwLanguage) and (Option.dwLanguage <= LANGUAGE_NUM) then Status.dwLanguage := Option.dwLanguage - 1
     else if API_GetUserDefaultLCID() and $FFFF = $0411 then Status.dwLanguage := 0
     else Status.dwLanguage := 1;
     if Status.dwLanguage > 1 then Status.dwLanguage := 0;
-    // İ’è’l‚ğ’²® (PLAYTIME)
+    // è¨­å®šå€¤ã‚’èª¿æ•´ (PLAYTIME)
     if (Option.dwPlayMax >= 1) and (dwPlayDefault >= 0) then Option.dwPlayMax := (Option.dwPlayMax and 1) + (dwPlayDefault and 1);
-    // İ’è’l‚ğ’²® (PLAYTYPE)
+    // è¨­å®šå€¤ã‚’èª¿æ•´ (PLAYTYPE)
     Status.dwPlayOrder := Option.dwPlayOrder;
-    // İ’è’l‚ğ’²® (SCALE)
+    // è¨­å®šå€¤ã‚’èª¿æ•´ (SCALE)
     if Option.dwScale >= 200 then Status.dwScale := 4
     else if Option.dwScale >= 150 then Status.dwScale := 3;
 {$IFNDEF TRY700A}{$IFNDEF TRY700W}{$IFDEF SIGNATURE}
-    // SPCPLAY.EXE ‚Ì”j‘¹‚ğŠm”F
+    // SPCPLAY.EXE ã®ç ´æã‚’ç¢ºèª
     if not longbool(result) then result := CheckImageHash(sEXEPath, 10);
-    // SNESAPU.DLL ‚Ì”j‘¹‚ğŠm”F
+    // SNESAPU.DLL ã®ç ´æã‚’ç¢ºèª
     if not longbool(result) then result := CheckImageHash(SNESAPU_FILE, 20);
 {$ENDIF}{$ENDIF}{$ENDIF}
-    // ƒtƒ@ƒCƒ‹‚ª³í‚Ìê‡
+    // ãƒ•ã‚¡ã‚¤ãƒ«ãŒæ­£å¸¸ã®å ´åˆ
     K := 0;
     if not longbool(result) then begin
-        // SNESAPU.DLL ‚ğƒ[ƒh
+        // SNESAPU.DLL ã‚’ãƒ­ãƒ¼ãƒ‰
         sData := Concat(sChPath, SNESAPU_FILE);
-        dwBuffer := API_LoadLibraryEx(pchar(sData), NULL, LOAD_LIBRARY_SEARCH_APPLICATION_DIR);
+        dwBuffer := API_LoadLibraryEx(StrToPtr(sData), NULL, LOAD_LIBRARY_SEARCH_APPLICATION_DIR);
         if longbool(dwBuffer) then begin
             I := 0;
             @Apu.EmuAPU := GetProcAddress(pchar('EmuAPU'));
@@ -6687,34 +6926,27 @@ begin
         end else result := 1;
         Apu.hSNESAPU := dwBuffer;
     end;
-    // SNESAPU.DLL ‚Ìî•ñ‚ğæ“¾
+    // SNESAPU.DLL ã®æƒ…å ±ã‚’å–å¾—
     if not longbool(result) then begin
         Apu.GetAPUData(@Apu.Ram, @Apu.XRam, @Apu.SPCOutPort, @Apu.T64Count, @Apu.DspReg, @Apu.Voices, @Apu.VolumeMaxLeft, @Apu.VolumeMaxRight);
         if longbool((longword(Apu.Ram) and $FFFF) or ((longword(Apu.DspReg) or longword(Apu.Voices)) and $FF)) then result := 4;
     end;
-    // SNESAPU.DLL ‚Ì“Ç‚İ‚İ‚É¸”s‚µ‚½ê‡
+    // SNESAPU.DLL ã®èª­ã¿è¾¼ã¿ã«å¤±æ•—ã—ãŸå ´åˆ
     if longbool(result) then begin
-        // ƒƒbƒZ[ƒW‚ğ•\¦
+        // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤º
         ShowErrMsg(100 + result);
-        // SNESAPU.DLL ‚ğ‰ğ•ú
+        // SNESAPU.DLL ã‚’è§£æ”¾
         if longbool(Apu.hSNESAPU) then API_FreeLibrary(Apu.hSNESAPU);
-        // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-        FreeMem(Status.lpCurrentPath, 1024);
-        FreeMem(Status.lpSPCFile, 1024);
-        FreeMem(Status.lpSPCDir, 1024);
-        FreeMem(Status.lpSPCName, 1024);
-        FreeMem(Status.lpOpenPath, 1024);
-        FreeMem(Status.lpSavePath, 1024);
-        // ƒEƒBƒ“ƒhƒE‚ğíœ
+        // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’å‰Šé™¤
         cwWindowMain.DeleteWindow();
         cwWindowMain.Free();
-        // I—¹
+        // çµ‚äº†
         exit;
     end;
 {$IFDEF SPCBPMTEST}
-    // SPC_BPM.DLL ‚ğƒ[ƒh
+    // SPC_BPM.DLL ã‚’ãƒ­ãƒ¼ãƒ‰
     sData := Concat(sChPath, SPC_BPM_FILE);
-    dwBuffer := API_LoadLibraryEx(pchar(sData), NULL, LOAD_LIBRARY_SEARCH_APPLICATION_DIR);
+    dwBuffer := API_LoadLibraryEx(StrToPtr(sData), NULL, LOAD_LIBRARY_SEARCH_APPLICATION_DIR);
     Apu.hSPCBPM := dwBuffer;
     if longbool(dwBuffer) then begin
         @Apu.BPMInitialize := API_GetProcAddress(dwBuffer, pchar('Initialize'));
@@ -6722,7 +6954,7 @@ begin
         @Apu.BPMStop := API_GetProcAddress(dwBuffer, pchar('Stop'));
         @Apu.BPMGetBPM := API_GetProcAddress(dwBuffer, pchar('GetBPM'));
     end;
-    // SPC_BPM.DLL ‚ğ‰Šú‰»
+    // SPC_BPM.DLL ã‚’åˆæœŸåŒ–
     Apu.BPMInitialize(Apu.hSNESAPU);
 {$ENDIF}
     // KSDATAFORMAT_SUBTYPE_IEEE_FLOAT : 00000003-0000-0010-8000-00AA00389B71
@@ -6769,21 +7001,21 @@ begin
 {$ENDIF}
     Status.hPowerNotify := NULL;
     Status.hSuspendNotify := NULL;
-    // USER32.DLL ‚ğƒ[ƒh
-    dwBuffer := API_LoadLibraryEx(pchar('user32.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    // USER32.DLL ã‚’ãƒ­ãƒ¼ãƒ‰
+    dwBuffer := API_LoadLibraryEx(StrToPtr('user32.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if longbool(dwBuffer) then begin
-        // ƒfƒBƒXƒvƒŒƒC‚Ì“dŒ¹ó‘ÔƒCƒxƒ“ƒg‚ğE‚¦‚é‚æ‚¤‚Éİ’è (for Windows 8, 8.1, 10, 11)
+        // ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ã®é›»æºçŠ¶æ…‹ã‚¤ãƒ™ãƒ³ãƒˆã‚’æ‹¾ãˆã‚‹ã‚ˆã†ã«è¨­å®š (for Windows 8 ä»¥é™)
         @API_RegisterPowerSettingNotification := API_GetProcAddress(dwBuffer, pchar('RegisterPowerSettingNotification'));
         if longbool(@API_RegisterPowerSettingNotification) then begin
             Status.hPowerNotify := API_RegisterPowerSettingNotification(hWndApp, @GUID_CONSOLE_DISPLAY_STATE, DEVICE_NOTIFY_WINDOW_HANDLE);
         end;
-        // S0 (È“d—Í) ƒXƒŠ[ƒv‚ÌƒCƒxƒ“ƒg‚ğE‚¦‚é‚æ‚¤‚Éİ’è (for Windows 8, 8.1, 10, 11)
+        // S0 (çœé›»åŠ›) ã‚¹ãƒªãƒ¼ãƒ—ã®ã‚¤ãƒ™ãƒ³ãƒˆã‚’æ‹¾ãˆã‚‹ã‚ˆã†ã«è¨­å®š (for Windows 8 ä»¥é™)
         @API_RegisterSuspendResumeNotification := API_GetProcAddress(dwBuffer, pchar('RegisterSuspendResumeNotification'));
         if longbool(@API_RegisterSuspendResumeNotification) then begin
             Status.hSuspendNotify := API_RegisterSuspendResumeNotification(hWndApp, DEVICE_NOTIFY_WINDOW_HANDLE);
         end;
 {$IFDEF UACDROP}
-        // Œ ŒÀ‚ª’á‚¢ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚©‚ç‚Ìƒhƒƒbƒv‚ğ—LŒø‚Éİ’è (for Windows Vista, 7)
+        // æ¨©é™ãŒä½ã„ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‹ã‚‰ã®ãƒ‰ãƒ­ãƒƒãƒ—ã‚’æœ‰åŠ¹ã«è¨­å®š (for Windows Vista ä»¥é™)
         @API_ChangeWindowMessageFilter := API_GetProcAddress(dwBuffer, pchar('ChangeWindowMessageFilter'));
         if longbool(@API_ChangeWindowMessageFilter) then begin
             API_ChangeWindowMessageFilter(WM_DROPFILES, MSGFLT_ADD);
@@ -6791,64 +7023,55 @@ begin
             API_ChangeWindowMessageFilter(WM_COPYGLOBALDATA, MSGFLT_ADD);
         end;
 {$ENDIF}
-        // DLL ‚ğ‰ğ•ú
+        // DLL ã‚’è§£æ”¾
         API_FreeLibrary(dwBuffer);
     end;
-    // ƒVƒXƒeƒ€‚Ìƒo[ƒWƒ‡ƒ“î•ñ‚ğæ“¾
-    Status.OsVersionInfo.dwOSVersionInfoSize := SizeOf(TOSVERSIONINFO);
-    API_GetVersionEx(@Status.OsVersionInfo);
-    // NTDLL.DLL ‚ğƒ[ƒh
-    dwBuffer := API_LoadLibraryEx(pchar('ntdll.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
-    if longbool(dwBuffer) then begin
-        // ƒVƒXƒeƒ€‚Ìƒo[ƒWƒ‡ƒ“î•ñ‚ğæ“¾
-        @API_RtlGetVersion := API_GetProcAddress(dwBuffer, pchar('RtlGetVersion'));
-        if longbool(@API_RtlGetVersion) then API_RtlGetVersion(@Status.OsVersionInfo);
-        // DLL ‚ğ‰ğ•ú
-        API_FreeLibrary(dwBuffer);
-    end;
+    // ã‚·ã‚¹ãƒ†ãƒ ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’å–å¾—
+    Status.OsVersionInfo.dwOSVersionInfoSize := SizeOf(TRTLOSVERSIONINFOW);
+    API_RtlGetVersion(@Status.OsVersionInfo);
 {$IFDEF ITASKBARLIST3}
-    // COM ƒCƒ“ƒ^[ƒtƒFƒCƒX‚ğ‰Šú‰»
+    // COM ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã‚’åˆæœŸåŒ–
     API_CoInitialize(NULLPOINTER);
-    // ƒ^ƒXƒNƒo[‚Ìƒ{ƒ^ƒ“‚ğ§Œä‚·‚éƒCƒ“ƒ^[ƒtƒF[ƒX‚ğ“Ç‚İ‚İ
+    // ã‚¿ã‚¹ã‚¯ãƒãƒ¼ã®ãƒœã‚¿ãƒ³ã‚’åˆ¶å¾¡ã™ã‚‹ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã‚’èª­ã¿è¾¼ã¿
     API_CoCreateInstance(@CLSID_TaskbarList, NULLPOINTER, CLSCTX_INPROC_SERVER, @IID_ITaskbarList3, @Status.ITaskbarList3);
 {$ENDIF}
-    // ƒoƒbƒtƒ@‚ğİ’è
-    SetLength(cBuffer, 32);
-    // ƒf[ƒ^‚ğŠi”[‚·‚éƒ|ƒCƒ“ƒ^‚ğæ“¾
-    API_ZeroMemory(@cBuffer[0], 32);
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è¨­å®š
+    SetLength(cBuffer, COPY_SIZE_TITLE);
+    // ãƒ‡ãƒ¼ã‚¿ã‚’æ ¼ç´ã™ã‚‹ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—
+    API_ZeroMemory(@cBuffer[0], COPY_SIZE_TITLE);
     Apu.GetScript700Data(@cBuffer[0], @Apu.SPC700Reg, @Status.Script700.Data);
-    // ƒo[ƒWƒ‡ƒ“î•ñ‚ğì¬
+    // ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’ä½œæˆ
     sInfo := Concat(SPCPLAY_TITLE, SPCPLAY_VERSION,
 {$IFNDEF SIGNATURE}
-        #32#42, // ”ñŒö®ƒ}[ƒN
+        #32#42, // éå…¬å¼ãƒãƒ¼ã‚¯
 {$ENDIF}
         CRLF, CRLF, SNESAPU_TITLE, Copy(
 {$IFDEF FREEPASCAL}
         ChrToStr(cBuffer),
 {$ELSE}
-        // NOTE: Boland Delphi ‚Ìê‡Achar ‚Ì“®“I”z—ñ‚ğ string ‚ÉƒLƒƒƒXƒg‚·‚éê‡‚ÍA
-        // ’¼Ú string() ‚ğg—p‚·‚é
+        // NOTE: Boland Delphi ã®å ´åˆã€char ã®å‹•çš„é…åˆ—ã‚’ string ã«ã‚­ãƒ£ã‚¹ãƒˆã™ã‚‹å ´åˆã¯ã€
+        // ç›´æ¥ string() ã‚’ä½¿ç”¨ã™ã‚‹
         string(cBuffer),
 {$ENDIF}
-        1, GetSize(@cBuffer[0], 32)));
-    if K <> SNESAPU_VERSION then sInfo := Concat(sInfo, #32#42); // ƒo[ƒWƒ‡ƒ“•sˆê’vƒ}[ƒN
-    // ƒuƒ‰ƒV‚ğì¬
+        1, GetAnsiSize(@cBuffer[0], COPY_SIZE_TITLE)));
+    if K <> SNESAPU_VERSION then sInfo := Concat(sInfo, #32#42); // ãƒãƒ¼ã‚¸ãƒ§ãƒ³ä¸ä¸€è‡´ãƒãƒ¼ã‚¯
+    // ãƒ–ãƒ©ã‚·ã‚’ä½œæˆ
     if Option.dwTheme = THEME_DARK then begin
         Status.hBackBrush := API_CreateSolidBrush(COLOR_DARK_BACK);
         Status.hTextBrush := API_CreateSolidBrush(COLOR_DARK_TEXT);
         Status.hMenuBrush := API_CreateSolidBrush(COLOR_DARK_MENU);
-        // ”wŒiƒuƒ‰ƒV‚ğ•ÏX
+        // èƒŒæ™¯ãƒ–ãƒ©ã‚·ã‚’å¤‰æ›´
         API_SetClassLong(hWndApp, GCL_HBRBACKGROUND, Status.hBackBrush);
     end else begin
         Status.hBackBrush := ORG_COLOR_BTNFACE;
         Status.hTextBrush := ORG_COLOR_WINDOWTEXT;
     end;
-    // ”z—ñ‚ÌƒTƒCƒY‚ğ‰Šú‰»
+    // é…åˆ—ã®ã‚µã‚¤ã‚ºã‚’åˆæœŸåŒ–
     SetLength(Wave.lpData, Option.dwBufferNum);
     SetLength(Wave.Header, Option.dwBufferNum);
     SetLength(Wave.Apu, Option.dwBufferNum);
     SetLength(Status.SPCCache, Option.dwCacheNum);
-    // ƒtƒ@ƒCƒ‹ƒƒjƒ…[‚ğì¬
+    // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     cmFile := CMENU.Create();
     cmFile.CreatePopupMenu();
     for I := 0 to MENU_FILE_OPEN_SIZE - 1 do cmFile.AppendMenu(MENU_FILE_OPEN_BASE + I, STR_MENU_FILE_OPEN_SUB[Status.dwLanguage][I]);
@@ -6856,61 +7079,61 @@ begin
     for I := 0 to MENU_FILE_PLAY_SIZE - 1 do cmFile.AppendMenu(MENU_FILE_PLAY_BASE + I, STR_MENU_FILE_PLAY_SUB[Status.dwLanguage][I]);
     cmFile.AppendSeparator();
     cmFile.AppendMenu(MENU_FILE_EXIT, STR_MENU_FILE_EXIT[Status.dwLanguage]);
-    // ƒfƒoƒCƒXƒƒjƒ…[‚ğì¬
+    // ãƒ‡ãƒã‚¤ã‚¹ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     cmSetupDevice := CMENU.Create();
     cmSetupDevice.CreatePopupMenu();
     Status.dwDeviceNum := 0;
     UpdateDevice(Option.dwDeviceID, WAVE_DEVICE_INITIALIZE);
-    // ƒ`ƒƒƒ“ƒlƒ‹ƒƒjƒ…[‚ğì¬
+    // ãƒãƒ£ãƒ³ãƒãƒ«ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     SetMenuTextAndTip(cmSetupChannel, MENU_SETUP_CHANNEL_SIZE, MENU_SETUP_CHANNEL_BASE, STR_MENU_SETUP_CHANNEL_SUB[Status.dwLanguage], true);
-    // ƒrƒbƒgƒƒjƒ…[‚ğì¬
+    // ãƒ“ãƒƒãƒˆãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     SetMenuTextAndTip(cmSetupBit, MENU_SETUP_BIT_SIZE, MENU_SETUP_BIT_BASE, STR_MENU_SETUP_BIT_SUB[Status.dwLanguage], true);
-    // ƒTƒ“ƒvƒŠƒ“ƒOƒŒ[ƒgƒƒjƒ…[‚ğì¬
+    // ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ¬ãƒ¼ãƒˆãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     SetMenuTextAndTip(cmSetupRate, MENU_SETUP_RATE_SIZE, MENU_SETUP_RATE_BASE, STR_MENU_SETUP_RATE_SUB[Status.dwLanguage], true);
-    // •âŠÔˆ—ƒƒjƒ…[‚ğì¬
+    // è£œé–“å‡¦ç†ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     SetMenuTextAndTip(cmSetupInter, MENU_SETUP_INTER_SIZE, MENU_SETUP_INTER_BASE, STR_MENU_SETUP_INTER_SUB[Status.dwLanguage], true);
-    // ƒsƒbƒ`ƒL[ƒƒjƒ…[‚ğì¬
+    // ãƒ”ãƒƒãƒã‚­ãƒ¼ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     cmSetupPitchKey := CMENU.Create();
     cmSetupPitchKey.CreatePopupMenu();
     for I := 0 to MENU_SETUP_PITCH_KEY_SIZE - 1 do cmSetupPitchKey.AppendMenu(MENU_SETUP_PITCH_KEY_BASE + I,
-        pchar(Concat(STR_MENU_SETUP_PITCH_PLUS[Status.dwLanguage], IntToStr(MENU_SETUP_PITCH_KEY_SIZE - I))), true);
+        Concat(STR_MENU_SETUP_PITCH_PLUS[Status.dwLanguage], IntToStr(MENU_SETUP_PITCH_KEY_SIZE - I)), true);
     cmSetupPitchKey.AppendMenu(MENU_SETUP_PITCH_KEY_BASE + MENU_SETUP_PITCH_KEY_SIZE, STR_MENU_SETUP_PITCH_ZERO, true);
     for I := 0 to MENU_SETUP_PITCH_KEY_SIZE - 1 do cmSetupPitchKey.AppendMenu(MENU_SETUP_PITCH_KEY_BASE + MENU_SETUP_PITCH_KEY_SIZE + I + 1,
-        pchar(Concat(STR_MENU_SETUP_PITCH_MINUS[Status.dwLanguage], char($31 + I))), true);
-    // ƒsƒbƒ`ƒƒjƒ…[‚ğì¬
+        Concat(STR_MENU_SETUP_PITCH_MINUS[Status.dwLanguage], char($31 + I)), true);
+    // ãƒ”ãƒƒãƒãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     SetMenuTextAndTip(cmSetupPitch, MENU_SETUP_PITCH_SIZE, MENU_SETUP_PITCH_BASE, STR_MENU_SETUP_PITCH_SUB[Status.dwLanguage], true);
     cmSetupPitch.AppendSeparator();
     cmSetupPitch.AppendMenu(MENU_SETUP_PITCH_KEY, STR_MENU_SETUP_PITCH_KEY[Status.dwLanguage], cmSetupPitchKey.hMenu);
     cmSetupPitch.AppendMenu(MENU_SETUP_PITCH_ASYNC, STR_MENU_SETUP_PITCH_ASYNC[Status.dwLanguage]);
-    // ¶‰EŠgU“xƒƒjƒ…[‚ğì¬
+    // å·¦å³æ‹¡æ•£åº¦ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     SetMenuTextAndTip(cmSetupSeparate, MENU_SETUP_SEPARATE_SIZE, MENU_SETUP_SEPARATE_BASE, STR_MENU_SETUP_SEPARATE_PER_INDEX,
         STR_MENU_SETUP_SEPARATE_TIP_INDEX);
-    // ƒtƒB[ƒhƒoƒbƒN”½“]“xƒƒjƒ…[‚ğì¬
+    // ãƒ•ã‚£ãƒ¼ãƒ‰ãƒãƒƒã‚¯åè»¢åº¦ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     SetMenuTextAndTip(cmSetupFeedback, MENU_SETUP_FEEDBACK_SIZE, MENU_SETUP_FEEDBACK_BASE, STR_MENU_SETUP_FEEDBACK_PER_INDEX,
         STR_MENU_SETUP_FEEDBACK_TIP_INDEX);
-    // ‰‰‘t‘¬“xƒƒjƒ…[‚ğì¬
+    // æ¼”å¥é€Ÿåº¦ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     SetMenuTextAndTip(cmSetupSpeed, MENU_SETUP_SPEED_SIZE, MENU_SETUP_SPEED_BASE, STR_MENU_SETUP_SPEED_PER_INDEX, STR_MENU_SETUP_SPEED_TIP_INDEX);
-    // ‰¹—Êƒƒjƒ…[‚ğì¬
+    // éŸ³é‡ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     SetMenuTextAndTip(cmSetupAmp, MENU_SETUP_AMP_SIZE, MENU_SETUP_AMP_BASE, STR_MENU_SETUP_AMP_PER_INDEX, STR_MENU_SETUP_AMP_TIP_INDEX);
-    // ƒ`ƒƒƒ“ƒlƒ‹ƒ}ƒXƒNƒƒjƒ…[‚ğì¬
+    // ãƒãƒ£ãƒ³ãƒãƒ«ãƒã‚¹ã‚¯ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     cmSetupMute := CMENU.Create();
     cmSetupMute.CreatePopupMenu();
     for I := 0 to MENU_SETUP_MUTE_NOISE_ALL_SIZE - 1 do
         cmSetupMute.AppendMenu(MENU_SETUP_MUTE_ALL_BASE + I, STR_MENU_SETUP_MUTE_NOISE_ALL_SUB[Status.dwLanguage][I]);
     cmSetupMute.AppendSeparator();
     for I := 0 to MENU_SETUP_MUTE_NOISE_SIZE - 1 do
-        cmSetupMute.AppendMenu(MENU_SETUP_MUTE_BASE + I, pchar(Concat(STR_MENU_SETUP_SWITCH_CHANNEL[Status.dwLanguage], '&', string(char($31 + I)))));
-    // ƒ`ƒƒƒ“ƒlƒ‹ƒmƒCƒYƒƒjƒ…[‚ğì¬
+        cmSetupMute.AppendMenu(MENU_SETUP_MUTE_BASE + I, Concat(STR_MENU_SETUP_SWITCH_CHANNEL[Status.dwLanguage], '&', string(char($31 + I))));
+    // ãƒãƒ£ãƒ³ãƒãƒ«ãƒã‚¤ã‚ºãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     cmSetupNoise := CMENU.Create();
     cmSetupNoise.CreatePopupMenu();
     for I := 0 to MENU_SETUP_MUTE_NOISE_ALL_SIZE - 1 do
         cmSetupNoise.AppendMenu(MENU_SETUP_NOISE_ALL_BASE + I, STR_MENU_SETUP_MUTE_NOISE_ALL_SUB[Status.dwLanguage][I]);
     cmSetupNoise.AppendSeparator();
     for I := 0 to MENU_SETUP_MUTE_NOISE_SIZE - 1 do
-        cmSetupNoise.AppendMenu(MENU_SETUP_NOISE_BASE + I, pchar(Concat(STR_MENU_SETUP_SWITCH_CHANNEL[Status.dwLanguage], '&', string(char($31 + I)))));
-    // Šg’£İ’èƒƒjƒ…[‚ğì¬
+        cmSetupNoise.AppendMenu(MENU_SETUP_NOISE_BASE + I, Concat(STR_MENU_SETUP_SWITCH_CHANNEL[Status.dwLanguage], '&', string(char($31 + I))));
+    // æ‹¡å¼µè¨­å®šãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     SetMenuTextAndTip(cmSetupOption, MENU_SETUP_OPTION_SIZE, MENU_SETUP_OPTION_BASE, STR_MENU_SETUP_OPTION_SUB[Status.dwLanguage], false);
-    // ‰‰‘tŠÔƒƒjƒ…[‚ğì¬
+    // æ¼”å¥æ™‚é–“ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     cmSetupTime := CMENU.Create();
     cmSetupTime.CreatePopupMenu();
     cmSetupTime.AppendMenu(MENU_SETUP_TIME_DISABLE, STR_MENU_SETUP_TIME_DISABLE[Status.dwLanguage], true);
@@ -6921,25 +7144,25 @@ begin
     cmSetupTime.AppendMenu(MENU_SETUP_TIME_LIMIT, STR_MENU_SETUP_TIME_LIMIT[Status.dwLanguage]);
     cmSetupTime.AppendSeparator();
     cmSetupTime.AppendMenu(MENU_SETUP_TIME_RESET, STR_MENU_SETUP_TIME_RESET[Status.dwLanguage]);
-    // ‰‰‘t‡˜ƒƒjƒ…[‚ğì¬
+    // æ¼”å¥é †åºãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     SetMenuTextAndTip(cmSetupOrder, MENU_SETUP_ORDER_SIZE, MENU_SETUP_ORDER_BASE, STR_MENU_SETUP_ORDER_SUB[Status.dwLanguage], true);
-    // ƒV[ƒNŠÔƒƒjƒ…[‚ğì¬
+    // ã‚·ãƒ¼ã‚¯æ™‚é–“ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     SetMenuTextAndTip(cmSetupSeek, MENU_SETUP_SEEK_SIZE, MENU_SETUP_SEEK_BASE, STR_MENU_SETUP_SEEK_SUB[Status.dwLanguage], true);
     cmSetupSeek.AppendSeparator();
     cmSetupSeek.AppendMenu(MENU_SETUP_SEEK_FAST, STR_MENU_SETUP_SEEK_FAST[Status.dwLanguage]);
     cmSetupSeek.AppendMenu(MENU_SETUP_SEEK_ASYNC, STR_MENU_SETUP_SEEK_ASYNC[Status.dwLanguage]);
-    // î•ñ•\¦ƒƒjƒ…[‚ğì¬
+    // æƒ…å ±è¡¨ç¤ºãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     SetMenuTextAndTip(cmSetupInfo, MENU_SETUP_INFO_SIZE, MENU_SETUP_INFO_BASE, STR_MENU_SETUP_INFO_SUB[Status.dwLanguage], true);
     cmSetupInfo.AppendSeparator();
     cmSetupInfo.AppendMenu(MENU_SETUP_INFO_RESET, STR_MENU_SETUP_INFO_RESET[Status.dwLanguage]);
-    // Šî–{—Dæ“xƒƒjƒ…[‚ğì¬
+    // åŸºæœ¬å„ªå…ˆåº¦ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     SetMenuTextAndTip(cmSetupPriority, MENU_SETUP_PRIORITY_SIZE, MENU_SETUP_PRIORITY_BASE, STR_MENU_SETUP_PRIORITY_SUB[Status.dwLanguage], true);
-    // ‚»‚Ì‘¼İ’èƒƒjƒ…[‚ğì¬
+    // ãã®ä»–è¨­å®šãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     cmSetupOthers := CMENU.Create();
     cmSetupOthers.CreatePopupMenu();
     cmSetupOthers.AppendMenu(MENU_SETUP_TOPMOST, STR_MENU_SETUP_TOPMOST[Status.dwLanguage]);
     cmSetupOthers.AppendMenu(MENU_SETUP_NOSLEEP, STR_MENU_SETUP_NOSLEEP[Status.dwLanguage]);
-    // İ’èƒƒjƒ…[‚ğì¬
+    // è¨­å®šãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     cmSetup := CMENU.Create();
     cmSetup.CreatePopupMenu();
     cmSetup.AppendMenu(MENU_SETUP_DEVICE, STR_MENU_SETUP_DEVICE[Status.dwLanguage], cmSetupDevice.hMenu);
@@ -6963,13 +7186,13 @@ begin
     cmSetup.AppendMenu(MENU_SETUP_INFO, STR_MENU_SETUP_INFO[Status.dwLanguage], cmSetupInfo.hMenu);
     cmSetup.AppendMenu(MENU_SETUP_PRIORITY, STR_MENU_SETUP_PRIORITY[Status.dwLanguage], cmSetupPriority.hMenu);
     cmSetup.AppendMenu(MENU_SETUP_OTHERS, STR_MENU_SETUP_OTHERS[Status.dwLanguage], cmSetupOthers.hMenu);
-    // ‰‰‘tŠJnƒƒjƒ…[‚ğì¬
+    // æ¼”å¥é–‹å§‹ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     cmListPlay := CMENU.Create();
     cmListPlay.CreatePopupMenu();
     cmListPlay.AppendMenu(MENU_LIST_PLAY_SELECT, STR_MENU_LIST_PLAY_SELECT[Status.dwLanguage]);
     cmListPlay.AppendSeparator();
     for I := 0 to MENU_LIST_PLAY_SIZE - 1 do cmListPlay.AppendMenu(MENU_LIST_PLAY_BASE + I, STR_MENU_LIST_PLAY_SUB[Status.dwLanguage][I], true);
-    // ƒvƒŒƒCƒŠƒXƒgƒƒjƒ…[‚ğì¬
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     cmList := CMENU.Create();
     cmList.CreatePopupMenu();
     cmList.AppendMenu(MENU_LIST_PLAY, STR_MENU_LIST_PLAY[Status.dwLanguage], cmListPlay.hMenu);
@@ -6977,7 +7200,7 @@ begin
     for I := 0 to MENU_LIST_EDIT_SIZE - 1 do cmList.AppendMenu(MENU_LIST_EDIT_BASE + I, STR_MENU_LIST_EDIT_SUB[Status.dwLanguage][I]);
     cmList.AppendSeparator();
     for I := 0 to MENU_LIST_MOVE_SIZE - 1 do cmList.AppendMenu(MENU_LIST_MOVE_BASE + I, STR_MENU_LIST_MOVE_SUB[Status.dwLanguage][I]);
-    // ƒVƒXƒeƒ€ƒƒjƒ…[‚ğì¬
+    // ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     cmSystem := cwWindowMain.GetSystemMenu();
     cmSystem.RemoveItem(SC_MAXIMIZE);
     cmSystem.RemoveItem(SC_SIZE);
@@ -6985,356 +7208,357 @@ begin
     cmSystem.InsertMenu(MENU_SETUP, SC_CLOSE, STR_MENU_SETUP[Status.dwLanguage], cmSetup.hMenu);
     cmSystem.InsertMenu(MENU_LIST, SC_CLOSE, STR_MENU_LIST[Status.dwLanguage], cmList.hMenu);
     cmSystem.InsertSeparator(SC_CLOSE);
-    // ƒEƒBƒ“ƒhƒEƒƒjƒ…[‚ğì¬
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
     cmMain := CMENUBAR.Create();
     cmMain.CreateMenu();
     cmMain.AppendMenu(MENU_FILE, STR_MENU_FILE[Status.dwLanguage], cmFile.hMenu);
     cmMain.AppendMenu(MENU_SETUP, STR_MENU_SETUP[Status.dwLanguage], cmSetup.hMenu);
     cmMain.AppendMenu(MENU_LIST, STR_MENU_LIST[Status.dwLanguage], cmList.hMenu);
     API_SetMenu(hWndApp, cmMain.hMenu);
-    // ƒtƒHƒ“ƒg‚ğì¬
+    // ãƒ•ã‚©ãƒ³ãƒˆã‚’ä½œæˆ
     cfMain := CFONT.Create();
     Box := ScalableWindowBox(0, 0, 6, 12);
     if Length(Option.sFontName) > 0 then sFontName := Option.sFontName
     else sFontName := FONT_NAME[Status.dwLanguage];
-    cfMain.CreateFont(pchar(sFontName), Box.height, Box.width, false, false, false, false);
-    // ƒvƒŒƒCƒŠƒXƒgAƒ{ƒ^ƒ“‚ğì¬
+    cfMain.CreateFont(sFontName, Box.height, Box.width, false, false, false, false);
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã€ãƒœã‚¿ãƒ³ã‚’ä½œæˆ
     hFontApp := cfMain.hFont;
-    lpString := pchar(ITEM_BUTTON);
-    lpBuffer := pchar(ITEM_LISTBOX);
     cwFileList := CWINDOW.Create();
-    cwFileList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''),
-        ID_LIST_FILE, LBS_NOREDRAW, NULL, ScalableWindowBox(0, 210, 220, 130));
+    cwFileList.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_LISTBOX, '', ID_LIST_FILE,
+        LBS_NOREDRAW, NULL, ScalableWindowBox(0, 210, 220, 130));
     cwSortList := CWINDOW.Create();
-    cwSortList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''),
-        ID_LIST_SORT, LBS_NOREDRAW or LBS_SORT, NULL, ScalableWindowBox(0, 210, 220, 130));
+    cwSortList.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_LISTBOX, '', ID_LIST_SORT,
+        LBS_NOREDRAW or LBS_SORT, NULL, ScalableWindowBox(0, 210, 220, 130));
     cwTempList := CWINDOW.Create();
-    cwTempList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''),
-        ID_LIST_TEMP, LBS_NOREDRAW, NULL, ScalableWindowBox(0, 210, 220, 130));
+    cwTempList.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_LISTBOX, '', ID_LIST_TEMP,
+        LBS_NOREDRAW, NULL, ScalableWindowBox(0, 210, 220, 130));
     cwButtonOpen := CBUTTON.Create();
-    cwButtonOpen.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_OPEN),
-        ID_BUTTON_OPEN, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(5, 103, 55, 21));
+    cwButtonOpen.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_OPEN, ID_BUTTON_OPEN,
+        WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(5, 103, 55, 21));
     cwButtonSave := CBUTTON.Create();
-    cwButtonSave.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_SAVE),
-        ID_BUTTON_SAVE, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(62, 103, 55, 21));
+    cwButtonSave.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_SAVE, ID_BUTTON_SAVE,
+        WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(62, 103, 55, 21));
     cwButtonPlay := CBUTTON.Create();
-    cwButtonPlay.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_PLAY),
-        ID_BUTTON_PLAY, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(126, 103, 54, 21));
+    cwButtonPlay.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_PLAY, ID_BUTTON_PLAY,
+        WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(126, 103, 54, 21));
     cwButtonRestart := CBUTTON.Create();
-    cwButtonRestart.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_RESTART),
-        ID_BUTTON_RESTART, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(182, 103, 54, 21));
+    cwButtonRestart.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_RESTART, ID_BUTTON_RESTART,
+        WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(182, 103, 54, 21));
     cwButtonStop := CBUTTON.Create();
-    cwButtonStop.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_STOP),
-        ID_BUTTON_STOP, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(238, 103, 54, 21));
+    cwButtonStop.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_STOP, ID_BUTTON_STOP,
+        WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(238, 103, 54, 21));
     sBuffer := ' ';
     K := 5;
     for I := 0 to 7 do begin
         sBuffer[1] := char($31 + I);
         cwCheckTrack[I] := CBUTTON.Create();
-        cwCheckTrack[I].CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(sBuffer),
-            ID_BUTTON_TRACK[I], BS_AUTOCHECKBOX or BS_PUSHLIKE or WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(K, 127, 14, 21));
+        cwCheckTrack[I].CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, sBuffer, ID_BUTTON_TRACK[I],
+            BS_AUTOCHECKBOX or BS_PUSHLIKE or WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(K, 127, 14, 21));
         Inc(K, 14);
     end;
     cwButtonVolM := CBUTTON.Create();
-    cwButtonVolM.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_AMPD),
-        ID_BUTTON_AMPD, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(126, 127, 26, 21));
+    cwButtonVolM.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_AMPD, ID_BUTTON_AMPD,
+        WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(126, 127, 26, 21));
     cwButtonVolP := CBUTTON.Create();
-    cwButtonVolP.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_AMPU),
-        ID_BUTTON_AMPU, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(154, 127, 26, 21));
+    cwButtonVolP.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_AMPU, ID_BUTTON_AMPU,
+        WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(154, 127, 26, 21));
     cwButtonSlow := CBUTTON.Create();
-    cwButtonSlow.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_SLOW),
-        ID_BUTTON_SLOW, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(182, 127, 26, 21));
+    cwButtonSlow.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_SLOW, ID_BUTTON_SLOW,
+        WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(182, 127, 26, 21));
     cwButtonFast := CBUTTON.Create();
-    cwButtonFast.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_FAST),
-        ID_BUTTON_FAST, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(210, 127, 26, 21));
+    cwButtonFast.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_FAST, ID_BUTTON_FAST,
+        WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(210, 127, 26, 21));
     cwButtonBack := CBUTTON.Create();
-    cwButtonBack.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_BACK),
-        ID_BUTTON_BACK, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(238, 127, 26, 21));
+    cwButtonBack.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_BACK, ID_BUTTON_BACK,
+        WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(238, 127, 26, 21));
     cwButtonNext := CBUTTON.Create();
-    cwButtonNext.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_NEXT),
-        ID_BUTTON_NEXT, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(266, 127, 26, 21));
+    cwButtonNext.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_NEXT, ID_BUTTON_NEXT,
+        WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(266, 127, 26, 21));
     cwPlayList := CWINDOW.Create();
     if Option.dwTheme = THEME_DARK then begin
-        cwPlayList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''),
-            ID_LIST_PLAY, LBS_DISABLENOSCROLL or LBS_NOTIFY or WS_TABSTOP or WS_VISIBLE or WS_VSCROLL, WS_EX_STATICEDGE or WS_EX_NOPARENTNOTIFY,
+        cwPlayList.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_LISTBOX, '', ID_LIST_PLAY,
+            LBS_DISABLENOSCROLL or LBS_NOTIFY or WS_TABSTOP or WS_VISIBLE or WS_VSCROLL, WS_EX_STATICEDGE or WS_EX_NOPARENTNOTIFY,
             ScalableWindowBox(301, 0, 215, 124));
         ScalableWindowBox(301, 0, 215, Option.dwListHeight);
         Box.top := (Status.dwScale - 2) shl 1 + 2;
     end else begin
-        cwPlayList.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(''),
-            ID_LIST_PLAY, LBS_DISABLENOSCROLL or LBS_NOTIFY or WS_TABSTOP or WS_VISIBLE or WS_VSCROLL, WS_EX_CLIENTEDGE or WS_EX_NOPARENTNOTIFY,
+        cwPlayList.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_LISTBOX, '', ID_LIST_PLAY,
+            LBS_DISABLENOSCROLL or LBS_NOTIFY or WS_TABSTOP or WS_VISIBLE or WS_VSCROLL, WS_EX_CLIENTEDGE or WS_EX_NOPARENTNOTIFY,
             ScalableWindowBox(301, 0, 215, 124));
         ScalableWindowBox(301, 0, 215, Option.dwListHeight);
         Box.top := (Status.dwScale - 2) shl 1;
     end;
-    API_MoveWindow(cwPlayList.hWnd, Box.left, Box.top, Box.width, Box.height, false); // ƒvƒŒƒCƒŠƒXƒg‚ª¬‚³‚­‚È‚éƒoƒO‰ñ”ğ
+    API_MoveWindow(cwPlayList.hWnd, Box.left, Box.top, Box.width, Box.height, false); // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆãŒå°ã•ããªã‚‹ãƒã‚°å›é¿
     cwButtonListAdd := CBUTTON.Create();
-    cwButtonListAdd.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_APPEND),
-        ID_BUTTON_ADD, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(301, 127, 54, 21));
+    cwButtonListAdd.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_APPEND, ID_BUTTON_ADD,
+        WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(301, 127, 54, 21));
     cwButtonListRemove := CBUTTON.Create();
-    cwButtonListRemove.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_REMOVE),
-        ID_BUTTON_REMOVE, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(357, 127, 54, 21));
+    cwButtonListRemove.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_REMOVE, ID_BUTTON_REMOVE,
+        WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(357, 127, 54, 21));
     cwButtonListClear := CBUTTON.Create();
-    cwButtonListClear.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_CLEAR),
-        ID_BUTTON_CLEAR, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(413, 127, 54, 21));
+    cwButtonListClear.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_CLEAR, ID_BUTTON_CLEAR,
+        WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(413, 127, 54, 21));
     cwButtonListUp := CBUTTON.Create();
-    cwButtonListUp.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_UP[Status.dwLanguage]),
-        ID_BUTTON_UP, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(472, 127, 21, 21));
+    cwButtonListUp.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_UP[Status.dwLanguage], ID_BUTTON_UP,
+        WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(472, 127, 21, 21));
     cwButtonListDown := CBUTTON.Create();
-    cwButtonListDown.CreateItem(hThisInstance, hWndApp, hFontApp, lpString, pchar(STR_BUTTON_DOWN[Status.dwLanguage]),
-        ID_BUTTON_DOWN, WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(495, 127, 21, 21));
-    // Static ‚ğì¬
-    lpBuffer := pchar(ITEM_STATIC);
+    cwButtonListDown.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_DOWN[Status.dwLanguage], ID_BUTTON_DOWN,
+        WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(495, 127, 21, 21));
+    // Static ã‚’ä½œæˆ
     cwStaticFile := CWINDOW.Create();
-    cwStaticFile.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(FILE_DEFAULT),
-        ID_STATIC_FILE, SS_NOPREFIX, WS_EX_NOPARENTNOTIFY, ScalableWindowBox(0, 0, 0, 0));
+    cwStaticFile.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_STATIC, FILE_DEFAULT, ID_STATIC_FILE,
+        SS_NOPREFIX, WS_EX_NOPARENTNOTIFY, ScalableWindowBox(0, 0, 0, 0));
     cwStaticMain := CWINDOW.Create();
-    cwStaticMain.CreateItem(hThisInstance, hWndApp, hFontApp, lpBuffer, pchar(sInfo),
-        ID_STATIC_MAIN, SS_LEFTNOWORDWRAP or SS_NOPREFIX or SS_NOTIFY or WS_VISIBLE, WS_EX_NOPARENTNOTIFY, ScalableWindowBox(5, 2, 287, 96));
-    // Static ‚ÌƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ‚ğæ“¾
+    cwStaticMain.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_STATIC, sInfo, ID_STATIC_MAIN,
+        SS_LEFTNOWORDWRAP or SS_NOPREFIX or SS_NOTIFY or WS_VISIBLE, WS_EX_NOPARENTNOTIFY, ScalableWindowBox(5, 2, 287, 96));
+    // Static ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ã‚’å–å¾—
     Status.lpStaticProc := pointer(API_SetWindowLong(cwStaticMain.hWnd, GWL_WNDPROC, longword(@_StaticProc)));
-    // ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ğæ“¾
+    // ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’å–å¾—
     Status.hDCWindow := API_GetWindowDC(cwWindowMain.hWnd);
     Status.hDCStatic := API_GetDC(cwStaticMain.hWnd);
-    // ƒCƒ“ƒWƒP[ƒ^•\¦—p‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ğì¬
+    // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿è¡¨ç¤ºç”¨ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’ä½œæˆ
     Status.hDCVolumeBuffer := API_CreateCompatibleDC(Status.hDCStatic);
     Status.hBitmapVolume := API_SelectObject(Status.hDCVolumeBuffer, API_CreateCompatibleBitmap(Status.hDCStatic, COLOR_BAR_NUM_X7, COLOR_BAR_HEIGHT));
-    // •¶š•\¦—p‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ğì¬
+    // æ–‡å­—è¡¨ç¤ºç”¨ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’ä½œæˆ
     Status.hDCStringBuffer := API_CreateCompatibleDC(Status.hDCStatic);
     Status.hBitmapString := API_SelectObject(Status.hDCStringBuffer, API_CreateCompatibleBitmap(Status.hDCStatic, BITMAP_NUM_X6P6, BITMAP_NUM_HEIGHT));
-    // ƒOƒ‰ƒtƒBƒbƒNƒŠƒ\[ƒX‚ğİ’è
+    // ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒªã‚½ãƒ¼ã‚¹ã‚’è¨­å®š
     SetGraphic();
-    // ƒfƒoƒCƒX‚ğ‰Šú‰»
+    // ãƒ‡ãƒã‚¤ã‚¹ã‚’åˆæœŸåŒ–
     WaveInit();
-    // ƒvƒŒƒCƒŠƒXƒgƒtƒ@ƒCƒ‹‚ğƒ[ƒh
-    lpBuffer := pchar(Concat(sChPath, LIST_FILE));
-    dwBuffer := GetFileType(lpBuffer, false, false);
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ­ãƒ¼ãƒ‰
+    sData := Concat(sChPath, LIST_FILE);
+    dwBuffer := GetFileType(sData, false, false);
     case dwBuffer of
-        FILE_TYPE_LIST_A, FILE_TYPE_LIST_B: ListLoad(lpBuffer, dwBuffer, true);
+        FILE_TYPE_LIST_A, FILE_TYPE_LIST_B: ListLoad(sData, dwBuffer, true);
     end;
-    // ƒƒjƒ…[‚ğXV
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
     UpdateMenu();
-    // ƒvƒƒZƒX—Dæ“x‚ğİ’è
+    // ãƒ—ãƒ­ã‚»ã‚¹å„ªå…ˆåº¦ã‚’è¨­å®š
     API_SetPriorityClass(API_GetCurrentProcess(), Option.dwPriority);
-    // ƒXƒŒƒbƒh‚ğì¬
+    // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’ä½œæˆ
     Status.dwThreadStatus := WAVE_THREAD_SUSPEND;
     Status.dwThreadHandle := API_CreateThread(NULLPOINTER, NULL, @_WaveThread, NULLPOINTER, NULL, @Status.dwThreadID);
-    // ƒEƒBƒ“ƒhƒEˆÊ’u‚ğİ’è
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½ç½®ã‚’è¨­å®š
     cwWindowMain.SetWindowPosition(dwLeft, dwTop, 1024, 1024);
-    // ƒEƒBƒ“ƒhƒE‚ğƒŠƒTƒCƒY
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ãƒªã‚µã‚¤ã‚º
     ResizeWindow();
-    // ƒtƒH[ƒJƒX‚ğİ’è
+    // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’è¨­å®š
     SetTabFocus(hWndApp, true);
-    // ƒXƒŒƒbƒh‚Ì€”õ‚ªŠ®—¹‚·‚é‚Ü‚Å‘Ò‹@
+    // ã‚¹ãƒ¬ãƒƒãƒ‰ã®æº–å‚™ãŒå®Œäº†ã™ã‚‹ã¾ã§å¾…æ©Ÿ
     while not longbool(Status.dwThreadStatus) do API_Sleep(16);
-    // ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚ğˆ—
+    // ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã‚’å‡¦ç†
     if longbool(Length(sCmdLine)) then begin
-        // ƒoƒbƒtƒ@‚ğŠm•Û
-        GetMem(lpBuffer, 1024);
-        // ƒoƒbƒtƒ@‚ÉƒRƒs[
-        API_ZeroMemory(lpBuffer, 1024);
-        lpString := pchar(sCmdLine);
-        API_MoveMemory(lpBuffer, lpString, Length(sCmdLine));
-        // ƒtƒ@ƒCƒ‹‚ğŠJ‚­
-        dwBuffer := GetFileType(lpBuffer, true, false);
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+        dwBuffer := GetFileType(sCmdLine, true, false);
         case dwBuffer of
-            FILE_TYPE_SPC: SPCLoad(lpBuffer, true);
-            FILE_TYPE_LIST_A, FILE_TYPE_LIST_B: ListLoad(lpBuffer, dwBuffer, false);
+            FILE_TYPE_SPC: SPCLoad(sCmdLine, true);
+            FILE_TYPE_LIST_A, FILE_TYPE_LIST_B: ListLoad(sCmdLine, dwBuffer, false);
         end;
-        // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-        FreeMem(lpBuffer, 1024);
     end;
-    // ƒtƒ‰ƒO‚ğİ’è
+    // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
     Status.dwTitle := Status.dwTitle or TITLE_NORMAL;
-    cwWindowMain.SendMessage(WM_SIZE, $FFFFFFFF, NULL);
+    cwWindowMain.SendMessage(WM_SIZE, $FFFFFFFF);
 {$IFDEF SPCDEBUG}
     Apu.SetSPCDbg(@_SPCDebug, $11); // SPC_TRACE | SPC_RETURN
     Apu.SetDSPDbg(@_DSPDebug);
 {$ENDIF}
-    // ƒ_[ƒNƒ‚[ƒh‚Ìê‡
+    // ãƒ€ãƒ¼ã‚¯ãƒ¢ãƒ¼ãƒ‰ã®å ´åˆ
     if Option.dwTheme = THEME_DARK then begin
-        // DWMAPI.DLL ‚ğƒ[ƒh
-        dwBuffer := API_LoadLibraryEx(pchar('dwmapi.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+        // DWMAPI.DLL ã‚’ãƒ­ãƒ¼ãƒ‰
+        dwBuffer := API_LoadLibraryEx(StrToPtr('dwmapi.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
         if longbool(dwBuffer) then begin
-            // ƒ^ƒCƒgƒ‹ƒo[‚Ìƒ_[ƒNƒ‚[ƒh‚ğ—LŒø‰»
+            // ã‚¿ã‚¤ãƒˆãƒ«ãƒãƒ¼ã®ãƒ€ãƒ¼ã‚¯ãƒ¢ãƒ¼ãƒ‰ã‚’æœ‰åŠ¹åŒ– (for Windows Vista ä»¥é™)
             @API_DwmSetWindowAttribute := API_GetProcAddress(dwBuffer, pchar('DwmSetWindowAttribute'));
-            I := -1; // TRUE: ƒ_[ƒNƒ‚[ƒh
+            I := -1; // TRUE: ãƒ€ãƒ¼ã‚¯ãƒ¢ãƒ¼ãƒ‰
             if longbool(@API_DwmSetWindowAttribute) then API_DwmSetWindowAttribute(hWndApp, 20, @I, 4); // DWMWA_USE_IMMERSIVE_DARK_MODE
-            // DLL ‚ğ‰ğ•ú
+            // DLL ã‚’è§£æ”¾
             API_FreeLibrary(dwBuffer);
         end;
-        // UXTHEME.DLL ‚ğƒ[ƒh
-        dwBuffer := API_LoadLibraryEx(pchar('uxtheme.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+        // UXTHEME.DLL ã‚’ãƒ­ãƒ¼ãƒ‰
+        dwBuffer := API_LoadLibraryEx(StrToPtr('uxtheme.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
         if longbool(dwBuffer) then begin
-            // ƒEƒBƒ“ƒhƒE‚Æƒƒjƒ…[‚Ìƒ_[ƒNƒ‚[ƒh‚ğ—LŒø‰»
+            // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã¨ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®ãƒ€ãƒ¼ã‚¯ãƒ¢ãƒ¼ãƒ‰ã‚’æœ‰åŠ¹åŒ– (for Windows 10 22H2 ä»¥é™)
             @API_SetPreferredAppMode := API_GetProcAddress(dwBuffer, pointer(longword(135)));
             if longbool(@API_SetPreferredAppMode) then begin
-                API_SetPreferredAppMode(0); // ˆê“xƒfƒtƒHƒ‹ƒgƒ‚[ƒh‚É–ß‚·
-                API_SetPreferredAppMode(2); // ƒ_[ƒNƒ‚[ƒh
+                API_SetPreferredAppMode(0); // ä¸€åº¦ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ¢ãƒ¼ãƒ‰ã«æˆ»ã™
+                API_SetPreferredAppMode(2); // ãƒ€ãƒ¼ã‚¯ãƒ¢ãƒ¼ãƒ‰
             end;
-            // ƒƒjƒ…[ƒe[ƒ}‚ğXV
+            // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãƒ†ãƒ¼ãƒã‚’æ›´æ–° (for Windows 10 22H2 ä»¥é™)
             @API_FlushMenuThemes := API_GetProcAddress(dwBuffer, pointer(longword(136)));
             if longbool(@API_FlushMenuThemes) then API_FlushMenuThemes();
-            // ƒvƒŒƒCƒŠƒXƒg‚Ìƒ_[ƒNƒ‚[ƒh‚ğ—LŒø‰»
+            // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ãƒ€ãƒ¼ã‚¯ãƒ¢ãƒ¼ãƒ‰ã‚’æœ‰åŠ¹åŒ– (for Windows Vista ä»¥é™)
             @API_SetWindowTheme := API_GetProcAddress(dwBuffer, pchar('SetWindowTheme'));
             wsData := 'DarkMode_Explorer';
             if longbool(@API_SetWindowTheme) then API_SetWindowTheme(cwPlayList.hWnd, pwidechar(wsData), NULLPOINTER);
-            // DLL ‚ğ‰ğ•ú
+            // DLL ã‚’è§£æ”¾
             API_FreeLibrary(dwBuffer);
         end;
     end;
-    // €”õŠ®—¹
+    // æº–å‚™å®Œäº†
     API_SetTimer(hWndApp, TIMER_ID_READY, TIMER_INTERVAL_READY, NULLPOINTER);
 end;
 
 // ================================================================================
-// DeleteWindow - ƒEƒBƒ“ƒhƒEíœ
+// DeleteWindow - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å‰Šé™¤
 // ================================================================================
 procedure CWINDOWMAIN.DeleteWindow();
 var
     I: longint;
     dwBuffer: longword;
-    sChPath: string;
-    fsFile: textfile;
+    sPath: utf8string;
+    hFile: longword;
     NormalRect: TRECT;
     ScreenRect: TRECT;
     API_UnregisterPowerSettingNotification: function(handle: longword): longbool; stdcall;
     API_UnregisterSuspendResumeNotification: function(handle: longword): longbool; stdcall;
 
-function GetBoolToInt(bValue: longbool): string;
+function GetBoolToInt(bValue: longbool): utf8string;
 begin
     if bValue then result := '1' else result := '0';
 end;
 
+procedure Writeln(S: utf8string); overload;
 begin
-    // ƒvƒƒZƒX—Dæ“x‚ğ•W€‚É•ÏX
+    API_WriteFile(hFile, pchar(S), Length(S), @I, NULLPOINTER);
+    API_WriteFile(hFile, pchar(CRLF), Length(CRLF), @I, NULLPOINTER);
+end;
+
+procedure Writeln(S1: utf8string; S2: utf8string); overload;
+begin
+    API_WriteFile(hFile, pchar(S1), Length(S1), @I, NULLPOINTER);
+    API_WriteFile(hFile, pchar(S2), Length(S2), @I, NULLPOINTER);
+    API_WriteFile(hFile, pchar(CRLF), Length(CRLF), @I, NULLPOINTER);
+end;
+
+begin
+    // ãƒ—ãƒ­ã‚»ã‚¹å„ªå…ˆåº¦ã‚’æ¨™æº–ã«å¤‰æ›´
     API_SetPriorityClass(API_GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
-    // ƒfƒoƒCƒX‚ğ‰ğ•ú
+    // ãƒ‡ãƒã‚¤ã‚¹ã‚’è§£æ”¾
     WaveQuit();
-    // ƒXƒŒƒbƒh‚ÉI—¹‚ğ’Ê’m
+    // ã‚¹ãƒ¬ãƒƒãƒ‰ã«çµ‚äº†ã‚’é€šçŸ¥
     API_PostThreadMessage(Status.dwThreadID, WM_QUIT, NULL, NULL);
-    // ’Êíó‘Ô‚ÌƒEƒBƒ“ƒhƒEƒTƒCƒY‚ğæ“¾
+    // é€šå¸¸çŠ¶æ…‹ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚µã‚¤ã‚ºã‚’å–å¾—
     cwWindowMain.GetWindowRect(@NormalRect);
-    // ƒXƒNƒŠ[ƒ“ƒTƒCƒY‚ğæ“¾
+    // ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã‚µã‚¤ã‚ºã‚’å–å¾—
     API_SystemParametersInfo(SPI_GETWORKAREA, NULL, @ScreenRect, NULL);
-    // ƒJƒŒƒ“ƒgƒpƒX‚ğæ“¾
-    sChPath := Copy(PtrToStr(Status.lpCurrentPath), 1, Status.lpCurrentSize);
-    // ƒŠƒs[ƒgŠJnˆÊ’uAƒŠƒs[ƒgI—¹ˆÊ’u‚ªİ’èÏ‚İ‚Ìê‡‚ÍA–{—ˆ‚Ì‰‰‘t‡˜‚É–ß‚·
+    // ãƒªãƒ”ãƒ¼ãƒˆé–‹å§‹ä½ç½®ã€ãƒªãƒ”ãƒ¼ãƒˆçµ‚äº†ä½ç½®ãŒè¨­å®šæ¸ˆã¿ã®å ´åˆã¯ã€æœ¬æ¥ã®æ¼”å¥é †åºã«æˆ»ã™
     if Status.bTimeRepeat then Option.dwPlayOrder := Status.dwPlayOrder;
-    // INI ƒtƒ@ƒCƒ‹‚ğì¬
-    AssignFile(fsFile, Concat(sChPath, INI_FILE));
-    Rewrite(fsFile);
-    Writeln(fsFile, SECTION_USER_POLICY);
-    Writeln(fsFile, Concat(BUFFER_BMPFONT_, IntToStr(Option.dwBmpFont)));
-    Writeln(fsFile, Concat(BUFFER_BPM_____, GetBoolToInt(Option.bBPM)));
-    Writeln(fsFile, Concat(BUFFER_BUFNUM__, IntToStr(Option.dwBufferNum)));
-    Writeln(fsFile, Concat(BUFFER_BUFTIME_, IntToStr(Option.dwBufferTime)));
-    Writeln(fsFile, Concat(BUFFER_CACHEDIF, IntToStr(Option.dwCacheDiff)));
-    Writeln(fsFile, Concat(BUFFER_CACHEINT, IntToStr(Option.dwCacheInt)));
-    Writeln(fsFile, Concat(BUFFER_CACHEKON, IntToStr(Option.dwCacheKOn)));
-    Writeln(fsFile, Concat(BUFFER_CACHENUM, IntToStr(Option.dwCacheNum)));
-    Writeln(fsFile, Concat(BUFFER_DRAWINFO, IntToStr(Option.dwDrawInfo)));
-    Writeln(fsFile, Concat(BUFFER_EARSAFE_, GetBoolToInt(Option.bEarSafe)));
-    Writeln(fsFile, Concat(BUFFER_FADELENG, IntToStr(Option.dwFadeTime)));
-    Writeln(fsFile, Concat(BUFFER_FONTNAME, Option.sFontName));
-    Writeln(fsFile, Concat(BUFFER_HIDELENG, IntToStr(Option.dwHideTime)));
-    Writeln(fsFile, Concat(BUFFER_LANGUAGE, IntToStr(Option.dwLanguage)));
-    Writeln(fsFile, Concat(BUFFER_LISTHGT_, IntToStr(Option.dwListHeight)));
-    Writeln(fsFile, Concat(BUFFER_LISTMAX_, IntToStr(Option.dwListMax)));
-    Writeln(fsFile, Concat(BUFFER_NEXTLENG, IntToStr(Option.dwNextTime)));
-    Writeln(fsFile, Concat(BUFFER_PLAYLENG, IntToStr(Option.dwPlayTime)));
-    Writeln(fsFile, Concat(BUFFER_SCALE___, IntToStr(Option.dwScale)));
-    Writeln(fsFile, Concat(BUFFER_SEEKBAR_, IntToStr(Option.dwSeekBar)));
-    Writeln(fsFile, Concat(BUFFER_SEEKMAX_, IntToStr(Option.dwSeekMax)));
-    Writeln(fsFile, Concat(BUFFER_SHIFTKEY, IntToStr(Option.dwShiftKey)));
-    Writeln(fsFile, Concat(BUFFER_SPEEDTUN, IntToStr(Option.dwSpeedTun)));
-    Writeln(fsFile, Concat(BUFFER_THEME___, IntToStr(Option.dwTheme)));
-    Writeln(fsFile, Concat(BUFFER_TOPTDISP, IntToStr(Option.dwTimerOptionDisplay)));
-    Writeln(fsFile, Concat(BUFFER_TOPTLOCK, IntToStr(Option.dwTimerOptionLock)));
-    Writeln(fsFile, Concat(BUFFER_TREDRAW_, IntToStr(Option.dwTimerRedrawResume)));
-    Writeln(fsFile, Concat(BUFFER_VOLCOLOR, IntToStr(Option.dwVolumeColor)));
-    Writeln(fsFile, Concat(BUFFER_VOLSPEED, IntToStr(Option.dwVolumeSpeed)));
-    Writeln(fsFile, Concat(BUFFER_WAITLENG, IntToStr(Option.dwWaitTime)));
-    Writeln(fsFile, Concat(BUFFER_WAVBLANK, IntToStr(Option.dwWaveBlank)));
-    Writeln(fsFile, Concat(BUFFER_WAVEFMT_, IntToStr(Option.dwWaveFormat)));
-    Writeln(fsFile, '');
-    Writeln(fsFile, SECTION_APP_SETTING);
-    Writeln(fsFile, Concat(BUFFER_AMP_____, IntToStr(Option.dwAmp)));
-    Writeln(fsFile, Concat(BUFFER_BIT_____, IntToStr(Option.dwBit)));
-    Writeln(fsFile, Concat(BUFFER_CHANNEL_, IntToStr(Option.dwChannel)));
-    Writeln(fsFile, Concat(BUFFER_DEVICE__, IntToStr(Option.dwDeviceID)));
-    Writeln(fsFile, Concat(BUFFER_DEVNAME_, Option.sDeviceName));
-    Writeln(fsFile, Concat(BUFFER_FEEDBACK, IntToStr(Option.dwFeedback)));
-    Writeln(fsFile, Concat(BUFFER_INFO____, IntToStr(Option.dwInfo)));
-    Writeln(fsFile, Concat(BUFFER_INTER___, IntToStr(Option.dwInter)));
-    Writeln(fsFile, Concat(BUFFER_LEFT____, IntToStr(NormalRect.left + ScreenRect.left)));
-    Writeln(fsFile, Concat(BUFFER_MUTE____, IntToStr(Option.dwMute)));
-    Writeln(fsFile, Concat(BUFFER_NOISE___, IntToStr(Option.dwNoise)));
-    Writeln(fsFile, Concat(BUFFER_NOSLEEP_, IntToStr(Option.dwNoSleep)));
-    Writeln(fsFile, Concat(BUFFER_OPTION__, IntToStr(Option.dwOption)));
-    Writeln(fsFile, Concat(BUFFER_PITCH___, IntToStr(Option.dwPitch)));
-    Writeln(fsFile, Concat(BUFFER_PITCHSNC, GetBoolToInt(Option.bPitchAsync)));
-    Writeln(fsFile, Concat(BUFFER_PLAYTIME, IntToStr(Option.dwPlayMax)));
-    Writeln(fsFile, Concat(BUFFER_PLAYTYPE, IntToStr(Option.dwPlayOrder)));
-    Writeln(fsFile, Concat(BUFFER_PRIORITY, IntToStr(Option.dwPriority)));
-    Writeln(fsFile, Concat(BUFFER_RATE____, IntToStr(Option.dwRate)));
-    Writeln(fsFile, Concat(BUFFER_SEEKFAST, GetBoolToInt(Option.bSeekFast)));
-    Writeln(fsFile, Concat(BUFFER_SEEKSNC_, GetBoolToInt(Option.bSeekAsync)));
-    Writeln(fsFile, Concat(BUFFER_SEEKTIME, IntToStr(Option.dwSeekTime)));
-    Writeln(fsFile, Concat(BUFFER_SEPARATE, IntToStr(Option.dwSeparate)));
-    Writeln(fsFile, Concat(BUFFER_SPEED___, IntToStr(Option.dwSpeedBas)));
-    Writeln(fsFile, Concat(BUFFER_TOP_____, IntToStr(NormalRect.top + ScreenRect.top)));
-    Writeln(fsFile, Concat(BUFFER_TOPMOST_, GetBoolToInt(Option.bTopMost)));
-    Writeln(fsFile, Concat(BUFFER_VERSION_, SPCPLAY_VERSION));
-    Writeln(fsFile, Concat(BUFFER_VOLRESET, GetBoolToInt(Option.bVolumeReset)));
-    CloseFile(fsFile);
-    // ƒvƒŒƒCƒŠƒXƒgƒtƒ@ƒCƒ‹‚ğì¬
-    ListSave(pchar(Concat(sChPath, LIST_FILE)), true);
-    // ƒXƒŒƒbƒh‚ªŠ®‘S‚ÉI—¹‚·‚é‚Ü‚Å‘Ò‹@
+    // INI ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+    sPath := Concat(Status.sCurrentPath, INI_FILE);
+    hFile := INVALID_HANDLE_VALUE;
+    if IsSafePath(sPath) then hFile := API_CreateFile(StrToPtr(sPath), GENERIC_WRITE, FILE_SHARE_READ, NULLPOINTER, CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    // INI ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¿å­˜
+    if hFile <> INVALID_HANDLE_VALUE then begin
+        Writeln(SECTION_HEADER);
+        Writeln('');
+        Writeln(SECTION_USER_POLICY);
+        Writeln(BUFFER_BMPFONT_, IntToStr(Option.dwBmpFont));
+        Writeln(BUFFER_BPM_____, GetBoolToInt(Option.bBPM));
+        Writeln(BUFFER_BUFNUM__, IntToStr(Option.dwBufferNum));
+        Writeln(BUFFER_BUFTIME_, IntToStr(Option.dwBufferTime));
+        Writeln(BUFFER_CACHEDIF, IntToStr(Option.dwCacheDiff));
+        Writeln(BUFFER_CACHEINT, IntToStr(Option.dwCacheInt));
+        Writeln(BUFFER_CACHEKON, IntToStr(Option.dwCacheKOn));
+        Writeln(BUFFER_CACHENUM, IntToStr(Option.dwCacheNum));
+        Writeln(BUFFER_DRAWINFO, IntToStr(Option.dwDrawInfo));
+        Writeln(BUFFER_EARSAFE_, GetBoolToInt(Option.bEarSafe));
+        Writeln(BUFFER_FADELENG, IntToStr(Option.dwFadeTime));
+        Writeln(BUFFER_FONTNAME, Option.sFontName);
+        Writeln(BUFFER_HIDELENG, IntToStr(Option.dwHideTime));
+        Writeln(BUFFER_LANGUAGE, IntToStr(Option.dwLanguage));
+        Writeln(BUFFER_LISTHGT_, IntToStr(Option.dwListHeight));
+        Writeln(BUFFER_LISTMAX_, IntToStr(Option.dwListMax));
+        Writeln(BUFFER_NEXTLENG, IntToStr(Option.dwNextTime));
+        Writeln(BUFFER_PLAYLENG, IntToStr(Option.dwPlayTime));
+        Writeln(BUFFER_SCALE___, IntToStr(Option.dwScale));
+        Writeln(BUFFER_SEEKBAR_, IntToStr(Option.dwSeekBar));
+        Writeln(BUFFER_SEEKMAX_, IntToStr(Option.dwSeekMax));
+        Writeln(BUFFER_SHIFTKEY, IntToStr(Option.dwShiftKey));
+        Writeln(BUFFER_SPEEDTUN, IntToStr(Option.dwSpeedTun));
+        Writeln(BUFFER_THEME___, IntToStr(Option.dwTheme));
+        Writeln(BUFFER_TOPTDISP, IntToStr(Option.dwTimerOptionDisplay));
+        Writeln(BUFFER_TOPTLOCK, IntToStr(Option.dwTimerOptionLock));
+        Writeln(BUFFER_TREDRAW_, IntToStr(Option.dwTimerRedrawResume));
+        Writeln(BUFFER_VOLCOLOR, IntToStr(Option.dwVolumeColor));
+        Writeln(BUFFER_VOLSPEED, IntToStr(Option.dwVolumeSpeed));
+        Writeln(BUFFER_WAITLENG, IntToStr(Option.dwWaitTime));
+        Writeln(BUFFER_WAVBLANK, IntToStr(Option.dwWaveBlank));
+        Writeln(BUFFER_WAVEFMT_, IntToStr(Option.dwWaveFormat));
+        Writeln('');
+        Writeln(SECTION_APP_SETTING);
+        Writeln(BUFFER_AMP_____, IntToStr(Option.dwAmp));
+        Writeln(BUFFER_BIT_____, IntToStr(Option.dwBit));
+        Writeln(BUFFER_CHANNEL_, IntToStr(Option.dwChannel));
+        Writeln(BUFFER_DEVICE__, IntToStr(Option.dwDeviceID));
+        Writeln(BUFFER_DEVNAME_, Option.sDeviceName);
+        Writeln(BUFFER_FEEDBACK, IntToStr(Option.dwFeedback));
+        Writeln(BUFFER_INFO____, IntToStr(Option.dwInfo));
+        Writeln(BUFFER_INTER___, IntToStr(Option.dwInter));
+        Writeln(BUFFER_LEFT____, IntToStr(NormalRect.left + ScreenRect.left));
+        Writeln(BUFFER_MUTE____, IntToStr(Option.dwMute));
+        Writeln(BUFFER_NOISE___, IntToStr(Option.dwNoise));
+        Writeln(BUFFER_NOSLEEP_, IntToStr(Option.dwNoSleep));
+        Writeln(BUFFER_OPTION__, IntToStr(Option.dwOption));
+        Writeln(BUFFER_PITCH___, IntToStr(Option.dwPitch));
+        Writeln(BUFFER_PITCHSNC, GetBoolToInt(Option.bPitchAsync));
+        Writeln(BUFFER_PLAYTIME, IntToStr(Option.dwPlayMax));
+        Writeln(BUFFER_PLAYTYPE, IntToStr(Option.dwPlayOrder));
+        Writeln(BUFFER_PRIORITY, IntToStr(Option.dwPriority));
+        Writeln(BUFFER_RATE____, IntToStr(Option.dwRate));
+        Writeln(BUFFER_SEEKFAST, GetBoolToInt(Option.bSeekFast));
+        Writeln(BUFFER_SEEKSNC_, GetBoolToInt(Option.bSeekAsync));
+        Writeln(BUFFER_SEEKTIME, IntToStr(Option.dwSeekTime));
+        Writeln(BUFFER_SEPARATE, IntToStr(Option.dwSeparate));
+        Writeln(BUFFER_SPEED___, IntToStr(Option.dwSpeedBas));
+        Writeln(BUFFER_TOP_____, IntToStr(NormalRect.top + ScreenRect.top));
+        Writeln(BUFFER_TOPMOST_, GetBoolToInt(Option.bTopMost));
+        Writeln(BUFFER_VERSION_, SPCPLAY_VERSION);
+        Writeln(BUFFER_VOLRESET, GetBoolToInt(Option.bVolumeReset));
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¯ãƒ­ãƒ¼ã‚º
+        API_CloseHandle(hFile);
+    end;
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆ
+    ListSave(Concat(Status.sCurrentPath, LIST_FILE), true);
+    // ã‚¹ãƒ¬ãƒƒãƒ‰ãŒå®Œå…¨ã«çµ‚äº†ã™ã‚‹ã¾ã§å¾…æ©Ÿ
     while longbool(Status.dwThreadStatus) do API_Sleep(16);
-    // ƒXƒŒƒbƒh‚ğ‰ğ•ú
+    // ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’è§£æ”¾
     API_CloseHandle(Status.dwThreadHandle);
-    // SNESAPU.DLL ‚ğ‰ğ•ú
+    // SNESAPU.DLL ã‚’è§£æ”¾
     if longbool(Apu.hSNESAPU) then API_FreeLibrary(Apu.hSNESAPU);
 {$IFDEF SPCBPMTEST}
-    // SPC_BPM.DLL ‚ğ‰ğ•ú
+    // SPC_BPM.DLL ã‚’è§£æ”¾
     if longbool(Apu.hSPCBPM) then API_FreeLibrary(Apu.hSPCBPM);
 {$ENDIF}
 {$IFDEF CONTEXT}
-    // SNESAPU ƒRƒ“ƒeƒLƒXƒg‚ğ‰ğ•ú
+    // SNESAPU ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’è§£æ”¾
     if longbool(Status.lpContext) then FreeMem(Status.lpContext, Status.dwContextSize);
 {$ENDIF}
-    // ƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ğ‰ğ•ú
+    // ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’è§£æ”¾
     API_DeleteObject(API_SelectObject(Status.hDCVolumeBuffer, Status.hBitmapVolume));
     API_DeleteDC(Status.hDCVolumeBuffer);
     API_DeleteObject(API_SelectObject(Status.hDCStringBuffer, Status.hBitmapString));
     API_DeleteDC(Status.hDCStringBuffer);
     API_ReleaseDC(cwStaticMain.hWnd, Status.hDCWindow);
     API_ReleaseDC(cwStaticMain.hWnd, Status.hDCStatic);
-    // USER32.DLL ‚ğƒ[ƒh
-    dwBuffer := API_LoadLibraryEx(pchar('user32.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    // USER32.DLL ã‚’ãƒ­ãƒ¼ãƒ‰
+    dwBuffer := API_LoadLibraryEx(StrToPtr('user32.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if longbool(dwBuffer) then begin
-        // ƒfƒBƒXƒvƒŒƒC‚Ì“dŒ¹ó‘ÔƒCƒxƒ“ƒg‚ğ‰ğœ (for Windows 8, 8.1, 10, 11)
+        // ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ã®é›»æºçŠ¶æ…‹ã‚¤ãƒ™ãƒ³ãƒˆã‚’è§£é™¤ (for Windows 8 ä»¥é™)
         @API_UnregisterPowerSettingNotification := API_GetProcAddress(dwBuffer, pchar('UnregisterPowerSettingNotification'));
         if longbool(@API_UnregisterPowerSettingNotification) then begin
             if longbool(Status.hPowerNotify) then API_UnregisterPowerSettingNotification(Status.hPowerNotify);
         end;
-        // S0 (È“d—Í) ƒXƒŠ[ƒv‚ÌƒCƒxƒ“ƒg‚ğ‰ğœ (for Windows 8, 8.1, 10, 11)
+        // S0 (çœé›»åŠ›) ã‚¹ãƒªãƒ¼ãƒ—ã®ã‚¤ãƒ™ãƒ³ãƒˆã‚’è§£é™¤ (for Windows 8 ä»¥é™)
         @API_UnregisterSuspendResumeNotification := API_GetProcAddress(dwBuffer, pchar('UnregisterSuspendResumeNotification'));
         if longbool(@API_UnregisterSuspendResumeNotification) then begin
             if longbool(Status.hSuspendNotify) then API_UnregisterSuspendResumeNotification(Status.hSuspendNotify);
         end;
-        // DLL ‚ğ‰ğ•ú
+        // DLL ã‚’è§£æ”¾
         API_FreeLibrary(dwBuffer);
     end;
-    // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-    FreeMem(Status.lpCurrentPath, 1024);
-    FreeMem(Status.lpSPCFile, 1024);
-    FreeMem(Status.lpSPCDir, 1024);
-    FreeMem(Status.lpSPCName, 1024);
-    FreeMem(Status.lpOpenPath, 1024);
-    FreeMem(Status.lpSavePath, 1024);
-    // ƒEƒBƒ“ƒhƒE‚ğíœ
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’å‰Šé™¤
     cmFile.DeleteMenu();
     cmFile.Free();
     cmSetupDevice.DeleteMenu();
@@ -7439,18 +7663,18 @@ begin
     cfMain.Free();
     cwWindowMain.DeleteWindow();
     cwWindowMain.Free();
-    // ƒuƒ‰ƒV‚ğíœ
+    // ãƒ–ãƒ©ã‚·ã‚’å‰Šé™¤
     if longbool(Status.hBackBrush) then API_DeleteObject(Status.hBackBrush);
     if longbool(Status.hTextBrush) then API_DeleteObject(Status.hTextBrush);
     if longbool(Status.hMenuBrush) then API_DeleteObject(Status.hMenuBrush);
 {$IFDEF ITASKBARLIST3}
-    // COM ƒCƒ“ƒ^[ƒtƒFƒCƒX‚ğ‰ğ•ú
+    // COM ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã‚’è§£æ”¾
     API_CoUninitialize();
 {$ENDIF}
 end;
 
 // ================================================================================
-// DragFile - ƒtƒ@ƒCƒ‹‚Ìƒhƒ‰ƒbƒO (ó‚¯“n‚µ)
+// DragFile - ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‰ãƒ©ãƒƒã‚° (å—ã‘æ¸¡ã—)
 // ================================================================================
 procedure CWINDOWMAIN.DragFile(msg: longword; wParam: longword; lParam: longword);
 var
@@ -7460,6 +7684,7 @@ var
     dwCount: longint;
     lpFile: pointer;
     lpBuffer: pointer;
+    sPath: utf8string;
     Rect: TRECT;
     KeyState: TKEYSTATE;
     IDropSourceVtbl: ^TIDROPSOURCEVTBL;
@@ -7470,24 +7695,24 @@ var
     FormatEtc: ^TFORMATETC;
     StgMedium: ^TSTGMEDIUM;
 begin
-    // ƒ}ƒEƒXÀ•W‚ğæ“¾
+    // ãƒã‚¦ã‚¹åº§æ¨™ã‚’å–å¾—
     x := lParam and $FFFF;
     y := (lParam shr 16) and $FFFF;
-    // ƒhƒ‰ƒbƒO‚ğŠJn‚·‚é‚©”»’è
+    // ãƒ‰ãƒ©ãƒƒã‚°ã‚’é–‹å§‹ã™ã‚‹ã‹åˆ¤å®š
     case msg of
-        WM_LBUTTONDOWN: begin // ¶ƒ{ƒ^ƒ“
+        WM_LBUTTONDOWN: begin // å·¦ãƒœã‚¿ãƒ³
             Status.DragPoint.x := x;
             Status.DragPoint.y := y;
-            // ƒvƒŒƒCƒŠƒXƒg‚ğ‘¦‚É”½‰‚³‚¹‚é‚½‚ß‚ÌƒƒbƒZ[ƒW‚ğ‘—M
+            // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã‚’å³æ™‚ã«åå¿œã•ã›ã‚‹ãŸã‚ã®ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’é€ä¿¡
             cwPlayList.PostMessage(WM_LBUTTONUP, wParam, lParam);
             exit;
         end;
-        WM_RBUTTONDOWN: begin // ‰Eƒ{ƒ^ƒ“
+        WM_RBUTTONDOWN: begin // å³ãƒœã‚¿ãƒ³
             Status.DragPoint.x := x;
             Status.DragPoint.y := y;
             exit;
         end;
-        WM_MOUSEMOVE: begin // ƒ}ƒEƒXˆÚ“®
+        WM_MOUSEMOVE: begin // ãƒã‚¦ã‚¹ç§»å‹•
             if (Status.DragPoint.x < 0) or (Status.DragPoint.y < 0) then exit;
             API_GetClientRect(cwPlayList.hWnd, @Rect);
             if (x - Rect.left >= DRAG_LIMIT_THRESHOLD)
@@ -7499,27 +7724,30 @@ begin
         end;
         else exit;
     end;
-    // ƒ}ƒEƒXƒJ[ƒ\ƒ‹ˆÊ’u‚ğ‰Šú‰»
+    // ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã‚’åˆæœŸåŒ–
     Status.DragPoint.x := -1;
     Status.DragPoint.y := -1;
-    // ƒL[ƒ{[ƒh‚Ìó‘Ô‚ğæ“¾ (Status.bShiftButton “™‚Å‚Íó‘Ô‚ğæ“¾•s‰Â)
+    // ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®çŠ¶æ…‹ã‚’å–å¾— (Status.bShiftButton ç­‰ã§ã¯çŠ¶æ…‹ã‚’å–å¾—ä¸å¯)
     API_GetKeyboardState(@KeyState);
-    // ƒ}ƒEƒX‚Ìƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍI—¹
+    // ãƒã‚¦ã‚¹ã®ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¦ã„ãªã„å ´åˆã¯çµ‚äº†
     if not bytebool((KeyState.k[VK_LBUTTON] or KeyState.k[VK_RBUTTON]) and $80) then exit;
-    // ƒ}ƒEƒX‚Ì‰Eƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éê‡‚Í Shift ƒL[‚ğ‰ğœ
+    // ãƒã‚¦ã‚¹ã®å³ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ Shift ã‚­ãƒ¼ã‚’è§£é™¤
     if bytebool(KeyState.k[VK_RBUTTON] and $80) then SetChangeFunction(false);
-    // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€”‚ğæ“¾
-    dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL, NULL);
-    // ƒvƒŒƒCƒŠƒXƒg‚ÉƒAƒCƒeƒ€‚ª“o˜^‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍI—¹
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ æ•°ã‚’å–å¾—
+    dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL);
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã«ã‚¢ã‚¤ãƒ†ãƒ ãŒç™»éŒ²ã•ã‚Œã¦ã„ãªã„å ´åˆã¯çµ‚äº†
     if not longbool(dwCount) then exit;
-    // ‘I‘ğ‚³‚ê‚Ä‚¢‚éƒAƒCƒeƒ€‚ğæ“¾
-    dwIndex := cwPlayList.SendMessage(LB_GETCURSEL, NULL, NULL);
-    // ƒoƒbƒtƒ@‚ğŠm•Û
-    GetMem(lpFile, 1024);
-    // ƒtƒ@ƒCƒ‹‚Æƒ^ƒCƒgƒ‹‚ğæ“¾
-    API_ZeroMemory(lpFile, 1024);
-    cwFileList.SendMessage(LB_GETTEXT, dwIndex, longword(lpFile));
-    // ƒoƒbƒtƒ@‚ğƒNƒŠƒA
+    // é¸æŠã•ã‚Œã¦ã„ã‚‹ã‚¢ã‚¤ãƒ†ãƒ ã‚’å–å¾—
+    dwIndex := cwPlayList.SendMessage(LB_GETCURSEL, NULL);
+    // ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’è¶…ãˆã‚‹å ´åˆã¯çµ‚äº†
+    if cwFileList.SendMessage(LB_GETTEXTLEN, dwIndex) >= BUFFER_SIZE_PATH then exit;
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+    GetMem(lpFile, BUFFER_SIZE_PATH);
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã¨ã‚¿ã‚¤ãƒˆãƒ«ã‚’å–å¾—
+    API_ZeroMemory(lpFile, BUFFER_SIZE_PATH);
+    cwFileList.SendMessage(LB_GETTEXT, dwIndex, lpFile);
+    sPath := PtrToStr(lpFile);
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ã‚¯ãƒªã‚¢
     IDropSourceVtbl := NULLPOINTER;
     IDropSource := NULLPOINTER;
     IDataObjectVtbl := NULLPOINTER;
@@ -7527,17 +7755,17 @@ begin
     DropFiles := NULLPOINTER;
     FormatEtc := NULLPOINTER;
     StgMedium := NULLPOINTER;
-    // ƒtƒ@ƒCƒ‹‚ª‘¶İ‚·‚éê‡
-    if IsSafePath(lpFile) and Exists(lpFile, $FFFFFFFF) then repeat
-        // ƒOƒ[ƒoƒ‹ƒƒ‚ƒŠ‚ğŠm•Û
+    // ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã™ã‚‹å ´åˆ
+    if IsSafePath(sPath) and Exists(sPath, $FFFFFFFF) then repeat
+        // ã‚°ãƒ­ãƒ¼ãƒãƒ«ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿
         IDropSourceVtbl := pointer(API_GlobalAlloc(GMEM_FIXED, SizeOf(TIDROPSOURCEVTBL)));
         IDropSource := pointer(API_GlobalAlloc(GMEM_FIXED, SizeOf(TIDROPSOURCE)));
         IDataObjectVtbl := pointer(API_GlobalAlloc(GMEM_FIXED, SizeOf(TIDATAOBJECTVTBL)));
         IDataObject := pointer(API_GlobalAlloc(GMEM_FIXED, SizeOf(TIDATAOBJECT)));
-        DropFiles := pointer(API_GlobalAlloc(GMEM_FIXED, SizeOf(TDROPFILES) + 2048));
+        DropFiles := pointer(API_GlobalAlloc(GMEM_FIXED, SizeOf(TDROPFILES) + BUFFER_SIZE_PATH));
         FormatEtc := pointer(API_GlobalAlloc(GMEM_FIXED, SizeOf(TFORMATETC)));
         StgMedium := pointer(API_GlobalAlloc(GMEM_FIXED, SizeOf(TSTGMEDIUM)));
-        // ƒƒ‚ƒŠ‚ğŠm•Û‚Å‚«‚È‚¢ê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+        // ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿ã§ããªã„å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
         if not longbool(IDropSourceVtbl)
         or not longbool(IDropSource)
         or not longbool(IDataObjectVtbl)
@@ -7545,7 +7773,7 @@ begin
         or not longbool(DropFiles)
         or not longbool(FormatEtc)
         or not longbool(StgMedium) then break;
-        // ƒNƒŠƒbƒvƒ{[ƒhî•ñ‚ğæ“¾
+        // ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰æƒ…å ±ã‚’å–å¾—
         DropFiles.pFiles := SizeOf(TDROPFILES);
         DropFiles.pt.x := x;
         DropFiles.pt.y := y;
@@ -7553,22 +7781,22 @@ begin
         DropFiles.fWide := Status.OsVersionInfo.dwPlatformId = VER_PLATFORM_WIN32_NT;
         lpBuffer := pointer(longword(DropFiles) + SizeOf(TDROPFILES));
         if DropFiles.fWide then begin
-            API_ZeroMemory(lpBuffer, 2048);
-            API_MultiByteToWideChar(CP_ACP, NULL, lpFile, -1, lpBuffer, 2048);
+            API_MoveMemory(lpBuffer, lpFile, BUFFER_SIZE_PATH);
         end else begin
-            API_MoveMemory(lpBuffer, lpFile, 1024);
+            API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
+            API_WideCharToMultiByte(CP_ACP, NULL, lpFile, -1, lpBuffer, COPY_SIZE_PATH, NULLPOINTER, NULLPOINTER);
         end;
-        // FORMATETC \‘¢‘Ì‚ğ‰Šú‰»
+        // FORMATETC æ§‹é€ ä½“ã‚’åˆæœŸåŒ–
         FormatEtc.cfFormat := CF_HDROP;
         FormatEtc.ptd := NULLPOINTER;
         FormatEtc.dwAspect := DVASPECT_CONTENT;
         FormatEtc.lindex := -1;
         FormatEtc.tymed := TYMED_HGLOBAL;
-        // STGMEDIUM \‘¢‘Ì‚ğ‰Šú‰»
+        // STGMEDIUM æ§‹é€ ä½“ã‚’åˆæœŸåŒ–
         StgMedium.tymed := TYMED_HGLOBAL;
         StgMedium.handle := longword(DropFiles);
         StgMedium.pUnkForRelease := NULLPOINTER;
-        // DROPSOURCE \‘¢‘Ì‚ğ‰Šú‰»
+        // DROPSOURCE æ§‹é€ ä½“ã‚’åˆæœŸåŒ–
         IDropSourceVtbl.OLEIDropSourceQueryInterface := @_OLEIDropSourceQueryInterface;
         IDropSourceVtbl.OLEIDropSourceAddRef := @_OLEIDropSourceAddRef;
         IDropSourceVtbl.OLEIDropSourceRelease := @_OLEIDropSourceRelease;
@@ -7576,7 +7804,7 @@ begin
         IDropSourceVtbl.OLEIDropSourceGiveFeedback := @_OLEIDropSourceGiveFeedback;
         IDropSource.lpVtbl := IDropSourceVtbl;
         IDropSource.dwRefCnt := 1;
-        // DATAOBJECT \‘¢‘Ì‚ğ‰Šú‰»
+        // DATAOBJECT æ§‹é€ ä½“ã‚’åˆæœŸåŒ–
         IDataObjectVtbl.OLEIDataObjectQueryInterface := @_OLEIDataObjectQueryInterface;
         IDataObjectVtbl.OLEIDataObjectAddRef := @_OLEIDataObjectAddRef;
         IDataObjectVtbl.OLEIDataObjectRelease := @_OLEIDataObjectRelease;
@@ -7593,23 +7821,23 @@ begin
         IDataObject.dwRefCnt := 1;
         IDataObject.dwObjectCnt := 0;
         _OLEIDataObjectSetData(IDataObject, FormatEtc, StgMedium, true);
-        // OLE ‚ğ‰Šú‰»
+        // OLE ã‚’åˆæœŸåŒ–
         if API_OleInitialize(NULLPOINTER) = S_OK then begin
-            // ƒvƒŒƒCƒŠƒXƒg‚Ö‚Ìƒhƒƒbƒv‚ğ‹Ö~
+            // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã¸ã®ãƒ‰ãƒ­ãƒƒãƒ—ã‚’ç¦æ­¢
             Status.bDropCancel := true;
-            // ƒhƒ‰ƒbƒOƒAƒ“ƒhƒhƒƒbƒvƒCƒxƒ“ƒg‚ğŠJn
+            // ãƒ‰ãƒ©ãƒƒã‚°ã‚¢ãƒ³ãƒ‰ãƒ‰ãƒ­ãƒƒãƒ—ã‚¤ãƒ™ãƒ³ãƒˆã‚’é–‹å§‹
             dwIndex := NULL;
             dwIndex := API_DoDragDrop(IDataObject, IDropSource, DROPEFFECT_COPY or DROPEFFECT_SCROLL, @dwIndex);
-            // OLE ‚ğ‰ğ•ú
+            // OLE ã‚’è§£æ”¾
             API_OleUninitialize();
-            // ƒhƒƒbƒv‹Ö~‚Ì‰ğœ‚ğ—\–ñ
+            // ãƒ‰ãƒ­ãƒƒãƒ—ç¦æ­¢ã®è§£é™¤ã‚’äºˆç´„
             cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_DRAG_DONE, dwIndex);
         end;
-        // ƒoƒbƒtƒ@‚ğ‰ğ•ú
+        // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
         _OLEIDropSourceRelease(IDropSource);
         _OLEIDataObjectRelease(IDataObject);
-        // IDropSource ‚Æ IDataObject ‚Ì Release ‚ÅQÆƒJƒEƒ“ƒg‚ª 0 ‚É‚È‚Á‚½‚Æ‚«‚Éƒƒ‚ƒŠ‰ğ•ú‚·‚é‚½‚ßA
-        // Œã‘±‚Å‚Í DropFiles, FormatEtc, StgMedium ‚ğŠÜ‚ß‚Ä‰ğ•ú‚µ‚È‚¢
+        // IDropSource ã¨ IDataObject ã® Release ã§å‚ç…§ã‚«ã‚¦ãƒ³ãƒˆãŒ 0 ã«ãªã£ãŸã¨ãã«ãƒ¡ãƒ¢ãƒªè§£æ”¾ã™ã‚‹ãŸã‚ã€
+        // å¾Œç¶šã§ã¯ DropFiles, FormatEtc, StgMedium ã‚’å«ã‚ã¦è§£æ”¾ã—ãªã„
         IDropSourceVtbl := NULLPOINTER;
         IDropSource := NULLPOINTER;
         IDataObjectVtbl := NULLPOINTER;
@@ -7618,7 +7846,7 @@ begin
         FormatEtc := NULLPOINTER;
         StgMedium := NULLPOINTER;
     until true;
-    // ƒoƒbƒtƒ@‚ğ‰ğ•ú
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
     if longbool(IDropSourceVtbl) then API_GlobalFree(longword(IDropSourceVtbl));
     if longbool(IDropSource) then API_GlobalFree(longword(IDropSource));
     if longbool(IDataObjectVtbl) then API_GlobalFree(longword(IDataObjectVtbl));
@@ -7626,11 +7854,11 @@ begin
     if longbool(DropFiles) then API_GlobalFree(longword(DropFiles));
     if longbool(FormatEtc) then API_GlobalFree(longword(FormatEtc));
     if longbool(StgMedium) then API_GlobalFree(longword(StgMedium));
-    FreeMem(lpFile, 1024);
+    FreeMem(lpFile, BUFFER_SIZE_PATH);
 end;
 
 // ================================================================================
-// DrawInfo - ƒCƒ“ƒWƒP[ƒ^‚Ì•`‰æ
+// DrawInfo - ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã®æç”»
 // ================================================================================
 procedure CWINDOWMAIN.DrawInfo(pApuData: pointer; bWave: longbool);
 var
@@ -7655,7 +7883,8 @@ var
     SPC700Reg: ^TSPC700REG;
     Script700: ^TSCRIPT700;
 
-function DrawInfoBitBlt(nXDest: longint; nYDest: longint; nWidthDest: longint; nHeightDest: longint; hdcSrc: longword; nXSrc: longint; nYSrc: longint): longbool;
+function DrawInfoBitBlt(nXDest: longint; nYDest: longint; nWidthDest: longint; nHeightDest: longint; hdcSrc: longword; nXSrc: longint; nYSrc: longint
+    ): longbool;
 begin
     if Status.dwScale = 2 then begin
         result := API_BitBlt(Status.hDCStatic, nXDest, nYDest, nWidthDest, nHeightDest, hdcSrc, nXSrc, nYSrc, SRCCOPY);
@@ -7682,14 +7911,14 @@ end;
 
 procedure UpdateVolumeWrite(cLastLevel: byte; cNowLevel: byte; dwColor: longword; dwLeft: longint; dwWidth: longint);
 begin
-    // ‘S‘Ì‚ğÄ•`‰æ‚·‚éê‡
+    // å…¨ä½“ã‚’å†æç”»ã™ã‚‹å ´åˆ
     if bRedrawInfo then begin
-        // ƒo[‚ğ•`‰æ
+        // ãƒãƒ¼ã‚’æç”»
         if cNowLevel > 0 then begin
             DrawInfoBitBlt(dwLeft, COLOR_BAR_HEIGHT_X2 - longword(cNowLevel), dwWidth, longword(cNowLevel),
                 Status.hDCVolumeBuffer, dwColor, COLOR_BAR_HEIGHT - longword(cNowLevel));
         end;
-        // ‹ó”’•”•ª‚ğ•`‰æ
+        // ç©ºç™½éƒ¨åˆ†ã‚’æç”»
         if cNowLevel < COLOR_BAR_HEIGHT then begin
             Rect.left := dwLeft;
             Rect.right := dwLeft + dwWidth;
@@ -7698,13 +7927,13 @@ begin
             DrawInfoFillRect(@Rect, Status.hBackBrush);
         end;
     end else begin
-        // ƒŒƒxƒ‹’l‚ª‘O‰ñ‚Æ“¯‚¶ê‡‚ÍI—¹
+        // ãƒ¬ãƒ™ãƒ«å€¤ãŒå‰å›ã¨åŒã˜å ´åˆã¯çµ‚äº†
         if cLastLevel = cNowLevel then exit;
-        // ƒŒƒxƒ‹’l‚ª‘O‰ñ‚æ‚èã‚ª‚Á‚½ê‡‚Íƒo[‚ğ•`‰æ
+        // ãƒ¬ãƒ™ãƒ«å€¤ãŒå‰å›ã‚ˆã‚Šä¸ŠãŒã£ãŸå ´åˆã¯ãƒãƒ¼ã‚’æç”»
         if cLastLevel < cNowLevel then begin
             DrawInfoBitBlt(dwLeft, COLOR_BAR_HEIGHT_X2 - longword(cNowLevel), dwWidth, longword(cNowLevel - cLastLevel),
                 Status.hDCVolumeBuffer, dwColor, COLOR_BAR_HEIGHT - longword(cNowLevel));
-        // ƒŒƒxƒ‹’l‚ª‘O‰ñ‚æ‚è‰º‚ª‚Á‚½ê‡‚Í‹ó”’•”•ª‚ğ•`‰æ
+        // ãƒ¬ãƒ™ãƒ«å€¤ãŒå‰å›ã‚ˆã‚Šä¸‹ãŒã£ãŸå ´åˆã¯ç©ºç™½éƒ¨åˆ†ã‚’æç”»
         end else begin
             Rect.left := dwLeft;
             Rect.right := dwLeft + dwWidth;
@@ -7717,7 +7946,7 @@ end;
 
 procedure UpdateVolumeFrame(dwLeft: longint);
 begin
-    // ƒtƒŒ[ƒ€‚ğ•`‰æ
+    // ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’æç”»
     Rect.left := dwLeft;
     Rect.right := dwLeft + 1;
     Rect.top := COLOR_BAR_TOP_FRAME;
@@ -7727,7 +7956,7 @@ end;
 
 procedure UpdateVolumeBlank(dwLeft: longint);
 begin
-    // ‹ó”’—Ìˆæ‚ğ•`‰æ
+    // ç©ºç™½é ˜åŸŸã‚’æç”»
     Rect.left := dwLeft;
     Rect.right := dwLeft + 27;
     Rect.top := COLOR_BAR_TOP;
@@ -7741,22 +7970,22 @@ var
     dwJ: longint;
     cV: byte;
 begin
-    // ƒfƒWƒ^ƒ‹•¶š‚ğ•`‰æ
+    // ãƒ‡ã‚¸ã‚¿ãƒ«æ–‡å­—ã‚’æç”»
     dwJ := Y * COLOR_BAR_HEIGHT + dwX;
     dwX := dwX * BITMAP_NUM_WIDTH + Z;
     K := dwL - 1;
     L := Y * 12 + 25;
     for dwI := 0 to K do begin
         cV := StrData.bData[dwI];
-        // ‘S‘Ì‚ğ•`‰æ‚·‚éê‡A‚Ü‚½‚ÍA‘O‰ñ•`‰æ’l‚©‚ç•Ï‰»‚µ‚½ê‡
+        // å…¨ä½“ã‚’æç”»ã™ã‚‹å ´åˆã€ã¾ãŸã¯ã€å‰å›æç”»å€¤ã‹ã‚‰å¤‰åŒ–ã—ãŸå ´åˆ
         if bRedrawInfo or (Status.NumCache[dwJ] <> cV) then begin
             Status.NumCache[dwJ] := cV;
             J := longword(cV);
             case J of
                 $20: J := BITMAP_NUM;  // SPACE
-                $30..$39: Dec(J, $30); // 0 ` 9
-                $41..$5A: Dec(J, $37); // A ` Z
-                $61..$7A: Dec(J, $3D); // a ` z
+                $30..$39: Dec(J, $30); // 0 ï½ 9
+                $41..$5A: Dec(J, $37); // A ï½ Z
+                $61..$7A: Dec(J, $3D); // a ï½ z
             end;
             DrawInfoBitBlt(dwX, L, BITMAP_NUM_WIDTH, BITMAP_NUM_HEIGHT, Status.hDCStringBuffer, J * BITMAP_NUM_WIDTH, 0);
         end;
@@ -7767,7 +7996,7 @@ end;
 
 procedure DeleteMarkWrite(dwY: longint);
 begin
-    // ˆÊ’uƒ}[ƒN‚ğÁ‹
+    // ä½ç½®ãƒãƒ¼ã‚¯ã‚’æ¶ˆå»
     Rect.left := 137;
     Rect.right := 284 + (Status.dwScale and 1);
     Rect.top := dwY;
@@ -7777,7 +8006,7 @@ end;
 
 procedure UpdateMarkWrite(dwI: longint; dwY: longint);
 begin
-    // ˆÊ’uƒ}[ƒN‚ğ•`‰æ
+    // ä½ç½®ãƒãƒ¼ã‚¯ã‚’æç”»
     DeleteMarkWrite(dwY);
     DrawInfoBitBlt(J - 2, dwY, BITMAP_NUM_WIDTH, BITMAP_MARK_HEIGHT, Status.hDCStringBuffer, (dwI + 38) * BITMAP_NUM_WIDTH, 0);
 end;
@@ -7809,7 +8038,7 @@ end;
 
 procedure UpdateChannelSource(bDec: boolean);
 begin
-    // ‰¹F”Ô†‚ğ•`‰æ
+    // éŸ³è‰²ç•ªå·ã‚’æç”»
     J := DspVoice.SoundSourcePlayBack;
     if bDec and Status.bBreakButton then begin
         Z := 0;
@@ -7831,25 +8060,25 @@ var
     TmpVoice: ^TVOICE;
     TmpDspVoice: ^TDSPVOICE;
 begin
-    // ’TõÏ‚İ‚Ìê‡‚ÍI—¹
+    // æ¢ç´¢æ¸ˆã¿ã®å ´åˆã¯çµ‚äº†
     if longbool(Status.dwTuningSize) then begin
         result := true;
         exit;
     end;
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := false;
     dwSource := -1;
-    // ‘Sƒ`ƒƒƒ“ƒlƒ‹‚ğ’Tõ
+    // å…¨ãƒãƒ£ãƒ³ãƒãƒ«ã‚’æ¢ç´¢
     for dwI := 0 to 7 do begin
-        // ‰¹‚ªo—Í‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Íƒ‹[ƒv‚ğÄŠJ
+        // éŸ³ãŒå‡ºåŠ›ã•ã‚Œã¦ã„ãªã„å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’å†é–‹
         TmpVoice := @Voices.Voice[dwI];
         if not longbool(TmpVoice.VolumeMaxLeft) and not longbool(TmpVoice.VolumeMaxRight) then continue;
-        // ADSR ‚ªw’è‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Íƒ‹[ƒv‚ğÄŠJ
+        // ADSR ãŒæŒ‡å®šã•ã‚Œã¦ã„ãªã„å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’å†é–‹
         TmpDspVoice := @DspReg.Voice[dwI];
         if not longbool(TmpDspVoice.EnvelopeADSR1) and not longbool(TmpDspVoice.EnvelopeADSR2) then continue;
-        // ADSR ƒpƒ‰ƒ[ƒ^‚ğ’Tõ
+        // ADSR ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’æ¢ç´¢
         for dwJ := Status.dwTuningAddress + 1 to $FFBB do begin
-            // ADSR ƒpƒ‰ƒ[ƒ^‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡‚Íƒ‹[ƒv‚ğÄŠJ
+            // ADSR ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’å†é–‹
             if Apu.Ram.Ram[dwJ + 0] <> TmpDspVoice.EnvelopeADSR1 then continue;
             if Apu.Ram.Ram[dwJ + 1] <> TmpDspVoice.EnvelopeADSR2 then continue;
             if not longbool(dwPhase) then begin
@@ -7857,38 +8086,38 @@ begin
             end else begin
                 if Apu.Ram.Ram[dwJ - 1] <> TmpDspVoice.SoundSourcePlayBack then continue;
             end;
-            // ADSR ƒpƒ‰ƒ[ƒ^ˆÊ’u‚ğ‹L˜^
+            // ADSR ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ä½ç½®ã‚’è¨˜éŒ²
             Status.dwTuningAddress := longword(dwJ);
             dwSource := longint(TmpDspVoice.SoundSourcePlayBack);
-            // ƒ‹[ƒv‚ğ”²‚¯‚é
+            // ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
             break;
         end;
-        // ADSR ƒpƒ‰ƒ[ƒ^‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡‚Í’TõˆÊ’u‚ğƒŠƒZƒbƒg
+        // ADSR ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯æ¢ç´¢ä½ç½®ã‚’ãƒªã‚»ãƒƒãƒˆ
         if dwSource < 0 then Status.dwTuningAddress := $1FF;
-        // ƒ‹[ƒv‚ğ”²‚¯‚é
+        // ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
         break;
     end;
-    // ADSR ƒpƒ‰ƒ[ƒ^‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡‚ÍI—¹
+    // ADSR ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯çµ‚äº†
     if dwSource < 0 then exit;
-    // Ÿ‚Ìƒ`ƒƒƒ“ƒlƒ‹‚ğ’Tõ
+    // æ¬¡ã®ãƒãƒ£ãƒ³ãƒãƒ«ã‚’æ¢ç´¢
     for dwMatch := 0 to 1 do for dwI := 0 to 7 do begin
-        // ‰¹‚ªo—Í‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Íƒ‹[ƒv‚ğÄŠJ
+        // éŸ³ãŒå‡ºåŠ›ã•ã‚Œã¦ã„ãªã„å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’å†é–‹
         if not longbool(dwMatch) then begin
             TmpVoice := @Voices.Voice[dwI];
             if not longbool(TmpVoice.VolumeMaxLeft) and not longbool(TmpVoice.VolumeMaxRight) then continue;
         end;
-        // ADSR ‚ªw’è‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Íƒ‹[ƒv‚ğÄŠJ
+        // ADSR ãŒæŒ‡å®šã•ã‚Œã¦ã„ãªã„å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’å†é–‹
         TmpDspVoice := @DspReg.Voice[dwI];
         if not longbool(TmpDspVoice.EnvelopeADSR1) and not longbool(TmpDspVoice.EnvelopeADSR2) then continue;
-        // 1‰ñ–Ú‚Ìƒ`ƒƒƒ“ƒlƒ‹‚Æ“¯‚¶”gŒ`”Ô†‚Ìê‡‚Íƒ‹[ƒv‚ğÄŠJ
+        // 1å›ç›®ã®ãƒãƒ£ãƒ³ãƒãƒ«ã¨åŒã˜æ³¢å½¢ç•ªå·ã®å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’å†é–‹
         if byte(dwSource) = TmpDspVoice.SoundSourcePlayBack then continue;
-        // ADSR ƒpƒ‰ƒ[ƒ^‚ğ’Tõ
+        // ADSR ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’æ¢ç´¢
         for dwJ := 5 to 8 do begin
-            // ƒAƒhƒŒƒX‚ª”ÍˆÍŠO‚É‚È‚éê‡‚Íƒ‹[ƒv‚ğÄŠJ
+            // ã‚¢ãƒ‰ãƒ¬ã‚¹ãŒç¯„å›²å¤–ã«ãªã‚‹å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’å†é–‹
             dwK := longint(TmpDspVoice.SoundSourcePlayBack) - dwSource;
             dwK := longint(Status.dwTuningAddress) + dwK * dwJ;
             if (dwK < $200) or (dwK > $FFBB) then continue;
-            // ADSR ƒpƒ‰ƒ[ƒ^‚ªŒ©‚Â‚©‚ç‚È‚¢ê‡‚Íƒ‹[ƒv‚ğÄŠJ
+            // ADSR ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãŒè¦‹ã¤ã‹ã‚‰ãªã„å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’å†é–‹
             if Apu.Ram.Ram[dwK + 0] <> TmpDspVoice.EnvelopeADSR1 then continue;
             if Apu.Ram.Ram[dwK + 1] <> TmpDspVoice.EnvelopeADSR2 then continue;
             if not longbool(dwPhase) then begin
@@ -7896,30 +8125,30 @@ begin
             end else begin
                 if Apu.Ram.Ram[dwK - 1] <> TmpDspVoice.SoundSourcePlayBack then continue;
             end;
-            // ADSR ƒpƒ‰ƒ[ƒ^ˆÊ’u‚©‚ç TUNING ŠJnƒAƒhƒŒƒX‚ğæ“¾
+            // ADSR ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ä½ç½®ã‹ã‚‰ TUNING é–‹å§‹ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å–å¾—
             Dec(Status.dwTuningAddress, dwSource * dwJ - 3);
-            // ADSR ƒpƒ‰ƒ[ƒ^ƒTƒCƒY‚ğ‹L˜^
+            // ADSR ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºã‚’è¨˜éŒ²
             Status.dwTuningSize := dwJ;
-            // ¬Œ÷
+            // æˆåŠŸ
             result := true;
             exit;
         end;
-        // ƒ‹[ƒv‚ğ”²‚¯‚é
+        // ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
         break;
     end;
 end;
 
 begin
-    // ƒoƒbƒtƒ@‚ğİ’è
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è¨­å®š
     ApuData := pApuData;
     DspReg := @ApuData.DspReg;
     Voices := @ApuData.Voices;
     T64Count := ApuData.T64Count;
-    // Ä•`‰æƒtƒ‰ƒO‚ğİ’è
+    // å†æç”»ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
     bRedrawInfo := longbool(Status.dwRedrawInfo and REDRAW_ON);
-    // Ÿ‰ñ‚ÍÄ•`‰æ‚µ‚È‚¢
+    // æ¬¡å›ã¯å†æç”»ã—ãªã„
     Status.dwRedrawInfo := REDRAW_OFF;
-    // ŠÔ‚ğ•`‰æ
+    // æ™‚é–“ã‚’æç”»
     Y := 0;
     Z := 0;
     UpdateNumWrite(11, IntToStr(StrData, T64Count div 230400000, 1));
@@ -7927,12 +8156,12 @@ begin
     UpdateNumWrite(16, IntToStr(StrData, T64Count div 64000 mod 60, 2));
     UpdateNumWrite(19, IntToStr(StrData, T64Count div 64, 3));
     if Status.bTimeRepeat then begin
-        // ƒŠƒs[ƒgŠJnˆÊ’u‚ğ•`‰æ
+        // ãƒªãƒ”ãƒ¼ãƒˆé–‹å§‹ä½ç½®ã‚’æç”»
         if Status.dwStartTime >= Status.dwDefaultTimeout then J := 280
         else J := (Status.dwStartTime * 141 div Status.dwDefaultTimeout) + 139;
         if bRedrawInfo or (J <> Status.dwLastStartTime) then UpdateMarkWrite(0, 24);
         Status.dwLastStartTime := J;
-        // ƒŠƒs[ƒgI—¹ˆÊ’u‚ğ•`‰æ
+        // ãƒªãƒ”ãƒ¼ãƒˆçµ‚äº†ä½ç½®ã‚’æç”»
         if Status.dwLimitTime >= Status.dwDefaultTimeout then J := 280
         else J := (Status.dwLimitTime * 141 div Status.dwDefaultTimeout) + 139;
         if bRedrawInfo or (J <> Status.dwLastLimitTime) then UpdateMarkWrite(1, 32);
@@ -7940,22 +8169,22 @@ begin
     end else begin
         J := 280;
         if longbool(Option.dwSeekBar) then begin
-            // ƒGƒ“ƒhƒŒƒXƒ}[ƒNA‚Ü‚½‚Íˆê’â~ƒ}[ƒN‚ğ•`‰æ
+            // ã‚¨ãƒ³ãƒ‰ãƒ¬ã‚¹ãƒãƒ¼ã‚¯ã€ã¾ãŸã¯ä¸€æ™‚åœæ­¢ãƒãƒ¼ã‚¯ã‚’æç”»
             if bRedrawInfo then if Option.dwPlayMax > PLAY_MAX_ENDLESS then UpdateMarkWrite(14, 24) else UpdateMarkWrite(13, 24);
         end else begin
-            // ƒŠƒs[ƒgˆÊ’u‚ğÁ‹
+            // ãƒªãƒ”ãƒ¼ãƒˆä½ç½®ã‚’æ¶ˆå»
             if bRedrawInfo then DeleteMarkWrite(24);
         end;
         Status.dwLastStartTime := J;
-        // ƒŠƒs[ƒgˆÊ’u‚ğÁ‹
+        // ãƒªãƒ”ãƒ¼ãƒˆä½ç½®ã‚’æ¶ˆå»
         if bRedrawInfo then DeleteMarkWrite(32);
         Status.dwLastLimitTime := $FFFFFFFF;
     end;
     if longbool(Option.dwSeekBar) or (Option.dwPlayMax > PLAY_MAX_ENDLESS) then begin
-        // ƒ^ƒCƒ€ƒQ[ƒW‚ğ•`‰æ
+        // ã‚¿ã‚¤ãƒ ã‚²ãƒ¼ã‚¸ã‚’æç”»
         if not Status.bPlay then J := 140
         else if T64Count >= Status.dwDefaultTimeout then J := 280
-        else J := (T64Count * 141 div Status.dwDefaultTimeout) + 140;
+        else J := longword(int64(T64Count) * 141 div Status.dwDefaultTimeout) + 140;
         if bRedrawInfo or (J <> Status.dwLastTime) then begin
             if J > 140 then begin
                 Rect.left := 140;
@@ -7978,10 +8207,10 @@ begin
                 DrawInfoFillRect(@Rect, Status.hBackBrush);
             end;
         end;
-        // ƒf[ƒ^‚ğƒRƒs[
+        // ãƒ‡ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼
         Status.dwLastTime := J;
     end else begin
-        // ƒ^ƒCƒ€ƒQ[ƒW‚ğÁ‹
+        // ã‚¿ã‚¤ãƒ ã‚²ãƒ¼ã‚¸ã‚’æ¶ˆå»
         if bRedrawInfo then begin
             Rect.left := 137;
             Rect.right := 284 + (Status.dwScale and 1);
@@ -7990,10 +8219,10 @@ begin
             DrawInfoFillRect(@Rect, Status.hBackBrush);
         end;
     end;
-    // ƒCƒ“ƒWƒP[ƒ^‚ğ•`‰æ
+    // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’æç”»
     case Option.dwInfo of
         INFO_INDICATOR: begin
-            // ŠeƒŒƒxƒ‹’l‚ğŒvZ
+            // å„ãƒ¬ãƒ™ãƒ«å€¤ã‚’è¨ˆç®—
             if bWave and not Status.bPause then begin
                 Status.NowLevel.cMasterLevelLeft := Max(Status.NowLevel.cMasterLevelLeft - byte(Option.dwVolumeSpeed),
                     GetVolumeLevel(ApuData.VolumeMaxLeft));
@@ -8029,7 +8258,7 @@ begin
                     Status.NowLevel.Channel[I].bChannelShow := not longbool(V);
                 end;
             end;
-            // ‘S‘Ì‚ğÄ•`‰æ‚·‚éê‡‚Í MIXER ‚ÆƒtƒŒ[ƒ€‚ğ•`‰æ
+            // å…¨ä½“ã‚’å†æç”»ã™ã‚‹å ´åˆã¯ MIXER ã¨ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’æç”»
             if bRedrawInfo then begin
                 StrData.qwData := $535251504F; // 'OPQRS'
                 Y := 1;
@@ -8040,7 +8269,7 @@ begin
                 UpdateVolumeFrame(44);
                 UpdateVolumeFrame(46);
             end;
-            // ƒ}ƒXƒ^[‚ÌƒCƒ“ƒWƒP[ƒ^‚ğ•`‰æ
+            // ãƒã‚¹ã‚¿ãƒ¼ã®ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’æç”»
             UpdateVolumeWrite(Status.LastLevel.cMasterVolumeLeft, Status.NowLevel.cMasterVolumeLeft, COLOR_BAR_GREEN, 4, 3);
             UpdateVolumeWrite(Status.LastLevel.cMasterVolumeRight, Status.NowLevel.cMasterVolumeRight, COLOR_BAR_GREEN, 8, 3);
             UpdateVolumeWrite(Status.LastLevel.cMasterEchoLeft, Status.NowLevel.cMasterEchoLeft, COLOR_BAR_ORANGE, 12, 3);
@@ -8053,7 +8282,7 @@ begin
             V := 0;
             Y := 1;
             for I := 0 to 7 do begin
-                // ‘S‘Ì‚ğÄ•`‰æ‚·‚éê‡‚Íƒ`ƒƒƒ“ƒlƒ‹”Ô†‚ÆƒtƒŒ[ƒ€‚ğ•`‰æ
+                // å…¨ä½“ã‚’å†æç”»ã™ã‚‹å ´åˆã¯ãƒãƒ£ãƒ³ãƒãƒ«ç•ªå·ã¨ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’æç”»
                 if bRedrawInfo then begin
                     Z := 0;
                     StrData.dwData[0] := I + $31;
@@ -8061,7 +8290,7 @@ begin
                     UpdateVolumeFrame(V + 76);
                     Status.LastLevel.Channel[I].dwChannelEffect.Update := true;
                 end;
-                // Šeƒ`ƒƒƒ“ƒlƒ‹‚ÌƒCƒ“ƒWƒP[ƒ^‚ğ•`‰æ
+                // å„ãƒãƒ£ãƒ³ãƒãƒ«ã®ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’æç”»
                 if Status.NowLevel.Channel[I].bChannelShow then begin
                     Z := 3;
                     if not Status.LastLevel.Channel[I].bChannelShow then begin
@@ -8101,11 +8330,11 @@ begin
                 Inc(X, 5);
                 Inc(V, 30);
             end;
-            // ƒf[ƒ^‚ğƒRƒs[
+            // ãƒ‡ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼
             Status.LastLevel := Status.NowLevel;
         end;
         INFO_MIXER: begin
-            // ƒ~ƒLƒT[î•ñ‚ğ•`‰æ
+            // ãƒŸã‚­ã‚µãƒ¼æƒ…å ±ã‚’æç”»
             Y := 1;
             Z := 0;
             if Status.bBreakButton then begin
@@ -8204,7 +8433,7 @@ begin
             end;
         end;
         INFO_CHANNEL_1: for I := 0 to 7 do begin
-            // Šeƒ`ƒƒƒ“ƒlƒ‹î•ñ‚ğ•`‰æ
+            // å„ãƒãƒ£ãƒ³ãƒãƒ«æƒ…å ±ã‚’æç”»
             X := I div 4 * 25 + 4;
             Y := I mod 4 + 2;
             DspVoice := @DspReg.Voice[I];
@@ -8223,14 +8452,14 @@ begin
             end;
         end;
         INFO_CHANNEL_2: for I := 0 to 7 do begin
-            // Šeƒ`ƒƒƒ“ƒlƒ‹î•ñ‚ğ•`‰æ
+            // å„ãƒãƒ£ãƒ³ãƒãƒ«æƒ…å ±ã‚’æç”»
             X := I div 4 * 25 + 4;
             Y := I mod 4 + 2;
             DspVoice := @DspReg.Voice[I];
             UpdateChannelSource(false);
             Voice := @Voices.Voice[I];
             if not longbool(T64Count) then begin
-                // ‰‰‘t’â~’†
+                // æ¼”å¥åœæ­¢ä¸­
                 if Status.bBreakButton then begin
                     StrData.dwData[0] := $3030; // '00'
                     UpdateNumWrite(X +  4, 2);
@@ -8305,7 +8534,7 @@ begin
                     UpdateNumWrite(X + 13, IntToHex(StrData, V and $1F, 2));
                     StrData.dwData[0] := $54; // 'T'
                     UpdateNumWrite(X +  8, 1);
-                    // MixFlag and $8 = MFLG_OFF ‚Í E_REL ‚Æ“™‰¿‚Æ‚İ‚È‚·
+                    // MixFlag and $8 = MFLG_OFF ã¯ E_REL ã¨ç­‰ä¾¡ã¨ã¿ãªã™
                     V := (Voice.EnvelopeCurrentMode and $F) or (Voice.MixFlag and $8);
                     if (V = $2) or (V = $6) then StrData.dwData[0] := $68 // 'h'
                     else if (V = $0) or (V = $1) then StrData.dwData[0] := $69 // 'i'
@@ -8325,7 +8554,7 @@ begin
                     StrData.dwData[0] := $54; // 'T'
                     UpdateNumWrite(X +  8, 1);
                     UpdateNumWrite(X + 10, 1);
-                    // MixFlag and $8 = MFLG_OFF ‚Í E_REL ‚Æ“™‰¿‚Æ‚İ‚È‚·
+                    // MixFlag and $8 = MFLG_OFF ã¯ E_REL ã¨ç­‰ä¾¡ã¨ã¿ãªã™
                     V := (Voice.EnvelopeCurrentMode and $F) or (Voice.MixFlag and $8);
                     if V = $7 then StrData.dwData[0] := $6D // 'm'
                     else StrData.dwData[0] := $54; // 'T'
@@ -8343,7 +8572,7 @@ begin
             end;
         end;
         INFO_CHANNEL_3: for I := 0 to 7 do begin
-            // Šeƒ`ƒƒƒ“ƒlƒ‹î•ñ‚ğ•`‰æ
+            // å„ãƒãƒ£ãƒ³ãƒãƒ«æƒ…å ±ã‚’æç”»
             X := I div 4 * 25 + 4;
             Y := I mod 4 + 2;
             V := 1 shl I;
@@ -8380,7 +8609,7 @@ begin
             UpdateNumWrite(X + 17, IntToHex(StrData, longword(Voice.BlockHdr) shr 4, 1));
         end;
         INFO_CHANNEL_4: for I := 0 to 7 do begin
-            // Šeƒ`ƒƒƒ“ƒlƒ‹î•ñ‚ğ•`‰æ
+            // å„ãƒãƒ£ãƒ³ãƒãƒ«æƒ…å ±ã‚’æç”»
             X := I div 4 * 25 + 4;
             Y := I mod 4 + 2;
             DspVoice := @DspReg.Voice[I];
@@ -8391,7 +8620,7 @@ begin
             UpdateNumWrite(X + 14, IntToHex(StrData, longword(Voice.CurrentBlock), 4));
         end;
         INFO_SPC_2: begin
-            // SPC ƒŒƒWƒXƒ^î•ñ‚ğ•`‰æ
+            // SPC ãƒ¬ã‚¸ã‚¹ã‚¿æƒ…å ±ã‚’æç”»
             SPC700Reg := @ApuData.SPC700Reg;
             Y := 5;
             Z := 0;
@@ -8410,7 +8639,7 @@ begin
             end;
         end;
         INFO_SCRIPT700: begin
-            // Script700 î•ñ‚ğ•`‰æ
+            // Script700 æƒ…å ±ã‚’æç”»
             Script700 := @ApuData.Script700;
             Y := 1;
             if Status.bBreakButton then begin
@@ -8456,12 +8685,12 @@ begin
             UpdateNumWrite(43, 3);
         end;
     end;
-    // GDI •`‰æ‚ğƒtƒ‰ƒbƒVƒ…
+    // GDI æç”»ã‚’ãƒ•ãƒ©ãƒƒã‚·ãƒ¥
     API_GdiFlush();
 end;
 
 // ================================================================================
-// DropFile - ƒtƒ@ƒCƒ‹‚Ìƒhƒƒbƒv (ó‚¯æ‚è)
+// DropFile - ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‰ãƒ­ãƒƒãƒ— (å—ã‘å–ã‚Š)
 // ================================================================================
 function CWINDOWMAIN.DropFile(dwParam: longword): longword;
 var
@@ -8471,96 +8700,120 @@ var
     bList: longbool;
     lpFile: pointer;
     dwType: longword;
-    dwPathSize: longint;
-    dwFileSize: longint;
-    hFile: longword;
-    cFilePath: array[0..259] of char;
-    Win32_Find_Data: TWIN32FINDDATA;
+    sPath: utf8string;
     Point: TPOINT;
+
+procedure SearchFolder();
+var
+    dwLast: longword;
+    sChDir: utf8string;
+    hFile: longword;
+    sFile: utf8string;
+    Win32_Find_Data: TWIN32FINDDATA;
 begin
-    // ‰Šú‰»
+    // ã‚¿ã‚¤ãƒˆãƒ«ã‚’æ›´æ–°
+    cwWindowMain.SetCaption(Concat(TITLE_INFO_HEADER[Status.dwLanguage], TITLE_INFO_FILE_APPEND[Status.dwLanguage],
+        TITLE_INFO_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage], DEFAULT_TITLE));
+    // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã®æœ€å¾Œã« '\*' ã‚’è¿½åŠ 
+    dwLast := Length(sPath) - 1;
+    if not IsPathSeparator(sPath, dwLast) then sPath := Concat(sPath, '\');
+    sChDir := sPath;
+    sPath := Concat(sPath, '*');
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ¢ç´¢
+    hFile := INVALID_HANDLE_VALUE;
+    if IsSafePath(sPath) then hFile := API_FindFirstFile(StrToPtr(sPath), @Win32_Find_Data);
+    if hFile <> INVALID_HANDLE_VALUE then while true do begin
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿å–ã‚Š
+        sFile := ChrToStr(Win32_Find_Data.wcFileName);
+        if not IsSingleByte(sFile, 1, '.') then begin
+            sPath := Concat(sChDir, sFile);
+            if GetFileType(sPath, false, false) = FILE_TYPE_SPC then cwSortList.SendMessage(LB_ADDSTRING, NULL, StrToPtr(sPath));
+        end;
+        // æœ€å¾Œã¾ã§æ¢ç´¢ã—ãŸã‚‰ãƒãƒ³ãƒ‰ãƒ«ã‚’ã‚¯ãƒ­ãƒ¼ã‚º
+        if not API_FindNextFile(hFile, @Win32_Find_Data) then begin
+            API_FindClose(hFile);
+            break;
+        end;
+    end;
+    // ã‚¿ã‚¤ãƒˆãƒ«ã‚’æ›´æ–°
+    UpdateTitle(NULL);
+end;
+
+begin
+    // åˆæœŸåŒ–
     result := 1;
-    // ƒ\[ƒg—pƒŠƒXƒg‚ğƒNƒŠƒA
-    cwSortList.SendMessage(LB_RESETCONTENT, NULL, NULL);
-    // ƒ|ƒCƒ“ƒ^‚ÌÀ•W‚ğæ“¾
+    // ã‚½ãƒ¼ãƒˆç”¨ãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢
+    cwSortList.SendMessage(LB_RESETCONTENT, NULL);
+    // ãƒã‚¤ãƒ³ã‚¿ã®åº§æ¨™ã‚’å–å¾—
     API_DragQueryPoint(dwParam, @Point);
-    // ƒhƒƒbƒv‚³‚ê‚½êŠ‚ÌŒŸo
+    // ãƒ‰ãƒ­ãƒƒãƒ—ã•ã‚ŒãŸå ´æ‰€ã®æ¤œå‡º
     if Status.dwScale = 2 then bAdd := Point.x >= LIST_ADD_THRESHOLD
     else bAdd := Point.x >= (LIST_ADD_THRESHOLD * Status.dwScale) shr 1;
     bList := false;
-    // ƒhƒƒbƒv‚³‚ê‚½ƒtƒ@ƒCƒ‹”‚ğæ“¾
+    // ãƒ‰ãƒ­ãƒƒãƒ—ã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«æ•°ã‚’å–å¾—
     dwCount := API_DragQueryFile(dwParam, $FFFFFFFF, NULLPOINTER, NULL);
-    // ƒtƒ@ƒCƒ‹‚ªƒhƒƒbƒv‚³‚ê‚È‚©‚Á‚½ê‡A‚Ü‚½‚ÍAƒtƒ@ƒCƒ‹”‚ª 1A‚©‚Âƒhƒƒbƒv‚ª‹Ö~‚³‚ê‚Ä‚¢‚éê‡‚ÍI—¹
+    // ãƒ•ã‚¡ã‚¤ãƒ«ãŒãƒ‰ãƒ­ãƒƒãƒ—ã•ã‚Œãªã‹ã£ãŸå ´åˆã€ã¾ãŸã¯ã€ãƒ•ã‚¡ã‚¤ãƒ«æ•°ãŒ 1ã€ã‹ã¤ãƒ‰ãƒ­ãƒƒãƒ—ãŒç¦æ­¢ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯çµ‚äº†
     if not longbool(dwCount) or (bAdd and (dwCount = 1) and Status.bDropCancel) then begin
-        // ƒhƒ‰ƒbƒOI—¹
+        // ãƒ‰ãƒ©ãƒƒã‚°çµ‚äº†
         API_DragFinish(dwParam);
-        // I—¹
+        // çµ‚äº†
         exit;
     end;
-    // ƒtƒ@ƒCƒ‹”‚ªÅ‘å’lˆÈã‚Ìê‡‚ÍÅ‘å’l‚Éİ’è
+    // ãƒ•ã‚¡ã‚¤ãƒ«æ•°ãŒæœ€å¤§å€¤ä»¥ä¸Šã®å ´åˆã¯æœ€å¤§å€¤ã«è¨­å®š
     if dwCount >= Option.dwListMax then dwCount := Option.dwListMax;
-    // ƒoƒbƒtƒ@‚ğŠm•Û
-    GetMem(lpFile, 1024);
-    // ‚·‚×‚Ä‚Ìƒtƒ@ƒCƒ‹‚ğŠm”F
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+    GetMem(lpFile, BUFFER_SIZE_PATH);
+    // ã™ã¹ã¦ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ç¢ºèª
     for I := 0 to dwCount - 1 do begin
-        // ƒtƒ@ƒCƒ‹‚ğæ“¾
-        API_ZeroMemory(lpFile, 1024);
-        API_DragQueryFile(dwParam, I, lpFile, 260);
-        // ƒtƒ@ƒCƒ‹‚Ìí—Ş‚ğæ“¾
-        dwType := GetFileType(lpFile, dwCount = 1, dwCount = 1);
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å–å¾—
+        API_ZeroMemory(lpFile, BUFFER_SIZE_PATH);
+        API_DragQueryFile(dwParam, I, lpFile, BUFFER_SIZE_PATH);
+        sPath := PtrToStr(lpFile);
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã®ç¨®é¡ã‚’å–å¾—
+        dwType := GetFileType(sPath, dwCount = 1, dwCount = 1);
         case dwType of
-            FILE_TYPE_SPC: if (dwCount = 1) and not bAdd then SPCLoad(lpFile, true)
-                else cwSortList.SendMessage(LB_ADDSTRING, NULL, longword(lpFile));
-            FILE_TYPE_LIST_A, FILE_TYPE_LIST_B: if not bList then bList := ListLoad(lpFile, dwType, false);
-            FILE_TYPE_FOLDER: begin
-                // ƒ^ƒCƒgƒ‹‚ğXV
-                cwWindowMain.SetCaption(pchar(Concat(TITLE_INFO_HEADER[Status.dwLanguage], TITLE_INFO_FILE_APPEND[Status.dwLanguage],
-                    TITLE_INFO_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage], DEFAULT_TITLE)));
-                // ƒtƒ@ƒCƒ‹ƒpƒX‚ğ‰Šú‰»
-                dwPathSize := GetSize(lpFile, 260);
-                API_ZeroMemory(@cFilePath[0], 260);
-                API_MoveMemory(@cFilePath[0], lpFile, dwPathSize);
-                if not IsPathSeparator(ChrToStr(cFilePath), dwPathSize) then begin
-                    if longbool(Pos('/', ChrToStr(cFilePath))) then cFilePath[dwPathSize] := '/' else cFilePath[dwPathSize] := '\';
-                    Inc(dwPathSize);
-                end;
-                cFilePath[dwPathSize] := '*';
-                // SPC ƒtƒ@ƒCƒ‹‚ğŒŸõ
-                hFile := INVALID_HANDLE_VALUE;
-                if IsSafePath(@cFilePath) then hFile := API_FindFirstFile(@cFilePath, @Win32_Find_Data);
-                if hFile < INVALID_HANDLE_VALUE then while true do begin
-                    if not IsSingleByte(ChrToStr(Win32_Find_Data.cFileName), 1, '.') then begin
-                        dwFileSize := GetSize(@Win32_Find_Data.cFileName[0], 260);
-                        if dwPathSize + dwFileSize < 260 then begin
-                            API_MoveMemory(@cFilePath[dwPathSize], @Win32_Find_Data.cFileName[0], dwFileSize);
-                            API_ZeroMemory(@cFilePath[dwPathSize + dwFileSize], 260 - dwPathSize - dwFileSize);
-                            if GetFileType(@cFilePath, false, false) = FILE_TYPE_SPC then
-                                cwSortList.SendMessage(LB_ADDSTRING, NULL, longword(@cFilePath));
-                        end;
-                    end;
-                    if not API_FindNextFile(hFile, @Win32_Find_Data) then begin
-                        API_FindClose(hFile);
-                        break;
-                    end;
-                end;
-                // ƒ^ƒCƒgƒ‹‚ğXV
-                UpdateTitle(NULL);
-            end;
-            FILE_TYPE_SCRIPT700: if dwCount = 1 then ReloadScript700(lpFile);
+            FILE_TYPE_SPC: if (dwCount = 1) and not bAdd then SPCLoad(sPath, true) else cwSortList.SendMessage(LB_ADDSTRING, NULL, lpFile);
+            FILE_TYPE_LIST_A, FILE_TYPE_LIST_B: if not bList then bList := ListLoad(sPath, dwType, false);
+            FILE_TYPE_FOLDER: SearchFolder();
+            FILE_TYPE_SCRIPT700: if dwCount = 1 then ReloadScript700(sPath);
         end;
     end;
-    // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-    FreeMem(lpFile, 1024);
-    // ƒhƒ‰ƒbƒOI—¹
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+    FreeMem(lpFile, BUFFER_SIZE_PATH);
+    // ãƒ‰ãƒ©ãƒƒã‚°çµ‚äº†
     API_DragFinish(dwParam);
-    // SPC ƒtƒ@ƒCƒ‹‚ğƒvƒŒƒCƒŠƒXƒg‚É“o˜^
+    // SPC ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã«ç™»éŒ²
     AppendList();
 end;
 
 // ================================================================================
-// GetFileType - ƒtƒ@ƒCƒ‹ƒ^ƒCƒvæ“¾
+// GetFileTitle - ãƒ•ã‚¡ã‚¤ãƒ«ã‚¿ã‚¤ãƒˆãƒ«å–å¾—
 // ================================================================================
-function CWINDOWMAIN.GetFileType(lpFile: pointer; bShowMsg: longbool; bScript700: longbool): longword;
+procedure CWINDOWMAIN.GetFileTitle(const sPath: utf8string; lpTarget: pointer);
+var
+    lpBuffer: pointer;
+    lpTitle: pointer;
+begin
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+    GetMem(lpBuffer, BUFFER_SIZE_PATH);
+    GetMem(lpTitle, BUFFER_SIZE_TITLE);
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚¿ã‚¤ãƒˆãƒ«ã‚’å–å¾—
+    API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
+    API_GetFileTitle(StrToPtr(sPath), lpBuffer, BUFFER_SIZE_PATH);
+    // Ansi æ–‡å­—åˆ—ã«å¤‰æ›
+    API_ZeroMemory(lpTitle, BUFFER_SIZE_TITLE);
+    API_WideCharToMultiByte(CP_ACP, NULL, lpBuffer, -1, lpTitle, COPY_SIZE_TITLE, NULLPOINTER, NULLPOINTER);
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ã‚³ãƒ”ãƒ¼
+    API_MoveMemory(lpTarget, lpTitle, COPY_SIZE_TITLE);
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+    FreeMem(lpBuffer, BUFFER_SIZE_PATH);
+    FreeMem(lpTitle, BUFFER_SIZE_TITLE);
+end;
+
+// ================================================================================
+// GetFileType - ãƒ•ã‚¡ã‚¤ãƒ«ã‚¿ã‚¤ãƒ—å–å¾—
+// ================================================================================
+function CWINDOWMAIN.GetFileType(const sPath: utf8string; bShowMsg: longbool; bScript700: longbool): longword;
 var
     bSafe: longbool;
     hFile: longword;
@@ -8570,66 +8823,66 @@ var
     cListHeaderA: array[0..LIST_FILE_HEADER_A_LEN - 1] of char;
     cListHeaderB: array[0..LIST_FILE_HEADER_B_LEN - 1] of char;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := FILE_TYPE_NOTEXIST;
     repeat
-        // ƒpƒX‚ÌˆÀ‘S«‚ğŠm”F
-        bSafe := IsSafePath(lpFile);
-        // ƒtƒHƒ‹ƒ_‚ª‘¶İ‚·‚éê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
-        if bSafe and Exists(lpFile, 0) then begin
+        // ãƒ‘ã‚¹ã®å®‰å…¨æ€§ã‚’ç¢ºèª
+        bSafe := IsSafePath(sPath);
+        // ãƒ•ã‚©ãƒ«ãƒ€ãŒå­˜åœ¨ã™ã‚‹å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
+        if bSafe and Exists(sPath, 0) then begin
             result := FILE_TYPE_FOLDER;
             break;
         end;
-        // ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚È‚¢ê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
-        if bSafe and not Exists(lpFile, $FFFFFFFF) then break;
-        // ‰Šú‰»
+        // ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
+        if bSafe and not Exists(sPath, $FFFFFFFF) then break;
+        // åˆæœŸåŒ–
         result := FILE_TYPE_NOTREAD;
-        // ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
         hFile := INVALID_HANDLE_VALUE;
-        if bSafe then hFile := API_CreateFile(lpFile, GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
+        if bSafe then hFile := API_CreateFile(StrToPtr(sPath), GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
             FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-        // ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚½ê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ãŸå ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
         if hFile = INVALID_HANDLE_VALUE then break;
-        // ‰Šú‰»
+        // åˆæœŸåŒ–
         result := FILE_TYPE_UNKNOWN;
-        // ƒtƒ@ƒCƒ‹‚ÌŠg’£q‚ğæ“¾
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã®æ‹¡å¼µå­ã‚’å–å¾—
         if bScript700 and (
-               IsExt(lpFile, Concat('.', SCRIPT700_FILETYPE))
-            or IsExt(lpFile, Concat('.', SCRIPT7SE_FILETYPE))
-            or IsExt(lpFile, Concat('.', SCRIPT700TXT_FILETYPE))
-            or IsExt(lpFile, Concat('.', SCRIPT7SETXT_FILETYPE))
+               IsExt(sPath, Concat('.', SCRIPT700_FILETYPE))
+            or IsExt(sPath, Concat('.', SCRIPT7SE_FILETYPE))
+            or IsExt(sPath, Concat('.', SCRIPT700TXT_FILETYPE))
+            or IsExt(sPath, Concat('.', SCRIPT7SETXT_FILETYPE))
         ) then result := FILE_TYPE_SCRIPT700;
-        // ƒtƒ@ƒCƒ‹‚ğƒ[ƒh
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ­ãƒ¼ãƒ‰
         API_ZeroMemory(@cBuffer[0], 64);
         API_ReadFile(hFile, @cBuffer[0], 64, @dwReadSize, NULLPOINTER);
-        // ƒoƒbƒtƒ@‚ğƒRƒs[
+        // ãƒãƒƒãƒ•ã‚¡ã‚’ã‚³ãƒ”ãƒ¼
         API_MoveMemory(@cSPCHeader[0], @cBuffer[0], SPC_FILE_HEADER_LEN);
         API_MoveMemory(@cListHeaderA[0], @cBuffer[0], LIST_FILE_HEADER_A_LEN);
         API_MoveMemory(@cListHeaderB[0], @cBuffer[0], LIST_FILE_HEADER_B_LEN);
-        // ƒtƒ@ƒCƒ‹‚Ìí—Ş‚ğæ“¾
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã®ç¨®é¡ã‚’å–å¾—
         if ChrToStr(cSPCHeader) = SPC_FILE_HEADER then result := FILE_TYPE_SPC;
         if ChrToStr(cListHeaderA) = LIST_FILE_HEADER_A then result := FILE_TYPE_LIST_A;
         if ChrToStr(cListHeaderB) = LIST_FILE_HEADER_B then result := FILE_TYPE_LIST_B;
-        // ƒtƒ@ƒCƒ‹‚ğƒNƒ[ƒY
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¯ãƒ­ãƒ¼ã‚º
         API_CloseHandle(hFile);
     until true;
-    // ƒtƒ@ƒCƒ‹Œ`®‚ª•s–¾‚Ìê‡‚ÍƒƒbƒZ[ƒW‚ğ•\¦
+    // ãƒ•ã‚¡ã‚¤ãƒ«å½¢å¼ãŒä¸æ˜ã®å ´åˆã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤º
     if bShowMsg then case result of
         FILE_TYPE_NOTEXIST, FILE_TYPE_NOTREAD, FILE_TYPE_UNKNOWN: ShowErrMsg(200 + result);
     end;
 end;
 
 // ================================================================================
-// GetID666Format - ID666 ƒtƒH[ƒ}ƒbƒgƒ^ƒCƒvæ“¾
+// GetID666Format - ID666 ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚¿ã‚¤ãƒ—å–å¾—
 // ================================================================================
 procedure CWINDOWMAIN.GetID666Format(var Hdr: TSPCHDR);
 var
     Bin: array[0..255] of byte;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     API_MoveMemory(@Bin[0], @Hdr, 256);
     Hdr.TagFormat := ID666_UNKNOWN;
-    // ID666 ƒtƒH[ƒ}ƒbƒg‚Ìí—Ş‚ğæ“¾
+    // ID666 ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã®ç¨®é¡ã‚’å–å¾—
     if (Bin[$23] = $1A) or (
         // PHASE 1
         bytebool(((Bin[$2E] or Bin[$4E] or Bin[$6E] or Bin[$7E] or Bin[$B0] or Bin[$B1]) and $E0) or Bin[$24] or Bin[$9E] or Bin[$A9] or Bin[$AC]
@@ -8645,66 +8898,63 @@ begin
 end;
 
 // ================================================================================
-// IsExt - ƒpƒX‚ÌŠg’£q‚ğŠm”F
+// IsExt - ãƒ‘ã‚¹ã®æ‹¡å¼µå­ã‚’ç¢ºèª
 // ================================================================================
-function CWINDOWMAIN.IsExt(lpFile: pointer; const sExt: string): longbool;
+function CWINDOWMAIN.IsExt(const sPath: utf8string; const sExt: utf8string): longbool;
 var
     I: longint;
-    dwSize: longword;
+    J: longword;
+    K: longword;
+    sPathExt: utf8string;
+    dwPathExtSize: longword;
     dwExtSize: longword;
-    cBuffer: array of char;
-    V: byte;
+    V1: byte;
+    V2: byte;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := false;
-    // ƒoƒbƒtƒ@ƒTƒCƒY‚ªŠg’£qƒTƒCƒY–¢–‚Ìê‡‚Í¸”s
-    dwSize := GetSize(lpFile, 1024);
+    // ã‚µã‚¤ã‚ºã‚’å–å¾—
     dwExtSize := Length(sExt);
-    if dwSize < dwExtSize then exit;
-    // Šg’£q•”•ª‚ğƒRƒs[
-    SetLength(cBuffer, dwExtSize);
-{$IFDEF FREEPASCAL}
-    API_MoveMemory(@cBuffer[0], lpFile + dwSize - dwExtSize, dwExtSize);
-{$ELSE}
-    API_MoveMemory(@cBuffer[0], pointer(longword(lpFile) + dwSize - dwExtSize), dwExtSize);
-{$ENDIF}
-    // ‘å•¶š‚É•ÏŠ·
-    for I := 0 to dwExtSize - 1 do begin
-        V := byte(cBuffer[I]);
-        if (V >= $61) and (V <= $7A) then cBuffer[I] := char(V - $20);
+    // æ‹¡å¼µå­ã‚’å–å¾—
+    J := Length(sPath);
+    K := J;
+    for I := 1 to K do begin
+        if sPath[I] = NULLCHAR then break;
+        if IsSingleByte(sPath, I, '.') then J := I;
     end;
-    // ˆê’v”»’è
-{$IFDEF FREEPASCAL}
-    result := ChrToStr(cBuffer) = sExt;
-{$ELSE}
-    // NOTE: Boland Delphi ‚Ìê‡Achar ‚Ì“®“I”z—ñ‚ğ string ‚ÉƒLƒƒƒXƒg‚·‚éê‡‚ÍA
-    // ’¼Ú string() ‚ğg—p‚·‚é
-    result := string(cBuffer) = sExt;
-{$ENDIF}
-end;
-
-// ================================================================================
-// IsSafePath - ƒpƒX‚ÌˆÀ‘S«‚ğŠm”F
-// ================================================================================
-function CWINDOWMAIN.IsSafePath(lpFile: pointer): longbool;
-var
-    dwSize: longword;
-    dwValue: ^longword;
-begin
-    // ‰Šú‰»
-    result := false;
-    // ƒoƒbƒtƒ@ƒTƒCƒY‚ª 4 ƒoƒCƒg–¢–‚Ìê‡‚Í¸”s
-    dwSize := GetSize(lpFile, 4);
-    if dwSize < 4 then exit;
-    // \\.\ ‚©‚çn‚Ü‚éê‡‚Í¸”s
-    dwValue := lpFile;
-    if dwValue^ = $5C2E5C5C then exit;
-    // ¬Œ÷
+    sPathExt := Copy(sPath, J, Length(sPath));
+    dwPathExtSize := Length(sPathExt);
+    // æ‹¡å¼µå­ã®ã‚µã‚¤ã‚ºãŒç•°ãªã‚‹å ´åˆã¯çµ‚äº†
+    if dwPathExtSize <> dwExtSize then exit;
+    // å¤§æ–‡å­—ã«å¤‰æ›
+    for I := 1 to dwExtSize do begin
+        V1 := byte(sExt[I]);
+        V2 := byte(sPathExt[I]);
+        if (V1 >= $61) and (V1 <= $7A) then Dec(V1, $20);
+        if (V2 >= $61) and (V2 <= $7A) then Dec(V2, $20);
+        if V1 <> V2 then exit;
+    end;
+    // æˆåŠŸ
     result := true;
 end;
 
 // ================================================================================
-// ListAdd - ƒvƒŒƒCƒŠƒXƒg’Ç‰Á
+// IsSafePath - ãƒ‘ã‚¹ã®å®‰å…¨æ€§ã‚’ç¢ºèª
+// ================================================================================
+function CWINDOWMAIN.IsSafePath(const sPath: utf8string): longbool;
+begin
+    // åˆæœŸåŒ–
+    result := false;
+    // ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºãŒ 4 ãƒã‚¤ãƒˆæœªæº€ã®å ´åˆã¯å¤±æ•—
+    if Length(sPath) < 4 then exit;
+    // \\.\ ã‹ã‚‰å§‹ã¾ã‚‹å ´åˆã¯å¤±æ•—
+    if Copy(sPath, 1, 4) = '\\.\' then exit;
+    // æˆåŠŸ
+    result := true;
+end;
+
+// ================================================================================
+// ListAdd - ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆè¿½åŠ 
 // ================================================================================
 procedure CWINDOWMAIN.ListAdd(dwAuto: longword);
 var
@@ -8714,60 +8964,62 @@ var
     bAdd: longbool;
     lpTitle: pointer;
 begin
-    // SPC ‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¢ê‡‚ÍI—¹
+    // SPC ãŒé–‹ã‹ã‚Œã¦ã„ãªã„å ´åˆã¯çµ‚äº†
     if not Status.bOpen then exit;
-    // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€”‚ğæ“¾
-    dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL, NULL);
-    // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€”‚ªÅ‘å’lˆÈã‚Ìê‡‚ÍI—¹
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ æ•°ã‚’å–å¾—
+    dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL);
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ æ•°ãŒæœ€å¤§å€¤ä»¥ä¸Šã®å ´åˆã¯çµ‚äº†
     if dwCount >= Option.dwListMax then exit;
-    // ‘I‘ğ‚³‚ê‚Ä‚¢‚éƒAƒCƒeƒ€‚ğæ“¾
-    dwIndex := cwPlayList.SendMessage(LB_GETCURSEL, NULL, NULL);
-    // ’Ç‰Á‚©‘}“ü‚ğæ“¾
+    // é¸æŠã•ã‚Œã¦ã„ã‚‹ã‚¢ã‚¤ãƒ†ãƒ ã‚’å–å¾—
+    dwIndex := cwPlayList.SendMessage(LB_GETCURSEL, NULL);
+    // è¿½åŠ ã‹æŒ¿å…¥ã‚’å–å¾—
     case dwAuto of
         1: bAdd := true;
         2: bAdd := not longbool(dwCount);
         else bAdd := not Status.bShiftButton or not longbool(dwCount);
     end;
     if bAdd then dwSelect := dwCount else dwSelect := dwIndex;
-    // ƒtƒ@ƒCƒ‹‚ğ’Ç‰Á
-    if bAdd then cwFileList.SendMessage(LB_ADDSTRING, NULL, longword(Status.lpSPCFile))
-    else cwFileList.SendMessage(LB_INSERTSTRING, dwIndex, longword(Status.lpSPCFile));
-    // ƒ^ƒCƒgƒ‹‚ğæ“¾
-    GetMem(lpTitle, 33);
-    API_ZeroMemory(lpTitle, 33);
-    API_MoveMemory(lpTitle, @Spc.Hdr.Title[0], 32);
-    // ƒvƒŒƒCƒŠƒXƒg‚É’Ç‰Á
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’è¿½åŠ 
+    if bAdd then cwFileList.SendMessage(LB_ADDSTRING, NULL, StrToPtr(Status.sSPCFile))
+    else cwFileList.SendMessage(LB_INSERTSTRING, dwIndex, StrToPtr(Status.sSPCFile));
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+    GetMem(lpTitle, BUFFER_SIZE_TITLE);
+    // ã‚¿ã‚¤ãƒˆãƒ«ã‚’å–å¾—
+    API_ZeroMemory(lpTitle, BUFFER_SIZE_TITLE);
+    API_MoveMemory(lpTitle, @Spc.Hdr.Title[0], COPY_SIZE_TITLE);
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã«è¿½åŠ 
     if bAdd then begin
-        cwPlayList.SendMessage(LB_ADDSTRING, NULL, longword(lpTitle));
-        cwPlayList.SendMessage(LB_SETITEMDATA, dwCount, NULL);
+        cwPlayList.SendMessageA(LB_ADDSTRING, NULL, lpTitle);
+        cwPlayList.SendMessage(LB_SETITEMDATA, dwCount);
     end else begin
-        cwPlayList.SendMessage(LB_INSERTSTRING, dwIndex, longword(lpTitle));
-        cwPlayList.SendMessage(LB_SETITEMDATA, dwIndex, NULL);
+        cwPlayList.SendMessageA(LB_INSERTSTRING, dwIndex, lpTitle);
+        cwPlayList.SendMessage(LB_SETITEMDATA, dwIndex);
     end;
-    FreeMem(lpTitle, 33);
-    // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€‚ğ‘I‘ğ
-    cwPlayList.SendMessage(LB_SETCURSEL, dwSelect, NULL);
-    // ƒƒjƒ…[‚ğXV
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+    FreeMem(lpTitle, BUFFER_SIZE_TITLE);
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ ã‚’é¸æŠ
+    cwPlayList.SendMessage(LB_SETCURSEL, dwSelect);
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
     UpdateMenu();
 end;
 
 // ================================================================================
-// ListClear - ƒvƒŒƒCƒŠƒXƒgƒNƒŠƒA
+// ListClear - ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã‚¯ãƒªã‚¢
 // ================================================================================
 procedure CWINDOWMAIN.ListClear(bQuiet: longbool);
 begin
-    // Šm”FƒƒbƒZ[ƒW‚ğ•\¦
-    if not bQuiet then if cwWindowMain.MessageBox(pchar(WARN_CLEAR_PLAYLIST[Status.dwLanguage]), pchar(DEFAULT_TITLE),
+    // ç¢ºèªãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤º
+    if not bQuiet then if cwWindowMain.MessageBox(WARN_CLEAR_PLAYLIST[Status.dwLanguage], DEFAULT_TITLE,
         MB_ICONQUESTION or MB_YESNO or MB_DEFBUTTON2) <> IDYES then exit;
-    // ƒvƒŒƒCƒŠƒXƒg‚ğ‚·‚×‚ÄƒNƒŠƒA
-    cwFileList.SendMessage(LB_RESETCONTENT, NULL, NULL);
-    cwPlayList.SendMessage(LB_RESETCONTENT, NULL, NULL);
-    // ƒƒjƒ…[‚ğXV
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã‚’ã™ã¹ã¦ã‚¯ãƒªã‚¢
+    cwFileList.SendMessage(LB_RESETCONTENT, NULL);
+    cwPlayList.SendMessage(LB_RESETCONTENT, NULL);
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
     UpdateMenu();
 end;
 
 // ================================================================================
-// ListDelete - ƒvƒŒƒCƒŠƒXƒgíœ
+// ListDelete - ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆå‰Šé™¤
 // ================================================================================
 procedure CWINDOWMAIN.ListDelete();
 var
@@ -8775,27 +9027,27 @@ var
     dwTopIndex: longint;
     dwCount: longint;
 begin
-    // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€”‚ğæ“¾
-    dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL, NULL);
-    // ƒvƒŒƒCƒŠƒXƒg‚ÉƒAƒCƒeƒ€‚ª“o˜^‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍI—¹
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ æ•°ã‚’å–å¾—
+    dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL);
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã«ã‚¢ã‚¤ãƒ†ãƒ ãŒç™»éŒ²ã•ã‚Œã¦ã„ãªã„å ´åˆã¯çµ‚äº†
     if not longbool(dwCount) then exit;
-    // ‘I‘ğ‚³‚ê‚Ä‚¢‚éƒAƒCƒeƒ€‚ğæ“¾
-    dwIndex := cwPlayList.SendMessage(LB_GETCURSEL, NULL, NULL);
-    dwTopIndex := cwPlayList.SendMessage(LB_GETTOPINDEX, NULL, NULL);
-    // ƒtƒ@ƒCƒ‹‚Æƒ^ƒCƒgƒ‹‚ğíœ
-    cwFileList.SendMessage(LB_DELETESTRING, dwIndex, NULL);
-    cwPlayList.SendMessage(LB_DELETESTRING, dwIndex, NULL);
+    // é¸æŠã•ã‚Œã¦ã„ã‚‹ã‚¢ã‚¤ãƒ†ãƒ ã‚’å–å¾—
+    dwIndex := cwPlayList.SendMessage(LB_GETCURSEL, NULL);
+    dwTopIndex := cwPlayList.SendMessage(LB_GETTOPINDEX, NULL);
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã¨ã‚¿ã‚¤ãƒˆãƒ«ã‚’å‰Šé™¤
+    cwFileList.SendMessage(LB_DELETESTRING, dwIndex);
+    cwPlayList.SendMessage(LB_DELETESTRING, dwIndex);
     Dec(dwCount);
-    // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€‚ğ‘I‘ğ
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ ã‚’é¸æŠ
     if dwIndex >= dwCount then dwIndex := dwCount - 1;
-    cwPlayList.SendMessage(LB_SETTOPINDEX, dwTopIndex, NULL);
-    cwPlayList.SendMessage(LB_SETCURSEL, dwIndex, NULL);
-    // ƒƒjƒ…[‚ğXV
+    cwPlayList.SendMessage(LB_SETTOPINDEX, dwTopIndex);
+    cwPlayList.SendMessage(LB_SETCURSEL, dwIndex);
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
     UpdateMenu();
 end;
 
 // ================================================================================
-// ListDown - ƒvƒŒƒCƒŠƒXƒg‚Ì€–Ú‚ğ‰º‚ÖˆÚ“®
+// ListDown - ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®é …ç›®ã‚’ä¸‹ã¸ç§»å‹•
 // ================================================================================
 procedure CWINDOWMAIN.ListDown();
 var
@@ -8805,48 +9057,51 @@ var
     dwCount: longint;
     dwItemData: longword;
 begin
-    // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€”‚ğæ“¾
-    dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL, NULL);
-    // ƒvƒŒƒCƒŠƒXƒg‚ÉƒAƒCƒeƒ€‚ª“o˜^‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍI—¹
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ æ•°ã‚’å–å¾—
+    dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL);
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã«ã‚¢ã‚¤ãƒ†ãƒ ãŒç™»éŒ²ã•ã‚Œã¦ã„ãªã„å ´åˆã¯çµ‚äº†
     if not longbool(dwCount) then exit;
-    // ‘I‘ğ‚³‚ê‚Ä‚¢‚éƒAƒCƒeƒ€‚ğæ“¾
-    dwIndex := cwPlayList.SendMessage(LB_GETCURSEL, NULL, NULL);
-    // ˆê”Ô‰º‚ÌƒAƒCƒeƒ€‚ª‘I‘ğ‚³‚ê‚Ä‚¢‚éê‡‚ÍI—¹
+    // é¸æŠã•ã‚Œã¦ã„ã‚‹ã‚¢ã‚¤ãƒ†ãƒ ã‚’å–å¾—
+    dwIndex := cwPlayList.SendMessage(LB_GETCURSEL, NULL);
+    // ä¸€ç•ªä¸‹ã®ã‚¢ã‚¤ãƒ†ãƒ ãŒé¸æŠã•ã‚Œã¦ã„ã‚‹å ´åˆã¯çµ‚äº†
     if dwIndex >= dwCount - 1 then exit;
-    // ƒoƒbƒtƒ@‚ğŠm•Û
-    GetMem(lpFile, 1024);
-    GetMem(lpTitle, 33);
-    // ƒtƒ@ƒCƒ‹‚Æƒ^ƒCƒgƒ‹‚ğæ“¾
-    API_ZeroMemory(lpFile, 1024);
-    cwFileList.SendMessage(LB_GETTEXT, dwIndex, longword(lpFile));
-    API_ZeroMemory(lpTitle, 33);
-    cwPlayList.SendMessage(LB_GETTEXT, dwIndex, longword(lpTitle));
-    dwItemData := cwPlayList.SendMessage(LB_GETITEMDATA, dwIndex, NULL);
-    // ƒJ[ƒ\ƒ‹‚ğİ’è
+    // ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’è¶…ãˆã‚‹å ´åˆã¯çµ‚äº†
+    if cwFileList.SendMessage(LB_GETTEXTLEN, dwIndex) >= BUFFER_SIZE_PATH then exit;
+    if cwPlayList.SendMessage(LB_GETTEXTLEN, dwIndex) >= BUFFER_SIZE_LPARAM then exit;
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+    GetMem(lpFile, BUFFER_SIZE_PATH);
+    GetMem(lpTitle, BUFFER_SIZE_TITLE);
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã¨ã‚¿ã‚¤ãƒˆãƒ«ã‚’å–å¾—
+    API_ZeroMemory(lpFile, BUFFER_SIZE_PATH);
+    cwFileList.SendMessage(LB_GETTEXT, dwIndex, lpFile);
+    API_ZeroMemory(lpTitle, BUFFER_SIZE_TITLE);
+    cwPlayList.SendMessageA(LB_GETTEXT, dwIndex, lpTitle, BUFFER_SIZE_TITLE);
+    dwItemData := cwPlayList.SendMessage(LB_GETITEMDATA, dwIndex);
+    // ã‚«ãƒ¼ã‚½ãƒ«ã‚’è¨­å®š
     Inc(dwIndex);
-    cwPlayList.SendMessage(LB_SETCURSEL, dwIndex, NULL);
-    // íœ
+    cwPlayList.SendMessage(LB_SETCURSEL, dwIndex);
+    // å‰Šé™¤
     Dec(dwIndex);
-    cwFileList.SendMessage(LB_DELETESTRING, dwIndex, NULL);
-    cwPlayList.SendMessage(LB_DELETESTRING, dwIndex, NULL);
-    // ‘}“ü
+    cwFileList.SendMessage(LB_DELETESTRING, dwIndex);
+    cwPlayList.SendMessage(LB_DELETESTRING, dwIndex);
+    // æŒ¿å…¥
     Inc(dwIndex);
-    cwFileList.SendMessage(LB_INSERTSTRING, dwIndex, longword(lpFile));
-    cwPlayList.SendMessage(LB_INSERTSTRING, dwIndex, longword(lpTitle));
+    cwFileList.SendMessage(LB_INSERTSTRING, dwIndex, lpFile);
+    cwPlayList.SendMessageA(LB_INSERTSTRING, dwIndex, lpTitle);
     cwPlayList.SendMessage(LB_SETITEMDATA, dwIndex, dwItemData);
-    // ƒJ[ƒ\ƒ‹‚ğİ’è
-    cwPlayList.SendMessage(LB_SETCURSEL, dwIndex, NULL);
-    // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-    FreeMem(lpFile, 1024);
-    FreeMem(lpTitle, 33);
-    // ƒƒjƒ…[‚ğXV
+    // ã‚«ãƒ¼ã‚½ãƒ«ã‚’è¨­å®š
+    cwPlayList.SendMessage(LB_SETCURSEL, dwIndex);
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+    FreeMem(lpFile, BUFFER_SIZE_PATH);
+    FreeMem(lpTitle, BUFFER_SIZE_TITLE);
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
     UpdateMenu();
 end;
 
 // ================================================================================
-// ListLoad - ƒvƒŒƒCƒŠƒXƒg‚ğŠJ‚­
+// ListLoad - ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã‚’é–‹ã
 // ================================================================================
-function CWINDOWMAIN.ListLoad(lpFile: pointer; dwType: longword; bShift: longbool): longbool;
+function CWINDOWMAIN.ListLoad(const sPath: utf8string; dwType: longword; bShift: longbool): longbool;
 var
     I: longint;
     hFile: longword;
@@ -8857,140 +9112,175 @@ var
     dwSizeTitle: longword;
     dwTopIndex: longint;
     dwIndex: longint;
+    dwCodePage: longword;
     lpListFile: pointer;
     lpTitle: pointer;
     cListHeader: array[0..63] of char;
 
 procedure ConvertPath();
 var
-    C1: ^byte;
-    C2: ^byte;
-    wValue: ^word;
+    lpBuffer: pointer;
+    dwBufferSize: longword;
+{$IFDEF FREEPASCAL}
+    wcValue: array of widechar;
+{$ELSE}
+    wcValue: array[0..COPY_SIZE_PATH] of widechar;
+{$ENDIF}
+    sBuffer: utf8string;
 begin
-    wValue := lpListFile;
-    if wValue^ <> $5C2E then exit; // .\
-    C1 := lpListFile;
-    Inc(C1, Status.lpCurrentSize);
-    C2 := lpListFile;
-    Inc(C2, 2);
-    API_MoveMemory(C1, C2, 1023 - Status.lpCurrentSize);
-    API_MoveMemory(lpListFile, Status.lpCurrentPath, Status.lpCurrentSize);
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+    GetMem(lpBuffer, BUFFER_SIZE_PATH);
+    // ãƒ‘ã‚¹ã‚’ Wide æ–‡å­—åˆ—ã«å¤‰æ›
+    API_MultiByteToWideChar(dwCodePage, NULL, lpListFile, -1, lpBuffer, (BUFFER_SIZE_PATH shr 1) - 1);
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ã‚³ãƒ”ãƒ¼
+    dwBufferSize := GetWideSize(lpBuffer, BUFFER_SIZE_PATH);
+{$IFDEF FREEPASCAL}
+    SetLength(wcValue, dwBufferSize shr 1);
+{$ELSE}
+    API_ZeroMemory(@wcValue[0], BUFFER_SIZE_PATH);
+{$ENDIF}
+    API_MoveMemory(@wcValue[0], lpBuffer, dwBufferSize);
+    sBuffer := ChrToStr(wcValue);
+    API_MoveMemory(lpListFile, lpBuffer, BUFFER_SIZE_PATH);
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+    FreeMem(lpBuffer, BUFFER_SIZE_PATH);
+    // çµ¶å¯¾ãƒ‘ã‚¹ã®å ´åˆã¯çµ‚äº†
+    if Copy(sBuffer, 1, 2) <> '.\' then exit;
+    // çµ¶å¯¾ãƒ‘ã‚¹ã«å¤‰æ›´
+    sBuffer := Concat(Status.sCurrentPath, Copy(sBuffer, 3, Length(sBuffer)));
+    API_ZeroMemory(lpListFile, BUFFER_SIZE_PATH);
+    CopyStrToWidePtr(lpListFile, BUFFER_SIZE_PATH, sBuffer);
 end;
 
 begin
     repeat
-        // ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
         hFile := INVALID_HANDLE_VALUE;
-        if IsSafePath(lpFile) then hFile := API_CreateFile(lpFile, GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
+        if IsSafePath(sPath) then hFile := API_CreateFile(StrToPtr(sPath), GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
             FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-        // ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚½ê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ãŸå ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
         if hFile = INVALID_HANDLE_VALUE then break;
-        // ƒvƒŒƒCƒŠƒXƒg‚ğƒNƒŠƒA
-        cwFileList.SendMessage(LB_RESETCONTENT, NULL, NULL);
-        cwPlayList.SendMessage(LB_RESETCONTENT, NULL, NULL);
-        // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€”‚ÆŒ»İ‚ÌêŠ‚ğæ“¾
+        // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢
+        cwFileList.SendMessage(LB_RESETCONTENT, NULL);
+        cwPlayList.SendMessage(LB_RESETCONTENT, NULL);
+        // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ æ•°ã¨ç¾åœ¨ã®å ´æ‰€ã‚’å–å¾—
         dwListNum := 0;
         dwTopIndex := 0;
         dwIndex := 0;
         dwReadSize := 0;
         case dwType of
             FILE_TYPE_LIST_A: begin
-                // ƒwƒbƒ_‚ğæ“¾
+                // ãƒ˜ãƒƒãƒ€ã‚’å–å¾—
                 API_ReadFile(hFile, @cListHeader, LIST_FILE_HEADER_A_LEN, @dwReadSize, NULLPOINTER);
-                // ƒtƒ@ƒCƒ‹‚Ìƒ[ƒh‚É¸”s‚µ‚½ê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+                // ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ­ãƒ¼ãƒ‰ã«å¤±æ•—ã—ãŸå ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
                 if not longbool(dwReadSize) then break;
-                // ƒAƒCƒeƒ€”‚ğæ“¾
+                // ã‚¢ã‚¤ãƒ†ãƒ æ•°ã‚’å–å¾—
                 API_ReadFile(hFile, @dwListNum, 4, @dwReadSize, NULLPOINTER);
-                // ƒtƒ@ƒCƒ‹‚Ìƒ[ƒh‚É¸”s‚µ‚½ê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+                // ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ­ãƒ¼ãƒ‰ã«å¤±æ•—ã—ãŸå ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
                 if not longbool(dwReadSize) then break;
             end;
             FILE_TYPE_LIST_B: begin
-                // ƒwƒbƒ_‚ğæ“¾
+                // ãƒ˜ãƒƒãƒ€ã‚’å–å¾—
                 API_ReadFile(hFile, @cListHeader, LIST_FILE_HEADER_B_LEN, @dwReadSize, NULLPOINTER);
-                // ƒtƒ@ƒCƒ‹‚Ìƒ[ƒh‚É¸”s‚µ‚½ê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+                // ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ­ãƒ¼ãƒ‰ã«å¤±æ•—ã—ãŸå ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
                 if not longbool(dwReadSize) then break;
-                // ƒAƒCƒeƒ€”‚ğæ“¾
+                // ã‚¢ã‚¤ãƒ†ãƒ æ•°ã‚’å–å¾—
                 API_ReadFile(hFile, @dwListNum, 2, @dwReadSize, NULLPOINTER);
-                // ƒtƒ@ƒCƒ‹‚Ìƒ[ƒh‚É¸”s‚µ‚½ê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+                // ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ­ãƒ¼ãƒ‰ã«å¤±æ•—ã—ãŸå ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
                 if not longbool(dwReadSize) then break;
                 dwListNum := dwListNum and $FFFF;
-                // ƒvƒŒƒCƒŠƒXƒg‚ÌƒgƒbƒvˆÊ’u‚ğæ“¾
+                // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ãƒˆãƒƒãƒ—ä½ç½®ã‚’å–å¾—
                 API_ReadFile(hFile, @dwTopIndex, 2, @dwReadSize, NULLPOINTER);
-                // ƒtƒ@ƒCƒ‹‚Ìƒ[ƒh‚É¸”s‚µ‚½ê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+                // ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ­ãƒ¼ãƒ‰ã«å¤±æ•—ã—ãŸå ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
                 if not longbool(dwReadSize) then break;
                 dwTopIndex := dwTopIndex and $FFFF;
-                // ƒvƒŒƒCƒŠƒXƒg‚Ì‘I‘ğˆÊ’u‚ğæ“¾
+                // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®é¸æŠä½ç½®ã‚’å–å¾—
                 API_ReadFile(hFile, @dwIndex, 2, @dwReadSize, NULLPOINTER);
-                // ƒtƒ@ƒCƒ‹‚Ìƒ[ƒh‚É¸”s‚µ‚½ê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+                // ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ­ãƒ¼ãƒ‰ã«å¤±æ•—ã—ãŸå ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
                 if not longbool(dwReadSize) then break;
                 dwIndex := dwIndex and $FFFF;
             end;
         end;
-        // ƒvƒŒƒCƒŠƒXƒg‚ÉƒAƒCƒeƒ€‚ª“o˜^‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+        // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã«ã‚¢ã‚¤ãƒ†ãƒ ãŒç™»éŒ²ã•ã‚Œã¦ã„ãªã„å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
         if not longbool(dwListNum) then break;
-        // ƒAƒCƒeƒ€”‚ÌÅ‘å’l‚ğİ’è
+        // ã‚¢ã‚¤ãƒ†ãƒ æ•°ã®æœ€å¤§å€¤ã‚’è¨­å®š
         if dwListNum > Option.dwListMax then dwListNum := Option.dwListMax;
-        // Ä•`‰æ‹Ö~
-        cwPlayList.SendMessage(WM_SETREDRAW, 0, NULL);
-        // ƒoƒbƒtƒ@‚ğŠm•Û
-        GetMem(lpListFile, 1024);
-        GetMem(lpTitle, 33);
-        // ƒvƒŒƒCƒŠƒXƒg‚ğæ“¾
+        // å†æç”»ç¦æ­¢
+        cwPlayList.SendMessage(WM_SETREDRAW, 0);
+        // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+        GetMem(lpListFile, BUFFER_SIZE_PATH);
+        GetMem(lpTitle, BUFFER_SIZE_TITLE);
+        // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã‚’å–å¾—
         for I := 0 to dwListNum - 1 do begin
-            dwSizeFile := 260;
-            dwSizeTitle := 32;
+            dwSize := 0;
+            dwSizeFile := MAX_PATH;
+            dwSizeTitle := COPY_SIZE_TITLE;
+            dwCodePage := CP_ACP;
             case dwType of
                 FILE_TYPE_LIST_B: begin
-                    // ƒf[ƒ^ƒTƒCƒY‚ğæ“¾
+                    // ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºã‚’å–å¾—
                     API_ReadFile(hFile, @dwSize, 2, @dwReadSize, NULLPOINTER);
-                    // ƒtƒ@ƒCƒ‹‚Ìƒ[ƒh‚É¸”s‚µ‚½ê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+                    // ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ­ãƒ¼ãƒ‰ã«å¤±æ•—ã—ãŸå ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
                     if not longbool(dwReadSize) then break;
-                    dwSizeFile := dwSize and $3FF;
-                    dwSizeTitle := (dwSize shr 10) and $3F;
-                    if dwSizeTitle > 32 then dwSizeTitle := 32;
+                    // ã‚µã‚¤ã‚ºã‚’è¨ˆç®—
+                    if dwSize = $FFFF then begin
+                        // type-B-UTF8
+                        API_ReadFile(hFile, @dwSizeFile, 2, @dwReadSize, NULLPOINTER);
+                        if not longbool(dwReadSize) then break;
+                        API_ReadFile(hFile, @dwSizeTitle, 2, @dwReadSize, NULLPOINTER);
+                        if not longbool(dwReadSize) then break;
+                        dwCodePage := CP_UTF8;
+                    end else begin
+                        // type-B-ANSI
+                        dwSizeFile := dwSize and $3FF;
+                        dwSizeTitle := (dwSize shr 10) and $3F;
+                        if dwSizeTitle = $3F then break;
+                    end;
+                    // æœ€å¤§ã‚µã‚¤ã‚ºã‚’èª¿æ•´
+                    if dwSizeTitle > COPY_SIZE_TITLE then dwSizeTitle := COPY_SIZE_TITLE;
                 end;
             end;
-            // ƒtƒ@ƒCƒ‹‚Ìƒ[ƒh‚É¸”s‚µ‚½ê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+            // ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ­ãƒ¼ãƒ‰ã«å¤±æ•—ã—ãŸå ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
             if not longbool(dwReadSize) then break;
-            // ƒtƒ@ƒCƒ‹ƒpƒX‚ğæ“¾
-            API_ZeroMemory(lpListFile, 1024);
+            // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’å–å¾—
+            API_ZeroMemory(lpListFile, BUFFER_SIZE_PATH);
             API_ReadFile(hFile, lpListFile, dwSizeFile, @dwReadSize, NULLPOINTER);
-            // ƒtƒ@ƒCƒ‹‚Ìƒ[ƒh‚É¸”s‚µ‚½ê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+            // ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ­ãƒ¼ãƒ‰ã«å¤±æ•—ã—ãŸå ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
             if not longbool(dwReadSize) then break;
-            // ƒ^ƒCƒgƒ‹‚ğæ“¾
-            API_ZeroMemory(lpTitle, 33);
+            // ã‚¿ã‚¤ãƒˆãƒ«ã‚’å–å¾—
+            API_ZeroMemory(lpTitle, BUFFER_SIZE_TITLE);
             API_ReadFile(hFile, lpTitle, dwSizeTitle, @dwReadSize, NULLPOINTER);
-            // ƒtƒ@ƒCƒ‹‚Ìƒ[ƒh‚É¸”s‚µ‚½ê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+            // ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ­ãƒ¼ãƒ‰ã«å¤±æ•—ã—ãŸå ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
             if not longbool(dwReadSize) then break;
-            // ƒvƒŒƒCƒŠƒXƒg‚É’Ç‰Á
-            cwPlayList.SendMessage(LB_ADDSTRING, NULL, longword(lpTitle));
-            cwPlayList.SendMessage(LB_SETITEMDATA, I, NULL);
+            // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã«è¿½åŠ 
+            cwPlayList.SendMessageA(LB_ADDSTRING, NULL, lpTitle);
+            cwPlayList.SendMessage(LB_SETITEMDATA, I);
             ConvertPath();
-            cwFileList.SendMessage(LB_ADDSTRING, NULL, longword(lpListFile));
+            cwFileList.SendMessage(LB_ADDSTRING, NULL, lpListFile);
         end;
-        // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-        FreeMem(lpListFile, 1024);
-        FreeMem(lpTitle, 33);
-        // Ä•`‰æ‹–‰Â
-        cwPlayList.SendMessage(WM_SETREDRAW, 1, NULL);
+        // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+        FreeMem(lpListFile, BUFFER_SIZE_PATH);
+        FreeMem(lpTitle, BUFFER_SIZE_TITLE);
+        // å†æç”»è¨±å¯
+        cwPlayList.SendMessage(WM_SETREDRAW, 1);
         cwPlayList.Invalidate();
-        // ƒtƒ@ƒCƒ‹‚Ìƒ[ƒh‚É¬Œ÷‚µ‚½ê‡‚ÍƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€‚ğ‘I‘ğ
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ­ãƒ¼ãƒ‰ã«æˆåŠŸã—ãŸå ´åˆã¯ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ ã‚’é¸æŠ
         if longbool(dwReadSize) then begin
             if bShift then cwPlayList.SendMessage(LB_SETITEMDATA, dwIndex, 1);
-            cwPlayList.SendMessage(LB_SETCURSEL, dwIndex, NULL);
-            cwPlayList.SendMessage(LB_SETTOPINDEX, dwTopIndex, NULL);
+            cwPlayList.SendMessage(LB_SETCURSEL, dwIndex);
+            cwPlayList.SendMessage(LB_SETTOPINDEX, dwTopIndex);
         end;
     until true;
-    // ƒtƒ@ƒCƒ‹‚ğƒNƒ[ƒY
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¯ãƒ­ãƒ¼ã‚º
     if hFile <> INVALID_HANDLE_VALUE then API_CloseHandle(hFile);
-    // ƒƒjƒ…[‚ğXV
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
     UpdateMenu();
-    // ¬Œ÷
+    // æˆåŠŸ
     result := true;
 end;
 
 // ================================================================================
-// ListNextPlay - ƒvƒŒƒCƒŠƒXƒg‚ÌŸ‚ğŠJ‚­
+// ListNextPlay - ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®æ¬¡ã‚’é–‹ã
 // ================================================================================
 procedure CWINDOWMAIN.ListNextPlay(dwOrder: longword; dwFlag: longword);
 var
@@ -9002,126 +9292,126 @@ var
     dwCount: longint;
     dwIndex: longint;
 begin
-    // ‰‰‘t‡˜‚ğæ“¾
+    // æ¼”å¥é †åºã‚’å–å¾—
     case dwOrder of
         PLAY_ORDER_STOP: begin
-            // ‰‰‘t’â~
+            // æ¼”å¥åœæ­¢
             SPCStop(false);
             exit;
         end;
         PLAY_ORDER_REPEAT: begin
-            // ƒŠƒs[ƒg
+            // ãƒªãƒ”ãƒ¼ãƒˆ
             SPCStop(true);
             exit;
         end;
     end;
-    // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€”‚ğæ“¾
-    dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL, NULL);
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ æ•°ã‚’å–å¾—
+    dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL);
     case dwCount of
         0: begin
-            // ‰‰‘t’â~
+            // æ¼”å¥åœæ­¢
             SPCStop(false);
             exit;
         end;
         1: begin
-            // ‰‰‘tŠJn
+            // æ¼”å¥é–‹å§‹
             ListPlay(dwOrder, 0, NULL);
             exit;
         end;
     end;
-    // Ÿ‚Ì‹È‚ğ‘I‘ğ
+    // æ¬¡ã®æ›²ã‚’é¸æŠ
     dwIndex := 0;
     J := 0;
     while true do begin
         I := 0;
         case dwOrder of
             PLAY_ORDER_FIRST: begin
-                // Å‰‚©‚ç
+                // æœ€åˆã‹ã‚‰
                 dwIndex := 0;
                 break;
             end;
             PLAY_ORDER_LAST: begin
-                // ÅŒã‚©‚ç
+                // æœ€å¾Œã‹ã‚‰
                 dwIndex := dwCount - 1;
                 break;
             end;
             PLAY_ORDER_RANDOM: begin
-                // ƒ‰ƒ“ƒ_ƒ€
+                // ãƒ©ãƒ³ãƒ€ãƒ 
                 dwIndex := LIST_PLAY_INDEX_RANDOM;
                 break;
             end;
             PLAY_ORDER_NEXT: begin
-                // ÅŒã‚É‰‰‘t‚³‚ê‚½ƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+                // æœ€å¾Œã«æ¼”å¥ã•ã‚ŒãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
                 dwIndex := dwCount - 1;
                 K := 0;
                 for X := 0 to dwCount - 1 do begin
-                    L := cwPlayList.SendMessage(LB_GETITEMDATA, X, NULL);
+                    L := cwPlayList.SendMessage(LB_GETITEMDATA, X);
                     if L > K then begin
                         dwIndex := X;
                         K := L;
                     end;
                 end;
-                // Ÿ‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ‘I‘ğ
+                // æ¬¡ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’é¸æŠ
                 if dwIndex = dwCount - 1 then dwIndex := 0 else Inc(dwIndex);
             end;
             PLAY_ORDER_PREVIOUS: begin
-                // ÅŒã‚É‰‰‘t‚³‚ê‚½ƒCƒ“ƒfƒbƒNƒX‚ğæ“¾
+                // æœ€å¾Œã«æ¼”å¥ã•ã‚ŒãŸã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’å–å¾—
                 dwIndex := 0;
                 K := 0;
                 for X := 0 to dwCount - 1 do begin
-                    L := cwPlayList.SendMessage(LB_GETITEMDATA, X, NULL);
+                    L := cwPlayList.SendMessage(LB_GETITEMDATA, X);
                     if L > K then begin
                         dwIndex := X;
                         K := L;
                     end;
                 end;
-                // ‘O‚ÌƒCƒ“ƒfƒbƒNƒX‚ğ‘I‘ğ
+                // å‰ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’é¸æŠ
                 if dwIndex = 0 then dwIndex := dwCount - 1 else Dec(dwIndex);
             end;
             PLAY_ORDER_SHUFFLE: begin
-                // ƒeƒ“ƒ|ƒ‰ƒŠ—pƒŠƒXƒg‚ğƒNƒŠƒA
-                cwTempList.SendMessage(LB_RESETCONTENT, NULL, NULL);
-                // –¢‰‰‘t‚ÌƒCƒ“ƒfƒbƒNƒX‚Æƒtƒ‰ƒO‚ÌÅ¬’lAÅ‘å’l‚ğ‹L˜^
+                // ãƒ†ãƒ³ãƒãƒ©ãƒªç”¨ãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢
+                cwTempList.SendMessage(LB_RESETCONTENT, NULL);
+                // æœªæ¼”å¥ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¨ãƒ•ãƒ©ã‚°ã®æœ€å°å€¤ã€æœ€å¤§å€¤ã‚’è¨˜éŒ²
                 dwIndex := 0;
                 K := 0;
                 L := $FFFFFFFF;
                 for X := 0 to dwCount - 1 do begin
-                    J := cwPlayList.SendMessage(LB_GETITEMDATA, X, NULL);
+                    J := cwPlayList.SendMessage(LB_GETITEMDATA, X);
                     if not longbool(J) then begin
-                        cwTempList.SendMessage(LB_ADDSTRING, NULL, longword(pchar('TEMP')));
+                        cwTempList.SendMessage(LB_ADDSTRING, NULL, StrToPtr('TEMP'));
                         cwTempList.SendMessage(LB_SETITEMDATA, dwIndex, X);
                         Inc(dwIndex);
                     end;
                     if K < J then K := J;
                     if L > J then L := J;
                 end;
-                // ‰‰‘tƒtƒ@ƒCƒ‹‚ğŒˆ’è
+                // æ¼”å¥ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ±ºå®š
                 if longbool(dwIndex) then begin
-                    dwIndex := cwTempList.SendMessage(LB_GETITEMDATA, Trunc(Random(dwIndex)), NULL);
+                    dwIndex := cwTempList.SendMessage(LB_GETITEMDATA, Trunc(Random(dwIndex)));
                     J := K + 1;
                 end else begin
                     for X := 0 to dwCount - 1 do begin
-                        J := cwPlayList.SendMessage(LB_GETITEMDATA, X, NULL) - L;
+                        J := cwPlayList.SendMessage(LB_GETITEMDATA, X) - L;
                         if longbool(J) then cwPlayList.SendMessage(LB_SETITEMDATA, X, J)
                         else dwIndex := X;
                     end;
                     J := K - L + 1;
                 end;
-                // ƒeƒ“ƒ|ƒ‰ƒŠ—pƒŠƒXƒg‚ğƒNƒŠƒA
-                cwTempList.SendMessage(LB_RESETCONTENT, NULL, NULL);
+                // ãƒ†ãƒ³ãƒãƒ©ãƒªç”¨ãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢
+                cwTempList.SendMessage(LB_RESETCONTENT, NULL);
             end;
         end;
-        // ˆ—‚ª¬Œ÷‚µ‚½ê‡‚Íƒ‹[ƒv‚ğ”²‚¯‚é
+        // å‡¦ç†ãŒæˆåŠŸã—ãŸå ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
         if not longbool(I) then break;
-        // ƒtƒ‰ƒO‚ğİ’è
-        for X := 0 to dwCount - 1 do cwPlayList.SendMessage(LB_SETITEMDATA, X, NULL);
+        // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
+        for X := 0 to dwCount - 1 do cwPlayList.SendMessage(LB_SETITEMDATA, X);
     end;
-    // ‰‰‘tŠJn
+    // æ¼”å¥é–‹å§‹
     ListPlay(dwOrder, dwIndex, J or dwFlag);
 end;
 
 // ================================================================================
-// ListPlay - ƒvƒŒƒCƒŠƒXƒg‚Ì“Ç‚İ‚İ
+// ListPlay - ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®èª­ã¿è¾¼ã¿
 // ================================================================================
 function CWINDOWMAIN.ListPlay(dwOrder: longword; dwIndex: longint; dwFlag: longword): longint;
 var
@@ -9129,62 +9419,68 @@ var
     dwTopIndex: longint;
     dwCount: longint;
     lpFile: pointer;
+    sPath: utf8string;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := -1;
-    // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€”‚ğæ“¾
-    dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL, NULL);
-    // ƒvƒŒƒCƒŠƒXƒg‚ª‘I‘ğ‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍI—¹
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ æ•°ã‚’å–å¾—
+    dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL);
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆãŒé¸æŠã•ã‚Œã¦ã„ãªã„å ´åˆã¯çµ‚äº†
     if not longbool(dwCount) then exit;
-    // ƒoƒbƒtƒ@‚ğŠm•Û
-    GetMem(lpFile, 1024);
-    // ƒtƒ@ƒCƒ‹‚ğæ“¾
-    API_ZeroMemory(lpFile, 1024);
-    dwTopIndex := cwPlayList.SendMessage(LB_GETCURSEL, NULL, NULL);
+    // æ¬¡ã®ãƒ•ã‚¡ã‚¤ãƒ«ä½ç½®ã‚’å–å¾—
+    dwTopIndex := cwPlayList.SendMessage(LB_GETCURSEL, NULL);
     case dwIndex of
         LIST_PLAY_INDEX_SELECTED: result := dwTopIndex;
         LIST_PLAY_INDEX_RANDOM: result := Trunc(Random(dwCount));
         else result := dwIndex;
     end;
-    cwFileList.SendMessage(LB_GETTEXT, result, longword(lpFile));
-    // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€‚ğ‘I‘ğ‚·‚éê‡
+    // ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’è¶…ãˆã‚‹å ´åˆã¯çµ‚äº†
+    if cwFileList.SendMessage(LB_GETTEXTLEN, result) >= BUFFER_SIZE_PATH then exit;
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+    GetMem(lpFile, BUFFER_SIZE_PATH);
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å–å¾—
+    API_ZeroMemory(lpFile, BUFFER_SIZE_PATH);
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å–å¾—
+    cwFileList.SendMessage(LB_GETTEXT, result, lpFile);
+    sPath := PtrToStr(lpFile);
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+    FreeMem(lpFile, BUFFER_SIZE_PATH);
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ ã‚’é¸æŠã™ã‚‹å ´åˆ
     if longbool(dwFlag and LIST_NEXT_PLAY_SELECT) then begin
-        // ƒvƒŒƒCƒŠƒXƒg‚Ìƒgƒbƒv‚ğİ’è
+        // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ãƒˆãƒƒãƒ—ã‚’è¨­å®š
         if longbool(dwFlag and LIST_NEXT_PLAY_CENTER) then begin
-            dwIndex := cwPlayList.SendMessage(LB_GETTOPINDEX, NULL, NULL);
+            dwIndex := cwPlayList.SendMessage(LB_GETTOPINDEX, NULL);
             if result < dwTopIndex then begin
                 dwTopIndex := result - 3;
                 if dwTopIndex < 0 then dwTopIndex := 0;
-                if dwTopIndex < dwIndex then cwPlayList.SendMessage(LB_SETTOPINDEX, dwTopIndex, NULL);
+                if dwTopIndex < dwIndex then cwPlayList.SendMessage(LB_SETTOPINDEX, dwTopIndex);
             end else if result > dwTopIndex then begin
                 dwTopIndex := result - 6;
                 if dwTopIndex < 0 then dwTopIndex := 0;
-                if dwTopIndex > dwIndex then cwPlayList.SendMessage(LB_SETTOPINDEX, dwTopIndex, NULL);
+                if dwTopIndex > dwIndex then cwPlayList.SendMessage(LB_SETTOPINDEX, dwTopIndex);
             end;
         end;
-        // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€‚ğ‘I‘ğ
-        cwPlayList.SendMessage(LB_SETCURSEL, result, NULL);
-        // ƒƒjƒ…[‚ğXV
+        // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ ã‚’é¸æŠ
+        cwPlayList.SendMessage(LB_SETCURSEL, result);
+        // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
         UpdateMenu();
     end;
-    // ‰‰‘tÏ‚İƒtƒ‰ƒO‚ğ‰Šú‰»
+    // æ¼”å¥æ¸ˆã¿ãƒ•ãƒ©ã‚°ã‚’åˆæœŸåŒ–
     dwFlag := dwFlag and $FFFF;
     if not longbool(dwFlag) then begin
-        for I := 0 to dwCount - 1 do cwPlayList.SendMessage(LB_SETITEMDATA, I, NULL);
+        for I := 0 to dwCount - 1 do cwPlayList.SendMessage(LB_SETITEMDATA, I);
         Inc(dwFlag);
     end;
-    // ‰‰‘tÏ‚İƒtƒ‰ƒO‚ğİ’è
+    // æ¼”å¥æ¸ˆã¿ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
     cwPlayList.SendMessage(LB_SETITEMDATA, result, dwFlag);
-    // SPC ‚ğƒ[ƒh
-    if GetFileType(lpFile, true, false) = FILE_TYPE_SPC then SPCLoad(lpFile, true);
-    // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-    FreeMem(lpFile, 1024);
+    // SPC ã‚’ãƒ­ãƒ¼ãƒ‰
+    if GetFileType(sPath, true, false) = FILE_TYPE_SPC then SPCLoad(sPath, true);
 end;
 
 // ================================================================================
-// ListSave - ƒvƒŒƒCƒŠƒXƒg‚Ì•Û‘¶
+// ListSave - ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ä¿å­˜
 // ================================================================================
-function CWINDOWMAIN.ListSave(lpFile: pointer; bShift: longbool): longbool;
+function CWINDOWMAIN.ListSave(const sPath: utf8string; bShift: longbool): longbool;
 var
     I: longint;
     hFile: longword;
@@ -9199,92 +9495,93 @@ var
 
 procedure ConvertPath();
 var
-    J: longword;
-    C1: ^byte;
-    C2: ^byte;
-    wValue: word;
+    dwBufferSize: longword;
+{$IFDEF FREEPASCAL}
+    wcValue: array of widechar;
+{$ELSE}
+    wcValue: array[0..COPY_SIZE_PATH] of widechar;
+{$ENDIF}
+    sBuffer: utf8string;
 begin
-    API_MoveMemory(lpBuffer, lpListFile, 1024);
-    C1 := Status.lpCurrentPath;
-    C2 := lpBuffer;
-    for J := 0 to 1023 do begin
-        if (C1^ >= $41) and (C1^ <= $5A) then C1^ := C1^ or $20;
-        if (C2^ >= $41) and (C2^ <= $5A) then C2^ := C2^ or $20;
-        if longbool(C1^) then begin
-            if C1^ = C2^ then begin
-                Inc(C1);
-                Inc(C2);
-                continue;
-            end else begin
-                exit;
-            end;
-        end;
-        C1 := lpListFile;
-        Inc(C1, 2);
-        C2 := lpListFile;
-        Inc(C2, J);
-        API_MoveMemory(C1, C2, 1023 - J);
-        wValue := $5C2E; // .\
-        API_MoveMemory(lpListFile, @wValue, 2);
-        exit;
-    end;
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ã‚³ãƒ”ãƒ¼
+    dwBufferSize := GetWideSize(lpListFile, BUFFER_SIZE_PATH);
+{$IFDEF FREEPASCAL}
+    SetLength(wcValue, dwBufferSize shr 1);
+{$ELSE}
+    API_ZeroMemory(@wcValue[0], BUFFER_SIZE_PATH);
+{$ENDIF}
+    API_MoveMemory(@wcValue[0], lpListFile, dwBufferSize);
+    sBuffer := ChrToStr(wcValue);
+    // ã‚«ãƒ¬ãƒ³ãƒˆãƒ‘ã‚¹ãŒåŒä¸€ã®å ´åˆã¯ã€ç›¸å¯¾ãƒ‘ã‚¹ã«å¤‰æ›´
+    if Copy(sBuffer, 1, Length(Status.sCurrentPath)) = Status.sCurrentPath then
+        sBuffer := Concat('.\', Copy(sBuffer, Length(Status.sCurrentPath) + 1, Length(sBuffer)));
+    // UTF-8 æ–‡å­—åˆ—ã«å¤‰æ›
+    API_ZeroMemory(lpListFile, BUFFER_SIZE_PATH);
+    API_WideCharToMultiByte(CP_UTF8, NULL, StrToPtr(sBuffer), -1, lpListFile, COPY_SIZE_PATH, NULLPOINTER, NULLPOINTER);
 end;
 
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := false;
-    // ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
     hFile := INVALID_HANDLE_VALUE;
-    if IsSafePath(lpFile) then hFile := API_CreateFile(lpFile, GENERIC_WRITE, FILE_SHARE_READ, NULLPOINTER, CREATE_ALWAYS,
+    if IsSafePath(sPath) then hFile := API_CreateFile(StrToPtr(sPath), GENERIC_WRITE, FILE_SHARE_READ, NULLPOINTER, CREATE_ALWAYS,
         FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-    // ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚½ê‡‚ÍI—¹
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ãŸå ´åˆã¯çµ‚äº†
     if hFile = INVALID_HANDLE_VALUE then exit;
-    // ƒtƒ@ƒCƒ‹‚Ìƒwƒbƒ_‚ğ•Û‘¶
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ˜ãƒƒãƒ€ã‚’ä¿å­˜
     lpTitle := pchar(LIST_FILE_HEADER_B);
     dwSize := LIST_FILE_HEADER_B_LEN;
     API_WriteFile(hFile, lpTitle, dwSize, @dwWriteSize, NULLPOINTER);
-    // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€”‚ğæ“¾
-    dwListNum := cwPlayList.SendMessage(LB_GETCOUNT, NULL, NULL);
-    // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€”‚ÆŒ»İ‚ÌêŠ‚ğ•Û‘¶
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ æ•°ã‚’å–å¾—
+    dwListNum := cwPlayList.SendMessage(LB_GETCOUNT, NULL);
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ æ•°ã¨ç¾åœ¨ã®å ´æ‰€ã‚’ä¿å­˜
     dwSize := 0;
     API_WriteFile(hFile, @dwListNum, 2, @dwWriteSize, NULLPOINTER);
-    if bShift then dwSize := cwPlayList.SendMessage(LB_GETTOPINDEX, NULL, NULL);
+    if bShift then dwSize := cwPlayList.SendMessage(LB_GETTOPINDEX, NULL);
     API_WriteFile(hFile, @dwSize, 2, @dwWriteSize, NULLPOINTER);
-    if bShift then dwSize := cwPlayList.SendMessage(LB_GETCURSEL, NULL, NULL);
+    if bShift then dwSize := cwPlayList.SendMessage(LB_GETCURSEL, NULL);
     API_WriteFile(hFile, @dwSize, 2, @dwWriteSize, NULLPOINTER);
-    // ƒvƒŒƒCƒŠƒXƒg‚ÉƒAƒCƒeƒ€‚ª“o˜^‚³‚ê‚Ä‚¢‚éê‡
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã«ã‚¢ã‚¤ãƒ†ãƒ ãŒç™»éŒ²ã•ã‚Œã¦ã„ã‚‹å ´åˆ
     if longbool(dwListNum) then begin
-        // ƒoƒbƒtƒ@‚ğŠm•Û
-        GetMem(lpBuffer, 1024);
-        GetMem(lpListFile, 1024);
-        GetMem(lpTitle, 33);
-        // ƒvƒŒƒCƒŠƒXƒg‚ğ•Û‘¶
+        // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+        GetMem(lpBuffer, BUFFER_SIZE_PATH);
+        GetMem(lpListFile, BUFFER_SIZE_PATH);
+        GetMem(lpTitle, BUFFER_SIZE_TITLE);
+        // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã‚’ä¿å­˜
         for I := 0 to dwListNum - 1 do begin
-            API_ZeroMemory(lpListFile, 1024);
-            cwFileList.SendMessage(LB_GETTEXT, I, longword(lpListFile));
-            API_ZeroMemory(lpTitle, 33);
-            cwPlayList.SendMessage(LB_GETTEXT, I, longword(lpTitle));
+            // ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’è¶…ãˆã‚‹å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
+            if cwFileList.SendMessage(LB_GETTEXTLEN, I) >= BUFFER_SIZE_PATH then break;
+            if cwPlayList.SendMessage(LB_GETTEXTLEN, I) >= BUFFER_SIZE_LPARAM then break;
+            // ãƒ•ã‚¡ã‚¤ãƒ«ã¨ã‚¿ã‚¤ãƒˆãƒ«ã‚’å–å¾—
+            API_ZeroMemory(lpListFile, BUFFER_SIZE_PATH);
+            cwFileList.SendMessage(LB_GETTEXT, I, lpListFile);
+            API_ZeroMemory(lpTitle, BUFFER_SIZE_TITLE);
+            cwPlayList.SendMessageA(LB_GETTEXT, I, lpTitle, BUFFER_SIZE_TITLE);
             ConvertPath();
-            dwSizeFile := GetSize(lpListFile, 1023);
-            dwSizeTitle := GetSize(lpTitle, 32);
-            dwSize := dwSizeFile or (dwSizeTitle shl 10);
+            // ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãè¾¼ã¿
+            dwSizeFile := GetAnsiSize(lpListFile, BUFFER_SIZE_PATH);
+            dwSizeTitle := GetAnsiSize(lpTitle, COPY_SIZE_TITLE);
+            dwSize := $FFFF; // type-B-UTF8
             API_WriteFile(hFile, @dwSize, 2, @dwWriteSize, NULLPOINTER);
+            API_WriteFile(hFile, @dwSizeFile, 2, @dwWriteSize, NULLPOINTER);
+            API_WriteFile(hFile, @dwSizeTitle, 2, @dwWriteSize, NULLPOINTER);
             API_WriteFile(hFile, lpListFile, dwSizeFile, @dwWriteSize, NULLPOINTER);
             API_WriteFile(hFile, lpTitle, dwSizeTitle, @dwWriteSize, NULLPOINTER);
         end;
-        // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-        FreeMem(lpBuffer, 1024);
-        FreeMem(lpListFile, 1024);
-        FreeMem(lpTitle, 33);
+        // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+        FreeMem(lpBuffer, BUFFER_SIZE_PATH);
+        FreeMem(lpListFile, BUFFER_SIZE_PATH);
+        FreeMem(lpTitle, BUFFER_SIZE_TITLE);
     end;
-    // ƒtƒ@ƒCƒ‹‚ğƒNƒ[ƒY
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¯ãƒ­ãƒ¼ã‚º
     API_CloseHandle(hFile);
-    // ¬Œ÷
+    // æˆåŠŸ
     result := true;
 end;
 
 // ================================================================================
-// ListUp - ƒvƒŒƒCƒŠƒXƒg‚Ì€–Ú‚ğã‚ÖˆÚ“®
+// ListUp - ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®é …ç›®ã‚’ä¸Šã¸ç§»å‹•
 // ================================================================================
 procedure CWINDOWMAIN.ListUp();
 var
@@ -9294,48 +9591,51 @@ var
     dwCount: longint;
     dwItemData: longword;
 begin
-    // ƒvƒŒƒCƒŠƒXƒg‚ÌƒAƒCƒeƒ€”‚ğæ“¾
-    dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL, NULL);
-    // ƒvƒŒƒCƒŠƒXƒg‚ÉƒAƒCƒeƒ€‚ª“o˜^‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍI—¹
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ æ•°ã‚’å–å¾—
+    dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL);
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã«ã‚¢ã‚¤ãƒ†ãƒ ãŒç™»éŒ²ã•ã‚Œã¦ã„ãªã„å ´åˆã¯çµ‚äº†
     if not longbool(dwCount) then exit;
-    // ‘I‘ğ‚³‚ê‚Ä‚¢‚éƒAƒCƒeƒ€‚ğæ“¾
-    dwIndex := cwPlayList.SendMessage(LB_GETCURSEL, NULL, NULL);
-    // ˆê”Ôã‚ÌƒAƒCƒeƒ€‚ª‘I‘ğ‚³‚ê‚Ä‚¢‚éê‡‚ÍI—¹
+    // é¸æŠã•ã‚Œã¦ã„ã‚‹ã‚¢ã‚¤ãƒ†ãƒ ã‚’å–å¾—
+    dwIndex := cwPlayList.SendMessage(LB_GETCURSEL, NULL);
+    // ä¸€ç•ªä¸Šã®ã‚¢ã‚¤ãƒ†ãƒ ãŒé¸æŠã•ã‚Œã¦ã„ã‚‹å ´åˆã¯çµ‚äº†
     if dwIndex <= 0 then exit;
-    // ƒoƒbƒtƒ@‚ğŠm•Û
-    GetMem(lpFile, 1024);
-    GetMem(lpTitle, 33);
-    // ƒtƒ@ƒCƒ‹‚Æƒ^ƒCƒgƒ‹‚ğæ“¾
-    API_ZeroMemory(lpFile, 1024);
-    cwFileList.SendMessage(LB_GETTEXT, dwIndex, longword(lpFile));
-    API_ZeroMemory(lpTitle, 33);
-    cwPlayList.SendMessage(LB_GETTEXT, dwIndex, longword(lpTitle));
-    dwItemData := cwPlayList.SendMessage(LB_GETITEMDATA, dwIndex, NULL);
-    // ƒJ[ƒ\ƒ‹‚ğİ’è
+    // ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’è¶…ãˆã‚‹å ´åˆã¯çµ‚äº†
+    if cwFileList.SendMessage(LB_GETTEXTLEN, dwIndex) >= BUFFER_SIZE_PATH then exit;
+    if cwPlayList.SendMessage(LB_GETTEXTLEN, dwIndex) >= BUFFER_SIZE_LPARAM then exit;
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+    GetMem(lpFile, BUFFER_SIZE_PATH);
+    GetMem(lpTitle, BUFFER_SIZE_TITLE);
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã¨ã‚¿ã‚¤ãƒˆãƒ«ã‚’å–å¾—
+    API_ZeroMemory(lpFile, BUFFER_SIZE_PATH);
+    cwFileList.SendMessage(LB_GETTEXT, dwIndex, lpFile);
+    API_ZeroMemory(lpTitle, BUFFER_SIZE_TITLE);
+    cwPlayList.SendMessageA(LB_GETTEXT, dwIndex, lpTitle, BUFFER_SIZE_TITLE);
+    dwItemData := cwPlayList.SendMessage(LB_GETITEMDATA, dwIndex);
+    // ã‚«ãƒ¼ã‚½ãƒ«ã‚’è¨­å®š
     Dec(dwIndex);
-    cwPlayList.SendMessage(LB_SETCURSEL, dwIndex, NULL);
-    // íœ
+    cwPlayList.SendMessage(LB_SETCURSEL, dwIndex);
+    // å‰Šé™¤
     Inc(dwIndex);
-    cwFileList.SendMessage(LB_DELETESTRING, dwIndex, NULL);
-    cwPlayList.SendMessage(LB_DELETESTRING, dwIndex, NULL);
-    // ‘}“ü
+    cwFileList.SendMessage(LB_DELETESTRING, dwIndex);
+    cwPlayList.SendMessage(LB_DELETESTRING, dwIndex);
+    // æŒ¿å…¥
     Dec(dwIndex);
-    cwFileList.SendMessage(LB_INSERTSTRING, dwIndex, longword(lpFile));
-    cwPlayList.SendMessage(LB_INSERTSTRING, dwIndex, longword(lpTitle));
+    cwFileList.SendMessage(LB_INSERTSTRING, dwIndex, lpFile);
+    cwPlayList.SendMessageA(LB_INSERTSTRING, dwIndex, lpTitle);
     cwPlayList.SendMessage(LB_SETITEMDATA, dwIndex, dwItemData);
-    // ƒJ[ƒ\ƒ‹‚ğİ’è
-    cwPlayList.SendMessage(LB_SETCURSEL, dwIndex, NULL);
-    // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-    FreeMem(lpFile, 1024);
-    FreeMem(lpTitle, 33);
-    // ƒƒjƒ…[‚ğXV
+    // ã‚«ãƒ¼ã‚½ãƒ«ã‚’è¨­å®š
+    cwPlayList.SendMessage(LB_SETCURSEL, dwIndex);
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+    FreeMem(lpFile, BUFFER_SIZE_PATH);
+    FreeMem(lpTitle, BUFFER_SIZE_TITLE);
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
     UpdateMenu();
 end;
 
 // ================================================================================
-// LoadScript700 - Script700 ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
+// LoadScript700 - Script700 ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿
 // ================================================================================
-function CWINDOWMAIN.LoadScript700(lpFile: pointer; dwAddr: longword): longbool;
+function CWINDOWMAIN.LoadScript700(const sPath: utf8string; dwAddr: longword): longbool;
 var
     hFile: longword;
     dwSize: longword;
@@ -9343,38 +9643,38 @@ var
     dwReadSize: longword;
     lpBuffer: pointer;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := false;
-    // ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
     hFile := INVALID_HANDLE_VALUE;
-    if IsSafePath(lpFile) then hFile := API_CreateFile(lpFile, GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
+    if IsSafePath(sPath) then hFile := API_CreateFile(StrToPtr(sPath), GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-    // ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚½ê‡‚ÍI—¹
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ãŸå ´åˆã¯çµ‚äº†
     if hFile = INVALID_HANDLE_VALUE then exit;
-    // ƒtƒ@ƒCƒ‹ƒTƒCƒY‚ğæ“¾
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºã‚’å–å¾—
     dwSize := API_GetFileSize(hFile, @dwHigh);
-    // ƒtƒ@ƒCƒ‹ƒTƒCƒY‚ª”ÍˆÍ“à‚Ìê‡
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºãŒç¯„å›²å†…ã®å ´åˆ
     if longbool(dwSize) and not longbool(dwSize and $FF000000) and not longbool(dwHigh) then begin
-        // ƒoƒbƒtƒ@‚ğŠm•Û
+        // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
         GetMem(lpBuffer, dwSize + 1);
-        // ƒoƒbƒtƒ@‚ğ‰Šú‰»
+        // ãƒãƒƒãƒ•ã‚¡ã‚’åˆæœŸåŒ–
         API_ZeroMemory(lpBuffer, dwSize + 1);
-        // ƒoƒbƒtƒ@‚ÉŠi”[
+        // ãƒãƒƒãƒ•ã‚¡ã«æ ¼ç´
         API_ReadFile(hFile, lpBuffer, dwSize, @dwReadSize, NULLPOINTER);
-        // Script700 ‚ğƒRƒ“ƒpƒCƒ‹
+        // Script700 ã‚’ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«
         if dwAddr = SCRIPT700_TEXT then Status.Script700.dwProgSize := Apu.SetScript700(lpBuffer)
         else Status.Script700.dwProgSize := Apu.SetScript700Data(dwAddr, lpBuffer, dwSize);
-        // ƒoƒbƒtƒ@‚ğ‰ğ•ú
+        // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
         FreeMem(lpBuffer, dwSize + 1);
-        // ¬Œ÷
+        // æˆåŠŸ
         result := true;
     end;
-    // ƒtƒ@ƒCƒ‹‚ğƒNƒ[ƒY
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¯ãƒ­ãƒ¼ã‚º
     API_CloseHandle(hFile);
 end;
 
 // ================================================================================
-// MoveWindowScreenSide - ƒEƒBƒ“ƒhƒEˆÊ’u‚Ì’²®
+// MoveWindowScreenSide - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½ç½®ã®èª¿æ•´
 // ================================================================================
 procedure CWINDOWMAIN.MoveWindowScreenSide();
 var
@@ -9395,49 +9695,49 @@ var
     API_DwmIsCompositionEnabled: function(pfEnabled: pointer): longword; stdcall;
     fEnabled: longbool;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := false;
-    // Windows 10 ˆÈã‚Ü‚½‚Í XP ˆÈ‰º‚Ìê‡‚ÍI—¹
+    // Windows 10 ä»¥ä¸Šã¾ãŸã¯ XP ä»¥ä¸‹ã®å ´åˆã¯çµ‚äº†
     if bWin10 or (Status.OsVersionInfo.dwMajorVersion < 6) then exit;
-    // DWMAPI.DLL ‚Ìƒ[ƒh‚É¸”s‚µ‚½ê‡‚ÍI—¹
-    hDLL := API_LoadLibraryEx(pchar('dwmapi.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    // DWMAPI.DLL ã®ãƒ­ãƒ¼ãƒ‰ã«å¤±æ•—ã—ãŸå ´åˆã¯çµ‚äº†
+    hDLL := API_LoadLibraryEx(StrToPtr('dwmapi.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if not longbool(hDLL) then exit;
-    // Aero —LŒø‚ğ”»’è
+    // Aero æœ‰åŠ¹ã‚’åˆ¤å®š (for Windows Vista ä»¥é™)
     @API_DwmIsCompositionEnabled := API_GetProcAddress(hDLL, pchar('DwmIsCompositionEnabled'));
     if longbool(@API_DwmIsCompositionEnabled) then API_DwmIsCompositionEnabled(@fEnabled);
-    // DLL ‚ğ‰ğ•ú
+    // DLL ã‚’è§£æ”¾
     API_FreeLibrary(hDLL);
-    // ¬Œ÷
+    // æˆåŠŸ
     result := fEnabled;
 end;
 
 begin
-    // OS ƒo[ƒWƒ‡ƒ“‚ğæ“¾
+    // OS ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚’å–å¾—
     bWin8 := (Status.OsVersionInfo.dwMajorVersion = 6) and (Status.OsVersionInfo.dwMinorVersion >= 2);
     bWin10 := Status.OsVersionInfo.dwMajorVersion >= 10;
-    // ƒL[ƒ{[ƒh‚Ìó‘Ô‚ğæ“¾ (Status.bShiftButton “™‚Å‚Íó‘Ô‚ğæ“¾•s‰Â)
+    // ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®çŠ¶æ…‹ã‚’å–å¾— (Status.bShiftButton ç­‰ã§ã¯çŠ¶æ…‹ã‚’å–å¾—ä¸å¯)
     API_GetKeyboardState(@KeyState);
-    // Shift, Ctrl, Alt ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éê‡‚ÍI—¹
+    // Shift, Ctrl, Alt ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯çµ‚äº†
     if bytebool((KeyState.k[VK_SHIFT] or KeyState.k[VK_CONTROL] or KeyState.k[VK_MENU]) and $80) then exit;
-    // ƒEƒBƒ“ƒhƒE‚ÌŠÔŠu‚ğæ“¾
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®é–“éš”ã‚’å–å¾—
     dwBorder := 0;
     if isEnabledAero() then dwBorder := API_GetSystemMetrics(SM_AEROFRAME);
     if longbool(dwBorder) then dwBorder := API_GetSystemMetrics(SM_CXFRAME) - dwBorder;
-    // Œ»İ‚ÌƒEƒBƒ“ƒhƒEˆÊ’uAƒTƒCƒY‚ğæ“¾
+    // ç¾åœ¨ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½ç½®ã€ã‚µã‚¤ã‚ºã‚’å–å¾—
     API_GetWindowRect(cwWindowMain.hWnd, @WindowRect);
-    // ƒXƒNƒŠ[ƒ“ƒnƒ“ƒhƒ‹‚ğæ“¾
+    // ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
     hMonitor := API_MonitorFromRect(@WindowRect, MONITOR_DEFAULTTOPRIMARY);
-    // ƒXƒNƒŠ[ƒ“ƒTƒCƒY‚ğæ“¾
+    // ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã‚µã‚¤ã‚ºã‚’å–å¾—
     MonitorInfo.cdSize := SizeOf(TMONITORINFO);
     if API_GetMonitorInfo(hMonitor, @MonitorInfo) then ScreenRect := MonitorInfo.rcWork
     else API_SystemParametersInfo(SPI_GETWORKAREA, NULL, @ScreenRect, NULL);
-    // V‚µ‚¢ƒEƒBƒ“ƒhƒEˆÊ’u‚ğæ“¾
+    // æ–°ã—ã„ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ä½ç½®ã‚’å–å¾—
     dwWidth := WindowRect.right - WindowRect.left;
     dwHeight := WindowRect.bottom - WindowRect.top;
-    if bWin8 then Dec(dwBorder, 1);     // ƒYƒŒ•â³ for Windows 8, 8.1
+    if bWin8 then Dec(dwBorder, 1);     // ã‚ºãƒ¬è£œæ­£ for Windows 8, 8.1
     Inc(ScreenRect.top, dwBorder);
-    if bWin8 then Inc(dwBorder, 1);     // ƒYƒŒ•â³ for Windows 8, 8.1
-    if bWin10 then Dec(dwBorder, 2);    // ƒYƒŒ•â³ for Windows 10
+    if bWin8 then Inc(dwBorder, 1);     // ã‚ºãƒ¬è£œæ­£ for Windows 8, 8.1
+    if bWin10 then Dec(dwBorder, 2);    // ã‚ºãƒ¬è£œæ­£ for Windows 10
     Inc(ScreenRect.left, dwBorder);
     Dec(ScreenRect.right, dwBorder);
     Dec(ScreenRect.bottom, dwBorder);
@@ -9445,17 +9745,17 @@ begin
     if Abs(WindowRect.right - ScreenRect.right) < WINDOW_MOVE_THRESHOLD then WindowRect.left := ScreenRect.right - dwWidth;
     if Abs(WindowRect.top - ScreenRect.top) < WINDOW_MOVE_THRESHOLD then WindowRect.top := ScreenRect.top;
     if Abs(WindowRect.bottom - ScreenRect.bottom) < WINDOW_MOVE_THRESHOLD then WindowRect.top := ScreenRect.bottom - dwHeight;
-    // ƒEƒBƒ“ƒhƒE‚ğˆÚ“®
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ç§»å‹•
     cwWindowMain.SetWindowPosition(WindowRect.left, WindowRect.top, dwWidth, dwHeight);
 end;
 
 // ================================================================================
-// OpenFile - ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+// OpenFile - ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
 // ================================================================================
 procedure CWINDOWMAIN.OpenFile();
 var
     I: longint;
-    sFilter: string;
+    sFilter: utf8string;
     lpFiles: pointer;
     lpFile: pointer;
     dwSize: longword;
@@ -9464,161 +9764,141 @@ var
     bList: longbool;
     dwCount: longword;
     dwType: longword;
+    sPath: utf8string;
     OpenFileName: TOPENFILENAME;
 begin
-    // ƒoƒbƒtƒ@‚ğŠm•Û
-    GetMem(lpFiles, 262144);
-    // ƒtƒ@ƒCƒ‹‘I‘ğƒ_ƒCƒAƒƒO‚ğŠJ‚­
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+    GetMem(lpFiles, BUFFER_SIZE_FILES);
+    // ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‹ã
     sFilter := DIALOG_OPEN_FILTER[Status.dwLanguage];
     if Status.bOpen then sFilter := Concat(sFilter, DIALOG_SCRIPT700_FILTER[Status.dwLanguage]);
     sFilter := Concat(sFilter, DIALOG_ALL_FILTER[Status.dwLanguage]);
-    API_ZeroMemory(lpFiles, 262144);
+    API_ZeroMemory(lpFiles, BUFFER_SIZE_FILES);
     API_ZeroMemory(@OpenFileName, SizeOf(TOPENFILENAME));
     OpenFileName.hwndOwner := cwWindowMain.hWnd;
     OpenFileName.hThisInstance := Status.hInstance;
-    OpenFileName.lpstrFilter := pchar(sFilter);
+    OpenFileName.lpstrFilter := StrToPtr(sFilter);
     OpenFileName.nFilterIndex := Status.dwOpenFilterIndex;
     OpenFileName.lpstrFile := lpFiles;
-    OpenFileName.nMaxFile := 262143;
-    OpenFileName.lpstrInitialDir := Status.lpOpenPath;
+    OpenFileName.nMaxFile := COPY_SIZE_FILES;
+    OpenFileName.lpstrInitialDir := StrToPtr(Status.sOpenPath);
     OpenFileName.Flags := $81A04;
     OpenFileName.lStructSize := SizeOf(TOPENFILENAME);
     cwWindowMain.bMessageBox := true;
     bResult := API_GetOpenFileName(@OpenFileName);
     cwWindowMain.bMessageBox := false;
-    // ƒtƒ@ƒCƒ‹‚ª‘I‘ğ‚³‚ê‚½ê‡
+    // ãƒ•ã‚¡ã‚¤ãƒ«ãŒé¸æŠã•ã‚ŒãŸå ´åˆ
     if bResult then begin
-        // ƒCƒ“ƒfƒbƒNƒX‚ğ‹L˜^
+        // ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¨˜éŒ²
         Status.dwOpenFilterIndex := OpenFileName.nFilterIndex;
-        // ƒeƒ“ƒ|ƒ‰ƒŠ—pƒŠƒXƒg‚ğƒNƒŠƒA
-        cwTempList.SendMessage(LB_RESETCONTENT, NULL, NULL);
-        // ƒ|ƒCƒ“ƒ^‚ğƒŠƒZƒbƒg
+        // ãƒ†ãƒ³ãƒãƒ©ãƒªç”¨ãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢
+        cwTempList.SendMessage(LB_RESETCONTENT, NULL);
+        // ãƒã‚¤ãƒ³ã‚¿ã‚’ãƒªã‚»ãƒƒãƒˆ
         lpPath := lpFiles;
-        // ƒoƒbƒtƒ@‚ğŠm•Û
-        GetMem(lpFile, 1024);
-        // ƒtƒ@ƒCƒ‹ƒpƒX‚ÌƒŠƒXƒg‚ğì¬
-        while bytebool(lpPath^) do begin
-            // ƒtƒ@ƒCƒ‹ƒpƒX‚ğæ“¾
-            dwSize := GetSize(lpPath, 1023);
-            API_ZeroMemory(lpFile, 1024);
+        // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+        GetMem(lpFile, BUFFER_SIZE_PATH);
+        // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã®ãƒªã‚¹ãƒˆã‚’ä½œæˆ
+        while wordbool(lpPath^) do begin
+            // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’å–å¾—
+            dwSize := GetWideSize(lpPath, BUFFER_SIZE_PATH);
+            API_ZeroMemory(lpFile, BUFFER_SIZE_PATH);
             API_MoveMemory(lpFile, lpPath, dwSize);
-            cwTempList.SendMessage(LB_ADDSTRING, NULL, longword(lpPath));
-            // Ÿ‚Ìƒtƒ@ƒCƒ‹ƒpƒX‚Ìƒ|ƒCƒ“ƒ^‚ğæ“¾
-            Inc(lpPath, dwSize + 1);
+            cwTempList.SendMessage(LB_ADDSTRING, NULL, lpPath);
+            // æ¬¡ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—
+            Inc(lpPath, dwSize + 2);
         end;
-        // ƒeƒ“ƒ|ƒ‰ƒŠ—pƒŠƒXƒg‚ÌƒAƒCƒeƒ€”‚ğæ“¾
-        dwCount := cwTempList.SendMessage(LB_GETCOUNT, NULL, NULL);
-        // ƒ|ƒCƒ“ƒ^‚ğƒŠƒZƒbƒg
-        lpPath := lpFile;
-        dwSize := 0;
+        // ãƒ†ãƒ³ãƒãƒ©ãƒªç”¨ãƒªã‚¹ãƒˆã®ã‚¢ã‚¤ãƒ†ãƒ æ•°ã‚’å–å¾—
+        dwCount := cwTempList.SendMessage(LB_GETCOUNT, NULL);
+        // ãƒã‚¤ãƒ³ã‚¿ã‚’ãƒªã‚»ãƒƒãƒˆ
         bList := false;
-        // ƒtƒ@ƒCƒ‹‚ğ’Šo
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æŠ½å‡º
         if longbool(dwCount) then for I := 0 to dwCount - 1 do begin
-            // ƒtƒ@ƒCƒ‹‚ğæ“¾
-            API_ZeroMemory(lpPath, 1024 - dwSize);
-            cwTempList.SendMessage(LB_GETTEXT, I, longword(lpPath));
-            // ƒJƒŒƒ“ƒgƒpƒX‚ğ‹L˜^
-            if dwCount = 1 then begin
-                API_ZeroMemory(Status.lpOpenPath, 1024);
-                API_MoveMemory(Status.lpOpenPath, lpFile, GetPosSeparator(PtrToStr(lpFile)));
-            end;
-            // ƒtƒ@ƒCƒ‹‚ğŠJ‚­
+            // ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’è¶…ãˆã‚‹å ´åˆã¯ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
+            if cwTempList.SendMessage(LB_GETTEXTLEN, I) >= BUFFER_SIZE_PATH then break;
+            // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å–å¾—
+            cwTempList.SendMessage(LB_GETTEXT, I, lpFile);
+            sPath := PtrToStr(lpFile);
+            // ã‚«ãƒ¬ãƒ³ãƒˆãƒ‘ã‚¹ã‚’è¨˜éŒ² (1ä»¶ã®ã¿é¸æŠã—ãŸå ´åˆã¯ãƒ•ãƒ«ãƒ‘ã‚¹ã€2ä»¶ä»¥ä¸Šé¸æŠæ™‚ã¯1ã¤ã‚ãŒã‚«ãƒ¬ãƒ³ãƒˆãƒ‘ã‚¹)
+            if dwCount = 1 then Status.sOpenPath := Copy(sPath, 1, GetPosSeparator(sPath))
+            else if not longbool(I) then Status.sOpenPath := Concat(sPath, '\')
+            else sPath := Concat(Status.sOpenPath, sPath);
+            // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
             if longbool(I) or (dwCount = 1) then begin
-                // ƒtƒ@ƒCƒ‹‚Ìí—Ş‚ğæ“¾
-                dwType := GetFileType(lpFile, dwCount = 1, dwCount = 1);
+                // ãƒ•ã‚¡ã‚¤ãƒ«ã®ç¨®é¡ã‚’å–å¾—
+                dwType := GetFileType(sPath, dwCount = 1, dwCount = 1);
                 case dwType of
-                    FILE_TYPE_SPC: if dwCount = 1 then SPCLoad(lpFile, true)
-                        else cwSortList.SendMessage(LB_ADDSTRING, NULL, longword(lpFile));
-                    FILE_TYPE_LIST_A, FILE_TYPE_LIST_B: if not bList then bList := ListLoad(lpFile, dwType, false);
-                    FILE_TYPE_SCRIPT700: if dwCount = 1 then ReloadScript700(lpFile);
-                end;
-            end else begin
-                // ƒtƒ@ƒCƒ‹ƒpƒX‚Ìƒ|ƒCƒ“ƒ^‚ğæ“¾
-                dwSize := GetSize(lpPath, 1023);
-                if longbool(dwSize) then begin
-{$IFDEF FREEPASCAL}
-                    lpPath := pointer(lpPath) + dwSize - 1;
-{$ELSE}
-                    lpPath := pointer(longword(lpPath) + dwSize - 1);
-{$ENDIF}
-                    if lpPath^ <> $5C then begin // \
-                        Inc(dwSize);
-                        Inc(lpPath);
-                        lpPath^ := $5C; // \
-                    end;
-                    Inc(lpPath);
-                    // ƒJƒŒƒ“ƒgƒpƒX‚ğ‹L˜^
-                    API_ZeroMemory(Status.lpOpenPath, 1024);
-                    API_MoveMemory(Status.lpOpenPath, lpFile, dwSize);
+                    FILE_TYPE_SPC: if dwCount = 1 then SPCLoad(sPath, true) else cwSortList.SendMessage(LB_ADDSTRING, NULL, StrToPtr(sPath));
+                    FILE_TYPE_LIST_A, FILE_TYPE_LIST_B: if not bList then bList := ListLoad(sPath, dwType, false);
+                    FILE_TYPE_SCRIPT700: if dwCount = 1 then ReloadScript700(sPath);
                 end;
             end;
         end;
-        // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-        FreeMem(lpFile, 1024);
-        // ƒeƒ“ƒ|ƒ‰ƒŠ—pƒŠƒXƒg‚ğƒNƒŠƒA
-        cwTempList.SendMessage(LB_RESETCONTENT, NULL, NULL);
+        // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+        FreeMem(lpFile, BUFFER_SIZE_PATH);
+        // ãƒ†ãƒ³ãƒãƒ©ãƒªç”¨ãƒªã‚¹ãƒˆã‚’ã‚¯ãƒªã‚¢
+        cwTempList.SendMessage(LB_RESETCONTENT, NULL);
     end;
-    // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-    FreeMem(lpFiles, 262144);
-    // SPC ƒtƒ@ƒCƒ‹‚ğƒvƒŒƒCƒŠƒXƒg‚É“o˜^
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+    FreeMem(lpFiles, BUFFER_SIZE_FILES);
+    // SPC ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã«ç™»éŒ²
     AppendList();
 end;
 
 // ================================================================================
-// ReloadScript700 - Script700 ƒtƒ@ƒCƒ‹‚ÌÄ“Ç‚İ‚İ
+// ReloadScript700 - Script700 ãƒ•ã‚¡ã‚¤ãƒ«ã®å†èª­ã¿è¾¼ã¿
 // ================================================================================
-function CWINDOWMAIN.ReloadScript700(lpFile: pointer): longbool;
+function CWINDOWMAIN.ReloadScript700(const sPath: utf8string): longbool;
 var
     I: longint;
     J: longword;
     K: longword;
+    sSPCDir: utf8string;
     lpBuffer: pointer;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := false;
-    // SPC ‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¢ê‡‚ÍI—¹
+    // SPC ãŒé–‹ã‹ã‚Œã¦ã„ãªã„å ´åˆã¯çµ‚äº†
     if not Status.bOpen then exit;
-    // ƒoƒbƒtƒ@‚ğŠm•Û
-    GetMem(lpBuffer, 1024);
-    // ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ‚ğƒoƒbƒNƒAƒbƒv
-    API_MoveMemory(lpBuffer, Status.lpSPCDir, 1024);
-    // ƒtƒHƒ‹ƒ_‚ÌˆÊ’u‚ğæ“¾
-    J := GetSize(lpFile, 1024);
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+    GetMem(lpBuffer, BUFFER_SIZE_PATH);
+    // ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—
+    sSPCDir := Status.sSPCDir;
+    // ãƒ•ã‚©ãƒ«ãƒ€ã®ä½ç½®ã‚’å–å¾—
+    J := Length(sPath);
     K := J;
     for I := 1 to K do begin
-        if PtrToStr(lpFile)[I] = NULLCHAR then break;
-        if IsPathSeparator(PtrToStr(lpFile), I) then J := I;
+        if sPath[I] = NULLCHAR then break;
+        if IsPathSeparator(sPath, I) then J := I;
     end;
-    // ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ‚ğƒRƒs[
-    API_ZeroMemory(Status.lpSPCDir, 1024);
-    API_MoveMemory(Status.lpSPCDir, lpFile, J);
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+    // ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’ã‚³ãƒ”ãƒ¼
+    Status.sSPCDir := Copy(sPath, 1, J);
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
     API_EnterCriticalSection(@CriticalSectionStatic);
-    // Script700 ‚ğƒ[ƒh
-    LoadScript700(lpFile, SCRIPT700_TEXT);
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+    // Script700 ã‚’ãƒ­ãƒ¼ãƒ‰
+    LoadScript700(sPath, SCRIPT700_TEXT);
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
     API_LeaveCriticalSection(@CriticalSectionStatic);
-    // ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ‚ğ–ß‚·
-    API_MoveMemory(Status.lpSPCDir, lpBuffer, 1024);
-    // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-    FreeMem(lpBuffer, 1024);
-    // Å‰‚©‚ç‰‰‘t
+    // ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’æˆ»ã™
+    Status.sSPCDir := sSPCDir;
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+    FreeMem(lpBuffer, BUFFER_SIZE_PATH);
+    // æœ€åˆã‹ã‚‰æ¼”å¥
     if Status.bPlay then SPCStop(true)
     else SPCPlay(PLAY_TYPE_PLAY);
-    // ¬Œ÷
+    // æˆåŠŸ
     result := true;
 end;
 
 // ================================================================================
-// ResetInfo - ƒCƒ“ƒWƒP[ƒ^ƒŠƒZƒbƒg (”r‘¼©“®)
+// ResetInfo - ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ãƒªã‚»ãƒƒãƒˆ (æ’ä»–è‡ªå‹•)
 // ================================================================================
 procedure CWINDOWMAIN.ResetInfo(bRedraw: longbool);
 var
     I: longint;
 begin
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
     API_EnterCriticalSection(@CriticalSectionStatic);
-    // ƒCƒ“ƒWƒP[ƒ^ŠÖŒW‚Ìƒƒ‚ƒŠ‚ğ‰Šú‰»
+    // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿é–¢ä¿‚ã®ãƒ¡ãƒ¢ãƒªã‚’åˆæœŸåŒ–
     API_ZeroMemory(@Status.NowLevel, SizeOf(TLEVEL));
     API_ZeroMemory(@Status.LastLevel, SizeOf(TLEVEL));
     for I := 0 to 7 do begin
@@ -9629,14 +9909,14 @@ begin
     Status.dwLastStartTime := $FFFFFFFF;
     Status.dwLastLimitTime := $FFFFFFFF;
     Status.dwRedrawInfo := Status.dwRedrawInfo or REDRAW_ON;
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
     API_LeaveCriticalSection(@CriticalSectionStatic);
-    // ƒCƒ“ƒWƒP[ƒ^‚ğÄ•`‰æ
+    // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’å†æç”»
     if bRedraw then WaveProc(WAVE_PROC_GRAPH_ONLY);
 end;
 
 // ================================================================================
-// ResizeWindow - ƒEƒBƒ“ƒhƒEƒŠƒTƒCƒY
+// ResizeWindow - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒªã‚µã‚¤ã‚º
 // ================================================================================
 procedure CWINDOWMAIN.ResizeWindow();
 var
@@ -9647,10 +9927,10 @@ var
     WindowRect: TRECT;
     ClientRect: TRECT;
 begin
-    // ƒEƒBƒ“ƒhƒE‚ÌƒTƒCƒYEˆÊ’u‚ğæ“¾
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚µã‚¤ã‚ºãƒ»ä½ç½®ã‚’å–å¾—
     API_GetWindowRect(cwWindowMain.hWnd, @WindowRect);
     API_GetClientRect(cwWindowMain.hWnd, @ClientRect);
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     dwLeft := WindowRect.left;
     dwTop := WindowRect.top;
     if Status.dwScale = 2 then begin
@@ -9660,83 +9940,90 @@ begin
         dwWidth := (WINDOW_WIDTH * Status.dwScale) shr 1;
         dwHeight := (WINDOW_HEIGHT * Status.dwScale) shr 1;
     end;
-    // V‚µ‚¢ƒTƒCƒY‚ğæ“¾
+    // æ–°ã—ã„ã‚µã‚¤ã‚ºã‚’å–å¾—
     dwWidth := (WindowRect.right - WindowRect.left) - (ClientRect.right - ClientRect.left) + dwWidth;
     dwHeight := (WindowRect.bottom - WindowRect.top) - (ClientRect.bottom - ClientRect.top) + dwHeight;
-    // V‚µ‚¢ƒTƒCƒY‚ğİ’è
+    // æ–°ã—ã„ã‚µã‚¤ã‚ºã‚’è¨­å®š
     cwWindowMain.SetWindowPosition(dwLeft, dwTop, dwWidth, dwHeight);
-    // ƒEƒBƒ“ƒhƒE‚ğXV
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’æ›´æ–°
     UpdateWindow();
 end;
 
 // ================================================================================
-// SaveFile - ƒtƒ@ƒCƒ‹‚Ì•Û‘¶
+// SaveFile - ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¿å­˜
 // ================================================================================
 procedure CWINDOWMAIN.SaveFile();
 var
-    I: longword;
+    I: longint;
     J: longword;
-    sFilter: string;
+    K: longword;
     bShift: longbool;
+    sFilter: utf8string;
+    sPath: utf8string;
     lpFile: pointer;
     bResult: longbool;
     dwIndex: longint;
     OpenFileName: TOPENFILENAME;
 begin
-    // ƒoƒbƒtƒ@‚ğŠm•Û
-    GetMem(lpFile, 1024);
-    // ƒtƒ@ƒCƒ‹‘I‘ğƒ_ƒCƒAƒƒO‚ğŠJ‚­
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
+    GetMem(lpFile, BUFFER_SIZE_PATH);
+    // ãƒ•ã‚¡ã‚¤ãƒ«é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’é–‹ã
     bShift := Status.bShiftButton;
     sFilter := DIALOG_LIST_FILTER[Status.dwLanguage];
     if Status.bOpen then sFilter := Concat(sFilter, DIALOG_WAVE_FILTER[Status.dwLanguage]);
     if Status.bPlay then sFilter := Concat(sFilter, DIALOG_SNAP_FILTER[Status.dwLanguage]);
-    API_ZeroMemory(lpFile, 1024);
+    API_ZeroMemory(lpFile, BUFFER_SIZE_PATH);
     API_ZeroMemory(@OpenFileName, SizeOf(TOPENFILENAME));
     if Status.bOpen then begin
-        API_MoveMemory(lpFile, Status.lpSPCName, 1024);
-        J := GetSize(lpFile, 1024);
-        for I := 1 to 1024 do if IsSingleByte(PtrToStr(lpFile), I, '.') then J := I;
-        I := longword(lpFile) + J - 1;
-        if J < 1020 then case Status.dwSaveFilterIndex of
-            1: API_MoveMemory(pointer(I), pchar('.lst'), 4);
-            2: API_MoveMemory(pointer(I), pchar('.wav'), 4);
-            3: API_MoveMemory(pointer(I), pchar('.spc'), 4);
+        sPath := Status.sSPCName;
+        J := Length(sPath);
+        K := J;
+        for I := 1 to K do begin
+            if sPath[I] = NULLCHAR then break;
+            if IsSingleByte(sPath, I, '.') then J := I;
         end;
+        case Status.dwSaveFilterIndex of
+            1: sPath := Concat(Copy(sPath, 1, J), 'lst');
+            2: sPath := Concat(Copy(sPath, 1, J), 'wav');
+            3: sPath := Concat(Copy(sPath, 1, J), 'spc');
+            else sPath := Copy(sPath, 1, J - 1);
+        end;
+        CopyStrToWidePtr(lpFile, BUFFER_SIZE_PATH, sPath);
     end;
     OpenFileName.hwndOwner := cwWindowMain.hWnd;
     OpenFileName.hThisInstance := Status.hInstance;
-    OpenFileName.lpstrFilter := pchar(sFilter);
+    OpenFileName.lpstrFilter := StrToPtr(sFilter);
     OpenFileName.nFilterIndex := Status.dwSaveFilterIndex;
     OpenFileName.lpstrFile := lpFile;
     OpenFileName.nMaxFile := 1024;
-    OpenFileName.lpstrInitialDir := Status.lpSavePath;
+    OpenFileName.lpstrInitialDir := StrToPtr(Status.sSavePath);
     OpenFileName.Flags := $80006;
-    OpenFileName.lpstrDefExt := pchar(LIST_FILETYPE);
+    OpenFileName.lpstrDefExt := StrToPtr(LIST_FILETYPE);
     OpenFileName.lStructSize := SizeOf(TOPENFILENAME);
     cwWindowMain.bMessageBox := true;
     bResult := API_GetSaveFileName(@OpenFileName);
     cwWindowMain.bMessageBox := false;
-    // ƒtƒ@ƒCƒ‹‚ª‘I‘ğ‚³‚ê‚½ê‡
+    // ãƒ•ã‚¡ã‚¤ãƒ«ãŒé¸æŠã•ã‚ŒãŸå ´åˆ
     if bResult then begin
-        // ƒCƒ“ƒfƒbƒNƒX‚ğ‹L˜^
+        // ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’è¨˜éŒ²
         dwIndex := OpenFileName.nFilterIndex;
         Status.dwSaveFilterIndex := dwIndex;
-        // ƒJƒŒƒ“ƒgƒpƒX‚ğ‹L˜^
-        API_ZeroMemory(Status.lpSavePath, 1024);
-        API_MoveMemory(Status.lpSavePath, lpFile, GetPosSeparator(PtrToStr(lpFile)));
-        // ƒtƒ@ƒCƒ‹‚ğ•Û‘¶
+        // ã‚«ãƒ¬ãƒ³ãƒˆãƒ‘ã‚¹ã‚’è¨˜éŒ²
+        sPath := PtrToStr(lpFile);
+        Status.sSavePath := Copy(sPath, 1, GetPosSeparator(sPath));
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¿å­˜
         case dwIndex of
-            1: ListSave(lpFile, bShift);
-            2: WaveSave(lpFile, bShift, false);
-            3: SPCSave(lpFile, bShift);
+            1: ListSave(sPath, bShift);
+            2: WaveSave(sPath, bShift, false);
+            3: SPCSave(sPath, bShift);
         end;
     end;
-    // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-    FreeMem(lpFile, 1024);
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
+    FreeMem(lpFile, BUFFER_SIZE_PATH);
 end;
 
 // ================================================================================
-// SaveSeekCache - ƒV[ƒNƒLƒƒƒbƒVƒ…•Û‘¶ (”r‘¼•K{)
+// SaveSeekCache - ã‚·ãƒ¼ã‚¯ã‚­ãƒ£ãƒƒã‚·ãƒ¥ä¿å­˜ (æ’ä»–å¿…é ˆ)
 // ================================================================================
 procedure CWINDOWMAIN.SaveSeekCache(dwIndex: longword);
 var
@@ -9747,9 +10034,9 @@ var
     SPCReg: ^TSPCREG;
     DspVoice: ^TDSPVOICE;
 begin
-    // ƒLƒƒƒbƒVƒ…‚ğg—p‚µ‚È‚¢ê‡‚ÍI—¹
+    // ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’ä½¿ç”¨ã—ãªã„å ´åˆã¯çµ‚äº†
     if not longbool(Option.dwCacheNum) then exit;
-    // Œ»İ‚Ìó‘Ô‚ğƒLƒƒƒbƒVƒ…
+    // ç¾åœ¨ã®çŠ¶æ…‹ã‚’ã‚­ãƒ£ãƒƒã‚·ãƒ¥
     SPCCache := @Status.SPCCache[dwIndex];
     SPCBuf := @SPCCache.Spc;
     SPCReg := @SPCBuf.Hdr.Reg;
@@ -9760,68 +10047,68 @@ begin
     API_MoveMemory(@SPCCache.Script700, Status.Script700.Data, SizeOf(TSCRIPT700EX));
     SPCCache.SPCOutPort.dwPort := Apu.SPCOutPort.dwPort;
     SPCBuf.Hdr.dwSongLen := Apu.T64Count^;
-    // KON ‚ğ•œŒ³
+    // KON ã‚’å¾©å…ƒ
     for I := 0 to 7 do begin
         DspVoice := @Apu.DspReg.Voice[I];
         dwEnvelope := $10;
-        // ADSR ‚Ü‚½‚Í Gain (Direct ‚ğœ‚­) ‚Ìê‡‚ÍAƒGƒ“ƒxƒ[ƒv‚ÌŠî€’l‚ğã‚°‚é
+        // ADSR ã¾ãŸã¯ Gain (Direct ã‚’é™¤ã) ã®å ´åˆã¯ã€ã‚¨ãƒ³ãƒ™ãƒ­ãƒ¼ãƒ—ã®åŸºæº–å€¤ã‚’ä¸Šã’ã‚‹
         if bytebool((DspVoice.EnvelopeADSR1 or DspVoice.EnvelopeGain) and $80) then dwEnvelope := Option.dwCacheKOn shl 4;
         if Apu.Voices.Voice[I].EnvelopeRateValue >= dwEnvelope then SPCBuf.Dsp[$4C] := SPCBuf.Dsp[$4C] or (1 shl I);
     end;
-    // Ÿ‚ÌƒLƒƒƒbƒVƒ…ŠÔ‚ğæ“¾
+    // æ¬¡ã®ã‚­ãƒ£ãƒƒã‚·ãƒ¥æ™‚é–“ã‚’å–å¾—
     if dwIndex = Option.dwCacheNum - 1 then Status.dwNextCache := 0
     else Status.dwNextCache := Status.SPCCache[dwIndex + 1].Spc.Hdr.dwFadeLen;
 end;
 
 // ================================================================================
-// SetChangeFunction - ‹@”\Ø‘Ö
+// SetChangeFunction - æ©Ÿèƒ½åˆ‡æ›¿
 // ================================================================================
 procedure CWINDOWMAIN.SetChangeFunction(bFlag: longbool);
 var
     KeyState: TKEYSTATE;
     bShiftButton: longbool;
 begin
-    // ƒL[ƒ{[ƒh‚Ìó‘Ô‚ğæ“¾
+    // ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®çŠ¶æ…‹ã‚’å–å¾—
     API_GetKeyboardState(@KeyState);
-    // ƒ}ƒEƒX‚Ì‰Eƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éê‡‚Í Shift ƒL[‚ğ‰ğœ
+    // ãƒã‚¦ã‚¹ã®å³ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ Shift ã‚­ãƒ¼ã‚’è§£é™¤
     bShiftButton := bFlag and bytebool((KeyState.k[VK_SHIFT] or KeyState.k[VK_RBUTTON]) and $80);
-    // ƒtƒ‰ƒO‚ª•ÏX‚³‚ê‚Ä‚¢‚È‚¢ê‡‚ÍI—¹
+    // ãƒ•ãƒ©ã‚°ãŒå¤‰æ›´ã•ã‚Œã¦ã„ãªã„å ´åˆã¯çµ‚äº†
     if Status.bShiftButton = bShiftButton then exit;
-    // ƒVƒtƒgƒtƒ‰ƒO‚ğØ‘Ö
+    // ã‚·ãƒ•ãƒˆãƒ•ãƒ©ã‚°ã‚’åˆ‡æ›¿
     Status.bShiftButton := bShiftButton;
-    // ƒƒjƒ…[‚ğXV
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
     UpdateMenu();
 end;
 
 // ================================================================================
-// SetChangeInfo - ƒCƒ“ƒWƒP[ƒ^Ø‘Ö
+// SetChangeInfo - ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿åˆ‡æ›¿
 // ================================================================================
 procedure CWINDOWMAIN.SetChangeInfo(bForce: longbool; dwValue: longint);
 begin
-    // ƒCƒ“ƒWƒP[ƒ^‚Ìí—Ş‚ğØ‘Ö
+    // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã®ç¨®é¡ã‚’åˆ‡æ›¿
     if bForce then begin
-        // ‘O‰ñ‚Æ“¯‚¶ê‡‚ÍI—¹
+        // å‰å›ã¨åŒã˜å ´åˆã¯çµ‚äº†
         if Option.dwInfo = longword(dwValue) then exit;
-        // ƒCƒ“ƒWƒP[ƒ^‚Ìí—Ş‚ğİ’è
+        // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã®ç¨®é¡ã‚’è¨­å®š
         Option.dwInfo := dwValue;
-        // ƒƒjƒ…[‚ğXV
+        // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
         UpdateMenu();
-        // SPC ‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¢ê‡‚ÍI—¹
+        // SPC ãŒé–‹ã‹ã‚Œã¦ã„ãªã„å ´åˆã¯çµ‚äº†
         if not Status.bOpen then exit;
     end else begin
-        // SPC ‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¢ê‡‚ÍI—¹
+        // SPC ãŒé–‹ã‹ã‚Œã¦ã„ãªã„å ´åˆã¯çµ‚äº†
         if not Status.bOpen then exit;
-        // ƒCƒ“ƒWƒP[ƒ^‚Ìí—Ş‚ğİ’è
+        // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã®ç¨®é¡ã‚’è¨­å®š
         Option.dwInfo := longword(longint(Option.dwInfo) + dwValue + MENU_SETUP_INFO_SIZE) mod MENU_SETUP_INFO_SIZE;
-        // ƒƒjƒ…[‚ğXV
+        // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
         UpdateMenu();
     end;
-    // î•ñ‚ğXV
+    // æƒ…å ±ã‚’æ›´æ–°
     UpdateInfo(true);
 end;
 
 // ================================================================================
-// SetFunction - İ’èØ‘Ö
+// SetFunction - è¨­å®šåˆ‡æ›¿
 // ================================================================================
 procedure CWINDOWMAIN.SetFunction(dwFlag: longint; dwType: longword);
 var
@@ -9834,25 +10121,25 @@ function UpdateFunction(dwNow: longword; dwSize: longword; dwValues: array of lo
 var
     dwI: longint;
 begin
-    // Œ»İ‚Ìİ’è’l‚ğæ“¾
+    // ç¾åœ¨ã®è¨­å®šå€¤ã‚’å–å¾—
     J := $FF;
     for dwI := 0 to dwSize - 1 do if dwNow = dwValues[dwI] then J := dwI;
-    // V‚µ‚¢İ’è’l‚ğæ“¾
+    // æ–°ã—ã„è¨­å®šå€¤ã‚’å–å¾—
     I := (not dwFlag shr 1) and (dwSize - 1);
     if J = I then begin
-        // “¯‚¶’l‚Ìê‡
+        // åŒã˜å€¤ã®å ´åˆ
         result := $FFFFFFFF;
     end else if J = $FF then begin
-        // –¢’è‹`‚Ìİ’è’l‚Ìê‡
+        // æœªå®šç¾©ã®è¨­å®šå€¤ã®å ´åˆ
         result := dwDef1;
         Status.dwInfo := dwIdx;
     end else begin
-        // Ÿ‚Ìİ’è’l‚ğİ’è
+        // æ¬¡ã®è¨­å®šå€¤ã‚’è¨­å®š
         Inc(J, dwFlag);
         if dwValues[J] = $FFFFFFFF then Inc(J, dwFlag);
         result := dwValues[J];
         Status.dwInfo := STR_MENU_SETUP_PER_INTEGER[dwIdxs[J]];
-        // İ’è‚ª’†‰›‚Ìê‡‚ÍƒIƒvƒVƒ‡ƒ“‚Ìİ’è‚ğƒƒbƒN
+        // è¨­å®šãŒä¸­å¤®ã®å ´åˆã¯ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¨­å®šã‚’ãƒ­ãƒƒã‚¯
         if not longbool(dwType and FUNCTION_TYPE_NO_TIMER) and longbool(Option.dwTimerOptionLock)
                 and ((result = dwDef1) or (result = dwDef2) or (result = dwDef3)) then begin
             Status.bOptionLock := true;
@@ -9862,58 +10149,58 @@ begin
 end;
 
 begin
-    // ƒIƒvƒVƒ‡ƒ“‚Ìİ’è‚ªƒƒbƒN‚³‚ê‚Ä‚¢‚éê‡‚ÍI—¹
+    // ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã®è¨­å®šãŒãƒ­ãƒƒã‚¯ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯çµ‚äº†
     if Status.bOptionLock then exit;
-    // ‹@”\‚Ìí—Ş‚ğ”»•Ê
+    // æ©Ÿèƒ½ã®ç¨®é¡ã‚’åˆ¤åˆ¥
     case dwType and $FFFF of
-        FUNCTION_TYPE_SEPARATE: begin // ¶‰EŠgU“x
-            // ¶‰EŠgU“x‚ğİ’è
+        FUNCTION_TYPE_SEPARATE: begin // å·¦å³æ‹¡æ•£åº¦
+            // å·¦å³æ‹¡æ•£åº¦ã‚’è¨­å®š
             I := UpdateFunction(Option.dwSeparate, MENU_SETUP_SEPARATE_SIZE, MENU_SETUP_SEPARATE_VALUE, STR_MENU_SETUP_SEPARATE_PER_INDEX,
                 SEPARATE_050, 50, SEPARATE_000, SEPARATE_100);
             if I = $FFFFFFFF then exit;
             Option.dwSeparate := I;
-            // ƒ^ƒCƒgƒ‹‚ğXV
+            // ã‚¿ã‚¤ãƒˆãƒ«ã‚’æ›´æ–°
             UpdateTitle(TITLE_INFO_SEPARATE);
-            // İ’è‚ğƒŠƒZƒbƒg
+            // è¨­å®šã‚’ãƒªã‚»ãƒƒãƒˆ
             SPCReset(false);
         end;
-        FUNCTION_TYPE_FEEDBACK: begin // ƒtƒB[ƒhƒoƒbƒN”½“]“x
-            // ƒtƒB[ƒhƒoƒbƒN”½“]“x‚ğİ’è
+        FUNCTION_TYPE_FEEDBACK: begin // ãƒ•ã‚£ãƒ¼ãƒ‰ãƒãƒƒã‚¯åè»¢åº¦
+            // ãƒ•ã‚£ãƒ¼ãƒ‰ãƒãƒƒã‚¯åè»¢åº¦ã‚’è¨­å®š
             I := UpdateFunction(Option.dwFeedback, MENU_SETUP_FEEDBACK_SIZE, MENU_SETUP_FEEDBACK_VALUE, STR_MENU_SETUP_FEEDBACK_PER_INDEX,
                 FEEDBACK_000, 0, FEEDBACK_050, FEEDBACK_100);
             if I = $FFFFFFFF then exit;
             Option.dwFeedback := I;
-            // ƒ^ƒCƒgƒ‹‚ğXV
+            // ã‚¿ã‚¤ãƒˆãƒ«ã‚’æ›´æ–°
             UpdateTitle(TITLE_INFO_FEEDBACK);
-            // İ’è‚ğƒŠƒZƒbƒg
+            // è¨­å®šã‚’ãƒªã‚»ãƒƒãƒˆ
             SPCReset(false);
         end;
-        FUNCTION_TYPE_SPEED: begin // ‰‰‘t‘¬“x
-            // ‰‰‘t‘¬“x‚ğİ’è
+        FUNCTION_TYPE_SPEED: begin // æ¼”å¥é€Ÿåº¦
+            // æ¼”å¥é€Ÿåº¦ã‚’è¨­å®š
             I := UpdateFunction(Option.dwSpeedBas, MENU_SETUP_SPEED_SIZE, MENU_SETUP_SPEED_VALUE, STR_MENU_SETUP_SPEED_PER_INDEX,
                 SPEED_100, 100, SPEED_025, SPEED_400);
             if I = $FFFFFFFF then exit;
             Option.dwSpeedBas := I;
-            // ƒ^ƒCƒgƒ‹‚ğXV
+            // ã‚¿ã‚¤ãƒˆãƒ«ã‚’æ›´æ–°
             UpdateTitle(TITLE_INFO_SPEED);
-            // İ’è‚ğƒŠƒZƒbƒg
+            // è¨­å®šã‚’ãƒªã‚»ãƒƒãƒˆ
             SPCReset(false);
         end;
-        FUNCTION_TYPE_AMP: begin // ‰¹—Ê
-            // ‰¹—Ê‚ğİ’è
+        FUNCTION_TYPE_AMP: begin // éŸ³é‡
+            // éŸ³é‡ã‚’è¨­å®š
             I := UpdateFunction(Option.dwAmp, MENU_SETUP_AMP_SIZE, MENU_SETUP_AMP_VALUE, STR_MENU_SETUP_AMP_PER_INDEX,
                 AMP_100, 100, AMP_025, AMP_400);
             if I = $FFFFFFFF then exit;
             Option.dwAmp := I;
-            // ƒ^ƒCƒgƒ‹‚ğXV
+            // ã‚¿ã‚¤ãƒˆãƒ«ã‚’æ›´æ–°
             UpdateTitle(TITLE_INFO_AMP);
-            // İ’è‚ğƒŠƒZƒbƒg
+            // è¨­å®šã‚’ãƒªã‚»ãƒƒãƒˆ
             SPCReset(false);
         end;
-        FUNCTION_TYPE_SEEK: begin // ƒV[ƒN
-            // SPC ‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¢A‰‰‘t’â~’†A‚Ü‚½‚Íˆê’â~’†‚Ìê‡‚ÍI—¹
+        FUNCTION_TYPE_SEEK: begin // ã‚·ãƒ¼ã‚¯
+            // SPC ãŒé–‹ã‹ã‚Œã¦ã„ãªã„ã€æ¼”å¥åœæ­¢ä¸­ã€ã¾ãŸã¯ä¸€æ™‚åœæ­¢ä¸­ã®å ´åˆã¯çµ‚äº†
             if not Status.bOpen or not Status.bPlay or Status.bPause then exit;
-            // ƒV[ƒNˆÊ’u‚ğæ“¾
+            // ã‚·ãƒ¼ã‚¯ä½ç½®ã‚’å–å¾—
             J := Option.dwSeekTime shl 6;
             if Option.bSeekAsync then J := longword(int64(J) * Option.dwSpeedBas div 65536);
             T64Count := Wave.Apu[Wave.dwLastIndex].T64Count;
@@ -9926,16 +10213,16 @@ begin
                 I := T64Count + J;
                 Status.dwInfo := Option.dwSeekTime;
             end;
-            // ƒ^ƒCƒgƒ‹‚ğXV
+            // ã‚¿ã‚¤ãƒˆãƒ«ã‚’æ›´æ–°
             UpdateTitle(TITLE_INFO_SEEK);
-            // ƒXƒŒƒbƒh‚ÉƒV[ƒN‚ğ’Ê’m
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã«ã‚·ãƒ¼ã‚¯ã‚’é€šçŸ¥
             API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_SEEK + (longword(Status.bCtrlButton) and $1 xor $1), I);
         end;
     end;
 end;
 
 // ================================================================================
-// SetGraphic - ƒOƒ‰ƒtƒBƒbƒNƒŠƒ\[ƒXİ’è
+// SetGraphic - ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒªã‚½ãƒ¼ã‚¹è¨­å®š
 // ================================================================================
 procedure CWINDOWMAIN.SetGraphic();
 var
@@ -9951,7 +10238,7 @@ var
     Rect: TRECT;
     Color: TREFCOLOR;
 begin
-    // ”wŒiF‚Ì–¾‚é‚³‚ğæ“¾
+    // èƒŒæ™¯è‰²ã®æ˜ã‚‹ã•ã‚’å–å¾—
     Rect.left := 0;
     Rect.right := 2;
     Rect.top := 0;
@@ -9959,7 +10246,7 @@ begin
     API_FillRect(Status.hDCVolumeBuffer, @Rect, Status.hBackBrush);
     Color.dwColor := API_GetPixel(Status.hDCVolumeBuffer, 0, 0);
     J := 299 * Color.r + 587 * Color.g + 114 * Color.b;
-    // •¶šF‚Ì–¾‚é‚³‚ğæ“¾
+    // æ–‡å­—è‰²ã®æ˜ã‚‹ã•ã‚’å–å¾—
     Inc(Rect.left);
     API_FillRect(Status.hDCVolumeBuffer, @Rect, Status.hTextBrush);
     Color.dwColor := API_GetPixel(Status.hDCVolumeBuffer, 1, 0);
@@ -9968,7 +10255,7 @@ begin
     else if K >= COLOR_BRIGHT_FORE then L := COLOR_BAR_NUM + COLOR_BAR_NUM
     else if J >= COLOR_BRIGHT_BACK then L := COLOR_BAR_NUM
     else L := 0;
-    // ƒCƒ“ƒWƒP[ƒ^—p‚ÌƒOƒ‰ƒtƒBƒbƒN‚ğ•`‰æ
+    // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ç”¨ã®ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ã‚’æç”»
     K := 0;
     Color.dwColor := K;
     for I := L to COLOR_BAR_NUM + L - 1 do begin
@@ -9984,13 +10271,13 @@ begin
         API_StretchBlt(Status.hDCVolumeBuffer, K, 0, COLOR_BAR_WIDTH, COLOR_BAR_HEIGHT, Status.hDCVolumeBuffer, K, 0, 1, COLOR_BAR_HEIGHT, SRCCOPY);
         Inc(K, 7);
     end;
-    // •¶š•\¦—p‚Ì•`‰æ—Ìˆæ‚ğ‡F‚Å•`‰æ
+    // æ–‡å­—è¡¨ç¤ºç”¨ã®æç”»é ˜åŸŸã‚’ç´«è‰²ã§æç”»
     API_SetPixel(Status.hDCStringBuffer, 0, 0, $FF00FF);
     API_StretchBlt(Status.hDCStringBuffer, 0, 0, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT, Status.hDCStringBuffer, 0, 0, 1, 1, SRCCOPY);
-    // ƒrƒbƒgƒ}ƒbƒvƒŠƒ\[ƒX—p‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ğì¬
+    // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ãƒªã‚½ãƒ¼ã‚¹ç”¨ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’ä½œæˆ
     hDCBitmapBuffer := API_CreateCompatibleDC(Status.hDCStatic);
     hBitmap := API_SelectObject(hDCBitmapBuffer, API_LoadBitmap(Status.hInstance, pchar(BITMAP_NAME)));
-    // ƒrƒbƒgƒ}ƒbƒvƒŠƒ\[ƒX‚©‚ç•¶š•\¦—p‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚Ö‰æ‘œ‚ğ“]‘— (AND ˆ—)
+    // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ãƒªã‚½ãƒ¼ã‚¹ã‹ã‚‰æ–‡å­—è¡¨ç¤ºç”¨ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã¸ç”»åƒã‚’è»¢é€ (AND å‡¦ç†)
     if longbool(Option.dwBmpFont) and (Option.dwBmpFont < BITMAP_NUM_FONT) then begin
         API_BitBlt(Status.hDCStringBuffer, 0, 0, BITMAP_NUM_HEX_X6, BITMAP_NUM_HEIGHT, hDCBitmapBuffer, BITMAP_NUM_X6 * Option.dwBmpFont, 0, SRCAND);
         API_BitBlt(Status.hDCStringBuffer, BITMAP_NUM_HEX_X6, 0, BITMAP_NUM_X6 - BITMAP_NUM_HEX_X6, BITMAP_NUM_HEIGHT, hDCBitmapBuffer,
@@ -9998,20 +10285,20 @@ begin
     end else begin
         API_BitBlt(Status.hDCStringBuffer, 0, 0, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT, hDCBitmapBuffer, 0, 0, SRCAND);
     end;
-    // ƒrƒbƒgƒ}ƒbƒvƒŠƒ\[ƒX—p‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ğì‚è’¼‚·
+    // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ãƒªã‚½ãƒ¼ã‚¹ç”¨ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’ä½œã‚Šç›´ã™
     API_DeleteObject(API_SelectObject(hDCBitmapBuffer, hBitmap));
     hBitmap := API_SelectObject(hDCBitmapBuffer, API_CreateCompatibleBitmap(Status.hDCStatic, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT));
-    // ƒrƒbƒgƒ}ƒbƒvƒŠƒ\[ƒX—p‚Ì•`‰æ—Ìˆæ‚ğ•¶šF‚Å•`‰æ
+    // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ãƒªã‚½ãƒ¼ã‚¹ç”¨ã®æç”»é ˜åŸŸã‚’æ–‡å­—è‰²ã§æç”»
     K := 0;
     for I := 0 to BITMAP_NUM - 1 do begin
         if Option.dwTheme = THEME_DARK then J := BITMAP_STRING_COLOR_DARK[I]
         else J := BITMAP_STRING_COLOR_LIGHT[I];
         if longbool(J shr 16) then begin
-            // ƒCƒ“ƒWƒP[ƒ^‚ÌF‚Å•`‰æ
+            // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã®è‰²ã§æç”»
             J := J and $FFFF;
             for L := 0 to 8 do API_BitBlt(hDCBitmapBuffer, K, L, BITMAP_NUM_WIDTH, 1, Status.hDCVolumeBuffer, J, Abs(4 - L) * 5 + 20, SRCCOPY);
         end else begin
-            // ƒVƒXƒeƒ€ƒJƒ‰[‚Å•`‰æ
+            // ã‚·ã‚¹ãƒ†ãƒ ã‚«ãƒ©ãƒ¼ã§æç”»
             Rect.left := K;
             Rect.right := K + BITMAP_NUM_WIDTH;
             Rect.top := 0;
@@ -10020,29 +10307,29 @@ begin
         end;
         Inc(K, BITMAP_NUM_WIDTH);
     end;
-    // •¶š•\¦—p‚©‚çƒrƒbƒgƒ}ƒbƒvƒŠƒ\[ƒX—p‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚Ö‰æ‘œ‚ğ“]‘— (•F‚Åƒ}ƒXƒN)
+    // æ–‡å­—è¡¨ç¤ºç”¨ã‹ã‚‰ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ãƒªã‚½ãƒ¼ã‚¹ç”¨ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã¸ç”»åƒã‚’è»¢é€ (é»’è‰²ã§ãƒã‚¹ã‚¯)
     API_TransparentBlt(hDCBitmapBuffer, 0, 0, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT, Status.hDCStringBuffer, 0, 0, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT, $000000);
-    // •¶š•\¦—p‚Ì•`‰æ—Ìˆæ‚ğƒ{ƒ^ƒ“‚ÌF‚Å•`‰æ
+    // æ–‡å­—è¡¨ç¤ºç”¨ã®æç”»é ˜åŸŸã‚’ãƒœã‚¿ãƒ³ã®è‰²ã§æç”»
     Rect.left := 0;
     Rect.right := BITMAP_NUM_X6P6;
     Rect.top := 0;
     Rect.bottom := 9;
     API_FillRect(Status.hDCStringBuffer, @Rect, Status.hBackBrush);
-    // ƒrƒbƒgƒ}ƒbƒvƒŠƒ\[ƒX—p‚©‚ç•¶š•\¦—p‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚Ö‰æ‘œ‚ğ“]‘— (‡F‚Åƒ}ƒXƒN)
+    // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ãƒªã‚½ãƒ¼ã‚¹ç”¨ã‹ã‚‰æ–‡å­—è¡¨ç¤ºç”¨ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã¸ç”»åƒã‚’è»¢é€ (ç´«è‰²ã§ãƒã‚¹ã‚¯)
     API_TransparentBlt(Status.hDCStringBuffer, 0, 0, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT, hDCBitmapBuffer, 0, 0, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT, $FF00FF);
-    // ƒrƒbƒgƒ}ƒbƒvƒŠƒ\[ƒX—p‚ÌƒfƒoƒCƒXƒRƒ“ƒeƒLƒXƒg‚ğ‰ğ•ú
+    // ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ãƒªã‚½ãƒ¼ã‚¹ç”¨ã®ãƒ‡ãƒã‚¤ã‚¹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’è§£æ”¾
     API_DeleteObject(API_SelectObject(hDCBitmapBuffer, hBitmap));
     API_DeleteDC(hDCBitmapBuffer);
-    // GDI •`‰æ‚ğƒtƒ‰ƒbƒVƒ…
+    // GDI æç”»ã‚’ãƒ•ãƒ©ãƒƒã‚·ãƒ¥
     API_GdiFlush();
-    // ƒƒjƒ…[‚ğ•`‰æ
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æç”»
     API_DrawMenuBar(cwWindowMain.hWnd);
-    // ƒƒjƒ…[‹«ŠE‚ğ•`‰æ
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼å¢ƒç•Œã‚’æç”»
     if Option.dwTheme = THEME_DARK then cmMain.DrawMenuBorder(cwWindowMain.hWnd);
 end;
 
 // ================================================================================
-// SetTabFocus - ƒtƒH[ƒJƒXˆÚ“®
+// SetTabFocus - ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ç§»å‹•
 // ================================================================================
 procedure CWINDOWMAIN.SetTabFocus(hWnd: longword; bNext: longbool);
 var
@@ -10053,13 +10340,13 @@ begin
 end;
 
 // ================================================================================
-// ShowErrMsg - ƒGƒ‰[ƒƒbƒZ[ƒW•\¦
+// ShowErrMsg - ã‚¨ãƒ©ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸è¡¨ç¤º
 // ================================================================================
 procedure CWINDOWMAIN.ShowErrMsg(dwCode: longword);
 var
-    sMsg: string;
+    sMsg: utf8string;
 begin
-    // ƒGƒ‰[‚Ìí—Ş‚ğ”»•Ê
+    // ã‚¨ãƒ©ãƒ¼ã®ç¨®é¡ã‚’åˆ¤åˆ¥
     case dwCode of
         100..109: sMsg := ERROR_SNESAPU[Status.dwLanguage];
         110..129: sMsg := ERROR_CHECKSUM[Status.dwLanguage];
@@ -10068,15 +10355,15 @@ begin
         300..599: sMsg := ERROR_DEVICE[Status.dwLanguage];
         else sMsg := '';
     end;
-    // ƒƒbƒZ[ƒW‚ğ•\¦
+    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤º
     sMsg := Concat(sMsg, ERROR_CODE_1[Status.dwLanguage], IntToStr(dwCode), ERROR_CODE_2[Status.dwLanguage]);
-    cwWindowMain.MessageBox(pchar(sMsg), pchar(DEFAULT_TITLE), MB_ICONEXCLAMATION or MB_OK);
+    cwWindowMain.MessageBox(sMsg, DEFAULT_TITLE, MB_ICONEXCLAMATION or MB_OK);
 end;
 
 // ================================================================================
-// SPCLoad - SPC ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
+// SPCLoad - SPC ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿
 // ================================================================================
-function CWINDOWMAIN.SPCLoad(lpFile: pointer; bAutoPlay: longbool): longbool;
+function CWINDOWMAIN.SPCLoad(const sPath: utf8string; bAutoPlay: longbool): longbool;
 var
     I: longint;
     J: longword;
@@ -10086,64 +10373,51 @@ var
     bScript700Exist: longbool;
     hFile: longword;
     dwReadSize: longword;
-    lpBuffer: pointer;
-    lpTitle: pointer;
-    sData: string;
+    sData: utf8string;
     HdrBin: TSPCHDRBIN;
     StrData: TSTRDATA;
 
-function CheckPath(dwEnd: longword; const sName: string): longbool;
+function CheckPath(dwEnd: longword; const sName: utf8string): longbool;
 begin
-    sData := Concat(Copy(PtrToStr(lpFile), 1, dwEnd), sName);
-    result := longbool(IsSafePath(pchar(sData)) and Exists(pchar(sData), $FFFFFFFF));
+    sData := Concat(Copy(sPath, 1, dwEnd), sName);
+    result := longbool(IsSafePath(sData) and Exists(sData, $FFFFFFFF));
 end;
 
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := false;
     sData := '';
-    // ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
     hFile := INVALID_HANDLE_VALUE;
-    if IsSafePath(lpFile) then hFile := API_CreateFile(lpFile, GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
+    if IsSafePath(sPath) then hFile := API_CreateFile(StrToPtr(sPath), GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-    // ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚½ê‡‚ÍI—¹
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ãŸå ´åˆã¯çµ‚äº†
     if hFile = INVALID_HANDLE_VALUE then exit;
-    // ‰‰‘t’†‚Ìê‡
+    // æ¼”å¥ä¸­ã®å ´åˆ
     if Status.bPlay then begin
-        // Script700 ‚ğ‹­§I—¹
+        // Script700 ã‚’å¼·åˆ¶çµ‚äº†
         Status.Script700.Data.cStatusFlag := Status.Script700.Data.cStatusFlag or $80;
         Status.bWaveWrite := false;
-        // ‰‰‘t‚ğˆê’â~
+        // æ¼”å¥ã‚’ä¸€æ™‚åœæ­¢
         WavePause();
     end;
-    // ƒCƒ“ƒfƒbƒNƒX‚ÌƒYƒŒ‚ğ•â³
+    // ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ã‚ºãƒ¬ã‚’è£œæ­£
     if not Status.bOpen and (Status.dwOpenFilterIndex >= 4) then Inc(Status.dwOpenFilterIndex);
-    // ƒtƒ‰ƒO‚ğİ’è
+    // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
     Status.bOpen := true;
     Status.bSPCRefresh := true;
-    // ƒtƒ@ƒCƒ‹‚ğƒ[ƒh
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒ­ãƒ¼ãƒ‰
     API_ReadFile(hFile, @Spc, $10200, @dwReadSize, NULLPOINTER);
-    // ƒoƒbƒtƒ@‚ğƒRƒs[
-    API_MoveMemory(Status.lpSPCFile, lpFile, 1024);
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ã‚³ãƒ”ãƒ¼
+    Status.sSPCFile := sPath;
     API_MoveMemory(@HdrBin, @Spc.Hdr, 256);
-    // ID666 ƒtƒH[ƒ}ƒbƒgŒ`®‚ğæ“¾
+    // ID666 ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆå½¢å¼ã‚’å–å¾—
     GetID666Format(Spc.Hdr);
-    // ƒ^ƒCƒgƒ‹‚ª‘¶İ‚µ‚È‚¢ê‡
-    if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Title[0]) then begin
-        // ƒ^ƒCƒgƒ‹‚Éƒtƒ@ƒCƒ‹–¼‚ğİ’è
-        GetMem(lpBuffer, 1024);
-        GetMem(lpTitle, 33);
-        API_ZeroMemory(lpBuffer, 1024);
-        API_GetFileTitle(lpFile, lpBuffer, 1023);
-        API_ZeroMemory(lpTitle, 33);
-        API_MoveMemory(lpTitle, lpBuffer, 32);
-        API_MoveMemory(@Spc.Hdr.Title[0], lpTitle, 32);
-        FreeMem(lpBuffer, 1024);
-        FreeMem(lpTitle, 33);
-    end;
-    // ID666 ƒoƒCƒiƒŠƒtƒH[ƒ}ƒbƒg‚Ìê‡
+    // ã‚¿ã‚¤ãƒˆãƒ«ãŒå­˜åœ¨ã—ãªã„å ´åˆã€ã‚¿ã‚¤ãƒˆãƒ«ã«ãƒ•ã‚¡ã‚¤ãƒ«åã‚’è¨­å®š
+    if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Title[0]) then GetFileTitle(sPath, @Spc.Hdr.Title[0]);
+    // ID666 ãƒã‚¤ãƒŠãƒªãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã®å ´åˆ
     if Spc.Hdr.TagFormat = ID666_BINARY then begin
-        // “ú•t‚ğ•ÏŠ·
+        // æ—¥ä»˜ã‚’å¤‰æ›
         if (HdrBin.DateYear > 0) and (HdrBin.DateYear < 10000) and (HdrBin.DateMonth > 0) and (HdrBin.DateMonth < 13) and (HdrBin.DateDay > 0)
         and (HdrBin.DateDay < 32) then begin
             IntToStr(StrData, longword(HdrBin.DateYear), 4);
@@ -10155,50 +10429,47 @@ begin
             IntToStr(StrData, longword(HdrBin.DateDay), 2);
             API_MoveMemory(@Spc.Hdr.Date[8], @StrData, 2);
         end else Spc.Hdr.Date[0] := NULLCHAR;
-        // ‰‰‘tŠÔ‚ğ•ÏŠ·
+        // æ¼”å¥æ™‚é–“ã‚’å¤‰æ›
         I := HdrBin.SongLen;
         if I > 999 then I := 999;
         if longbool(I) then begin
             IntToStr(StrData, longword(I), 3);
             API_MoveMemory(@Spc.Hdr.SongLen[0], @StrData, 3);
         end;
-        // ƒtƒF[ƒhƒAƒEƒgŠÔ‚ğ•ÏŠ·
+        // ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“ã‚’å¤‰æ›
         I := HdrBin.FadeLen and $FFFFFF;
         if I > 99999 then I := 99999;
         if longbool(I) then begin
             IntToStr(StrData, longword(I), 5);
             API_MoveMemory(@Spc.Hdr.FadeLen[0], @StrData, 5);
         end;
-        // ì‹ÈÒAƒ`ƒƒƒ“ƒlƒ‹–³ŒøAo—ÍŒ³ƒGƒ~ƒ…ƒŒ[ƒ^‚ğƒRƒs[
+        // ä½œæ›²è€…ã€ãƒãƒ£ãƒ³ãƒãƒ«ç„¡åŠ¹ã€å‡ºåŠ›å…ƒã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼
         API_MoveMemory(@Spc.Hdr.Artist[0], @HdrBin.Artist[0], 34);
     end;
-    // ƒeƒLƒXƒg‚Ì§ŒäƒR[ƒh‚ğƒXƒy[ƒX‚É•ÏŠ·
+    // ãƒ†ã‚­ã‚¹ãƒˆã®åˆ¶å¾¡ã‚³ãƒ¼ãƒ‰ã‚’ã‚¹ãƒšãƒ¼ã‚¹ã«å¤‰æ›
     pV := @Spc.Hdr.Title;
     for I := 0 to 162 do begin
         if ((pV^ > $0) and (pV^ < $20)) or (pV^ = $7F) then pV^ := $20;
         Inc(pV);
     end;
-    // ‰‰‘tŠÔAƒtƒF[ƒhƒAƒEƒgŠÔ‚ğæ“¾
+    // æ¼”å¥æ™‚é–“ã€ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“ã‚’å–å¾—
     Spc.Hdr.dwSongLen := StrToInt(ChrToStr(Spc.Hdr.SongLen), longword(0));
     Spc.Hdr.dwFadeLen := StrToInt(ChrToStr(Spc.Hdr.FadeLen), longword(0));
-    // ƒtƒHƒ‹ƒ_‚ÌˆÊ’u‚ğæ“¾
-    J := GetSize(lpFile, 1024);
+    // ãƒ•ã‚©ãƒ«ãƒ€ã®ä½ç½®ã‚’å–å¾—
+    J := Length(sPath);
     K := J;
     L := J;
     for I := 1 to L do begin
-        if PtrToStr(lpFile)[I] = NULLCHAR then break;
-        if IsPathSeparator(PtrToStr(lpFile), I) then J := I;
-        if IsSingleByte(PtrToStr(lpFile), I, '.') then K := I;
+        if sPath[I] = NULLCHAR then break;
+        if IsPathSeparator(sPath, I) then J := I;
+        if IsSingleByte(sPath, I, '.') then K := I;
     end;
-    // ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ‚ğƒRƒs[
-    API_ZeroMemory(Status.lpSPCDir, 1024);
-    API_MoveMemory(Status.lpSPCDir, lpFile, J);
-    // ƒtƒ@ƒCƒ‹–¼‚ğƒRƒs[
-    API_ZeroMemory(Status.lpSPCName, 1024);
-    I := L - J;
-    if I > 0 then API_MoveMemory(Status.lpSPCName, pointer(longword(lpFile) + J), I);
+    // ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’ã‚³ãƒ”ãƒ¼
+    Status.sSPCDir := Copy(sPath, 1, J);
+    // SPC ãƒ•ã‚¡ã‚¤ãƒ«åã‚’ã‚³ãƒ”ãƒ¼
+    Status.sSPCName := Copy(sPath, J + 1, Length(sPath));
 {$IFNDEF TRY700A}{$IFNDEF TRY700W}
-    // ƒtƒ@ƒCƒ‹‚ğæ“¾
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’å–å¾—
     bScript700Exist := CheckPath(K, SCRIPT700_FILETYPE)
                     or CheckPath(K, SCRIPT7SE_FILETYPE)
                     or CheckPath(K, SCRIPT700TXT_FILETYPE)
@@ -10207,33 +10478,30 @@ begin
                     or CheckPath(J, SCRIPT7SE_FILENAME)
                     or CheckPath(J, SCRIPT700TXT_FILENAME)
                     or CheckPath(J, SCRIPT7SETXT_FILENAME);
-    // Script700 ‚ğƒ[ƒh
-    if not bScript700Exist or not LoadScript700(pchar(sData), SCRIPT700_TEXT) then Status.Script700.dwProgSize := Apu.SetScript700(NULLPOINTER);
+    // Script700 ã‚’ãƒ­ãƒ¼ãƒ‰
+    if not bScript700Exist or not LoadScript700(sData, SCRIPT700_TEXT) then Status.Script700.dwProgSize := Apu.SetScript700(NULLPOINTER);
 {$ENDIF}{$ENDIF}
 {$IFDEF TRY700A}
-    cwWindowMain.MessageBox(pchar(IntToStr(Apu.Try700(lpFile))), NULLPOINTER, NULL);
+    cwWindowMain.MessageBox(IntToStr(Apu.Try700(pchar(sData))), DEFAULT_TITLE, NULL);
 {$ENDIF}
 {$IFDEF TRY700W}
-    GetMem(lpBuffer, 2048);
-    API_MultiByteToWideChar(CP_ACP, NULL, lpFile, -1, lpBuffer, 2048);
-    cwWindowMain.MessageBox(pchar(IntToStr(Apu.Try700(lpBuffer))), NULLPOINTER, NULL);
-    FreeMem(lpBuffer, 2048);
+    cwWindowMain.MessageBox(IntToStr(Apu.Try700(StrToPtr(sData))), DEFAULT_TITLE, NULL);
 {$ENDIF}
-    // î•ñ‚ğXV
+    // æƒ…å ±ã‚’æ›´æ–°
     UpdateInfo(false);
-    // ƒ^ƒCƒgƒ‹‚ğXV
+    // ã‚¿ã‚¤ãƒˆãƒ«ã‚’æ›´æ–°
     UpdateTitle(NULL);
-    // ‰‰‘t‚ğŠJn
+    // æ¼”å¥ã‚’é–‹å§‹
     if Status.bPlay then SPCStop(bAutoPlay)
     else if bAutoPlay then SPCPlay(PLAY_TYPE_PLAY);
-    // ƒtƒ@ƒCƒ‹‚ğƒNƒ[ƒY
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¯ãƒ­ãƒ¼ã‚º
     API_CloseHandle(hFile);
-    // ¬Œ÷
+    // æˆåŠŸ
     result := true;
 end;
 
 // ================================================================================
-// SPCOption - SPC ‰‰‘tİ’è (”r‘¼•K{)
+// SPCOption - SPC æ¼”å¥è¨­å®š (æ’ä»–å¿…é ˆ)
 // ================================================================================
 procedure CWINDOWMAIN.SPCOption();
 var
@@ -10242,25 +10510,25 @@ var
     dwOption: longword;
     dwPitch: longword;
 begin
-    // Šg’£İ’è‚ğİ’è (dwBit ‚Í•‰”‚É‚È‚éê‡‚ª‚ ‚é‚½‚ß shl ‚Íg‚í‚È‚¢)
+    // æ‹¡å¼µè¨­å®šã‚’è¨­å®š (dwBit ã¯è² æ•°ã«ãªã‚‹å ´åˆãŒã‚ã‚‹ãŸã‚ shl ã¯ä½¿ã‚ãªã„)
     dwOption := Option.dwOption or OPTION_FLOATOUT;
     if not longbool(Option.bEarSafe) then dwOption := dwOption or OPTION_NOEARSAFE;
     Apu.SetAPUOption(1, Status.dwChannel, Status.dwBit * 8, Status.dwRate, Option.dwInter, dwOption);
-    // ‰‰‘t‘¬“x‚ğİ’è
+    // æ¼”å¥é€Ÿåº¦ã‚’è¨­å®š
     Apu.SetAPUSpeed(Option.dwSpeedBas + longword(longint(Option.dwSpeedBas) * Option.dwSpeedTun div SPEED_100));
-    // ƒsƒbƒ`‚ğİ’è
+    // ãƒ”ãƒƒãƒã‚’è¨­å®š
     if Option.dwPitch < 16384 then dwPitch := 16384
     else if Option.dwPitch > 262144 then dwPitch := 262144
     else dwPitch := Option.dwPitch;
     if Option.bPitchAsync then Apu.SetDSPPitch(Option.dwSpeedBas * dwPitch div SPEED_100)
     else Apu.SetDSPPitch(dwPitch);
-    // ¶‰EŠgU“x‚ğİ’è
+    // å·¦å³æ‹¡æ•£åº¦ã‚’è¨­å®š
     Apu.SetDSPStereo(Option.dwSeparate);
-    // ƒtƒB[ƒhƒoƒbƒN”½“]“x‚ğİ’è
+    // ãƒ•ã‚£ãƒ¼ãƒ‰ãƒãƒƒã‚¯åè»¢åº¦ã‚’è¨­å®š
     Apu.SetDSPFeedback(32768 - Option.dwFeedback);
-    // ‰¹—Ê‚ğİ’è
+    // éŸ³é‡ã‚’è¨­å®š
     Apu.SetDSPAmp(Option.dwAmp);
-    // ƒ`ƒƒƒ“ƒlƒ‹ƒ}ƒXƒN‚ğİ’è
+    // ãƒãƒ£ãƒ³ãƒãƒ«ãƒã‚¹ã‚¯ã‚’è¨­å®š
     for I := 0 to 7 do begin
         V := Apu.Voices.Voice[I].MixFlag and $FC;
         if bytebool(Option.dwMute and (1 shl I)) then V := V or $1;
@@ -10270,7 +10538,7 @@ begin
 end;
 
 // ================================================================================
-// SPCPlay - SPC ‰‰‘tŠJnEˆê’â~
+// SPCPlay - SPC æ¼”å¥é–‹å§‹ãƒ»ä¸€æ™‚åœæ­¢
 // ================================================================================
 procedure CWINDOWMAIN.SPCPlay(dwType: longword);
 var
@@ -10285,65 +10553,65 @@ var
     lpBuffer: pointer;
 {$ENDIF}
 begin
-    // ‰‰‘t‚Ìí—Ş‚ğ”»•Ê
+    // æ¼”å¥ã®ç¨®é¡ã‚’åˆ¤åˆ¥
     if not Status.bEmuDebug then case dwType of
-        PLAY_TYPE_AUTO, PLAY_TYPE_PLAY: if not Status.bOpen then begin // ©“®
+        PLAY_TYPE_AUTO, PLAY_TYPE_PLAY: if not Status.bOpen then begin // è‡ªå‹•
             ListPlay(Option.dwPlayOrder, LIST_PLAY_INDEX_SELECTED, NULL);
             exit;
         end;
-        PLAY_TYPE_LIST: begin // ƒvƒŒƒCƒŠƒXƒg‚Ì‘I‘ğÏ‚İƒAƒCƒeƒ€
+        PLAY_TYPE_LIST: begin // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®é¸æŠæ¸ˆã¿ã‚¢ã‚¤ãƒ†ãƒ 
             ListPlay(Option.dwPlayOrder, LIST_PLAY_INDEX_SELECTED, NULL);
             exit;
         end;
-        PLAY_TYPE_RANDOM: begin // ƒvƒŒƒCƒŠƒXƒg‚©‚çƒ‰ƒ“ƒ_ƒ€‘I‘ğ
+        PLAY_TYPE_RANDOM: begin // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã‹ã‚‰ãƒ©ãƒ³ãƒ€ãƒ é¸æŠ
             ListNextPlay(PLAY_ORDER_RANDOM, LIST_NEXT_PLAY_SELECT);
             exit;
         end;
     end else begin
-        // ƒoƒbƒtƒ@‚ğƒNƒŠƒA
+        // ãƒãƒƒãƒ•ã‚¡ã‚’ã‚¯ãƒªã‚¢
         API_ZeroMemory(@Spc.Hdr, SizeOf(TSPCHDR));
-        // ƒCƒ“ƒfƒbƒNƒX‚ÌƒYƒŒ‚ğ•â³
+        // ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ã‚ºãƒ¬ã‚’è£œæ­£
         if not Status.bOpen and (Status.dwOpenFilterIndex >= 4) then Inc(Status.dwOpenFilterIndex);
-        // ƒtƒ‰ƒO‚ğİ’è
+        // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
         Status.bOpen := true;
-        // î•ñ‚ğXV
+        // æƒ…å ±ã‚’æ›´æ–°
         UpdateInfo(false);
-        // ƒ^ƒCƒgƒ‹‚ğXV
+        // ã‚¿ã‚¤ãƒˆãƒ«ã‚’æ›´æ–°
         UpdateTitle(NULL);
     end;
-    // SPC ‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¢ê‡‚ÍI—¹
+    // SPC ãŒé–‹ã‹ã‚Œã¦ã„ãªã„å ´åˆã¯çµ‚äº†
     if not Status.bOpen then exit;
-    // ƒXƒŠ[ƒv‰ğœƒ^ƒCƒ}[‚ğ‰Šú‰»
+    // ã‚¹ãƒªãƒ¼ãƒ—è§£é™¤ã‚¿ã‚¤ãƒãƒ¼ã‚’åˆæœŸåŒ–
     Status.dwNoSleepTime := 0;
-    // ˆê’â~’†‚Ìê‡
+    // ä¸€æ™‚åœæ­¢ä¸­ã®å ´åˆ
     if Status.bPause then begin
-        // ˆê’â~w’è‚Ìê‡‚ÍI—¹
+        // ä¸€æ™‚åœæ­¢æŒ‡å®šã®å ´åˆã¯çµ‚äº†
         if dwType = PLAY_TYPE_PAUSE then exit;
 {$IFNDEF TRANSMITSPC}
-        // ƒXƒŒƒbƒh‚É‰‰‘tÄŠJ‚ğ’Ê’m
+        // ã‚¹ãƒ¬ãƒƒãƒ‰ã«æ¼”å¥å†é–‹ã‚’é€šçŸ¥
         API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_RESUME, NULL);
 {$ENDIF}
-    // ‰‰‘t’†‚Ìê‡
+    // æ¼”å¥ä¸­ã®å ´åˆ
     end else if Status.bPlay then begin
-        // ‰‰‘tŠJnw’è‚Ìê‡‚ÍI—¹
+        // æ¼”å¥é–‹å§‹æŒ‡å®šã®å ´åˆã¯çµ‚äº†
         if dwType = PLAY_TYPE_PLAY then exit;
 {$IFNDEF TRANSMITSPC}
-        // ƒXƒŒƒbƒh‚Éˆê’â~‚ğ’Ê’m
+        // ã‚¹ãƒ¬ãƒƒãƒ‰ã«ä¸€æ™‚åœæ­¢ã‚’é€šçŸ¥
         API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_PAUSE, NULL);
 {$ENDIF}
-    // ‰‰‘t’â~’†‚Ìê‡
+    // æ¼”å¥åœæ­¢ä¸­ã®å ´åˆ
     end else begin
-        // ˆê’â~w’è‚Ìê‡‚ÍI—¹
+        // ä¸€æ™‚åœæ­¢æŒ‡å®šã®å ´åˆã¯çµ‚äº†
         if dwType = PLAY_TYPE_PAUSE then exit;
-        // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+        // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
         API_EnterCriticalSection(@CriticalSectionThread);
-        // Script700 ‚Åİ’è‚³‚ê‚½ƒuƒŒƒCƒNƒ|ƒCƒ“ƒg‚ğ‰ğœ
+        // Script700 ã§è¨­å®šã•ã‚ŒãŸãƒ–ãƒ¬ã‚¤ã‚¯ãƒã‚¤ãƒ³ãƒˆã‚’è§£é™¤
         for I := 0 to 65535 do if longbool(Status.BreakPoint[I] and $80) then Status.BreakPoint[I] := 0;
 {$IFDEF TIMERTRICK}
-        // TimerTrick ‚ğİ’è
+        // TimerTrick ã‚’è¨­å®š
         Apu.SetTimerTrick(0, 16661);
 {$ENDIF}
-        // SPC ‚ğ APU ‚É“]‘—
+        // SPC ã‚’ APU ã«è»¢é€
         if Status.bEmuDebug then begin
             Apu.SetScript700(NULLPOINTER);
             Apu.ResetAPU($FFFFFFFF);
@@ -10356,31 +10624,31 @@ begin
         TSPCEx.bScript700 := longbool(Status.Script700.dwProgSize);
         TSPCEx.lptPort := $D050;
         I := Apu.TransmitSPCEx(@TSPCEx);
-        if longbool(I) then cwWindowMain.MessageBox(pchar(IntToStr(longint(I))), NULLPOINTER, 0);
+        if longbool(I) then cwWindowMain.MessageBox(IntToStr(longint(I)), DEFAULT_TITLE, NULL);
 {$ENDIF}
-        // SPC ‰‰‘tİ’è
+        // SPC æ¼”å¥è¨­å®š
         SPCOption();
-        // ‰‰‘tŠÔAƒtƒF[ƒhƒAƒEƒgŠÔ‚ğİ’è
+        // æ¼”å¥æ™‚é–“ã€ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“ã‚’è¨­å®š
         SPCTime(true, false, true);
-        // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+        // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
         API_LeaveCriticalSection(@CriticalSectionThread);
 {$IFDEF PERFORMANCETEST}
-        // ƒoƒbƒtƒ@‚ğŠm•Û
+        // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
         GetMem(lpBuffer, 96000 * 2 * 4);
-        // Œ»İ‚ğæ“¾
+        // ç¾åœ¨æ™‚åˆ»ã‚’å–å¾—
         J := API_timeGetTime();
-        // 299 •b•ª‚ğƒGƒ~ƒ…ƒŒ[ƒg
+        // 299 ç§’åˆ†ã‚’ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ãƒˆ
         for I := 0 to 299 do Apu.EmuAPU(lpBuffer, 24576000, 0);
-        // Œ»İ‚ğæ“¾
+        // ç¾åœ¨æ™‚åˆ»ã‚’å–å¾—
         J := API_timeGetTime() - J;
-        // ƒoƒbƒtƒ@‚ğ‰ğ•ú
+        // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
         FreeMem(lpBuffer, 96000 * 2 * 4);
-        // ŠÔ‚ğ•\¦
-        cwWindowMain.SetCaption(pchar(IntToStr(J)));
+        // æ™‚é–“ã‚’è¡¨ç¤º
+        cwWindowMain.SetCaption(IntToStr(J));
 {$ENDIF}
-        // V‚µ‚¢ SPC ‚ª“Ç‚İ‚Ü‚ê‚½ê‡
+        // æ–°ã—ã„ SPC ãŒèª­ã¿è¾¼ã¾ã‚ŒãŸå ´åˆ
         if Status.bEmuDebug or Status.bSPCRefresh then begin
-            // ƒV[ƒNƒLƒƒƒbƒVƒ…‚ğ‰Šú‰»
+            // ã‚·ãƒ¼ã‚¯ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’åˆæœŸåŒ–
             if longbool(Option.dwCacheNum) then begin
                 J := 0;
                 K := Option.dwCacheInt shl 6;
@@ -10394,28 +10662,28 @@ begin
             end else begin
                 Status.dwNextCache := 0;
             end;
-            // ƒŠƒs[ƒgŠJnˆÊ’uAƒŠƒs[ƒgI—¹ˆÊ’u‚ğ‰Šú‰»
+            // ãƒªãƒ”ãƒ¼ãƒˆé–‹å§‹ä½ç½®ã€ãƒªãƒ”ãƒ¼ãƒˆçµ‚äº†ä½ç½®ã‚’åˆæœŸåŒ–
             if Status.bTimeRepeat then Option.dwPlayOrder := Status.dwPlayOrder;
             Status.dwStartTime := 0;
             Status.dwLimitTime := Status.dwDefaultTimeout;
             Status.bTimeRepeat := false;
-            // TUNING ŠJnƒAƒhƒŒƒX‚ğ‰Šú‰»
+            // TUNING é–‹å§‹ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’åˆæœŸåŒ–
             Status.dwTuningAddress := $1FF;
             Status.dwTuningSize := 0;
         end;
-        // ƒeƒ“ƒ|‰ğÍ‚ª—LŒø‚Èê‡
+        // ãƒ†ãƒ³ãƒè§£æãŒæœ‰åŠ¹ãªå ´åˆ
         if Option.bBPM then begin
-            // ƒoƒbƒtƒ@‚ğƒNƒŠƒA
+            // ãƒãƒƒãƒ•ã‚¡ã‚’ã‚¯ãƒªã‚¢
             API_ZeroMemory(@Status.Tempo, SizeOf(TTEMPO));
 {$IFDEF SPCBPMTEST}
-            // BPM ‰ğÍ‚ğŠJn
+            // BPM è§£æã‚’é–‹å§‹
             Apu.BPMStart(NULLPOINTER);
 {$ELSE}
-            // ƒR[ƒ‹ƒoƒbƒN‚ğ’Ç‰Áİ’è
+            // ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’è¿½åŠ è¨­å®š
             Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_DSPREG);
 {$ENDIF}
         end;
-        // ƒfƒoƒCƒX‚ğƒI[ƒvƒ“
+        // ãƒ‡ãƒã‚¤ã‚¹ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
         Status.dwWaveMessage := WAVE_MESSAGE_MAX_COUNT;
 {$IFDEF TRANSMITSPC}
         Status.bPlay := true;
@@ -10424,21 +10692,21 @@ begin
         Status.bPlay := Status.bSPCRestart;
         if Status.bSPCRestart then I := 0 else I := WaveOpen();
 {$ENDIF}
-        // ƒtƒ‰ƒO‚ğİ’è
+        // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
         Status.bSPCRestart := false;
         Status.bSPCRefresh := false;
         Status.bWaveWrite := true;
-        // ƒƒjƒ…[‚ğXV
+        // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
         UpdateMenu();
-        // ƒCƒ“ƒWƒP[ƒ^‚ğƒŠƒZƒbƒg
+        // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’ãƒªã‚»ãƒƒãƒˆ
         if not Status.bTimeRepeat then ResetInfo(true);
 {$IFNDEF TRANSMITSPC}
-        // ƒGƒ‰[‚ª‚ ‚éê‡
+        // ã‚¨ãƒ©ãƒ¼ãŒã‚ã‚‹å ´åˆ
         if longbool(I) then begin
-            // ƒƒbƒZ[ƒW‚ğ•\¦
+            // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤º
             ShowErrMsg(300 + (I and $FF));
         end else if Status.bPlay then begin
-            // ƒXƒŒƒbƒh‚É‰‰‘tŠJn‚ğ’Ê’m
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã«æ¼”å¥é–‹å§‹ã‚’é€šçŸ¥
             API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_PLAY, NULL);
         end;
 {$ENDIF}
@@ -10446,73 +10714,82 @@ begin
 end;
 
 // ================================================================================
-// SPCReset - SPC ƒŠƒZƒbƒg
+// SPCReset - SPC ãƒªã‚»ãƒƒãƒˆ
 // ================================================================================
 procedure CWINDOWMAIN.SPCReset(bWave: longbool);
 begin
-    // ƒfƒoƒCƒX‚ÌÄƒI[ƒvƒ“‚ª•s—v‚Èê‡
+    // ãƒ‡ãƒã‚¤ã‚¹ã®å†ã‚ªãƒ¼ãƒ—ãƒ³ãŒä¸è¦ãªå ´åˆ
     if not bWave and Status.bPlay then begin
-        // ƒXƒŒƒbƒh‚Éİ’è•ÏX‚ğ’Ê’m
+        // ã‚¹ãƒ¬ãƒƒãƒ‰ã«è¨­å®šå¤‰æ›´ã‚’é€šçŸ¥
         API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_RESET, NULL);
     end;
-    // ƒfƒoƒCƒX‚ÌÄƒI[ƒvƒ“‚ª•K—v‚Èê‡
+    // ãƒ‡ãƒã‚¤ã‚¹ã®å†ã‚ªãƒ¼ãƒ—ãƒ³ãŒå¿…è¦ãªå ´åˆ
     if bWave and not Status.bPlay then begin
-        // ƒfƒoƒCƒX‚ğ‰ğ•ú
+        // ãƒ‡ãƒã‚¤ã‚¹ã‚’è§£æ”¾
         WaveQuit();
-        // ƒfƒoƒCƒX‚ğ‰Šú‰»
+        // ãƒ‡ãƒã‚¤ã‚¹ã‚’åˆæœŸåŒ–
         WaveInit();
     end;
-    // ƒƒjƒ…[‚ğXV
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
     UpdateMenu();
 end;
 
 // ================================================================================
-// SPCSave - SPC •Û‘¶
+// SPCSave - SPC ä¿å­˜
 // ================================================================================
-function CWINDOWMAIN.SPCSave(lpFile: pointer; bShift: longbool): longbool;
+function CWINDOWMAIN.SPCSave(const sPath: utf8string; bShift: longbool): longbool;
 var
+    I: longint;
+    J: longword;
+    K: longword;
     hFile: longword;
     dwWriteSize: longword;
     SPCBuf: TSPC;
     SPCReg: ^TSPCREG;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := false;
-    // SPC ‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¢A‚Ü‚½‚Í‰‰‘t’â~’†‚Ìê‡‚ÍI—¹
+    // SPC ãŒé–‹ã‹ã‚Œã¦ã„ãªã„ã€ã¾ãŸã¯æ¼”å¥åœæ­¢ä¸­ã®å ´åˆã¯çµ‚äº†
     if not Status.bOpen or not Status.bPlay then exit;
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
     API_EnterCriticalSection(@CriticalSectionThread);
-    // SPC ‚ğ•Û‘¶
+    // SPC ã‚’ä¿å­˜
     SPCReg := @SPCBuf.Hdr.Reg;
     API_MoveMemory(@SPCBuf, @Spc, SizeOf(TSPCHDR));
     Apu.GetSPCRegs(@SPCReg.pc, @SPCReg.a, @SPCReg.y, @SPCReg.x, @SPCReg.psw, @SPCReg.sp);
     API_MoveMemory(@SPCBuf.Ram, Apu.Ram, SizeOf(TRAM));
     API_MoveMemory(@SPCBuf.Dsp, Apu.DspReg, SizeOf(TDSPREG));
     API_MoveMemory(@SPCBuf.XRam, Apu.XRam, SizeOf(TXRAM));
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
     API_LeaveCriticalSection(@CriticalSectionThread);
-    // ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
     hFile := INVALID_HANDLE_VALUE;
-    if IsSafePath(lpFile) then begin
-        API_MakeSureDirectoryPathExists(lpFile);
-        hFile := API_CreateFile(lpFile, GENERIC_WRITE, FILE_SHARE_READ, NULLPOINTER, CREATE_ALWAYS,
+    if IsSafePath(sPath) then begin
+        J := Length(sPath);
+        K := J;
+        for I := 1 to K do begin
+            if sPath[I] = NULLCHAR then break;
+            if IsPathSeparator(sPath, I) then J := I;
+        end;
+        API_SHCreateDirectoryEx(cwWindowMain.hWnd, StrToPtr(Copy(sPath, 1, J - 1)), NULLPOINTER);
+        hFile := API_CreateFile(StrToPtr(sPath), GENERIC_WRITE, FILE_SHARE_READ, NULLPOINTER, CREATE_ALWAYS,
             FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
     end;
-    // ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚½ê‡‚ÍƒƒbƒZ[ƒW‚ğ•\¦‚µ‚ÄI—¹
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ãŸå ´åˆã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã—ã¦çµ‚äº†
     if hFile = INVALID_HANDLE_VALUE then begin
         ShowErrMsg(251);
         exit;
     end;
-    // SPC ƒoƒbƒtƒ@‚ğ•Û‘¶
+    // SPC ãƒãƒƒãƒ•ã‚¡ã‚’ä¿å­˜
     API_WriteFile(hFile, @SPCBuf, SizeOf(TSPC), @dwWriteSize, NULLPOINTER);
-    // ƒtƒ@ƒCƒ‹‚ğƒNƒ[ƒY
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¯ãƒ­ãƒ¼ã‚º
     API_CloseHandle(hFile);
-    // ¬Œ÷
+    // æˆåŠŸ
     result := true;
 end;
 
 // ================================================================================
-// SPCSeek - SPC ƒV[ƒN (”r‘¼•K{)
+// SPCSeek - SPC ã‚·ãƒ¼ã‚¯ (æ’ä»–å¿…é ˆ)
 // ================================================================================
 procedure CWINDOWMAIN.SPCSeek(dwTime: longword; bCache: longbool);
 var
@@ -10529,11 +10806,11 @@ var
     SPCOutPortCopy: ^TSPCPORT;
 begin
     if not longbool(T64Cache) then begin
-        // ƒLƒƒƒbƒVƒ…‚ª‚È‚¢ê‡‚ÍÅ‰‚Ìƒoƒbƒtƒ@‚ğ“Ç‚İ‚Ş
+        // ã‚­ãƒ£ãƒƒã‚·ãƒ¥ãŒãªã„å ´åˆã¯æœ€åˆã®ãƒãƒƒãƒ•ã‚¡ã‚’èª­ã¿è¾¼ã‚€
         Apu.LoadSPCFile(@Spc);
         T64Count := 0;
     end else begin
-        // ƒLƒƒƒbƒVƒ…‚ª‚ ‚éê‡‚ÍƒLƒƒƒbƒVƒ…‚ğ“Ç‚İ‚Ş
+        // ã‚­ãƒ£ãƒƒã‚·ãƒ¥ãŒã‚ã‚‹å ´åˆã¯ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’èª­ã¿è¾¼ã‚€
         SPCCache := @Status.SPCCache[J];
         Apu.LoadSPCFile(@SPCCache.Spc);
         API_MoveMemory(Status.Script700.Data, @SPCCache.Script700, SizeOf(TSCRIPT700EX));
@@ -10543,121 +10820,121 @@ begin
         Apu.T64Count^ := T64Cache;
         T64Count := T64Cache;
     end;
-    // ‰‰‘tŠÔAƒtƒF[ƒhƒAƒEƒgŠÔ‚ğİ’è
+    // æ¼”å¥æ™‚é–“ã€ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“ã‚’è¨­å®š
     Apu.SetAPULength(Status.dwAPUPlayTime, Status.dwAPUFadeTime);
 end;
 
 begin
-    // SPC ‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¢A‰‰‘t’â~’†A‚Ü‚½‚Íˆê’â~’†‚Ìê‡‚ÍI—¹
+    // SPC ãŒé–‹ã‹ã‚Œã¦ã„ãªã„ã€æ¼”å¥åœæ­¢ä¸­ã€ã¾ãŸã¯ä¸€æ™‚åœæ­¢ä¸­ã®å ´åˆã¯çµ‚äº†
     if not Status.bOpen or not Status.bPlay or Status.bPause then exit;
-    // ÅŒã‚ÉƒGƒ~ƒ…ƒŒ[ƒg‚µ‚½ŠÔ‚ğæ“¾
+    // æœ€å¾Œã«ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ãƒˆã—ãŸæ™‚é–“ã‚’å–å¾—
     T64Count := Wave.Apu[Wave.dwLastIndex].T64Count;
-    // Œ»İ‚ÌêŠ‚É•ÏX‚ª‚È‚¢ê‡‚ÍI—¹
+    // ç¾åœ¨ã®å ´æ‰€ã«å¤‰æ›´ãŒãªã„å ´åˆã¯çµ‚äº†
     if dwTime = T64Count then exit;
 {$IFDEF SPCBPMTEST}
-    // ƒeƒ“ƒ|‰ğÍ‚ª—LŒø‚Èê‡ABPM ‰ğÍ‚ğ’â~
+    // ãƒ†ãƒ³ãƒè§£æãŒæœ‰åŠ¹ãªå ´åˆã€BPM è§£æã‚’åœæ­¢
     if Option.bBPM then Apu.BPMStop();
 {$ELSE}
-    // ƒeƒ“ƒ|‰ğÍ‚ª—LŒø‚Èê‡Aƒeƒ“ƒ|‰ğÍ‚ğ–³Œø‰»
+    // ãƒ†ãƒ³ãƒè§£æãŒæœ‰åŠ¹ãªå ´åˆã€ãƒ†ãƒ³ãƒè§£æã‚’ç„¡åŠ¹åŒ–
     if Option.bBPM then Status.Tempo.bDisable := true;
 {$ENDIF}
-    // ƒLƒƒƒbƒVƒ…‚ÌŠî€ˆÊ’u‚ğæ“¾
+    // ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã®åŸºæº–ä½ç½®ã‚’å–å¾—
     dwCacheDiff := Option.dwCacheDiff shl 6;
     dwTarget := dwTime;
     if not Option.bSeekFast then if dwTarget > dwCacheDiff then Dec(dwTarget, dwCacheDiff) else dwTarget := 0;
-    // ƒV[ƒNˆÊ’u‚ÉÅ‚à‹ß‚¢ƒLƒƒƒbƒVƒ…‚ÌêŠ‚ğæ“¾
+    // ã‚·ãƒ¼ã‚¯ä½ç½®ã«æœ€ã‚‚è¿‘ã„ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã®å ´æ‰€ã‚’å–å¾—
     J := -1;
     for I := 0 to Option.dwCacheNum - 1 do if dwTarget >= Status.SPCCache[I].Spc.Hdr.dwSongLen then J := I;
     if not bCache or (J = -1) then T64Cache := 0
     else T64Cache := Status.SPCCache[J].Spc.Hdr.dwSongLen;
-    // ƒV[ƒNˆÊ’u‚ªŒ»İˆÊ’u‚àŒã‚Ìê‡‚Í‘å‚Ü‚©‚ÈˆÊ’u‚Ü‚ÅƒV[ƒN
+    // ã‚·ãƒ¼ã‚¯ä½ç½®ãŒç¾åœ¨ä½ç½®ã‚‚å¾Œã®å ´åˆã¯å¤§ã¾ã‹ãªä½ç½®ã¾ã§ã‚·ãƒ¼ã‚¯
     if dwTime > T64Count then begin
-        // Œ»İˆÊ’u‚æ‚èƒLƒƒƒbƒVƒ…ˆÊ’u‚Ì•û‚ª‹ß‚¢ê‡‚ÍƒLƒƒƒbƒVƒ…‚ğ“Ç‚İ‚Ş
+        // ç¾åœ¨ä½ç½®ã‚ˆã‚Šã‚­ãƒ£ãƒƒã‚·ãƒ¥ä½ç½®ã®æ–¹ãŒè¿‘ã„å ´åˆã¯ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’èª­ã¿è¾¼ã‚€
         if T64Cache > T64Count then CacheSeek();
-        // ƒLƒƒƒbƒVƒ…ˆÊ’u‚ªŒo‰ß‚·‚é‚Ü‚Åƒ‹[ƒv
+        // ã‚­ãƒ£ãƒƒã‚·ãƒ¥ä½ç½®ãŒçµŒéã™ã‚‹ã¾ã§ãƒ«ãƒ¼ãƒ—
         while longbool(Status.dwNextCache) and (Status.dwNextCache < dwTime) do begin
-            // ƒLƒƒƒbƒVƒ…‚·‚éˆÊ’u‚Ü‚ÅƒV[ƒN
+            // ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã™ã‚‹ä½ç½®ã¾ã§ã‚·ãƒ¼ã‚¯
             if Status.dwNextCache > T64Count then Apu.SeekAPU(Status.dwNextCache - T64Count, byte(bCache and Option.bSeekFast));
-            // ƒLƒƒƒbƒVƒ…‚ğXV
+            // ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’æ›´æ–°
             Inc(J);
             SaveSeekCache(J);
-            // Œ»İˆÊ’u‚ğ‹L˜^
+            // ç¾åœ¨ä½ç½®ã‚’è¨˜éŒ²
             T64Count := Apu.T64Count^;
         end;
     end else begin
-        // ƒV[ƒNˆÊ’u‚ÉÅ‚à‹ß‚¢ƒLƒƒƒbƒVƒ…‚ğ“Ç‚İ‚Ş
+        // ã‚·ãƒ¼ã‚¯ä½ç½®ã«æœ€ã‚‚è¿‘ã„ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’èª­ã¿è¾¼ã‚€
         CacheSeek();
     end;
-    // ÅI“I‚ÈˆÊ’u‚Ü‚ÅƒV[ƒN
+    // æœ€çµ‚çš„ãªä½ç½®ã¾ã§ã‚·ãƒ¼ã‚¯
     if dwTime > T64Count then Apu.SeekAPU(dwTime - T64Count, byte(bCache and Option.bSeekFast));
-    // –³‰¹ŒŸoƒtƒ‰ƒO‚ğƒŠƒZƒbƒg
+    // ç„¡éŸ³æ¤œå‡ºãƒ•ãƒ©ã‚°ã‚’ãƒªã‚»ãƒƒãƒˆ
     Status.dwMuteTimeout := 0;
     Status.dwMuteCounter := Option.dwBufferNum;
-    // ƒeƒ“ƒ|‰ğÍ‚ª—LŒø‚Èê‡Aƒeƒ“ƒ|‰ğÍ‚ğ—LŒø‰»
+    // ãƒ†ãƒ³ãƒè§£æãŒæœ‰åŠ¹ãªå ´åˆã€ãƒ†ãƒ³ãƒè§£æã‚’æœ‰åŠ¹åŒ–
     if Option.bBPM then begin
-        // Œ»İˆÊ’u‚ğæ“¾
+        // ç¾åœ¨ä½ç½®ã‚’å–å¾—
         T64Count := Apu.T64Count^;
-        // ƒoƒbƒtƒ@‚ğƒNƒŠƒA
+        // ãƒãƒƒãƒ•ã‚¡ã‚’ã‚¯ãƒªã‚¢
         API_ZeroMemory(@Status.Tempo, SizeOf(TTEMPO));
-        // ƒV[ƒN’¼Œã‚ÌŠÔ‚Å‰Šú‰»
+        // ã‚·ãƒ¼ã‚¯ç›´å¾Œã®æ™‚é–“ã§åˆæœŸåŒ–
         Status.Tempo.dwStartTime := T64Count;
         Status.Tempo.dwKOnTime := T64Count;
         Status.Tempo.dwMinTime := T64Count;
         Status.Tempo.dwMaxTime := T64Count;
 {$IFDEF SPCBPMTEST}
-        // BPM ‰ğÍ‚ğŠJn
+        // BPM è§£æã‚’é–‹å§‹
         Apu.BPMStart(NULLPOINTER);
 {$ENDIF}
     end;
 end;
 
 // ================================================================================
-// SPCStop - SPC ‰‰‘t’â~
+// SPCStop - SPC æ¼”å¥åœæ­¢
 // ================================================================================
 procedure CWINDOWMAIN.SPCStop(bRestart: longbool);
 begin
-    // SPC ‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¢A‚Ü‚½‚Í‰‰‘t’â~’†‚Ìê‡‚ÍI—¹
+    // SPC ãŒé–‹ã‹ã‚Œã¦ã„ãªã„ã€ã¾ãŸã¯æ¼”å¥åœæ­¢ä¸­ã®å ´åˆã¯çµ‚äº†
     if not Status.bOpen or not Status.bPlay then exit;
-    // ƒtƒ‰ƒO‚ğİ’è
+    // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
     Status.bSPCRestart := bRestart;
 {$IFDEF TRANSMITSPC}
     Status.bPlay := false;
     Status.bPause := false;
     Apu.StopTransmitSPC();
 {$ENDIF}
-    // ‚·‚®‚ÉÄ‰‰‘t‚·‚éê‡
+    // ã™ãã«å†æ¼”å¥ã™ã‚‹å ´åˆ
     if Status.bSPCRestart then begin
 {$IFNDEF TRANSMITSPC}
-        // ‰‰‘t‚ğ’â~
+        // æ¼”å¥ã‚’åœæ­¢
         WaveReset(false);
 {$ENDIF}
-        // Ä‰‰‘t
+        // å†æ¼”å¥
         SPCPlay(PLAY_TYPE_PLAY);
     end else begin
 {$IFNDEF TRANSMITSPC}
-        // ‰‰‘t‚ğ’â~
+        // æ¼”å¥ã‚’åœæ­¢
         WaveClose(false);
 {$ENDIF}
-        // ƒfƒoƒCƒX‚ğXV
+        // ãƒ‡ãƒã‚¤ã‚¹ã‚’æ›´æ–°
         UpdateDevice(Option.dwDeviceID, WAVE_DEVICE_UPDATE_LIST);
-        // ƒƒjƒ…[‚ğXV
+        // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
         UpdateMenu();
-        // ƒCƒ“ƒWƒP[ƒ^‚ğƒŠƒZƒbƒg
+        // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’ãƒªã‚»ãƒƒãƒˆ
         ResetInfo(true);
     end;
 end;
 
 // ================================================================================
-// SPCTime - SPC ŠÔİ’è (bSet=true A”r‘¼•K{)
+// SPCTime - SPC æ™‚é–“è¨­å®š (bSet=true æ™‚ã€æ’ä»–å¿…é ˆ)
 // ================================================================================
 procedure CWINDOWMAIN.SPCTime(bCal: longbool; bDefault: longbool; bSet: longbool);
 begin
-    // ‰‰‘tŠÔ‚ğŒvZ‚·‚éê‡
+    // æ¼”å¥æ™‚é–“ã‚’è¨ˆç®—ã™ã‚‹å ´åˆ
     if bCal then begin
-        // –³‰¹ŒŸoƒtƒ‰ƒO‚ğƒŠƒZƒbƒg
+        // ç„¡éŸ³æ¤œå‡ºãƒ•ãƒ©ã‚°ã‚’ãƒªã‚»ãƒƒãƒˆ
         Status.dwMuteTimeout := 0;
         Status.dwMuteCounter := 0;
-        // ‰‰‘tŠÔAƒtƒF[ƒhƒAƒEƒgŠÔ‚ğŒvZ
+        // æ¼”å¥æ™‚é–“ã€ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“ã‚’è¨ˆç®—
         Status.bNextDefault := not bytebool(Spc.Hdr.TagFormat) or not longbool(Spc.Hdr.dwSongLen) or (Option.dwPlayMax = PLAY_MAX_DEFAULT);
         if Option.dwPlayMax = PLAY_MAX_ENDLESS then begin
             if not bDefault then begin
@@ -10682,94 +10959,96 @@ begin
         end;
         if not longbool(Status.dwDefaultTimeout) then Inc(Status.dwDefaultTimeout);
     end;
-    // ‰‰‘tŠÔ‚ğg—p‚·‚éê‡
+    // æ¼”å¥æ™‚é–“ã‚’ä½¿ç”¨ã™ã‚‹å ´åˆ
     if bDefault or (Option.dwPlayMax > PLAY_MAX_ENDLESS) then begin
-        // ƒ^ƒCƒ€ƒAƒEƒg‚ğİ’è
+        // ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆã‚’è¨­å®š
         if bCal then Status.dwNextTimeout := Status.dwDefaultTimeout;
-        // ‰‰‘tŠÔAƒtƒF[ƒhƒAƒEƒgŠÔ‚ğİ’è
+        // æ¼”å¥æ™‚é–“ã€ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“ã‚’è¨­å®š
         if bSet then Apu.SetAPULength(Status.dwAPUPlayTime, Status.dwAPUFadeTime);
     end else begin
-        // ƒ^ƒCƒ€ƒAƒEƒg‚ğİ’è
+        // ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆã‚’è¨­å®š
         if bCal then Status.dwNextTimeout := 1;
-        // ‰‰‘t’†‚Ìê‡‚Í‰‰‘tŠÔAƒtƒF[ƒhƒAƒEƒgŠÔ‚ğİ’è
+        // æ¼”å¥ä¸­ã®å ´åˆã¯æ¼”å¥æ™‚é–“ã€ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“ã‚’è¨­å®š
         if bSet and Status.bPlay then Apu.SetAPULength($FFFFFFFF, 0);
     end;
 end;
 
 // ================================================================================
-// UpdateDevice - ƒfƒoƒCƒXXV
+// UpdateDevice - ãƒ‡ãƒã‚¤ã‚¹æ›´æ–°
 // ================================================================================
 procedure CWINDOWMAIN.UpdateDevice(dwDeviceID: longint; dwFlag: longword);
 var
     I: longint;
     J: longint;
-    sBuffer: string;
+    sBuffer: utf8string;
     WaveOutCaps: TWAVEOUTCAPS;
 begin
-    // ƒfƒoƒCƒXˆê——‚ğXV‚·‚éê‡
+    // ãƒ‡ãƒã‚¤ã‚¹ä¸€è¦§ã‚’æ›´æ–°ã™ã‚‹å ´åˆ
     if longbool(dwFlag and WAVE_DEVICE_UPDATE_LIST) then begin
-        // ƒfƒoƒCƒXƒƒjƒ…[‚ğíœ
+        // ãƒ‡ãƒã‚¤ã‚¹ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’å‰Šé™¤
         for I := 0 to Status.dwDeviceNum - 1 do cmSetupDevice.RemoveItem(MENU_SETUP_DEVICE_BASE + I + 1);
-        // ƒfƒoƒCƒXˆê——‚ğæ“¾
+        // ãƒ‡ãƒã‚¤ã‚¹ä¸€è¦§ã‚’å–å¾—
         Status.dwDeviceNum := API_waveOutGetNumDevs();
         if Status.dwDeviceNum > 32 then Status.dwDeviceNum := 32;
         SetLength(Status.sDeviceName, Status.dwDeviceNum + 1);
-        // ƒfƒoƒCƒX‚ğ‰¼‘I‘ğ
+        // ãƒ‡ãƒã‚¤ã‚¹ã‚’ä»®é¸æŠ
         if dwDeviceID >= longint(Status.dwDeviceNum) then dwDeviceID := -1;
         if dwDeviceID < -1 then dwDeviceID := -1;
-        Option.dwDeviceID := dwDeviceID;
-        // ƒfƒoƒCƒXƒƒjƒ…[‚ğì¬
+        // ãƒ‡ãƒã‚¤ã‚¹ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’ä½œæˆ
         if (dwFlag and WAVE_DEVICE_INITIALIZE) = WAVE_DEVICE_INITIALIZE then J := -1 else J := 0;
         for I := J to Status.dwDeviceNum - 1 do begin
-            // ƒfƒoƒCƒX–¼‚ğæ“¾
+            // ãƒ‡ãƒã‚¤ã‚¹åã‚’å–å¾—
             if I < 0 then begin
                 sBuffer := STR_MENU_SETUP_DEVICE_MAPPER[Status.dwLanguage];
             end else begin
                 API_waveOutGetDevCaps(I, @WaveOutCaps, SizeOf(TWAVEOUTCAPS));
                 sBuffer := ChrToStr(WaveOutCaps.szPname);
+                if not longbool(Length(sBuffer)) then sBuffer := STR_MENU_SETUP_DEVICE_UNKNOWN[Status.dwLanguage];
             end;
             Status.sDeviceName[I + 1] := sBuffer;
-            // ƒfƒoƒCƒX–¼‚ğŠÈ—ª‰»‚·‚é‚½‚ßA' (' ˆÈ~‚ğíœ‚·‚é
+            // ãƒ‡ãƒã‚¤ã‚¹åã‚’ç°¡ç•¥åŒ–ã™ã‚‹ãŸã‚ã€' (' ä»¥é™ã‚’å‰Šé™¤
             if I < 0 then begin
-                cmSetupDevice.AppendMenu(MENU_SETUP_DEVICE_BASE + I + 1, pchar(sBuffer), true);
+                cmSetupDevice.AppendMenu(MENU_SETUP_DEVICE_BASE + I + 1, sBuffer, true);
                 cmSetupDevice.AppendSeparator();
             end else begin
                 J := Pos(' (', sBuffer);
                 if longbool(J) then sBuffer := Copy(sBuffer, 1, J - 1);
-                cmSetupDevice.AppendMenu(MENU_SETUP_DEVICE_BASE + I + 1, pchar(Concat('&', char($31 + I), ' : ', sBuffer)), true);
+                cmSetupDevice.AppendMenu(MENU_SETUP_DEVICE_BASE + I + 1, Concat('&', char($31 + I), ' : ', sBuffer), true);
             end;
         end;
-        // ‘O‰ñI—¹‚É‘I‘ğ‚µ‚Ä‚¢‚½ƒfƒoƒCƒX–¼‚Æˆê’v‚·‚éƒfƒoƒCƒX‚ğ—Dæ‚·‚é
-        // “¯–¼‚ÌƒfƒoƒCƒX‚ª•¡”‚ ‚éê‡‚ÍA‘O‰ñ‘I‘ğˆÊ’u‚ğ—Dæ‚·‚é
-        J := -1;
-        for I := 0 to Status.dwDeviceNum do if Status.sDeviceName[I] = Option.sDeviceName then if J = -1 then J := I else J := -2;
-        if J >= 0 then dwDeviceID := J - 1;
+        // å‰å›çµ‚äº†æ™‚ã«é¸æŠã—ã¦ã„ãŸãƒ‡ãƒã‚¤ã‚¹åã¨ä¸€è‡´ã™ã‚‹ãƒ‡ãƒã‚¤ã‚¹ã‚’å„ªå…ˆ
+        // åŒåã®ãƒ‡ãƒã‚¤ã‚¹ãŒè¤‡æ•°ã‚ã‚‹å ´åˆã¯ã€å‰å›é¸æŠä½ç½®ã‚’å„ªå…ˆ
+        if Option.dwDeviceID >= 0 then begin
+            J := -1;
+            for I := 0 to Status.dwDeviceNum do if Status.sDeviceName[I] = Option.sDeviceName then if J = -1 then J := I else J := -2;
+            if J >= 0 then dwDeviceID := J - 1;
+        end;
     end;
-    // ƒfƒoƒCƒX‚ğÄ‘I‘ğ
+    // ãƒ‡ãƒã‚¤ã‚¹ã‚’å†é¸æŠ
     if dwDeviceID >= longint(Status.dwDeviceNum) then dwDeviceID := -1;
     Option.dwDeviceID := dwDeviceID;
-    // ƒfƒoƒCƒX–¼‚ğ‹L˜^
+    // ãƒ‡ãƒã‚¤ã‚¹åã‚’è¨˜éŒ²
     if longbool(dwFlag and WAVE_DEVICE_UPDATE_SELECT) then
         if dwDeviceID < 0 then Option.sDeviceName := '' else Option.sDeviceName := Status.sDeviceName[dwDeviceID + 1];
 end;
 
 // ================================================================================
-// UpdateInfo - î•ñXV
+// UpdateInfo - æƒ…å ±æ›´æ–°
 // ================================================================================
 procedure CWINDOWMAIN.UpdateInfo(bRedraw: longbool);
 var
-    sInfo: string;
-    sBuffer: string;
+    sInfo: utf8string;
+    sBuffer: utf8string;
 begin
-    // SPC ‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¢ê‡‚ÍI—¹
+    // SPC ãŒé–‹ã‹ã‚Œã¦ã„ãªã„å ´åˆã¯çµ‚äº†
     if not Status.bOpen then exit;
-    // î•ñ‚ğì¬
+    // æƒ…å ±ã‚’ä½œæˆ
     sInfo := 'Title    : ';
     if not bytebool(Spc.Hdr.Title[0]) then sInfo := Concat(sInfo, '(Unknown)')
-    else sInfo := Concat(sInfo, ChrToStr(Spc.Hdr.Title));
+    else sInfo := Concat(sInfo, AnsiToStr(Spc.Hdr.Title));
     sInfo := Concat(sInfo, CRLF, 'Game     : ');
     if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Game[0]) then sInfo := Concat(sInfo, '(Unknown)')
-    else sInfo := Concat(sInfo, ChrToStr(Spc.Hdr.Game));
+    else sInfo := Concat(sInfo, AnsiToStr(Spc.Hdr.Game));
     sInfo := Concat(sInfo, CRLF, 'Time     :  :  :  .');
     case Option.dwInfo of
         INFO_MIXER, INFO_CHANNEL_1, INFO_CHANNEL_2, INFO_CHANNEL_3, INFO_CHANNEL_4, INFO_SCRIPT700: begin
@@ -10814,16 +11093,16 @@ begin
         INFO_SPC_1: begin
             sInfo := Concat(sInfo, CRLF, 'Artist   : ');
             if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Artist[0]) then sInfo := Concat(sInfo, '(Unknown)')
-            else sInfo := Concat(sInfo, ChrToStr(Spc.Hdr.Artist));
+            else sInfo := Concat(sInfo, AnsiToStr(Spc.Hdr.Artist));
             sInfo := Concat(sInfo, CRLF, 'Dumper   : ');
             if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Dumper[0]) then sInfo := Concat(sInfo, '(Unknown)')
-            else sInfo := Concat(sInfo, ChrToStr(Spc.Hdr.Dumper));
+            else sInfo := Concat(sInfo, AnsiToStr(Spc.Hdr.Dumper));
             sInfo := Concat(sInfo, CRLF, 'Date     : ');
             if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Date[0]) then sInfo := Concat(sInfo, '(Unknown)')
-            else sInfo := Concat(sInfo, ChrToStr(Spc.Hdr.Date));
+            else sInfo := Concat(sInfo, AnsiToStr(Spc.Hdr.Date));
             sInfo := Concat(sInfo, CRLF, 'Comment  : ');
             if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Comment[0]) then sInfo := Concat(sInfo, '(Unknown)')
-            else sInfo := Concat(sInfo, ChrToStr(Spc.Hdr.Comment));
+            else sInfo := Concat(sInfo, AnsiToStr(Spc.Hdr.Comment));
             sInfo := Concat(sInfo, CRLF, 'PlayTime : ');
             if not bytebool(Spc.Hdr.TagFormat) or not longbool(Spc.Hdr.dwSongLen) then sInfo := Concat(sInfo, '(Unknown)')
             else begin
@@ -10865,14 +11144,14 @@ begin
                 'Register : PC=     YA=     X=   SP=   ');
         end;
     end;
-    // î•ñ‚ğ•\¦
-    cwStaticMain.SetCaption(pchar(sInfo));
-    // Ä•`‰æ‚ğs‚¤ê‡‚ÍƒCƒ“ƒWƒP[ƒ^‚ğƒŠƒZƒbƒg
+    // æƒ…å ±ã‚’è¡¨ç¤º
+    cwStaticMain.SetCaption(sInfo);
+    // å†æç”»ã‚’è¡Œã†å ´åˆã¯ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’ãƒªã‚»ãƒƒãƒˆ
     if bRedraw then ResetInfo(true);
 end;
 
 // ================================================================================
-// UpdateMenu - ƒƒjƒ…[XV
+// UpdateMenu - ãƒ¡ãƒ‹ãƒ¥ãƒ¼æ›´æ–°
 // ================================================================================
 procedure CWINDOWMAIN.UpdateMenu();
 var
@@ -10884,30 +11163,30 @@ var
     dwIndex: longint;
     dwCount: longint;
 begin
-    // ƒvƒŒƒCƒŠƒXƒg‚ÌˆÊ’u‚ÆƒAƒCƒeƒ€”‚ğæ“¾
-    dwIndex := cwPlayList.SendMessage(LB_GETCURSEL, NULL, NULL);
-    dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL, NULL);
-    // ƒtƒ@ƒCƒ‹ƒƒjƒ…[‚ğXV
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®ä½ç½®ã¨ã‚¢ã‚¤ãƒ†ãƒ æ•°ã‚’å–å¾—
+    dwIndex := cwPlayList.SendMessage(LB_GETCURSEL, NULL);
+    dwCount := cwPlayList.SendMessage(LB_GETCOUNT, NULL);
+    // ãƒ•ã‚¡ã‚¤ãƒ«ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
     cmFile.SetMenuEnable(MENU_FILE_PLAY, (Status.bOpen or longbool(dwCount)) and (not Status.bPlay or Status.bPause));
     cmFile.SetMenuEnable(MENU_FILE_PAUSE, Status.bPlay and not Status.bPause);
     cmFile.SetMenuEnable(MENU_FILE_RESTART, Status.bPlay);
     cmFile.SetMenuEnable(MENU_FILE_STOP, Status.bPlay);
-    // ƒ{ƒ^ƒ“‚ğXV
+    // ãƒœã‚¿ãƒ³ã‚’æ›´æ–°
     cwButtonPlay.SetWindowEnable(Status.bOpen or longbool(dwCount));
     cwButtonRestart.SetWindowEnable(Status.bPlay);
     cwButtonStop.SetWindowEnable(Status.bPlay);
     bUp := Status.bPlay and not Status.bPause;
     bDown := Status.bShiftButton;
-    if Status.bChangePlay <> bUp then if bUp then cwButtonPlay.SetCaption(pchar(STR_BUTTON_PAUSE))
-    else cwButtonPlay.SetCaption(pchar(STR_BUTTON_PLAY));
+    if Status.bChangePlay <> bUp then if bUp then cwButtonPlay.SetCaption(STR_BUTTON_PAUSE)
+    else cwButtonPlay.SetCaption(STR_BUTTON_PLAY);
     if Status.bChangeShift <> bDown then if bDown then begin
-        cwButtonListAdd.SetCaption(pchar(STR_BUTTON_INSERT));
+        cwButtonListAdd.SetCaption(STR_BUTTON_INSERT);
     end else begin
-        cwButtonListAdd.SetCaption(pchar(STR_BUTTON_APPEND));
+        cwButtonListAdd.SetCaption(STR_BUTTON_APPEND);
     end;
     Status.bChangePlay := bUp;
     Status.bChangeShift := bDown;
-    // İ’èƒƒjƒ…[‚ğXV
+    // è¨­å®šãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
     for I := -1 to Status.dwDeviceNum - 1 do begin
         cmSetupDevice.SetMenuCheck(MENU_SETUP_DEVICE_BASE + I + 1, Option.dwDeviceID = I);
         cmSetupDevice.SetMenuEnable(MENU_SETUP_DEVICE_BASE + I + 1, not Status.bPlay);
@@ -10967,9 +11246,9 @@ begin
     end;
     cmSetupOthers.SetMenuCheck(MENU_SETUP_TOPMOST, Option.bTopMost);
     cmSetupOthers.SetMenuCheck(MENU_SETUP_NOSLEEP, Option.dwNoSleep = NOSLEEP_DISPLAY);
-    // ƒ{ƒ^ƒ“‚ğXV
+    // ãƒœã‚¿ãƒ³ã‚’æ›´æ–°
     for I := 0 to 7 do begin
-        cwCheckTrack[I].SendMessage(BM_SETCHECK, 1 - (Option.dwMute and (1 shl I)) shr I, NULL);
+        cwCheckTrack[I].SendMessage(BM_SETCHECK, 1 - (Option.dwMute and (1 shl I)) shr I);
         cwCheckTrack[I].Invalidate();
     end;
     cwButtonVolM.SetWindowEnable(Option.dwAmp > AMP_005);
@@ -10978,7 +11257,7 @@ begin
     cwButtonFast.SetWindowEnable(Option.dwSpeedBas < SPEED_800);
     cwButtonBack.SetWindowEnable(bUp);
     cwButtonNext.SetWindowEnable(bUp);
-    // ƒvƒŒƒCƒŠƒXƒgƒƒjƒ…[‚ğXV
+    // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
     if not longbool(dwCount) then begin
         bUp := false;
         bDown := false;
@@ -11002,19 +11281,19 @@ begin
     cmList.SetMenuEnable(MENU_LIST_CLEAR, bDelete);
     cmList.SetMenuEnable(MENU_LIST_UP, bUp);
     cmList.SetMenuEnable(MENU_LIST_DOWN, bDown);
-    // ƒ{ƒ^ƒ“‚ğXV
+    // ãƒœã‚¿ãƒ³ã‚’æ›´æ–°
     cwPlayList.SetWindowEnable(bDelete);
     cwButtonListAdd.SetWindowEnable(Status.bOpen and bMax);
     cwButtonListRemove.SetWindowEnable(bDelete);
     cwButtonListClear.SetWindowEnable(bDelete);
     cwButtonListUp.SetWindowEnable(bUp);
     cwButtonListDown.SetWindowEnable(bDown);
-    // ƒtƒH[ƒJƒX‚ğİ’è
+    // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’è¨­å®š
     if not API_IsWindowEnabled(API_GetFocus()) then SetTabFocus(API_GetFocus(), true);
 end;
 
 // ================================================================================
-// UpdateTitle - ƒ^ƒCƒgƒ‹•\¦
+// UpdateTitle - ã‚¿ã‚¤ãƒˆãƒ«è¡¨ç¤º
 // ================================================================================
 procedure CWINDOWMAIN.UpdateTitle(dwFlag: longword);
 
@@ -11031,10 +11310,10 @@ end;
 
 var
     dwInfo: longword;
-    sInfo: string;
+    sInfo: utf8string;
 begin
-    // ƒ^ƒCƒgƒ‹‚ğXV‚µ‚È‚¢ê‡‚ÍI—¹
-    // ƒIƒvƒVƒ‡ƒ“‘€ì‚Ìƒtƒ‰ƒO‚ğİ’è
+    // ã‚¿ã‚¤ãƒˆãƒ«ã‚’æ›´æ–°ã—ãªã„å ´åˆã¯çµ‚äº†
+    // ã‚ªãƒ—ã‚·ãƒ§ãƒ³æ“ä½œã®ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
     if not longbool(Status.dwTitle) then exit;
 {$IFDEF FREEPASCAL}
     if not (not longbool(dwFlag) or not longbool(Option.dwTimerOptionDisplay)) then begin
@@ -11044,10 +11323,10 @@ begin
         API_SetTimer(cwWindowMain.hWnd, TIMER_ID_OPTION_DISPLAY, Option.dwTimerOptionDisplay, NULLPOINTER);
         Status.dwTitle := (Status.dwTitle and TITLE_ALWAYS_FLAG) or dwFlag;
     end;
-    // ƒ^ƒCƒgƒ‹‚ğİ’è
+    // ã‚¿ã‚¤ãƒˆãƒ«ã‚’è¨­å®š
     sInfo := '';
     dwInfo := Status.dwTitle and not TITLE_ALWAYS_FLAG;
-    // ƒIƒvƒVƒ‡ƒ“‚ª•ÏX‚³‚ê‚½ê‡
+    // ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãŒå¤‰æ›´ã•ã‚ŒãŸå ´åˆ
     if longbool(dwInfo) then begin
         sInfo := Concat(sInfo, TITLE_INFO_HEADER[Status.dwLanguage]);
         case dwInfo of
@@ -11070,33 +11349,33 @@ begin
             end;
         end;
         sInfo := Concat(sInfo, TITLE_INFO_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage]);
-    // SPC ‚ªŠJ‚©‚ê‚Ä‚¢‚éê‡
+    // SPC ãŒé–‹ã‹ã‚Œã¦ã„ã‚‹å ´åˆ
     end else if Status.bOpen then begin
-        // Å¬‰»‚µ‚Ä‚¢‚éê‡
+        // æœ€å°åŒ–ã—ã¦ã„ã‚‹å ´åˆ
         if longbool(Status.dwTitle and TITLE_MINIMIZE) then begin
-            // SPC ‚Ìƒ^ƒCƒgƒ‹‚ğ’Ç‰Á
+            // SPC ã®ã‚¿ã‚¤ãƒˆãƒ«ã‚’è¿½åŠ 
             if not bytebool(Spc.Hdr.Title[0]) then sInfo := Concat(sInfo, TITLE_NAME_UNKNOWN)
-            else sInfo := Concat(sInfo, ChrToStr(Spc.Hdr.Title));
+            else sInfo := Concat(sInfo, AnsiToStr(Spc.Hdr.Title));
 {$IFDEF FREEPASCAL}
             if not (not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Game[0])) then
 {$ELSE}
             if bytebool(Spc.Hdr.TagFormat) and bytebool(Spc.Hdr.Game[0]) then
 {$ENDIF}
-                sInfo := Concat(sInfo, TITLE_NAME_SEPARATOR[Status.dwLanguage], ChrToStr(Spc.Hdr.Game));
-            sInfo := Concat(sInfo, TITLE_NAME_HEADER[Status.dwLanguage], Copy(PtrToStr(Status.lpSPCName), 1, GetSize(Status.lpSPCName, 1023)),
-                TITLE_NAME_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage]);
+                sInfo := Concat(sInfo, TITLE_NAME_SEPARATOR[Status.dwLanguage], AnsiToStr(Spc.Hdr.Game));
+            sInfo := Concat(sInfo, TITLE_NAME_HEADER[Status.dwLanguage], Status.sSPCName, TITLE_NAME_FOOTER[Status.dwLanguage],
+                TITLE_MAIN_HEADER[Status.dwLanguage]);
         end else begin
-            // SPC ‚Ìƒtƒ@ƒCƒ‹–¼‚ğ’Ç‰Á
-            sInfo := Concat(sInfo, Copy(PtrToStr(Status.lpSPCName), 1, GetSize(Status.lpSPCName, 1023)), TITLE_MAIN_HEADER[Status.dwLanguage]);
+            // SPC ã®ãƒ•ã‚¡ã‚¤ãƒ«åã‚’è¿½åŠ 
+            sInfo := Concat(sInfo, Status.sSPCName, TITLE_MAIN_HEADER[Status.dwLanguage]);
         end;
     end;
-    // ƒ^ƒCƒgƒ‹‚ğXV
+    // ã‚¿ã‚¤ãƒˆãƒ«ã‚’æ›´æ–°
     sInfo := Concat(sInfo, DEFAULT_TITLE);
-    cwWindowMain.SetCaption(pchar(sInfo));
+    cwWindowMain.SetCaption(sInfo);
 end;
 
 // ================================================================================
-// UpdateWindow - ƒEƒBƒ“ƒhƒEXV
+// UpdateWindow - ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦æ›´æ–°
 // ================================================================================
 procedure CWINDOWMAIN.UpdateWindow();
 begin
@@ -11105,33 +11384,33 @@ begin
 end;
 
 // ================================================================================
-// WaveClose - ƒfƒoƒCƒX‚ğ•Â‚¶‚é
+// WaveClose - ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‰ã˜ã‚‹
 // ================================================================================
 procedure CWINDOWMAIN.WaveClose(bForce: longbool);
 var
     I: longint;
 begin
-    // ƒfƒoƒCƒX‚ğƒŠƒZƒbƒg
+    // ãƒ‡ãƒã‚¤ã‚¹ã‚’ãƒªã‚»ãƒƒãƒˆ
     WaveReset(bForce);
-    // ƒTƒEƒ“ƒhƒoƒbƒtƒ@‚ğ‰ğ•ú
+    // ã‚µã‚¦ãƒ³ãƒ‰ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
     for I := 0 to Option.dwBufferNum - 1 do API_waveOutUnprepareHeader(Wave.dwHandle, @Wave.Header[I], SizeOf(TWAVEHDR));
-    // ƒfƒoƒCƒX‚ğƒNƒ[ƒY
+    // ãƒ‡ãƒã‚¤ã‚¹ã‚’ã‚¯ãƒ­ãƒ¼ã‚º
     if longbool(API_waveOutClose(Wave.dwHandle)) then API_Sleep(50)
-    // ƒfƒoƒCƒX‚ªŠ®‘S‚ÉƒNƒ[ƒY‚³‚ê‚é‚Ü‚Å‘Ò‹@
+    // ãƒ‡ãƒã‚¤ã‚¹ãŒå®Œå…¨ã«ã‚¯ãƒ­ãƒ¼ã‚ºã•ã‚Œã‚‹ã¾ã§å¾…æ©Ÿ
     else while not longbool(Status.dwThreadStatus and WAVE_THREAD_DEVICE_CLOSED) do API_Sleep(16);
     Status.dwThreadStatus := Status.dwThreadStatus xor WAVE_THREAD_DEVICE_CLOSED;
-    // ƒnƒ“ƒhƒ‹‚ğ‰Šú‰»
+    // ãƒãƒ³ãƒ‰ãƒ«ã‚’åˆæœŸåŒ–
     Wave.dwHandle := 0;
 end;
 
 // ================================================================================
-// WaveFormat - ƒtƒH[ƒ}ƒbƒg‰Šú‰»
+// WaveFormat - ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆåˆæœŸåŒ–
 // ================================================================================
 procedure CWINDOWMAIN.WaveFormat(dwIndex: longword);
 begin
-    // ƒ^ƒO‚Ìí—Ş‚ğ”»•Ê
+    // ã‚¿ã‚°ã®ç¨®é¡ã‚’åˆ¤åˆ¥
     case WAVE_FORMAT_TAG_ARRAY[dwIndex] of
-        WAVE_FORMAT_EXTENSIBLE: begin // WAVEFORMATEXTENSIBLE \‘¢‘Ì
+        WAVE_FORMAT_EXTENSIBLE: begin // WAVEFORMATEXTENSIBLE æ§‹é€ ä½“
             Wave.Format.wFormatTag := WAVE_FORMAT_EXTENSIBLE;
             Wave.Format.cbSize := 22;
             case Status.dwBit of
@@ -11139,7 +11418,7 @@ begin
                 else Wave.Format.SubFormat := KSDATAFORMAT_SUBTYPE_PCM;
             end;
         end;
-        WAVE_FORMAT_PCM: begin // WAVEFORMATEX \‘¢‘Ì
+        WAVE_FORMAT_PCM: begin // WAVEFORMATEX æ§‹é€ ä½“
             case Status.dwBit of
                 BIT_IEEE: Wave.Format.wFormatTag := WAVE_FORMAT_IEEE_FLOAT;
                 else Wave.Format.wFormatTag := WAVE_FORMAT_PCM;
@@ -11150,28 +11429,28 @@ begin
 end;
 
 // ================================================================================
-// WaveInit - ƒfƒoƒCƒX‰Šú‰»
+// WaveInit - ãƒ‡ãƒã‚¤ã‚¹åˆæœŸåŒ–
 // ================================================================================
 procedure CWINDOWMAIN.WaveInit();
 var
     I: longint;
     dwBit: longword;
 begin
-    // İ’è’l‚ğ’²® (ƒ`ƒƒƒ“ƒlƒ‹)
+    // è¨­å®šå€¤ã‚’èª¿æ•´ (ãƒãƒ£ãƒ³ãƒãƒ«)
     if not ((Option.dwChannel = 1) or (Option.dwChannel = 2)) then Status.dwChannel := 2
     else Status.dwChannel := Option.dwChannel;
-    // İ’è’l‚ğ’²® (ƒrƒbƒg)
+    // è¨­å®šå€¤ã‚’èª¿æ•´ (ãƒ“ãƒƒãƒˆ)
     if not (((Option.dwBit >= 1) and (Option.dwBit <= 4)) or (Option.dwBit = -4)) then Status.dwBit := 2
     else Status.dwBit := Option.dwBit;
-    // İ’è’l‚ğ’²® (ƒTƒ“ƒvƒŠƒ“ƒOƒŒ[ƒg)
+    // è¨­å®šå€¤ã‚’èª¿æ•´ (ã‚µãƒ³ãƒ—ãƒªãƒ³ã‚°ãƒ¬ãƒ¼ãƒˆ)
     if Option.dwRate < 8000 then Status.dwRate := 8000
     else if Option.dwRate > 192000 then Status.dwRate := 192000
     else Status.dwRate := Option.dwRate;
-    // ƒtƒ‰ƒO‚ğİ’è
+    // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
     Status.dwWaveMessage := WAVE_MESSAGE_MAX_COUNT;
     Status.bPlay := false;
     Status.bPause := false;
-    // ƒtƒH[ƒ}ƒbƒg‚ğ‰Šú‰»
+    // ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’åˆæœŸåŒ–
     dwBit := Abs(Status.dwBit);
     Wave.Format.wBitsPerSample := word(dwBit shl 3);
     Wave.Format.nSamplesPerSec := Status.dwRate;
@@ -11180,15 +11459,15 @@ begin
     Wave.Format.nAvgBytesPerSec := Status.dwChannel * dwBit * Status.dwRate;
     Wave.Format.wValidBitsPerSample := Wave.Format.wBitsPerSample;
     Wave.Format.dwChannelMask := $3; // FL, FR
-    // ƒoƒbƒtƒ@ƒTƒCƒY‚ğŒvZ
+    // ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’è¨ˆç®—
     Wave.dwEmuSize := Option.dwBufferTime * Wave.Format.nAvgBytesPerSec div 1000 div Wave.Format.nBlockAlign;
     Wave.dwBufSize := Wave.dwEmuSize * Wave.Format.nBlockAlign;
-    // ƒoƒbƒtƒ@‚ğŠm•Û
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
     for I := 0 to Option.dwBufferNum - 1 do GetMem(Wave.lpData[I], Wave.dwBufSize);
 end;
 
 // ================================================================================
-// WaveOpen - ƒfƒoƒCƒX‚ğŠJ‚­
+// WaveOpen - ãƒ‡ãƒã‚¤ã‚¹ã‚’é–‹ã
 // ================================================================================
 function CWINDOWMAIN.WaveOpen(): longword;
 var
@@ -11196,11 +11475,11 @@ var
     J: longint;
     WaveHdr: ^TWAVEHDR;
 begin
-    // ƒfƒoƒCƒX‚ğƒI[ƒvƒ“
+    // ãƒ‡ãƒã‚¤ã‚¹ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
     for I := 0 to WAVE_FORMAT_TAG_SIZE - 1 do begin
-        // ƒtƒH[ƒ}ƒbƒg‚ğ‰Šú‰»
+        // ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã‚’åˆæœŸåŒ–
         WaveFormat(I);
-        // ƒfƒoƒCƒX‚ğƒI[ƒvƒ“
+        // ãƒ‡ãƒã‚¤ã‚¹ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
         for J := 0 to WAVE_FORMAT_TYPE_SIZE - 1 do begin
             result := API_waveOutOpen(@Wave.dwHandle, Option.dwDeviceID, @Wave.Format, Status.dwThreadID, NULL,
                 WAVE_FORMAT_TYPE_ARRAY[J] or CALLBACK_THREAD);
@@ -11208,16 +11487,16 @@ begin
         end;
         if not longbool(result) then break;
     end;
-    // ƒtƒ‰ƒO‚ğİ’è
+    // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
     Status.dwWaveMessage := WAVE_MESSAGE_MAX_COUNT;
     Status.bPlay := not longbool(result);
     Status.bPause := false;
-    // ƒfƒoƒCƒX‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚½ê‡‚ÍI—¹
+    // ãƒ‡ãƒã‚¤ã‚¹ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ãŸå ´åˆã¯çµ‚äº†
     if not Status.bPlay then exit;
-    // ƒfƒoƒCƒX‚ªŠ®‘S‚ÉƒI[ƒvƒ“‚³‚ê‚é‚Ü‚Å‘Ò‹@
+    // ãƒ‡ãƒã‚¤ã‚¹ãŒå®Œå…¨ã«ã‚ªãƒ¼ãƒ—ãƒ³ã•ã‚Œã‚‹ã¾ã§å¾…æ©Ÿ
     while not longbool(Status.dwThreadStatus and WAVE_THREAD_DEVICE_OPENED) do API_Sleep(16);
     Status.dwThreadStatus := Status.dwThreadStatus xor WAVE_THREAD_DEVICE_OPENED;
-    // ƒTƒEƒ“ƒhƒoƒbƒtƒ@‚ğ€”õ
+    // ã‚µã‚¦ãƒ³ãƒ‰ãƒãƒƒãƒ•ã‚¡ã‚’æº–å‚™
     for I := 0 to Option.dwBufferNum - 1 do begin
         WaveHdr := @Wave.Header[I];
         API_ZeroMemory(WaveHdr, SizeOf(TWAVEHDR));
@@ -11228,29 +11507,29 @@ begin
 end;
 
 // ================================================================================
-// WavePause - ƒfƒoƒCƒXˆê’â~ (”r‘¼©“®)
+// WavePause - ãƒ‡ãƒã‚¤ã‚¹ä¸€æ™‚åœæ­¢ (æ’ä»–è‡ªå‹•)
 // ================================================================================
 function CWINDOWMAIN.WavePause(): longbool;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := false;
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
     API_EnterCriticalSection(@CriticalSectionThread);
-    // ‰‰‘t’†‚Ìê‡
+    // æ¼”å¥ä¸­ã®å ´åˆ
     if Status.bPlay and not Status.bPause then begin
-        // ƒtƒ‰ƒO‚ğİ’è
+        // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
         Status.bPause := true;
-        // ˆê’â~
+        // ä¸€æ™‚åœæ­¢
         API_waveOutPause(Wave.dwHandle);
-        // ¬Œ÷
+        // æˆåŠŸ
         result := true;
     end;
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
     API_LeaveCriticalSection(@CriticalSectionThread);
 end;
 
 // ================================================================================
-// WaveProc - ƒfƒoƒCƒXƒvƒƒV[ƒWƒƒ (dwFlag<>WAVE_PROC_GRAPH_ONLY A”r‘¼•K{)
+// WaveProc - ãƒ‡ãƒã‚¤ã‚¹ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£ (dwFlag<>WAVE_PROC_GRAPH_ONLY æ™‚ã€æ’ä»–å¿…é ˆ)
 // ================================================================================
 procedure CWINDOWMAIN.WaveProc(dwFlag: longword);
 var
@@ -11268,13 +11547,13 @@ var
     DspVoice: ^TDSPVOICE;
 
 begin
-    // ƒoƒbƒtƒ@‚ğİ’è
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è¨­å®š
     dwIndex := Wave.dwIndex;
     bInit := longbool(dwFlag and WAVE_PROC_WRITE_INIT);
     bWave := longbool(dwFlag and WAVE_PROC_WRITE_WAVE);
-    // ‰¹ºƒf[ƒ^‚ğ“]‘—‚·‚éê‡
+    // éŸ³å£°ãƒ‡ãƒ¼ã‚¿ã‚’è»¢é€ã™ã‚‹å ´åˆ
     if bWave then begin
-        // o—ÍƒŒƒxƒ‹’l‚ğ‰Šú‰»
+        // å‡ºåŠ›ãƒ¬ãƒ™ãƒ«å€¤ã‚’åˆæœŸåŒ–
         Apu.VolumeMaxLeft^ := 0;
         Apu.VolumeMaxRight^ := 0;
         for I := 0 to 7 do begin
@@ -11282,7 +11561,7 @@ begin
             Voice.VolumeMaxLeft := 0;
             Voice.VolumeMaxRight := 0;
         end;
-        // V‚µ‚¢ƒoƒbƒtƒ@‚ğæ“¾
+        // æ–°ã—ã„ãƒãƒƒãƒ•ã‚¡ã‚’å–å¾—
 {$IFDEF SPCCYCLE}
         if Status.Script700.Data.dwWork[0] = 0 then begin
           Apu.EmuAPU(Wave.lpData[dwIndex], 768, 0);
@@ -11293,18 +11572,18 @@ begin
         if Status.bWaveWrite then Apu.EmuAPU(Wave.lpData[dwIndex], Wave.dwEmuSize, 1);
         // if Status.bWaveWrite then Apu.EmuAPU(Wave.lpData[dwIndex], 24576 * 23, 0);
 {$ENDIF}
-        // ƒoƒbƒtƒ@‚ğƒfƒoƒCƒX‚É“]‘—
+        // ãƒãƒƒãƒ•ã‚¡ã‚’ãƒ‡ãƒã‚¤ã‚¹ã«è»¢é€
         if longbool(API_waveOutWrite(Wave.dwHandle, @Wave.Header[dwIndex], SizeOf(TWAVEHDR))) then begin
-            // ‚·‚Å‚ÉÄsÏ‚İ‚Ìê‡‚ÍI—¹
+            // ã™ã§ã«å†è©¦è¡Œæ¸ˆã¿ã®å ´åˆã¯çµ‚äº†
             if Status.bPause then exit;
-            // ƒtƒ‰ƒO‚ğİ’è
+            // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
             Status.bPause := true;
-            // ƒfƒbƒhƒƒbƒN‚ğ–h~‚·‚é‚½‚ßAƒEƒBƒ“ƒhƒEƒƒbƒZ[ƒW‚ğ‘—M
+            // ãƒ‡ãƒƒãƒ‰ãƒ­ãƒƒã‚¯ã‚’é˜²æ­¢ã™ã‚‹ãŸã‚ã€ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’é€ä¿¡
             cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_TRY_RESUME, NULL);
-            // I—¹
+            // çµ‚äº†
             exit;
         end;
-        // APU ƒf[ƒ^‚ğƒRƒs[
+        // APU ãƒ‡ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼
         ApuData := @Wave.Apu[dwIndex];
         ApuData.SPCApuPort.dwPort := Apu.Ram.dwPort;
         ApuData.SPCOutPort.dwPort := Apu.SPCOutPort.dwPort;
@@ -11321,44 +11600,44 @@ begin
         if dwIndex = Option.dwBufferNum then dwIndex := 0;
         Wave.dwIndex := dwIndex;
     end;
-    // ƒCƒ“ƒWƒP[ƒ^‚ğ•`‰æ‚µ‚È‚¢ê‡‚ÍI—¹
+    // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’æç”»ã—ãªã„å ´åˆã¯çµ‚äº†
     if longbool(dwFlag and WAVE_PROC_NO_GRAPH) then exit;
-    // ƒoƒbƒtƒ@‚ğİ’è
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è¨­å®š
     ApuData := @Wave.Apu[dwIndex];
     DspReg := @ApuData.DspReg;
     T64Count := ApuData.T64Count;
     T64Cache := Apu.T64Count^;
-    // î•ñ‚ğXV
+    // æƒ…å ±ã‚’æ›´æ–°
     if (longbool(Option.dwDrawInfo and DRAW_INFO_ALWAYS) or longbool(Status.dwTitle and TITLE_NORMAL)) then begin
-        // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+        // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
         API_EnterCriticalSection(@CriticalSectionStatic);
-        // ƒCƒ“ƒWƒP[ƒ^‚ğ•`‰æ
+        // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’æç”»
         if (longbool(Option.dwDrawInfo and DRAW_INFO_ALWAYS) or longbool(Status.dwReady and READY_ACTIVE))
             and not longbool(Status.dwRedrawInfo and REDRAW_LOCK_READY) then DrawInfo(ApuData, bWave);
-        // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+        // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
         API_LeaveCriticalSection(@CriticalSectionStatic);
     end;
-    // ƒLƒƒƒbƒVƒ…‚ğ•Û‘¶‚·‚éŠÔ‚É‚È‚Á‚½ê‡
+    // ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’ä¿å­˜ã™ã‚‹æ™‚é–“ã«ãªã£ãŸå ´åˆ
     if longbool(Status.dwNextCache) and (T64Cache >= Status.dwNextCache) then begin
-        // ƒLƒƒƒbƒVƒ…‚·‚éƒoƒbƒtƒ@‚ÌˆÊ’u‚ğæ“¾
+        // ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã™ã‚‹ãƒãƒƒãƒ•ã‚¡ã®ä½ç½®ã‚’å–å¾—
         J := 0;
         for I := 0 to Option.dwCacheNum - 1 do if T64Cache >= Status.SPCCache[I].Spc.Hdr.dwFadeLen then J := I;
-        // ƒLƒƒƒbƒVƒ…‚ğ•Û‘¶
+        // ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’ä¿å­˜
         SaveSeekCache(J);
     end;
-    // ƒ^ƒCƒ€ƒAƒEƒg‚ª”­¶‚µ‚Ä‚¢‚È‚¢ê‡
-    // ‰Šú‰»’†ˆÈŠOA‚©‚Â‰¹ºo—Í’†A‚©‚Âƒ^ƒCƒ€ƒAƒEƒgˆ—’†ˆÈŠOA‚©‚Âi‹æŠÔƒŠƒs[ƒgİ’èÏ‚İA‚Ü‚½‚ÍƒGƒ“ƒhƒŒƒXˆÈŠOj
+    // ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆãŒç™ºç”Ÿã—ã¦ã„ãªã„å ´åˆ
+    // åˆæœŸåŒ–ä¸­ä»¥å¤–ã€ã‹ã¤éŸ³å£°å‡ºåŠ›ä¸­ã€ã‹ã¤ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆå‡¦ç†ä¸­ä»¥å¤–ã€ã‹ã¤ï¼ˆåŒºé–“ãƒªãƒ”ãƒ¼ãƒˆè¨­å®šæ¸ˆã¿ã€ã¾ãŸã¯ã‚¨ãƒ³ãƒ‰ãƒ¬ã‚¹ä»¥å¤–ï¼‰
     if not bInit and bWave and longbool(Status.dwNextTimeout) and (Status.bTimeRepeat or (Option.dwPlayMax > PLAY_MAX_ENDLESS)) then begin
-        // ƒpƒ‰ƒ[ƒ^‰Šú‰»
+        // ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿åˆæœŸåŒ–
         J := 0;
         K := 0;
-        // ‰‰‘tŠÔ‚ªI—¹ˆÊ’u‚ğŒo‰ß‚µ‚½‚©Šm”F
+        // æ¼”å¥æ™‚é–“ãŒçµ‚äº†ä½ç½®ã‚’çµŒéã—ãŸã‹ç¢ºèª
         if Status.bTimeRepeat then begin
             if T64Count >= Status.dwLimitTime then J := 1;
         end else begin
             if T64Count >= Status.dwNextTimeout then J := 1;
         end;
-        // –³‰¹ŠÔ‚ğŠm”F
+        // ç„¡éŸ³æ™‚é–“ã‚’ç¢ºèª
         if Status.bNextDefault then begin
             for I := 0 to 7 do begin
                 DspVoice := @DspReg.Voice[I];
@@ -11379,96 +11658,98 @@ begin
                 if T64Count >= Status.dwMuteTimeout then J := 1;
             end;
         end;
-        // Ÿ‚Ì‹È‚ğ‰‰‘t‚·‚éê‡
+        // æ¬¡ã®æ›²ã‚’æ¼”å¥ã™ã‚‹å ´åˆ
         if longbool(J) then begin
-            // ‰Šú‰» (ƒ^ƒCƒ€ƒAƒEƒg‚ğİ’è)
+            // åˆæœŸåŒ– (ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆã‚’è¨­å®š)
             Status.dwNextTimeout := 0;
-            // ƒfƒbƒhƒƒbƒN‚ğ–h~‚·‚é‚½‚ßAƒEƒBƒ“ƒhƒEƒƒbƒZ[ƒW‚ğ‘—M
+            // ãƒ‡ãƒƒãƒ‰ãƒ­ãƒƒã‚¯ã‚’é˜²æ­¢ã™ã‚‹ãŸã‚ã€ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’é€ä¿¡
             cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_NEXT_PLAY, NULL);
         end;
     end;
 end;
 
 // ================================================================================
-// WaveQuit - ƒfƒoƒCƒX‰ğ•ú
+// WaveQuit - ãƒ‡ãƒã‚¤ã‚¹è§£æ”¾
 // ================================================================================
 procedure CWINDOWMAIN.WaveQuit();
 var
     I: longint;
 begin
 {$IFNDEF TRANSMITSPC}
-    // ‰‰‘t’†‚Ìê‡‚ÍƒfƒoƒCƒX‚ğƒNƒ[ƒY
+    // æ¼”å¥ä¸­ã®å ´åˆã¯ãƒ‡ãƒã‚¤ã‚¹ã‚’ã‚¯ãƒ­ãƒ¼ã‚º
     if Status.bPlay then WaveClose(false);
 {$ENDIF}
-    // ƒoƒbƒtƒ@‚ğ‰ğ•ú
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
     for I := 0 to Option.dwBufferNum - 1 do FreeMem(Wave.lpData[I], Wave.dwBufSize);
 end;
 
 // ================================================================================
-// WaveReset - ƒfƒoƒCƒXƒŠƒZƒbƒg (”r‘¼©“®)
+// WaveReset - ãƒ‡ãƒã‚¤ã‚¹ãƒªã‚»ãƒƒãƒˆ (æ’ä»–è‡ªå‹•)
 // ================================================================================
 procedure CWINDOWMAIN.WaveReset(bForce: longbool);
 var
     I: longint;
     dwResult: longword;
 begin
-    // Script700 ‚ğ‹­§I—¹
+    // Script700 ã‚’å¼·åˆ¶çµ‚äº†
     Status.Script700.Data.cStatusFlag := Status.Script700.Data.cStatusFlag or $80;
     Status.bWaveWrite := false;
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
     API_EnterCriticalSection(@CriticalSectionThread);
-    // ƒtƒ‰ƒO‚ğİ’è
+    // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
     Status.dwWaveMessage := WAVE_MESSAGE_MAX_COUNT;
     Status.bPlay := false;
     Status.bPause := false;
-    // ƒAƒCƒhƒ‹‚Ü‚Å‚ÌƒJƒEƒ“ƒg‚ğİ’è
+    // ã‚¢ã‚¤ãƒ‰ãƒ«ã¾ã§ã®ã‚«ã‚¦ãƒ³ãƒˆã‚’è¨­å®š
     Status.dwThreadIdle := Option.dwBufferNum;
-    // ƒfƒoƒCƒX‚ğƒŠƒZƒbƒg
+    // ãƒ‡ãƒã‚¤ã‚¹ã‚’ãƒªã‚»ãƒƒãƒˆ
     dwResult := API_waveOutReset(Wave.dwHandle);
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
     API_LeaveCriticalSection(@CriticalSectionThread);
-    // ƒfƒoƒCƒX‚ªƒAƒCƒhƒ‹ó‘Ô‚É‚È‚é‚Ü‚Å‘Ò‹@
+    // ãƒ‡ãƒã‚¤ã‚¹ãŒã‚¢ã‚¤ãƒ‰ãƒ«çŠ¶æ…‹ã«ãªã‚‹ã¾ã§å¾…æ©Ÿ
     if bForce or longbool(dwResult) then API_Sleep(50)
     else while longbool(Status.dwThreadIdle) do API_Sleep(16);
-    // ƒCƒ“ƒWƒP[ƒ^‚ğƒNƒŠƒA
+    // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’ã‚¯ãƒªã‚¢
     for I := 0 to Option.dwBufferNum - 1 do API_ZeroMemory(@Wave.Apu[I], SizeOf(TAPUDATA));
 {$IFDEF SPCBPMTEST}
-    // ƒeƒ“ƒ|‰ğÍ‚ª—LŒø‚Èê‡ABPM ‰ğÍ‚ğ’â~
+    // ãƒ†ãƒ³ãƒè§£æãŒæœ‰åŠ¹ãªå ´åˆã€BPM è§£æã‚’åœæ­¢
     if Option.bBPM then Apu.BPMStop();
 {$ELSE}
-    // ƒeƒ“ƒ|‰ğÍ‚ª—LŒø‚Èê‡Aƒeƒ“ƒ|‚ğƒNƒŠƒA
+    // ãƒ†ãƒ³ãƒè§£æãŒæœ‰åŠ¹ãªå ´åˆã€ãƒ†ãƒ³ãƒã‚’ã‚¯ãƒªã‚¢
     if Option.bBPM then API_ZeroMemory(@Status.Tempo, SizeOf(TTEMPO));
 {$ENDIF}
 end;
 
 // ================================================================================
-// WaveResume - ƒfƒoƒCƒXÄŠJ (”r‘¼©“®)
+// WaveResume - ãƒ‡ãƒã‚¤ã‚¹å†é–‹ (æ’ä»–è‡ªå‹•)
 // ================================================================================
 function CWINDOWMAIN.WaveResume(): longbool;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := false;
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
     API_EnterCriticalSection(@CriticalSectionThread);
-    // ˆê’â~’†‚Ìê‡
+    // ä¸€æ™‚åœæ­¢ä¸­ã®å ´åˆ
     if Status.bPlay and Status.bPause then begin
-        // ƒtƒ‰ƒO‚ğİ’è
+        // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
         Status.bPause := false;
-        // ˆê’â~‚ğ‰ğœ
+        // ä¸€æ™‚åœæ­¢ã‚’è§£é™¤
         API_waveOutRestart(Wave.dwHandle);
-        // ¬Œ÷
+        // æˆåŠŸ
         result := true;
     end;
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
     API_LeaveCriticalSection(@CriticalSectionThread);
 end;
 
 // ================================================================================
-// WaveSave - WAVE ƒtƒ@ƒCƒ‹‚Ì•Û‘¶
+// WaveSave - WAVE ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¿å­˜
 // ================================================================================
-function CWINDOWMAIN.WaveSave(lpFile: pointer; bShift: longbool; bQuiet: longbool): longbool;
+function CWINDOWMAIN.WaveSave(const sPath: utf8string; bShift: longbool; bQuiet: longbool): longbool;
 var
     I: longint;
+    J: longword;
+    K: longword;
     hFile: longword;
     dwWaveL: longword;
     dwWaveB: longword;
@@ -11484,7 +11765,7 @@ var
     qwData: TLONGLONG;
     lpData: pointer;
 
-function GetMBString(dwSize: longword): string;
+function GetMBString(dwSize: longword): utf8string;
 var
     dwInt: longword;
     dwDec1: longword;
@@ -11498,21 +11779,21 @@ begin
 end;
 
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := false;
-    // ‰‰‘t’â~
+    // æ¼”å¥åœæ­¢
     SPCStop(false);
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
     API_EnterCriticalSection(@CriticalSectionThread);
-    // SPC ‚ğ APU ‚É“]‘—
+    // SPC ã‚’ APU ã«è»¢é€
     Apu.LoadSPCFile(@Spc);
-    // SPC ‰‰‘tİ’è
+    // SPC æ¼”å¥è¨­å®š
     SPCOption();
-    // ‰‰‘tŠÔAƒtƒF[ƒhƒAƒEƒgŠÔ‚ğİ’è
+    // æ¼”å¥æ™‚é–“ã€ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“ã‚’è¨­å®š
     SPCTime(true, true, true);
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
     API_LeaveCriticalSection(@CriticalSectionThread);
-    // ƒwƒbƒ_ƒTƒCƒY‚ğŒvZ
+    // ãƒ˜ãƒƒãƒ€ã‚µã‚¤ã‚ºã‚’è¨ˆç®—
     case Option.dwWaveFormat of
         1: WaveFormat(WAVE_FORMAT_INDEX_PCM);
         2: WaveFormat(WAVE_FORMAT_INDEX_EXTENSIBLE);
@@ -11524,160 +11805,166 @@ begin
     dwSizeH := 16;
     if wordbool(Wave.Format.cbSize) then Inc(dwSizeH, Wave.Format.cbSize + 2);
     dwSizeP := dwSizeH + 28; // "RIFF" + 4 + "WAVE" + "fmt " + 4 + HEADER + "data" + 4
-    // –³‰¹‚ÌƒTƒCƒY‚ğŒvZ
-    dwWaveL := Option.dwWaveBlank; // Å‰‚Ì–³‰¹ŠÔ
+    // ç„¡éŸ³ã®ã‚µã‚¤ã‚ºã‚’è¨ˆç®—
+    dwWaveL := Option.dwWaveBlank; // æœ€åˆã®ç„¡éŸ³æ™‚é–“
     dwBlank := 0;
     if (dwWaveL < $80000000) and not longbool(Option.dwMute and $FF) then begin
-        Inc(dwWaveL, dwWaveL mod 100); // ŠÔŠu’²®
+        Inc(dwWaveL, dwWaveL mod 100); // é–“éš”èª¿æ•´
         dwBlank := dwWaveL div 100;
     end;
-    // ‰¹º‚ÌƒTƒCƒY‚ğŒvZ
+    // éŸ³å£°ã®ã‚µã‚¤ã‚ºã‚’è¨ˆç®—
     qwWaveL := int64((Status.dwAPUPlayTime + Status.dwAPUFadeTime) shr 6) * SPEED_100;
     dwWaveB := Option.dwSpeedBas + longword(longint(Option.dwSpeedBas) * Option.dwSpeedTun div SPEED_100);
     dwWaveL := qwWaveL div dwWaveB;
-    Inc(dwWaveL, dwWaveL mod 100); // ŠÔŠu’²®
+    Inc(dwWaveL, dwWaveL mod 100); // é–“éš”èª¿æ•´
     dwCount := dwWaveL div 100;
-    // ƒoƒbƒtƒ@ƒTƒCƒY‚ğŒvZ
-    dwWaveB := Wave.Format.nAvgBytesPerSec div 10 div longword(Wave.Format.nBlockAlign); // 100ms ‚²‚Æ‚ÌƒTƒ“ƒvƒ‹”
-    dwSizeB := dwWaveB * longword(Wave.Format.nBlockAlign); // 100ms ‚²‚Æ‚ÌƒoƒCƒg”
-    dwSizeT := dwSizeP + (dwBlank + dwCount + 10) * dwSizeB; // ƒwƒbƒ_ + Å‰‚Ì–³‰¹ + ‰¹º + ÅŒã‚Ì–³‰¹
-    // Šm”FƒƒbƒZ[ƒW‚ğ•\¦
-    if not bQuiet then if cwWindowMain.MessageBox(pchar(Concat(WARN_WAVE_SIZE_1[Status.dwLanguage], GetMBString(dwSizeT),
-        WARN_WAVE_SIZE_2[Status.dwLanguage])), pchar(DEFAULT_TITLE), MB_ICONQUESTION or MB_YESNO or MB_DEFBUTTON2) <> IDYES then exit;
-    // ƒtƒ@ƒCƒ‹‚ğƒI[ƒvƒ“
+    // ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’è¨ˆç®—
+    dwWaveB := Wave.Format.nAvgBytesPerSec div 10 div longword(Wave.Format.nBlockAlign); // 100ms ã”ã¨ã®ã‚µãƒ³ãƒ—ãƒ«æ•°
+    dwSizeB := dwWaveB * longword(Wave.Format.nBlockAlign); // 100ms ã”ã¨ã®ãƒã‚¤ãƒˆæ•°
+    dwSizeT := dwSizeP + (dwBlank + dwCount + 10) * dwSizeB; // ãƒ˜ãƒƒãƒ€ + æœ€åˆã®ç„¡éŸ³ + éŸ³å£° + æœ€å¾Œã®ç„¡éŸ³
+    // ç¢ºèªãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤º
+    if not bQuiet then if cwWindowMain.MessageBox(Concat(WARN_WAVE_SIZE_1[Status.dwLanguage], GetMBString(dwSizeT),
+        WARN_WAVE_SIZE_2[Status.dwLanguage]), DEFAULT_TITLE, MB_ICONQUESTION or MB_YESNO or MB_DEFBUTTON2) <> IDYES then exit;
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
     hFile := INVALID_HANDLE_VALUE;
-    if IsSafePath(lpFile) then begin
-        API_MakeSureDirectoryPathExists(lpFile);
-        hFile := API_CreateFile(lpFile, GENERIC_WRITE, FILE_SHARE_READ, NULLPOINTER, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL
-            or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    if IsSafePath(sPath) then begin
+        J := Length(sPath);
+        K := J;
+        for I := 1 to K do begin
+            if sPath[I] = NULLCHAR then break;
+            if IsPathSeparator(sPath, I) then J := I;
+        end;
+        API_SHCreateDirectoryEx(cwWindowMain.hWnd, StrToPtr(Copy(sPath, 1, J - 1)), NULLPOINTER);
+        hFile := API_CreateFile(StrToPtr(sPath), GENERIC_WRITE, FILE_SHARE_READ, NULLPOINTER, CREATE_ALWAYS,
+            FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
     end;
-    // ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚½ê‡‚ÍƒƒbƒZ[ƒW‚ğ•\¦‚µ‚ÄI—¹
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ãŸå ´åˆã¯ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã—ã¦çµ‚äº†
     if hFile = INVALID_HANDLE_VALUE then begin
         ShowErrMsg(252);
         exit;
     end;
-    // isó‹µ‚ğ•\¦
-    cwWindowMain.SetCaption(pchar(Concat(TITLE_INFO_HEADER[Status.dwLanguage], TITLE_INFO_FILE_HEADER[Status.dwLanguage],
-        TITLE_INFO_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage], DEFAULT_TITLE)));
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+    // é€²è¡ŒçŠ¶æ³ã‚’è¡¨ç¤º
+    cwWindowMain.SetCaption(Concat(TITLE_INFO_HEADER[Status.dwLanguage], TITLE_INFO_FILE_HEADER[Status.dwLanguage],
+        TITLE_INFO_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage], DEFAULT_TITLE));
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
     API_EnterCriticalSection(@CriticalSectionThread);
-    // WAVE ƒwƒbƒ_‚ğo—Í (ƒTƒCƒY = WaveHeader + 28)
+    // WAVE ãƒ˜ãƒƒãƒ€ã‚’å‡ºåŠ› (ã‚µã‚¤ã‚º = WaveHeader + 28)
     dwSizeT := 0;
-    qwData.l := $46464952; // "RIFF" + ƒTƒCƒY (Œã‚ÅŒvZ)
+    qwData.l := $46464952; // "RIFF" + ã‚µã‚¤ã‚º (å¾Œã§è¨ˆç®—)
     API_WriteFile(hFile, @qwData, 8, @dwSizeT, NULLPOINTER);
     qwData.l := $45564157; // "WAVE"
     API_WriteFile(hFile, @qwData, 4, @dwSizeT, NULLPOINTER);
-    qwData.l := $20746D66; // "fmt " + ƒTƒCƒY
+    qwData.l := $20746D66; // "fmt " + ã‚µã‚¤ã‚º
     qwData.h := dwSizeH;
     API_WriteFile(hFile, @qwData, 8, @dwSizeT, NULLPOINTER);
     API_WriteFile(hFile, @Wave.Format, dwSizeH, @dwSizeT, NULLPOINTER);
-    qwData.l := $61746164; // "data" + ƒTƒCƒY (Œã‚ÅŒvZ)
+    qwData.l := $61746164; // "data" + ã‚µã‚¤ã‚º (å¾Œã§è¨ˆç®—)
     API_WriteFile(hFile, @qwData, 8, @dwSizeT, NULLPOINTER);
-    // ƒoƒbƒtƒ@‚ğŠm•Û
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
     GetMem(lpData, dwSizeB);
-    // Å‰‚Ì–³‰¹‚ğo—Í
+    // æœ€åˆã®ç„¡éŸ³ã‚’å‡ºåŠ›
     if Status.dwBit = BIT_8 then API_FillMemory(lpData, dwSizeB, $80)
     else API_ZeroMemory(lpData, dwSizeB);
     if longbool(dwBlank) then for I := 0 to dwBlank - 1 do begin
         API_WriteFile(hFile, lpData, dwSizeB, @dwSizeT, NULLPOINTER);
         Inc(dwSizeP, dwSizeB);
     end;
-    // WAVE ƒf[ƒ^‚ğo—Í
+    // WAVE ãƒ‡ãƒ¼ã‚¿ã‚’å‡ºåŠ›
     dwPCent := $FFFFFFFF;
-    dwSizeL := dwSizeP; // ÅŒã‚Ìƒ|ƒCƒ“ƒ^AŒ»İ‚Ìƒ|ƒCƒ“ƒ^
+    dwSizeL := dwSizeP; // æœ€å¾Œã®ãƒã‚¤ãƒ³ã‚¿ã€ç¾åœ¨ã®ãƒã‚¤ãƒ³ã‚¿
     if (Option.dwWaveBlank >= 0) and not longbool(Option.dwMute and $FF) then dwSizeT := 0 else dwSizeT := 1;
     for I := 0 to dwCount - 1 do begin
-        // V‚µ‚¢ƒoƒbƒtƒ@‚ğæ“¾
+        // æ–°ã—ã„ãƒãƒƒãƒ•ã‚¡ã‚’å–å¾—
         Apu.VolumeMaxLeft^ := 0;
         Apu.VolumeMaxRight^ := 0;
         Apu.EmuAPU(lpData, dwWaveB, 1);
-        // –³‰¹‚ğŒŸo
+        // ç„¡éŸ³ã‚’æ¤œå‡º
         if not longbool(dwSizeT) then begin
             if (Apu.VolumeMaxLeft^ >= MIN_WAVE_LEVEL) or (Apu.VolumeMaxRight^ >= MIN_WAVE_LEVEL) then Inc(dwSizeT);
         end;
-        // ƒtƒ@ƒCƒ‹‚Éo—Í
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã«å‡ºåŠ›
         if longbool(dwSizeT) then begin
             API_WriteFile(hFile, lpData, dwSizeB, @dwSizeT, NULLPOINTER);
             Inc(dwSizeP, dwSizeB);
             if (Apu.VolumeMaxLeft^ >= MIN_WAVE_LEVEL) or (Apu.VolumeMaxRight^ >= MIN_WAVE_LEVEL) then dwSizeL := dwSizeP;
         end;
-        // isó‹µ‚ğ•\¦
+        // é€²è¡ŒçŠ¶æ³ã‚’è¡¨ç¤º
         dwWaveL := longword(I + 1) * 10 div dwCount * 10;
         if dwWaveL <> dwPCent then begin
             dwPCent := dwWaveL;
-            cwWindowMain.SetCaption(pchar(Concat(TITLE_INFO_HEADER[Status.dwLanguage], TITLE_INFO_FILE_HEADER[Status.dwLanguage],
+            cwWindowMain.SetCaption(Concat(TITLE_INFO_HEADER[Status.dwLanguage], TITLE_INFO_FILE_HEADER[Status.dwLanguage],
                 IntToStr(dwPCent), TITLE_INFO_FILE_PROC[Status.dwLanguage], TITLE_INFO_FOOTER[Status.dwLanguage],
-                TITLE_MAIN_HEADER[Status.dwLanguage], DEFAULT_TITLE)));
+                TITLE_MAIN_HEADER[Status.dwLanguage], DEFAULT_TITLE));
         end;
     end;
-    // ÅŒã‚Ì–³‰¹ (1000ms) ‚ğo—Í
+    // æœ€å¾Œã®ç„¡éŸ³ (1000ms) ã‚’å‡ºåŠ›
     if Status.dwBit = BIT_8 then API_FillMemory(lpData, dwSizeB, $80)
     else API_ZeroMemory(lpData, dwSizeB);
     for I := 0 to 9 do begin
         API_WriteFile(hFile, lpData, dwSizeB, @dwSizeT, NULLPOINTER);
         Inc(dwSizeL, dwSizeB);
     end;
-    // ƒoƒbƒtƒ@‚ğ‰ğ•ú
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
     FreeMem(lpData, dwSizeB);
-    // ƒoƒbƒtƒ@ƒTƒCƒY‚ğo—Í
+    // ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’å‡ºåŠ›
     dwSizeB := 0;
     API_SetFilePointer(hFile, 4, @dwSizeB, FILE_BEGIN);
-    dwSizeP := dwSizeL - 8; // ƒtƒ@ƒCƒ‹ƒTƒCƒY - ("RIFF" + 4)
+    dwSizeP := dwSizeL - 8; // ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚º - ("RIFF" + 4)
     API_WriteFile(hFile, @dwSizeP, 4, @dwSizeT, NULLPOINTER);
     API_SetFilePointer(hFile, dwSizeH + 24, @dwSizeB, FILE_BEGIN);
-    dwSizeP := dwSizeL - dwSizeH - 28; // ƒf[ƒ^ƒTƒCƒY
+    dwSizeP := dwSizeL - dwSizeH - 28; // ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚º
     API_WriteFile(hFile, @dwSizeP, 4, @dwSizeT, NULLPOINTER);
-    // ƒtƒ@ƒCƒ‹‚ÌI’[ˆÊ’u‚ğİ’è
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã®çµ‚ç«¯ä½ç½®ã‚’è¨­å®š
     API_SetFilePointer(hFile, dwSizeL, @dwSizeB, FILE_BEGIN);
     API_SetEndOfFile(hFile);
-    // ƒtƒ@ƒCƒ‹‚ğƒNƒ[ƒY
+    // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¯ãƒ­ãƒ¼ã‚º
     API_CloseHandle(hFile);
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
     API_LeaveCriticalSection(@CriticalSectionThread);
-    // ƒ^ƒCƒgƒ‹‚ğXV
+    // ã‚¿ã‚¤ãƒˆãƒ«ã‚’æ›´æ–°
     UpdateTitle(NULL);
-    // ƒƒbƒZ[ƒW‚ğ•\¦
-    if not bQuiet then cwWindowMain.MessageBox(pchar(Concat(INFO_WAVE_FINISH_1[Status.dwLanguage], GetMBString(dwSizeL),
-        INFO_WAVE_FINISH_2[Status.dwLanguage])), pchar(DEFAULT_TITLE), MB_ICONINFORMATION or MB_OK);
-    // ¬Œ÷
+    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤º
+    if not bQuiet then cwWindowMain.MessageBox(Concat(INFO_WAVE_FINISH_1[Status.dwLanguage], GetMBString(dwSizeL),
+        INFO_WAVE_FINISH_2[Status.dwLanguage]), DEFAULT_TITLE, MB_ICONINFORMATION or MB_OK);
+    // æˆåŠŸ
     result := true;
 end;
 
 // ================================================================================
-// WaveStart - ƒfƒoƒCƒX‰‰‘tŠJn (”r‘¼•K{)
+// WaveStart - ãƒ‡ãƒã‚¤ã‚¹æ¼”å¥é–‹å§‹ (æ’ä»–å¿…é ˆ)
 // ================================================================================
 procedure CWINDOWMAIN.WaveStart();
 var
     I: longint;
     J: longint;
 begin
-    // ˆê’â~
+    // ä¸€æ™‚åœæ­¢
     API_waveOutPause(Wave.dwHandle);
-    // ƒoƒbƒtƒ@“]‘—
+    // ãƒãƒƒãƒ•ã‚¡è»¢é€
     J := Option.dwBufferNum - 1;
     for I := 0 to J do WaveProc((J - I) or WAVE_PROC_WRITE_WAVE or WAVE_PROC_WRITE_INIT);
-    // ‰‰‘tŠJn
+    // æ¼”å¥é–‹å§‹
     API_waveOutRestart(Wave.dwHandle);
 end;
 
 // ================================================================================
-// WindowProc - ƒƒbƒZ[ƒWŠ„
+// WindowProc - ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‰²è¾¼
 // ================================================================================
 function CWINDOWMAIN.WindowProc(hWnd: longword; msg: longword; wParam: longword; lParam: longword; var dwDef: longword): longword;
 
 procedure SetSPCTime();
 begin
-    // ‰‰‘tŠÔAƒtƒF[ƒhƒAƒEƒgŠÔ‚ğİ’è
+    // æ¼”å¥æ™‚é–“ã€ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“ã‚’è¨­å®š
     SPCTime(true, false, false);
-    // SPC ‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¢A‚Ü‚½‚Í‰‰‘t’â~’†‚Ìê‡‚ÍI—¹
+    // SPC ãŒé–‹ã‹ã‚Œã¦ã„ãªã„ã€ã¾ãŸã¯æ¼”å¥åœæ­¢ä¸­ã®å ´åˆã¯çµ‚äº†
     if not Status.bOpen or not Status.bPlay then exit;
-    // ƒXƒŒƒbƒh‚Éİ’è•ÏX‚ğ’Ê’m
+    // ã‚¹ãƒ¬ãƒƒãƒ‰ã«è¨­å®šå¤‰æ›´ã‚’é€šçŸ¥
     API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_TIME, NULL);
 end;
 
 procedure ResetRepeatPosision();
 begin
-    // ƒŠƒs[ƒgŠJnˆÊ’uAƒŠƒs[ƒgI—¹ˆÊ’u‚ğ‰Šú‰»
+    // ãƒªãƒ”ãƒ¼ãƒˆé–‹å§‹ä½ç½®ã€ãƒªãƒ”ãƒ¼ãƒˆçµ‚äº†ä½ç½®ã‚’åˆæœŸåŒ–
     Status.dwStartTime := 0;
     Status.dwLimitTime := Status.dwDefaultTimeout;
     Status.bTimeRepeat := false;
@@ -11685,12 +11972,12 @@ end;
 
 procedure ResetTimeMark();
 begin
-    // SPC ‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¢A‚Ü‚½‚Í‹æŠÔƒŠƒs[ƒg‚ª–³Œø‚Ìê‡‚ÍI—¹
+    // SPC ãŒé–‹ã‹ã‚Œã¦ã„ãªã„ã€ã¾ãŸã¯åŒºé–“ãƒªãƒ”ãƒ¼ãƒˆãŒç„¡åŠ¹ã®å ´åˆã¯çµ‚äº†
     if not Status.bOpen or not Status.bTimeRepeat then exit;
-    // ƒŠƒs[ƒgŠJnˆÊ’uAƒŠƒs[ƒgI—¹ˆÊ’u‚ğ‰Šú‰»
+    // ãƒªãƒ”ãƒ¼ãƒˆé–‹å§‹ä½ç½®ã€ãƒªãƒ”ãƒ¼ãƒˆçµ‚äº†ä½ç½®ã‚’åˆæœŸåŒ–
     Option.dwPlayOrder := Status.dwPlayOrder;
     ResetRepeatPosision();
-    // ƒCƒ“ƒWƒP[ƒ^‚ğÄ•`‰æ
+    // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’å†æç”»
     cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
 end;
 
@@ -11698,30 +11985,30 @@ procedure ChangeSPCTime();
 var
     dwPlayMax: longint;
 begin
-    // Œ»İ‚Ìİ’è’l‚ğ‹L˜^
+    // ç¾åœ¨ã®è¨­å®šå€¤ã‚’è¨˜éŒ²
     dwPlayMax := Option.dwPlayMax;
-    // ƒtƒ‰ƒO‚ğİ’è
+    // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
     if wParam = MENU_SETUP_TIME_DISABLE then Option.dwPlayMax := PLAY_MAX_ENDLESS
     else if wParam = MENU_SETUP_TIME_ID666 then Option.dwPlayMax := PLAY_MAX_ID666
     else if wParam = MENU_SETUP_TIME_DEFAULT then Option.dwPlayMax := PLAY_MAX_DEFAULT;
-    // ‰‰‘tŠÔAƒtƒF[ƒhƒAƒEƒgŠÔ‚ğİ’è
+    // æ¼”å¥æ™‚é–“ã€ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆæ™‚é–“ã‚’è¨­å®š
     SetSPCTime();
-    // İ’è‚ª•ÏX‚³‚ê‚½ê‡‚ÍAƒŠƒs[ƒgŠJnˆÊ’uAƒŠƒs[ƒgI—¹ˆÊ’u‚ğ‰Šú‰»
+    // è¨­å®šãŒå¤‰æ›´ã•ã‚ŒãŸå ´åˆã¯ã€ãƒªãƒ”ãƒ¼ãƒˆé–‹å§‹ä½ç½®ã€ãƒªãƒ”ãƒ¼ãƒˆçµ‚äº†ä½ç½®ã‚’åˆæœŸåŒ–
     if dwPlayMax <> Option.dwPlayMax then begin
         if Status.bTimeRepeat then Option.dwPlayOrder := Status.dwPlayOrder;
         ResetRepeatPosision();
     end;
-    // ƒCƒ“ƒWƒP[ƒ^‚ğÄ•`‰æ
+    // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’å†æç”»
     cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
 end;
 
 procedure ForceRepeatMode();
 begin
-    // ‹­§“I‚ÉƒŠƒs[ƒgƒ‚[ƒh‚Éİ’è
+    // å¼·åˆ¶çš„ã«ãƒªãƒ”ãƒ¼ãƒˆãƒ¢ãƒ¼ãƒ‰ã«è¨­å®š
     if not Status.bTimeRepeat then Status.dwPlayOrder := Option.dwPlayOrder;
     if Option.dwPlayOrder <> PLAY_ORDER_STOP then Option.dwPlayOrder := PLAY_ORDER_REPEAT;
     Status.bTimeRepeat := true;
-    // ƒCƒ“ƒWƒP[ƒ^‚ğÄ•`‰æ
+    // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’å†æç”»
     cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
 end;
 
@@ -11729,26 +12016,26 @@ procedure SetStartTimeMark();
 var
     dwTime: longword;
 begin
-    // SPC ‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¢A‰‰‘t’â~’†A‚Ü‚½‚Íƒ^ƒCƒ€ƒAƒEƒg‚ª”­¶‚µ‚½ê‡‚ÍI—¹
+    // SPC ãŒé–‹ã‹ã‚Œã¦ã„ãªã„ã€æ¼”å¥åœæ­¢ä¸­ã€ã¾ãŸã¯ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆãŒç™ºç”Ÿã—ãŸå ´åˆã¯çµ‚äº†
     if not Status.bOpen or not Status.bPlay or not longbool(Status.dwNextTimeout) then exit;
-    // Œ»İ‚ÌêŠ‚ªƒV[ƒNƒo[‚ğ’´‚¦‚éê‡‚ÍI—¹
+    // ç¾åœ¨ã®å ´æ‰€ãŒã‚·ãƒ¼ã‚¯ãƒãƒ¼ã‚’è¶…ãˆã‚‹å ´åˆã¯çµ‚äº†
     dwTime := Wave.Apu[Wave.dwIndex].T64Count;
     if dwTime >= Status.dwDefaultTimeout then exit;
-    // Œ»İ‚ÌêŠ‚ğƒŠƒs[ƒgŠJnˆÊ’u‚Éİ’è
+    // ç¾åœ¨ã®å ´æ‰€ã‚’ãƒªãƒ”ãƒ¼ãƒˆé–‹å§‹ä½ç½®ã«è¨­å®š
     Status.dwStartTime := dwTime;
     if Status.dwLimitTime < Status.dwStartTime then Status.dwLimitTime := Status.dwStartTime;
-    // ‹­§“I‚ÉƒŠƒs[ƒgƒ‚[ƒh‚Éİ’è
+    // å¼·åˆ¶çš„ã«ãƒªãƒ”ãƒ¼ãƒˆãƒ¢ãƒ¼ãƒ‰ã«è¨­å®š
     ForceRepeatMode();
 end;
 
 procedure SetLimitTimeMark();
 begin
-    // SPC ‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¢A‰‰‘t’â~’†A‚Ü‚½‚Íƒ^ƒCƒ€ƒAƒEƒg‚ª”­¶‚µ‚½ê‡‚ÍI—¹
+    // SPC ãŒé–‹ã‹ã‚Œã¦ã„ãªã„ã€æ¼”å¥åœæ­¢ä¸­ã€ã¾ãŸã¯ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆãŒç™ºç”Ÿã—ãŸå ´åˆã¯çµ‚äº†
     if not Status.bOpen or not Status.bPlay or not longbool(Status.dwNextTimeout) then exit;
-    // Œ»İ‚ÌêŠ‚ğƒŠƒs[ƒgI—¹ˆÊ’u‚Éİ’è
+    // ç¾åœ¨ã®å ´æ‰€ã‚’ãƒªãƒ”ãƒ¼ãƒˆçµ‚äº†ä½ç½®ã«è¨­å®š
     Status.dwLimitTime := Wave.Apu[Wave.dwIndex].T64Count;
     if Status.dwStartTime > Status.dwLimitTime then Status.dwStartTime := Status.dwLimitTime;
-    // ‹­§“I‚ÉƒŠƒs[ƒgƒ‚[ƒh‚Éİ’è
+    // å¼·åˆ¶çš„ã«ãƒªãƒ”ãƒ¼ãƒˆãƒ¢ãƒ¼ãƒ‰ã«è¨­å®š
     ForceRepeatMode();
 end;
 
@@ -11757,119 +12044,113 @@ var
     X: longword;
     Y: longword;
 begin
-    // ƒNƒŠƒbƒNˆÊ’u‚ğæ“¾
+    // ã‚¯ãƒªãƒƒã‚¯ä½ç½®ã‚’å–å¾—
     X := Status.DblClickPoint.x;
     Y := Status.DblClickPoint.y;
     if Status.dwScale <> 2 then begin
         X := Trunc(longint(X + X) / Status.dwScale);
         Y := Trunc(longint(Y + Y) / Status.dwScale);
     end;
-    // ƒV[ƒNƒo[ã‚Åƒ_ƒuƒ‹ƒNƒŠƒbƒN‚³‚ê‚½ê‡‚ÍI—¹
+    // ã‚·ãƒ¼ã‚¯ãƒãƒ¼ä¸Šã§ãƒ€ãƒ–ãƒ«ã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸå ´åˆã¯çµ‚äº†
     if not ((X < 140) or (X > 280) or (Y < STATIC_SEEKBAR_TOP) or (Y >= STATIC_SEEKBAR_BOTTOM)) then begin
         if longbool(Option.dwSeekBar) or (Option.dwPlayMax > PLAY_MAX_ENDLESS) then exit;
     end;
-    // î•ñ•\¦Ø‘Ö
+    // æƒ…å ±è¡¨ç¤ºåˆ‡æ›¿
     if Status.bShiftButton then SetChangeInfo(false, -1)
     else SetChangeInfo(false, 1);
 end;
 
 function LostFocusWindow(): longword;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := 1;
-    // ƒtƒH[ƒJƒX‚ª‚ ‚éƒEƒBƒ“ƒhƒE‚ğ‹L˜^
+    // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ãŒã‚ã‚‹ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’è¨˜éŒ²
     if longbool(API_GetFocus()) and (API_GetFocus() <> cwWindowMain.hWnd) then Status.dwFocusHandle := API_GetFocus();
-    // Shift ƒL[‚ğ‰ğœ
+    // Shift ã‚­ãƒ¼ã‚’è§£é™¤
     SetChangeFunction(false);
-    // Ctrl ƒL[‚ğ‰ğœ
+    // Ctrl ã‚­ãƒ¼ã‚’è§£é™¤
     Status.bCtrlButton := false;
-    // ƒƒjƒ…[‹«ŠE‚ğ•`‰æ
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼å¢ƒç•Œã‚’æç”»
     if Option.dwTheme = THEME_DARK then cmMain.DrawMenuBorder(cwWindowMain.hWnd);
 end;
 
 function GetFocusWindow(): longword;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := 1;
-    // Shift ƒL[‚ğİ’è
+    // Shift ã‚­ãƒ¼ã‚’è¨­å®š
     SetChangeFunction(true);
-    // ƒƒjƒ…[‹«ŠE‚ğ•`‰æ
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼å¢ƒç•Œã‚’æç”»
     if Option.dwTheme = THEME_DARK then cmMain.DrawMenuBorder(cwWindowMain.hWnd);
-    // ƒEƒBƒ“ƒhƒE‚ÉƒtƒH[ƒJƒX‚ğİ’è
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’è¨­å®š
     if (API_GetForegroundWindow() = cwWindowMain.hWnd) and longbool(Status.dwFocusHandle) then
         cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_ACTIVATE, NULL);
 end;
 
 function TransmitFile(bAutoPlay: longbool): longbool;
 var
-    lpFile: pointer;
+    sPath: utf8string;
     dwType: longword;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := false;
-    // ƒƒbƒZ[ƒWƒ{ƒbƒNƒX•\¦’†‚Ìê‡
+    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹è¡¨ç¤ºä¸­ã®å ´åˆ
     if cwWindowMain.bMessageBox then begin
-        // Œ³‚É–ß‚·
-        cwStaticFile.SetCaption(pchar(FILE_DEFAULT));
+        // å…ƒã«æˆ»ã™
+        cwStaticFile.SetCaption(FILE_DEFAULT);
     end else begin
-        // ƒoƒbƒtƒ@‚ğŠm•Û
-        GetMem(lpFile, 1024);
-        // ƒoƒbƒtƒ@‚ğ‰Šú‰»
-        API_ZeroMemory(lpFile, 1024);
-        // ƒtƒ@ƒCƒ‹–¼‚ğæ“¾
-        cwStaticFile.GetCaption(lpFile, 1024);
-        // Œ³‚É–ß‚·
-        cwStaticFile.SetCaption(pchar(FILE_DEFAULT));
-        // ƒtƒ@ƒCƒ‹‚ğŠJ‚­
-        dwType := GetFileType(lpFile, true, true);
+        // ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å–å¾—
+        sPath := cwStaticFile.GetCaption(BUFFER_SIZE_PATH);
+        // å…ƒã«æˆ»ã™
+        cwStaticFile.SetCaption(FILE_DEFAULT);
+        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é–‹ã
+        dwType := GetFileType(sPath, true, true);
         case dwType of
-            FILE_TYPE_SPC: result := SPCLoad(lpFile, bAutoPlay);
-            FILE_TYPE_LIST_A, FILE_TYPE_LIST_B: result := ListLoad(lpFile, dwType, false);
-            FILE_TYPE_SCRIPT700: result := ReloadScript700(lpFile);
+            FILE_TYPE_SPC: result := SPCLoad(sPath, bAutoPlay);
+            FILE_TYPE_LIST_A, FILE_TYPE_LIST_B: result := ListLoad(sPath, dwType, false);
+            FILE_TYPE_SCRIPT700: result := ReloadScript700(sPath);
         end;
-        // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-        FreeMem(lpFile, 1024);
     end;
 end;
 
 procedure GetFocusWindowAfter();
 begin
-    // ƒtƒH[ƒJƒX‚ğİ’è
+    // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ã‚’è¨­å®š
     if API_GetFocus() = cwWindowMain.hWnd then begin
         API_SetFocus(Status.dwFocusHandle);
         Status.dwFocusHandle := NULL;
     end;
-    // Šî–{—Dæ“x‚ğæ“¾
+    // åŸºæœ¬å„ªå…ˆåº¦ã‚’å–å¾—
     Option.dwPriority := API_GetPriorityClass(API_GetCurrentProcess());
-    // íè‘O‚ğæ“¾
+    // å¸¸æ™‚æ‰‹å‰ã‚’å–å¾—
     Option.bTopMost := longbool(cwWindowMain.GetWindowStyleEx() and WS_EX_TOPMOST);
-    // ƒtƒ‰ƒO‚ğİ’è
+    // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
     Status.dwReady := READY_ACTIVE;
-    // ƒfƒoƒCƒX‚ğXV
+    // ãƒ‡ãƒã‚¤ã‚¹ã‚’æ›´æ–°
     UpdateDevice(Option.dwDeviceID, WAVE_DEVICE_UPDATE_LIST);
-    // ƒƒjƒ…[‚ğXV
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
     UpdateMenu();
 end;
 
 procedure RedrawInfo(bWindow: boolean);
 begin
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
     API_EnterCriticalSection(@CriticalSectionStatic);
-    // ƒEƒBƒ“ƒhƒE‘S‘Ì‚ğÄ•`‰æ‚·‚éê‡
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å…¨ä½“ã‚’å†æç”»ã™ã‚‹å ´åˆ
     if (bWindow) then begin
-        // ƒEƒBƒ“ƒhƒE‚ğÄ•`‰æ
+        // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’å†æç”»
         API_RedrawWindow(cwWindowMain.hWnd, NULLPOINTER, NULL, RDW_INVALIDATE or RDW_ERASE or RDW_UPDATENOW or RDW_ALLCHILDREN);
-        // ƒƒjƒ…[‹«ŠE‚ğ•`‰æ
+        // ãƒ¡ãƒ‹ãƒ¥ãƒ¼å¢ƒç•Œã‚’æç”»
         if Option.dwTheme = THEME_DARK then cmMain.DrawMenuBorder(cwWindowMain.hWnd);
     end;
-    // Ä•`‰æ‚ªƒƒbƒN‚³‚ê‚Ä‚¢‚È‚¢ê‡
+    // å†æç”»ãŒãƒ­ãƒƒã‚¯ã•ã‚Œã¦ã„ãªã„å ´åˆ
     if not longbool(Status.dwRedrawInfo and REDRAW_LOCK_CRITICAL) then begin
-        // Ä•`‰æƒtƒ‰ƒO‚ğİ’è
+        // å†æç”»ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
         Status.dwRedrawInfo := REDRAW_ON;
-        // ƒCƒ“ƒWƒP[ƒ^‚ğÄ•`‰æ
+        // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’å†æç”»
         if Status.bOpen then WaveProc(WAVE_PROC_GRAPH_ONLY);
     end;
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
     API_LeaveCriticalSection(@CriticalSectionStatic);
 end;
 
@@ -11878,41 +12159,41 @@ var
     X: longword;
     Y: longword;
 begin
-    // SPC ‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¢Aƒ^ƒCƒ€ƒAƒEƒg‚ª”­¶‚µ‚½A‚Ü‚½‚ÍƒV[ƒNƒo[‚ª–³Œø‚Ìê‡‚ÍI—¹
+    // SPC ãŒé–‹ã‹ã‚Œã¦ã„ãªã„ã€ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆãŒç™ºç”Ÿã—ãŸã€ã¾ãŸã¯ã‚·ãƒ¼ã‚¯ãƒãƒ¼ãŒç„¡åŠ¹ã®å ´åˆã¯çµ‚äº†
     if not Status.bOpen or not longbool(Status.dwNextTimeout)
         or (not longbool(Option.dwSeekBar) and (Option.dwPlayMax = PLAY_MAX_ENDLESS)) then exit;
-    // ƒNƒŠƒbƒNˆÊ’u‚ğæ“¾
+    // ã‚¯ãƒªãƒƒã‚¯ä½ç½®ã‚’å–å¾—
     X := lParam and $FFFF;
     Y := lParam shr 16;
     if Status.dwScale <> 2 then begin
         X := Trunc(longint(X + X) / Status.dwScale);
         Y := Trunc(longint(Y + Y) / Status.dwScale);
     end;
-    // ƒNƒŠƒbƒNˆÊ’u‚ª”ÍˆÍŠO‚Ìê‡‚ÍI—¹
+    // ã‚¯ãƒªãƒƒã‚¯ä½ç½®ãŒç¯„å›²å¤–ã®å ´åˆã¯çµ‚äº†
     if (X < 140) or (X > 280) or (Y < STATIC_SEEKBAR_TOP) or (Y >= STATIC_SEEKBAR_BOTTOM) then exit;
-    // ƒNƒŠƒbƒNˆÊ’u‚ÌŠ„‡‚ğæ“¾
+    // ã‚¯ãƒªãƒƒã‚¯ä½ç½®ã®å‰²åˆã‚’å–å¾—
     Y := ((X - 139) * Status.dwDefaultTimeout div 141) + 1;
     if X = 140 then X := 0 else X := ((X - 140) * Status.dwDefaultTimeout div 141) + 1;
     if X > Status.dwDefaultTimeout then X := Status.dwDefaultTimeout;
     if Y > Status.dwDefaultTimeout then Y := Status.dwDefaultTimeout;
-    // ƒƒbƒZ[ƒWˆ—
+    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†
     case wParam and $FFFFF000 of
         WM_APP_SEEK: begin
-            // ƒXƒŒƒbƒh‚ÉƒV[ƒN‚ğ’Ê’m
+            // ã‚¹ãƒ¬ãƒƒãƒ‰ã«ã‚·ãƒ¼ã‚¯ã‚’é€šçŸ¥
             API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_SEEK + (longword(Status.bCtrlButton) and $1 xor $1), X);
         end;
         WM_APP_START_TIME: begin
-            // ƒŠƒs[ƒgŠJnˆÊ’u‚ğİ’è
+            // ãƒªãƒ”ãƒ¼ãƒˆé–‹å§‹ä½ç½®ã‚’è¨­å®š
             if X < Status.dwLimitTime then Status.dwStartTime := X
             else Status.dwStartTime := Status.dwLimitTime;
-            // ‹­§“I‚ÉƒŠƒs[ƒgƒ‚[ƒh‚Éİ’è
+            // å¼·åˆ¶çš„ã«ãƒªãƒ”ãƒ¼ãƒˆãƒ¢ãƒ¼ãƒ‰ã«è¨­å®š
             ForceRepeatMode();
         end;
         WM_APP_LIMIT_TIME: begin
-            // ƒŠƒs[ƒgI—¹ˆÊ’u‚ğİ’è
+            // ãƒªãƒ”ãƒ¼ãƒˆçµ‚äº†ä½ç½®ã‚’è¨­å®š
             if Y > Status.dwStartTime then Status.dwLimitTime := Y
             else Status.dwLimitTime := Status.dwStartTime;
-            // ‹­§“I‚ÉƒŠƒs[ƒgƒ‚[ƒh‚Éİ’è
+            // å¼·åˆ¶çš„ã«ãƒªãƒ”ãƒ¼ãƒˆãƒ¢ãƒ¼ãƒ‰ã«è¨­å®š
             ForceRepeatMode();
         end;
         WM_APP_RESET_TIME: ResetTimeMark();
@@ -11923,22 +12204,22 @@ procedure SetNextPlay();
 var
     dwFlag: longword;
 begin
-    // SPC ‚ªŠJ‚©‚ê‚Ä‚¢‚È‚¢A‚Ü‚½‚Í‰‰‘t’â~’†‚Ìê‡‚ÍI—¹
+    // SPC ãŒé–‹ã‹ã‚Œã¦ã„ãªã„ã€ã¾ãŸã¯æ¼”å¥åœæ­¢ä¸­ã®å ´åˆã¯çµ‚äº†
     if not Status.bOpen or not Status.bPlay then exit;
-    // ƒEƒBƒ“ƒhƒE‚ÉƒtƒH[ƒJƒX‚ª‚È‚¢ê‡‚ÍƒJ[ƒ\ƒ‹‚ğ‘I‘ğ
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ãŒãªã„å ´åˆã¯ã‚«ãƒ¼ã‚½ãƒ«ã‚’é¸æŠ
     if API_GetForegroundWindow() = cwWindowMain.hWnd then dwFlag := NULL
     else dwFlag := LIST_NEXT_PLAY_SELECT or LIST_NEXT_PLAY_CENTER;
-    // Ÿ‚Ì‹È‚ğÄ¶
+    // æ¬¡ã®æ›²ã‚’å†ç”Ÿ
     ListNextPlay(Option.dwPlayOrder, dwFlag);
 end;
 
 procedure MinimizeWindow();
 begin
-    // Å¬‰»‚³‚ê‚Ä‚¢‚éê‡‚ÍI—¹
+    // æœ€å°åŒ–ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯çµ‚äº†
     if longbool(cwWindowMain.GetWindowStyle() and WS_MINIMIZE) then exit;
-    // ƒtƒH[ƒJƒX‚ªİ’è‚³‚ê‚Ä‚¢‚éƒEƒBƒ“ƒhƒE‚ğ‹L˜^
+    // ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ãŒè¨­å®šã•ã‚Œã¦ã„ã‚‹ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’è¨˜éŒ²
     LostFocusWindow();
-    // Å¬‰»
+    // æœ€å°åŒ–
     cwWindowMain.SetWindowShowStyle(SW_MINIMIZE);
 end;
 
@@ -11946,7 +12227,7 @@ function ReadAPURam(dwAddr: longword): longword;
 var
     X: longword;
 begin
-    // RAM ’l‚Ì“Ç‚İæ‚è
+    // RAM å€¤ã®èª­ã¿å–ã‚Š
     API_MoveMemory(@X, pointer(longword(Apu.Ram) or dwAddr), 4);
     result := X;
 end;
@@ -11955,7 +12236,7 @@ procedure WriteAPURam(dwAddr: longword; dwVal: longword);
 var
     X: longword;
 begin
-    // RAM ’l‚Ì‘‚«‚İ
+    // RAM å€¤ã®æ›¸ãè¾¼ã¿
     for X := 0 to 3 do Apu.SetAPURAM(dwAddr + X, dwVal shr (X shl 3));
 end;
 
@@ -11963,7 +12244,7 @@ function ReadSPCReg(dwAddr: longword): longword;
 var
     X: longword;
 begin
-    // SPC ƒŒƒWƒXƒ^‚ğæ“¾
+    // SPC ãƒ¬ã‚¸ã‚¹ã‚¿ã‚’å–å¾—
     case dwAddr of
         0: result := Apu.SPC700Reg.pc and $FFFF;
         1: result := Apu.SPC700Reg.ya and $FFFF;
@@ -11980,7 +12261,7 @@ procedure WriteSPCReg(dwAddr: longword; dwVal: longword);
 var
     X: longword;
 begin
-    // SPC ƒŒƒWƒXƒ^‚ğİ’è
+    // SPC ãƒ¬ã‚¸ã‚¹ã‚¿ã‚’è¨­å®š
     case dwAddr of
         0: Apu.SPC700Reg.Word[16] := dwVal and $FFFF;
         1: Apu.SPC700Reg.Word[18] := dwVal and $FFFF;
@@ -11996,43 +12277,37 @@ procedure ForceEmuAPU();
 var
     lpData: pointer;
 begin
-    // ‰‰‘t’â~’†‚Ìê‡‚ÍI—¹
+    // æ¼”å¥åœæ­¢ä¸­ã®å ´åˆã¯çµ‚äº†
     if not Status.bEmuDebug or not Status.bPlay then exit;
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
     API_EnterCriticalSection(@CriticalSectionThread);
-    // ƒoƒbƒtƒ@‚ğŠm•Û
+    // ãƒãƒƒãƒ•ã‚¡ã‚’ç¢ºä¿
     GetMem(lpData, 16);
-    // ‹­§ƒGƒ~ƒ…ƒŒ[ƒg
+    // å¼·åˆ¶ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ãƒˆ
     Apu.EmuAPU(lpData, 1, 1);
-    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
     API_LeaveCriticalSection(@CriticalSectionThread);
-    // ƒoƒbƒtƒ@‚ğ‰ğ•ú
+    // ãƒãƒƒãƒ•ã‚¡ã‚’è§£æ”¾
     FreeMem(lpData, 16);
 end;
 
 function WaveOutput(bShift: longbool; bQuiet: longbool): longbool;
 var
-    lpFile: pointer;
+    sPath: utf8string;
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := false;
-    // ƒƒbƒZ[ƒWƒ{ƒbƒNƒX•\¦’†‚Ìê‡
+    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹è¡¨ç¤ºä¸­ã®å ´åˆ
     if cwWindowMain.bMessageBox then begin
-        // Œ³‚É–ß‚·
-        cwStaticFile.SetCaption(pchar(FILE_DEFAULT));
+        // å…ƒã«æˆ»ã™
+        cwStaticFile.SetCaption(FILE_DEFAULT);
     end else begin
-        // ƒoƒbƒtƒ@‚ğŠm•Û
-        GetMem(lpFile, 1024);
-        // ƒoƒbƒtƒ@‚ğ‰Šú‰»
-        API_ZeroMemory(lpFile, 1024);
-        // ƒtƒ@ƒCƒ‹–¼‚ğæ“¾
-        cwStaticFile.GetCaption(lpFile, 1024);
-        // Œ³‚É–ß‚·
-        cwStaticFile.SetCaption(pchar(FILE_DEFAULT));
-        // WAVE ƒtƒ@ƒCƒ‹‚ğ•Û‘¶
-        result := WaveSave(lpFile, bShift, bQuiet);
-        // ƒoƒbƒtƒ@‚ğ‰ğ•ú
-        FreeMem(lpFile, 1024);
+        // ãƒ•ã‚¡ã‚¤ãƒ«åã‚’å–å¾—
+        sPath := cwStaticFile.GetCaption(BUFFER_SIZE_PATH);
+        // å…ƒã«æˆ»ã™
+        cwStaticFile.SetCaption(FILE_DEFAULT);
+        // WAVE ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¿å­˜
+        result := WaveSave(sPath, bShift, bQuiet);
     end;
 end;
 
@@ -12041,29 +12316,29 @@ var
     dwBuffer: longword;
     Setting: ^TPOWERBROADCAST_SETTING;
 begin
-    // ‹N“®€”õ‚ª‚Å‚«‚Ä‚¢‚È‚¢ê‡‚ÍI—¹
+    // èµ·å‹•æº–å‚™ãŒã§ãã¦ã„ãªã„å ´åˆã¯çµ‚äº†
     if not longbool(Status.dwReady) or not longbool(Option.dwTimerRedrawResume) then exit;
-    // ƒfƒBƒXƒvƒŒƒC‚Ì“dŒ¹ó‘Ô‚ğŠm”F
+    // ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ã®é›»æºçŠ¶æ…‹ã‚’ç¢ºèª
     if longbool(lParam) then begin
-        // ƒfƒBƒXƒvƒŒƒC‚Ì“dŒ¹ó‘ÔƒCƒxƒ“ƒg‚Å‚È‚¢ê‡‚ÍI—¹
+        // ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ã®é›»æºçŠ¶æ…‹ã‚¤ãƒ™ãƒ³ãƒˆã§ãªã„å ´åˆã¯çµ‚äº†
         Setting := pointer(lParam);
         if not IsEqualsGUID(Setting.PowerSetting, GUID_CONSOLE_DISPLAY_STATE) then exit;
-        // ƒfƒBƒXƒvƒŒƒC‚Ì“dŒ¹ó‘Ô‚É‚æ‚Á‚ÄA€”õŠ®—¹ƒtƒ‰ƒO‚ğİ’è
+        // ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ã®é›»æºçŠ¶æ…‹ã«ã‚ˆã£ã¦ã€æº–å‚™å®Œäº†ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
         API_MoveMemory(@dwBuffer, @Setting.Data, 4);
         if dwBuffer = $0 then Status.dwReady := READY_INACTIVE;
         if dwBuffer = $1 then Status.dwReady := READY_ACTIVE;
-        // ƒfƒBƒXƒvƒŒƒC‚Ì“dŒ¹‚ªƒIƒ“‚Å‚È‚¢ê‡‚ÍI—¹
+        // ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ã®é›»æºãŒã‚ªãƒ³ã§ãªã„å ´åˆã¯çµ‚äº†
         if dwBuffer <> $1 then exit;
     end;
-    // ƒEƒBƒ“ƒhƒE‚ÌÄ•`‰æ‚ğ—\–ñ
+    // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®å†æç”»ã‚’äºˆç´„
     API_KillTimer(cwWindowMain.hWnd, TIMER_ID_REDRAW_RESUME);
     API_SetTimer(cwWindowMain.hWnd, TIMER_ID_REDRAW_RESUME, Option.dwTimerRedrawResume, NULLPOINTER);
 end;
 
 begin
-    // ‰Šú‰»
+    // åˆæœŸåŒ–
     result := 0;
-    // ƒƒjƒ…[‚ğ‰EƒNƒŠƒbƒN‚³‚ê‚½ê‡‚ÍAƒƒbƒZ[ƒW‚ğƒƒjƒ…[ƒNƒŠƒbƒNƒCƒxƒ“ƒg‚É•ÏŠ·
+    // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’å³ã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸå ´åˆã¯ã€ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¯ãƒªãƒƒã‚¯ã‚¤ãƒ™ãƒ³ãƒˆã«å¤‰æ›
     if (msg = WM_MENURBUTTONUP) or ((msg = WM_MENUCHAR) and ((wParam and $FFFF) = $20)) then begin
         wParam := Status.dwMenuFlags and $FFFF;
         if not longbool(API_GetMenuState(lParam, wParam, MF_BYCOMMAND) and MF_GRAYED) then begin
@@ -12073,10 +12348,10 @@ begin
             dwDef := 1;
         end;
     end;
-    // ƒƒbƒZ[ƒWˆ—
+    // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†
     case msg of
-        WM_SYSCOMMAND, WM_COMMAND, WM_APP_COMMAND: begin // ƒVƒXƒeƒ€ƒRƒ}ƒ“ƒhˆ—
-            if (msg = WM_SYSCOMMAND) or (msg = WM_APP_COMMAND) or ((msg = WM_COMMAND) and not longbool(lParam)) then begin // ƒƒjƒ…[‚ª‘I‘ğ‚³‚ê‚½
+        WM_SYSCOMMAND, WM_COMMAND, WM_APP_COMMAND: begin // ã‚·ã‚¹ãƒ†ãƒ ã‚³ãƒãƒ³ãƒ‰å‡¦ç†
+            if (msg = WM_SYSCOMMAND) or (msg = WM_APP_COMMAND) or ((msg = WM_COMMAND) and not longbool(lParam)) then begin // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãŒé¸æŠã•ã‚ŒãŸ
                 case wParam of
                     MENU_FILE_OPEN: OpenFile();
                     MENU_FILE_SAVE: SaveFile();
@@ -12099,9 +12374,9 @@ begin
                     MENU_SETUP_TIME_RESET: ResetTimeMark();
                     MENU_SETUP_INFO_RESET: Option.bVolumeReset := not Option.bVolumeReset;
                     MENU_SETUP_TOPMOST: begin
-                        // ƒtƒ‰ƒO‚ğİ’è
+                        // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
                         Option.bTopMost := not Option.bTopMost;
-                        // ƒEƒBƒ“ƒhƒE‚ğXV
+                        // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’æ›´æ–°
                         UpdateWindow();
                     end;
                     MENU_SETUP_NOSLEEP: Option.dwNoSleep := Option.dwNoSleep and NOSLEEP_DISPLAY xor NOSLEEP_DISPLAY;
@@ -12136,44 +12411,44 @@ begin
                         MENU_SETUP_OPTION_BASE..MENU_SETUP_OPTION_BASE + 10:
                             Option.dwOption := Option.dwOption xor MENU_SETUP_OPTION_VALUE[wParam - MENU_SETUP_OPTION_BASE];
                         MENU_SETUP_ORDER_BASE: begin
-                            // ƒtƒ‰ƒO‚ğİ’è
+                            // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
                             Option.dwPlayOrder := wParam - MENU_SETUP_ORDER_BASE;
                             Status.dwPlayOrder := Option.dwPlayOrder;
-                            // ƒŠƒs[ƒgŠJnˆÊ’uAƒŠƒs[ƒgI—¹ˆÊ’u‚ğ‰Šú‰»
+                            // ãƒªãƒ”ãƒ¼ãƒˆé–‹å§‹ä½ç½®ã€ãƒªãƒ”ãƒ¼ãƒˆçµ‚äº†ä½ç½®ã‚’åˆæœŸåŒ–
                             if (Option.dwPlayOrder <> PLAY_ORDER_STOP) and (Option.dwPlayOrder <> PLAY_ORDER_REPEAT) then ResetRepeatPosision();
-                            // ƒCƒ“ƒWƒP[ƒ^‚ğÄ•`‰æ
+                            // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’å†æç”»
                             cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
                         end;
                         MENU_SETUP_SEEK_BASE: Option.dwSeekTime := MENU_SETUP_SEEK_VALUE[wParam - MENU_SETUP_SEEK_BASE];
                         MENU_SETUP_INFO_BASE: begin
                             SetChangeInfo(true, wParam - MENU_SETUP_INFO_BASE);
-                            exit; // UpdateMenu ‚ğÀs‚µ‚È‚¢
+                            exit; // UpdateMenu ã‚’å®Ÿè¡Œã—ãªã„
                         end;
                         MENU_SETUP_PRIORITY_BASE: begin
-                            // İ’è‚·‚é—Dæ“x‚ğæ“¾
+                            // è¨­å®šã™ã‚‹å„ªå…ˆåº¦ã‚’å–å¾—
                             Option.dwPriority := MENU_SETUP_PRIORITY_VALUE[wParam - MENU_SETUP_PRIORITY_BASE];
-                            // ƒvƒƒZƒX—Dæ“x‚ğİ’è
+                            // ãƒ—ãƒ­ã‚»ã‚¹å„ªå…ˆåº¦ã‚’è¨­å®š
                             API_SetPriorityClass(API_GetCurrentProcess(), Option.dwPriority);
                         end;
                     end;
                 end;
                 case wParam div 100 of
-                    2, 10: SPCReset(true); // 2: ƒ`ƒƒƒ“ƒlƒ‹`ƒŒ[ƒg, 10: ƒfƒoƒCƒX
-                    3..5: SPCReset(false); // 3`5: •âŠÔˆ—`Šg’£İ’è
-                    6: UpdateMenu();       // 6: ‰‰‘tŠÔ`í‚Éè‘O‚É•\¦
+                    2, 10: SPCReset(true); // 2: ãƒãƒ£ãƒ³ãƒãƒ«ï½ãƒ¬ãƒ¼ãƒˆ, 10: ãƒ‡ãƒã‚¤ã‚¹
+                    3..5: SPCReset(false); // 3ï½5: è£œé–“å‡¦ç†ï½æ‹¡å¼µè¨­å®š
+                    6: UpdateMenu();       // 6: æ¼”å¥æ™‚é–“ï½å¸¸ã«æ‰‹å‰ã«è¡¨ç¤º
                 end;
-            end else case (wParam and $FFFF) div ID_BASE of // qƒEƒBƒ“ƒhƒE‚ª•Ï‰»‚µ‚½
-                ID_BUTTON: case wParam shr 16 of // ƒ{ƒ^ƒ“‚Ìˆ—
-                    BN_CLICKED: case wParam and $FFFF of // ƒNƒŠƒbƒNAƒ_ƒuƒ‹ƒNƒŠƒbƒN‚³‚ê‚½
+            end else case (wParam and $FFFF) div ID_BASE of // å­ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒå¤‰åŒ–ã—ãŸ
+                ID_BUTTON: case wParam shr 16 of // ãƒœã‚¿ãƒ³ã®å‡¦ç†
+                    BN_CLICKED: case wParam and $FFFF of // ã‚¯ãƒªãƒƒã‚¯ã€ãƒ€ãƒ–ãƒ«ã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸ
                         ID_BUTTON_OPEN: OpenFile();
                         ID_BUTTON_SAVE: SaveFile();
                         ID_BUTTON_PLAY: SPCPlay(PLAY_TYPE_AUTO);
                         ID_BUTTON_RESTART: SPCStop(true);
                         ID_BUTTON_STOP: SPCStop(false);
                         ID_BUTTON_TRACK_BASE..ID_BUTTON_TRACK_BASE + 7: begin
-                            // ƒ`ƒƒƒ“ƒlƒ‹ƒ}ƒXƒN‚ğİ’è
+                            // ãƒãƒ£ãƒ³ãƒãƒ«ãƒã‚¹ã‚¯ã‚’è¨­å®š
                             Option.dwMute := Option.dwMute xor (1 shl ((wParam and $FFFF) - ID_BUTTON_TRACK_BASE));
-                            // İ’è‚ğƒŠƒZƒbƒg
+                            // è¨­å®šã‚’ãƒªã‚»ãƒƒãƒˆ
                             SPCReset(false);
                         end;
                         ID_BUTTON_SLOW: SetFunction(-1, FUNCTION_TYPE_SPEED or FUNCTION_TYPE_NO_TIMER);
@@ -12191,238 +12466,238 @@ begin
                             else ListDown();
                     end;
                 end;
-                ID_LISTBOX: case wParam shr 16 of // ƒvƒŒƒCƒŠƒXƒg‚Ìˆ—
-                    LBN_SELCHANGE: case wParam and $FFFF of // ‘I‘ğ‚³‚ê‚½
+                ID_LISTBOX: case wParam shr 16 of // ãƒ—ãƒ¬ã‚¤ãƒªã‚¹ãƒˆã®å‡¦ç†
+                    LBN_SELCHANGE: case wParam and $FFFF of // é¸æŠã•ã‚ŒãŸ
                         ID_LIST_PLAY: UpdateMenu();
                     end;
-                    LBN_DBLCLK: case wParam and $FFFF of // ƒ_ƒuƒ‹ƒNƒŠƒbƒN‚³‚ê‚½
+                    LBN_DBLCLK: case wParam and $FFFF of // ãƒ€ãƒ–ãƒ«ã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸ
                         ID_LIST_PLAY: SPCPlay(PLAY_TYPE_LIST);
                     end;
                 end;
-                ID_STATIC: case wParam shr 16 of // ƒXƒ^ƒeƒBƒbƒN‚Ìˆ—
-                    STN_DBLCLK: case wParam and $FFFF of // ƒ_ƒuƒ‹ƒNƒŠƒbƒN‚³‚ê‚½
+                ID_STATIC: case wParam shr 16 of // ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ã®å‡¦ç†
+                    STN_DBLCLK: case wParam and $FFFF of // ãƒ€ãƒ–ãƒ«ã‚¯ãƒªãƒƒã‚¯ã•ã‚ŒãŸ
                         ID_STATIC_MAIN: ChangeStaticClick();
                     end;
                 end;
             end;
         end;
-        WM_DROPFILES: dwDef := DropFile(wParam); // ƒtƒ@ƒCƒ‹‚ªƒhƒƒbƒv‚³‚ê‚½
-        WM_CAPTURECHANGED: dwDef := LostFocusWindow(); // ƒ}ƒEƒX‚ÌƒLƒƒƒvƒ`ƒƒ‚ª•Ï‰»‚µ‚½
-        WM_ACTIVATE: case wParam and $FFFF of // ƒEƒBƒ“ƒhƒE‚ÌƒAƒNƒeƒBƒu‚ª•Ï‰»‚µ‚½
-            0: dwDef := LostFocusWindow(); // ƒEƒBƒ“ƒhƒE‚©‚çƒtƒH[ƒJƒX‚ª—£‚ê‚½
-            1, 2: dwDef := GetFocusWindow(); // ƒEƒBƒ“ƒhƒE‚ÉƒtƒH[ƒJƒX‚ªˆÚ‚Á‚½
+        WM_DROPFILES: dwDef := DropFile(wParam); // ãƒ•ã‚¡ã‚¤ãƒ«ãŒãƒ‰ãƒ­ãƒƒãƒ—ã•ã‚ŒãŸ
+        WM_CAPTURECHANGED: dwDef := LostFocusWindow(); // ãƒã‚¦ã‚¹ã®ã‚­ãƒ£ãƒ—ãƒãƒ£ãŒå¤‰åŒ–ã—ãŸ
+        WM_ACTIVATE: case wParam and $FFFF of // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãŒå¤‰åŒ–ã—ãŸ
+            0: dwDef := LostFocusWindow(); // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‹ã‚‰ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ãŒé›¢ã‚ŒãŸ
+            1, 2: dwDef := GetFocusWindow(); // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ãŒç§»ã£ãŸ
         end;
-        WM_SIZE: if longbool(Status.dwTitle) then begin // ƒTƒCƒY‚ª•ÏX‚³‚ê‚½
+        WM_SIZE: if longbool(Status.dwTitle) then begin // ã‚µã‚¤ã‚ºãŒå¤‰æ›´ã•ã‚ŒãŸ
             if wParam = $FFFFFFFF then dwDef := 1;
-            // ƒtƒ‰ƒO‚ğİ’è
+            // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
             Status.dwTitle := Status.dwTitle and not TITLE_ALWAYS_FLAG;
             if longbool(cwWindowMain.GetWindowStyle() and WS_MINIMIZE) then Status.dwTitle := Status.dwTitle or TITLE_MINIMIZE
             else Status.dwTitle := Status.dwTitle or TITLE_NORMAL;
             if longbool(cwWindowMain.GetWindowStyle() and WS_MAXIMIZE) then cwWindowMain.SetWindowShowStyle(SW_SHOWNORMAL);
-            // Å¬‰»‚³‚ê‚½ê‡‚ÍƒCƒ“ƒWƒP[ƒ^‚ğƒŠƒZƒbƒg
+            // æœ€å°åŒ–ã•ã‚ŒãŸå ´åˆã¯ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’ãƒªã‚»ãƒƒãƒˆ
             if longbool(Status.dwTitle and TITLE_MINIMIZE) then ResetInfo(false);
-            // ƒ^ƒCƒgƒ‹‚ğXV
+            // ã‚¿ã‚¤ãƒˆãƒ«ã‚’æ›´æ–°
             UpdateTitle(NULL);
         end;
-        WM_MENUSELECT: Status.dwMenuFlags := wParam; // ƒƒjƒ…[‚ª‘I‘ğ‚³‚ê‚½
-        WM_EXITSIZEMOVE: if longbool(Status.dwTitle) then MoveWindowScreenSide(); // ƒEƒBƒ“ƒhƒE‚ªˆÚ“®‚µ‚½
-        WM_APP_MESSAGE: begin // ƒ†[ƒU[’è‹`
-            // ‰Šú‰»
+        WM_MENUSELECT: Status.dwMenuFlags := wParam; // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ãŒé¸æŠã•ã‚ŒãŸ
+        WM_EXITSIZEMOVE: if longbool(Status.dwTitle) then MoveWindowScreenSide(); // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒç§»å‹•ã—ãŸ
+        WM_APP_MESSAGE: begin // ãƒ¦ãƒ¼ã‚¶ãƒ¼å®šç¾©
+            // åˆæœŸåŒ–
             dwDef := 1;
-            // ƒƒbƒZ[ƒWˆ—
+            // ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†
             case wParam and $FFFF0000 of
-                WM_APP_TRANSMIT: result := longword(TransmitFile(longbool(wParam and $1))); // ƒtƒ@ƒCƒ‹–¼‚ª“]‘—‚³‚ê‚Ä‚«‚½
-                WM_APP_ACTIVATE: GetFocusWindowAfter(); // ƒEƒBƒ“ƒhƒE‚ÉƒtƒH[ƒJƒX‚ªˆÚ‚Á‚½
-                WM_APP_REDRAW: RedrawInfo(longbool(wParam and $1)); // Ä•`‰æ‚Ì•K—v‚ª¶‚¶‚½
-                WM_APP_SEEK, WM_APP_REPEAT_TIME: ClickSeekBar(); // ƒV[ƒN‚Ì•K—v‚ª¶‚¶‚½AƒŠƒs[ƒgˆÊ’u‚ª•ÏX‚³‚ê‚½
-                WM_APP_NEXT_PLAY: SetNextPlay(); // Ÿ‚Ì‹È‚ğ‰‰‘t
-                WM_APP_MINIMIZE: MinimizeWindow(); // Å¬‰»‚ª—v‹‚³‚ê‚½
-                WM_APP_WAVE_PROC: Inc(Status.dwWaveMessage); // WAVE Š„‚è‚İ
-                WM_APP_FUNCTION: SetFunction((wParam and $2) - 1, lParam); // ‹@”\İ’è
-                WM_APP_GET_DSP, WM_APP_SET_DSP: begin // DSP “Ç‚İæ‚èE‘‚«‚İ
-                    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+                WM_APP_TRANSMIT: result := longword(TransmitFile(longbool(wParam and $1))); // ãƒ•ã‚¡ã‚¤ãƒ«åãŒè»¢é€ã•ã‚Œã¦ããŸ
+                WM_APP_ACTIVATE: GetFocusWindowAfter(); // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ãŒç§»ã£ãŸ
+                WM_APP_REDRAW: RedrawInfo(longbool(wParam and $1)); // å†æç”»ã®å¿…è¦ãŒç”Ÿã˜ãŸ
+                WM_APP_SEEK, WM_APP_REPEAT_TIME: ClickSeekBar(); // ã‚·ãƒ¼ã‚¯ã®å¿…è¦ãŒç”Ÿã˜ãŸã€ãƒªãƒ”ãƒ¼ãƒˆä½ç½®ãŒå¤‰æ›´ã•ã‚ŒãŸ
+                WM_APP_NEXT_PLAY: SetNextPlay(); // æ¬¡ã®æ›²ã‚’æ¼”å¥
+                WM_APP_MINIMIZE: MinimizeWindow(); // æœ€å°åŒ–ãŒè¦æ±‚ã•ã‚ŒãŸ
+                WM_APP_WAVE_PROC: Inc(Status.dwWaveMessage); // WAVE å‰²ã‚Šè¾¼ã¿
+                WM_APP_FUNCTION: SetFunction((wParam and $2) - 1, lParam); // æ©Ÿèƒ½è¨­å®š
+                WM_APP_GET_DSP, WM_APP_SET_DSP: begin // DSP èª­ã¿å–ã‚Šãƒ»æ›¸ãè¾¼ã¿
+                    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
                     API_EnterCriticalSection(@CriticalSectionThread);
-                    // DSP ƒŒƒWƒXƒ^
+                    // DSP ãƒ¬ã‚¸ã‚¹ã‚¿
                     result := Apu.DspReg.Reg[wParam and $7F];
                     if longbool(wParam and $10000) then Apu.SetDSPReg(byte(wParam), byte(lParam));
-                    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+                    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
                     API_LeaveCriticalSection(@CriticalSectionThread);
                 end;
-                WM_APP_GET_PORT, WM_APP_SET_PORT: begin // I/O ƒ|[ƒg“Ç‚İæ‚èE‘‚«‚İ
-                    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+                WM_APP_GET_PORT, WM_APP_SET_PORT: begin // I/O ãƒãƒ¼ãƒˆèª­ã¿å–ã‚Šãƒ»æ›¸ãè¾¼ã¿
+                    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
                     API_EnterCriticalSection(@CriticalSectionThread);
-                    // I/O ƒ|[ƒg
+                    // I/O ãƒãƒ¼ãƒˆ
                     result := Apu.SPCOutPort.Port[wParam and $3];
                     if longbool(wParam and $10000) then Apu.InPort(byte(wParam), byte(lParam));
-                    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+                    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
                     API_LeaveCriticalSection(@CriticalSectionThread);
                 end;
-                WM_APP_GET_RAM, WM_APP_SET_RAM: begin // RAM “Ç‚İæ‚èE‘‚«‚İ
-                    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+                WM_APP_GET_RAM, WM_APP_SET_RAM: begin // RAM èª­ã¿å–ã‚Šãƒ»æ›¸ãè¾¼ã¿
+                    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
                     API_EnterCriticalSection(@CriticalSectionThread);
                     // APU RAM
                     result := ReadAPURam(wParam and $FFFF);
                     if longbool(wParam and $10000) then WriteAPURam(wParam and $FFFF, lParam);
-                    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+                    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
                     API_LeaveCriticalSection(@CriticalSectionThread);
                 end;
-                WM_APP_GET_WORK, WM_APP_SET_WORK: begin // ƒ[ƒN“Ç‚İæ‚èE‘‚«‚İ
-                    // Script700 ƒ†[ƒUƒ[ƒNƒGƒŠƒA
+                WM_APP_GET_WORK, WM_APP_SET_WORK: begin // ãƒ¯ãƒ¼ã‚¯èª­ã¿å–ã‚Šãƒ»æ›¸ãè¾¼ã¿
+                    // Script700 ãƒ¦ãƒ¼ã‚¶ãƒ¯ãƒ¼ã‚¯ã‚¨ãƒªã‚¢
                     result := Status.Script700.Data.dwWork[wParam and $7];
                     if longbool(wParam and $10000) then Status.Script700.Data.dwWork[wParam and $7] := lParam;
                 end;
-                WM_APP_GET_CMP, WM_APP_SET_CMP: begin // ”äŠr’l“Ç‚İæ‚èE‘‚«‚İ
-                    // Script700 ƒf[ƒ^ƒGƒŠƒA
+                WM_APP_GET_CMP, WM_APP_SET_CMP: begin // æ¯”è¼ƒå€¤èª­ã¿å–ã‚Šãƒ»æ›¸ãè¾¼ã¿
+                    // Script700 ãƒ‡ãƒ¼ã‚¿ã‚¨ãƒªã‚¢
                     result := Status.Script700.Data.dwCmpParam[wParam and $1];
                     if longbool(wParam and $10000) then Status.Script700.Data.dwCmpParam[wParam and $1] := lParam;
                 end;
-                WM_APP_GET_SPC, WM_APP_SET_SPC: begin // SPC “Ç‚İæ‚èE‘‚«‚İ
-                    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+                WM_APP_GET_SPC, WM_APP_SET_SPC: begin // SPC èª­ã¿å–ã‚Šãƒ»æ›¸ãè¾¼ã¿
+                    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
                     API_EnterCriticalSection(@CriticalSectionThread);
-                    // SPC ƒŒƒWƒXƒ^
+                    // SPC ãƒ¬ã‚¸ã‚¹ã‚¿
                     result := ReadSPCReg(wParam and $FFFF);
                     if longbool(wParam and $10000) then WriteSPCReg(wParam and $FFFF, lParam);
-                    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+                    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
                     API_LeaveCriticalSection(@CriticalSectionThread);
                 end;
-                WM_APP_HALT: begin // HALT ƒXƒCƒbƒ`
-                    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+                WM_APP_HALT: begin // HALT ã‚¹ã‚¤ãƒƒãƒ
+                    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
                     API_EnterCriticalSection(@CriticalSectionThread);
-                    // HALT ƒXƒCƒbƒ`
+                    // HALT ã‚¹ã‚¤ãƒƒãƒ
                     Apu.SetSPCDbg(pointer(longword(-1)), lParam and $2F);
-                    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+                    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
                     API_LeaveCriticalSection(@CriticalSectionThread);
                 end;
-                WM_APP_BP_SET, WM_APP_BP_CLEAR: begin // BreakPoint İ’èE‘S‰ğœ
-                    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+                WM_APP_BP_SET, WM_APP_BP_CLEAR: begin // BreakPoint è¨­å®šãƒ»å…¨è§£é™¤
+                    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
                     API_EnterCriticalSection(@CriticalSectionThread);
-                    // ƒR[ƒ‹ƒoƒbƒN‚ğ’Ç‰Áİ’è
+                    // ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’è¿½åŠ è¨­å®š
                     Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_S700FCH);
-                    // BreakPoint İ’è
+                    // BreakPoint è¨­å®š
                     if longbool(wParam and $10000) then API_ZeroMemory(@Status.BreakPoint, 65536)
                     else Status.BreakPoint[wParam and $FFFF] := lParam and $FF;
-                    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+                    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
                     API_LeaveCriticalSection(@CriticalSectionThread);
                 end;
-                WM_APP_NEXT_TICK: begin // Ÿ‚Ì–½—ß‚Å~‚ß‚é
-                    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+                WM_APP_NEXT_TICK: begin // æ¬¡ã®å‘½ä»¤ã§æ­¢ã‚ã‚‹
+                    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
                     API_EnterCriticalSection(@CriticalSectionThread);
-                    // Ÿ‚Ì–½—ßÀsƒXƒCƒbƒ`
+                    // æ¬¡ã®å‘½ä»¤å®Ÿè¡Œã‚¹ã‚¤ãƒƒãƒ
                     if longbool(lParam) then Status.dwNextTick := (lParam and $FF) or BRKP_NEXT_STOP
                     else Status.dwNextTick := BRKP_RELEASE;
-                    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+                    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
                     API_LeaveCriticalSection(@CriticalSectionThread);
                 end;
-                WM_APP_DSP_CHEAT, WM_APP_DSP_THRU: begin // DSP ƒ`[ƒgİ’èE‘S‰ğœ
-                    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+                WM_APP_DSP_CHEAT, WM_APP_DSP_THRU: begin // DSP ãƒãƒ¼ãƒˆè¨­å®šãƒ»å…¨è§£é™¤
+                    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
                     API_EnterCriticalSection(@CriticalSectionThread);
-                    // ƒR[ƒ‹ƒoƒbƒN‚ğ’Ç‰Áİ’è
+                    // ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’è¿½åŠ è¨­å®š
                     Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_DSPREG);
-                    // DSP ƒ`[ƒgİ’è
+                    // DSP ãƒãƒ¼ãƒˆè¨­å®š
                     if longbool(wParam and $10000) then API_ZeroMemory(@Status.DSPCheat, 256)
                     else if lParam >= $100 then Status.DSPCheat[wParam and $7F] := 0
                     else Status.DSPCheat[wParam and $7F] := (lParam and $FF) or $100;
-                    // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+                    // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
                     API_LeaveCriticalSection(@CriticalSectionThread);
                 end;
-                WM_APP_GET_MUTE, WM_APP_SET_MUTE: begin // ƒ~ƒ…[ƒgİ’è
-                    // ƒ`ƒƒƒ“ƒlƒ‹ƒ}ƒXƒN
+                WM_APP_GET_MUTE, WM_APP_SET_MUTE: begin // ãƒŸãƒ¥ãƒ¼ãƒˆè¨­å®š
+                    // ãƒãƒ£ãƒ³ãƒãƒ«ãƒã‚¹ã‚¯
                     result := Option.dwMute;
                     if longbool(wParam and $10000) then begin
-                        // ƒ`ƒƒƒ“ƒlƒ‹ƒ}ƒXƒN‚ğİ’è
+                        // ãƒãƒ£ãƒ³ãƒãƒ«ãƒã‚¹ã‚¯ã‚’è¨­å®š
                         Option.dwMute := wParam and $FF;
-                        // İ’è‚ğƒŠƒZƒbƒg
+                        // è¨­å®šã‚’ãƒªã‚»ãƒƒãƒˆ
                         SPCReset(false);
                     end;
                 end;
                 WM_APP_STATUS: result := (longword(Status.bOpen) and STATUS_OPEN) or (longword(Status.bPlay) and STATUS_PLAY)
-                    or (longword(Status.bPause) and STATUS_PAUSE); // ƒXƒe[ƒ^ƒXæ“¾
-                WM_APP_APPVER: result := APPLINK_VERSION; // ƒo[ƒWƒ‡ƒ“æ“¾
-                WM_APP_EMU_APU: ForceEmuAPU(); // ‹­§ƒGƒ~ƒ…ƒŒ[ƒg
-                WM_APP_EMU_DEBUG: Status.bEmuDebug := longbool(wParam and $1); // SPC700 “]‘—ƒeƒXƒg
-                WM_APP_DRAG_DONE: Status.bDropCancel := false; // ƒhƒ‰ƒbƒOI—¹
-                WM_APP_UPDATE_INFO: UpdateInfo(longbool(wParam and $1)); // î•ñ‚ğXV
-                WM_APP_UPDATE_MENU: UpdateMenu(); // ƒƒjƒ…[‚ğXV
-                WM_APP_WAVE_OUTPUT: result := longword(WaveOutput(longbool(wParam and $1), longbool(wParam and $2))); // WAVE ‘‚«‚İ
-                WM_APP_TRY_RESUME: begin // ‰‰‘tÄŠJs
-                    // ƒfƒoƒCƒX‚ğƒNƒ[ƒY
+                    or (longword(Status.bPause) and STATUS_PAUSE); // ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹å–å¾—
+                WM_APP_APPVER: result := APPLINK_VERSION; // ãƒãƒ¼ã‚¸ãƒ§ãƒ³å–å¾—
+                WM_APP_EMU_APU: ForceEmuAPU(); // å¼·åˆ¶ã‚¨ãƒŸãƒ¥ãƒ¬ãƒ¼ãƒˆ
+                WM_APP_EMU_DEBUG: Status.bEmuDebug := longbool(wParam and $1); // SPC700 è»¢é€ãƒ†ã‚¹ãƒˆ
+                WM_APP_DRAG_DONE: Status.bDropCancel := false; // ãƒ‰ãƒ©ãƒƒã‚°çµ‚äº†
+                WM_APP_UPDATE_INFO: UpdateInfo(longbool(wParam and $1)); // æƒ…å ±ã‚’æ›´æ–°
+                WM_APP_UPDATE_MENU: UpdateMenu(); // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
+                WM_APP_WAVE_OUTPUT: result := longword(WaveOutput(longbool(wParam and $1), longbool(wParam and $2))); // WAVE æ›¸ãè¾¼ã¿
+                WM_APP_TRY_RESUME: begin // æ¼”å¥å†é–‹è©¦è¡Œ
+                    // ãƒ‡ãƒã‚¤ã‚¹ã‚’ã‚¯ãƒ­ãƒ¼ã‚º
                     WaveClose(true);
-                    // ƒfƒoƒCƒX‚ğXV
+                    // ãƒ‡ãƒã‚¤ã‚¹ã‚’æ›´æ–°
                     UpdateDevice(Option.dwDeviceID, WAVE_DEVICE_UPDATE_LIST);
-                    // ƒfƒoƒCƒX‚ğƒI[ƒvƒ“
+                    // ãƒ‡ãƒã‚¤ã‚¹ã‚’ã‚ªãƒ¼ãƒ—ãƒ³
                     if longbool(WaveOpen()) then begin
-                        // ƒƒjƒ…[‚ğXV
+                        // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
                         UpdateMenu();
-                        // ƒCƒ“ƒWƒP[ƒ^‚ğƒŠƒZƒbƒg
+                        // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’ãƒªã‚»ãƒƒãƒˆ
                         ResetInfo(true);
                     end else begin
-                        // ƒtƒ‰ƒO‚ğİ’è
+                        // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
                         Status.bSPCRestart := false;
                         Status.bSPCRefresh := false;
                         Status.bWaveWrite := true;
-                        // ƒƒjƒ…[‚ğXV
+                        // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æ›´æ–°
                         UpdateMenu();
-                        // ƒCƒ“ƒWƒP[ƒ^‚ğƒŠƒZƒbƒg
+                        // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’ãƒªã‚»ãƒƒãƒˆ
                         ResetInfo(true);
-                        // ƒXƒŒƒbƒh‚É‰‰‘tŠJn‚ğ’Ê’m
+                        // ã‚¹ãƒ¬ãƒƒãƒ‰ã«æ¼”å¥é–‹å§‹ã‚’é€šçŸ¥
                         API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_PLAY, NULL);
                     end;
                 end;
             end;
         end;
-        WM_TIMER: case wParam of // ƒ^ƒCƒ}[
-            TIMER_ID_READY: begin // €”õŠ®—¹
-                // ƒtƒ‰ƒO‚ğİ’è
+        WM_TIMER: case wParam of // ã‚¿ã‚¤ãƒãƒ¼
+            TIMER_ID_READY: begin // æº–å‚™å®Œäº†
+                // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
                 Status.dwReady := READY_ACTIVE;
-                // ƒ^ƒCƒ}[‚ğ‰ğœ
+                // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤
                 API_KillTimer(cwWindowMain.hWnd, TIMER_ID_READY);
-                // ƒƒjƒ…[‚ğ•`‰æ
+                // ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚’æç”»
                 API_DrawMenuBar(cwWindowMain.hWnd);
-                // ƒƒjƒ…[‹«ŠE‚ğ•`‰æ
+                // ãƒ¡ãƒ‹ãƒ¥ãƒ¼å¢ƒç•Œã‚’æç”»
                 if Option.dwTheme = THEME_DARK then cmMain.DrawMenuBorder(cwWindowMain.hWnd);
             end;
-            TIMER_ID_OPTION_DISPLAY: begin // î•ñ•\¦‰ğœ
-                // ƒtƒ‰ƒO‚ğİ’è
+            TIMER_ID_OPTION_DISPLAY: begin // æƒ…å ±è¡¨ç¤ºè§£é™¤
+                // ãƒ•ãƒ©ã‚°ã‚’è¨­å®š
                 Status.dwTitle := Status.dwTitle and TITLE_ALWAYS_FLAG;
-                // ƒ^ƒCƒ}[‚ğ‰ğœ
+                // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤
                 API_KillTimer(cwWindowMain.hWnd, TIMER_ID_OPTION_DISPLAY);
-                // ƒ^ƒCƒgƒ‹‚ğXV
+                // ã‚¿ã‚¤ãƒˆãƒ«ã‚’æ›´æ–°
                 UpdateTitle(NULL);
             end;
-            TIMER_ID_OPTION_LOCK: begin // ƒIƒvƒVƒ‡ƒ“ƒƒbƒN‰ğœ
-                // ƒ^ƒCƒ}[‚ğ‰ğœ
+            TIMER_ID_OPTION_LOCK: begin // ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãƒ­ãƒƒã‚¯è§£é™¤
+                // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤
                 if Status.bOptionLock then API_KillTimer(cwWindowMain.hWnd, TIMER_ID_OPTION_LOCK);
-                // ƒIƒvƒVƒ‡ƒ“İ’èƒƒbƒN‚ğ‰ğœ
+                // ã‚ªãƒ—ã‚·ãƒ§ãƒ³è¨­å®šãƒ­ãƒƒã‚¯ã‚’è§£é™¤
                 Status.bOptionLock := false;
             end;
-            TIMER_ID_REDRAW_RESUME: begin // ƒTƒXƒyƒ“ƒh•œ‹AŒã‚ÌƒEƒBƒ“ƒhƒEÄ•`‰æ
-                // ƒ^ƒCƒ}[‚ğ‰ğœ
+            TIMER_ID_REDRAW_RESUME: begin // ã‚µã‚¹ãƒšãƒ³ãƒ‰å¾©å¸°å¾Œã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å†æç”»
+                // ã‚¿ã‚¤ãƒãƒ¼ã‚’è§£é™¤
                 API_KillTimer(cwWindowMain.hWnd, TIMER_ID_REDRAW_RESUME);
-                // ƒEƒBƒ“ƒhƒE‘S‘Ì‚ğÄ•`‰æ
+                // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦å…¨ä½“ã‚’å†æç”»
                 cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW or $1, NULL);
             end;
         end;
-        WM_ENDSESSION: if longbool(wParam) then DeleteWindow(); // ƒZƒbƒVƒ‡ƒ“‚ªI—¹ (Windows ‚ªƒƒOƒIƒtAÄ‹N“®AƒVƒƒƒbƒgƒ_ƒEƒ“) ‚µ‚½
-        WM_POWERBROADCAST: case wParam of // Windows ‚Ì“dŒ¹ŠÇ—ó‘Ô‚ª•Ï‰»‚µ‚½
-            PBT_APMSUSPEND, PBT_APMSTANDBY: SPCStop(false); // Windows ‚ªƒTƒXƒyƒ“ƒhA‹x~ó‘Ô‚É“ü‚Á‚½
-            PBT_APMRESUMESUSPEND, PBT_APMRESUMESTANDBY, PBT_APMRESUMEAUTOMATIC: RedrawResume(NULL); // Windows ‚ªƒTƒXƒyƒ“ƒh‚©‚ç•œ‹A‚µ‚½
-            PBT_POWERSETTINGCHANGE: RedrawResume(lParam); // ƒfƒBƒXƒvƒŒƒC‚Ì“dŒ¹ó‘Ô‚ª•Ï‰»‚µ‚½
+        WM_ENDSESSION: if longbool(wParam) then DeleteWindow(); // ã‚»ãƒƒã‚·ãƒ§ãƒ³ãŒçµ‚äº† (Windows ãŒãƒ­ã‚°ã‚ªãƒ•ã€å†èµ·å‹•ã€ã‚·ãƒ£ãƒƒãƒˆãƒ€ã‚¦ãƒ³) ã—ãŸ
+        WM_POWERBROADCAST: case wParam of // Windows ã®é›»æºç®¡ç†çŠ¶æ…‹ãŒå¤‰åŒ–ã—ãŸ
+            PBT_APMSUSPEND, PBT_APMSTANDBY: SPCStop(false); // Windows ãŒã‚µã‚¹ãƒšãƒ³ãƒ‰ã€ä¼‘æ­¢çŠ¶æ…‹ã«å…¥ã£ãŸ
+            PBT_APMRESUMESUSPEND, PBT_APMRESUMESTANDBY, PBT_APMRESUMEAUTOMATIC: RedrawResume(NULL); // Windows ãŒã‚µã‚¹ãƒšãƒ³ãƒ‰ã‹ã‚‰å¾©å¸°ã—ãŸ
+            PBT_POWERSETTINGCHANGE: RedrawResume(lParam); // ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ã®é›»æºçŠ¶æ…‹ãŒå¤‰åŒ–ã—ãŸ
         end;
-        WM_DISPLAYCHANGE: RedrawResume(NULL); // ƒfƒBƒXƒvƒŒƒC‚Ì‰ğ‘œ“x‚ª•Ï‰»‚µ‚½
-        WM_SYSCOLORCHANGE: begin // ƒVƒXƒeƒ€ƒJƒ‰[İ’è‚ª•Ï‰»‚µ‚½
-            // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğŠJn
+        WM_DISPLAYCHANGE: RedrawResume(NULL); // ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ã®è§£åƒåº¦ãŒå¤‰åŒ–ã—ãŸ
+        WM_SYSCOLORCHANGE: begin // ã‚·ã‚¹ãƒ†ãƒ ã‚«ãƒ©ãƒ¼è¨­å®šãŒå¤‰åŒ–ã—ãŸ
+            // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’é–‹å§‹
             API_EnterCriticalSection(@CriticalSectionStatic);
-            // ƒOƒ‰ƒtƒBƒbƒNƒŠƒ\[ƒX‚ğİ’è
+            // ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯ãƒªã‚½ãƒ¼ã‚¹ã‚’è¨­å®š
             SetGraphic();
-            // ƒNƒŠƒeƒBƒJƒ‹ƒZƒNƒVƒ‡ƒ“‚ğI—¹
+            // ã‚¯ãƒªãƒ†ã‚£ã‚«ãƒ«ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†
             API_LeaveCriticalSection(@CriticalSectionStatic);
-            // ƒCƒ“ƒWƒP[ƒ^‚ğÄ•`‰æ
+            // ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿ã‚’å†æç”»
             cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW, NULL);
         end;
-        WM_CLOSE: if hWnd = cwWindowMain.hWnd then begin // Windows ‚ªƒEƒBƒ“ƒhƒE‚ğ•Â‚¶‚½
-            // ‰Šú‰»
+        WM_CLOSE: if hWnd = cwWindowMain.hWnd then begin // Windows ãŒã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’é–‰ã˜ãŸ
+            // åˆæœŸåŒ–
             dwDef := 1;
-            // I—¹ƒƒbƒZ[ƒW‚ğ‘—M
+            // çµ‚äº†ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’é€ä¿¡
             cwWindowMain.PostMessage(WM_QUIT, NULL, NULL);
         end;
         WM_CTLCOLORSTATIC, WM_CTLCOLORLISTBOX: if Option.dwTheme = THEME_DARK then begin
@@ -12471,11 +12746,11 @@ end;
 
 
 // *************************************************************************************************************************************************************
-// ƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg
+// ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆ
 // *************************************************************************************************************************************************************
 
 begin
-{$WARNINGS OFF} // ƒRƒ“ƒpƒCƒ‰ŒxƒƒbƒZ[ƒW‚È‚µ --- ‚±‚±‚©‚ç
+{$WARNINGS OFF} // ã‚³ãƒ³ãƒ‘ã‚¤ãƒ©è­¦å‘Šãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãªã— --- ã“ã“ã‹ã‚‰
     ExitCode := longint(_WinMain(hInstance, hPrevInst, cmdLine, cmdShow));
-{$WARNINGS ON}  // ƒRƒ“ƒpƒCƒ‰ŒxƒƒbƒZ[ƒW‚È‚µ --- ‚±‚±‚Ü‚Å
+{$WARNINGS ON}  // ã‚³ãƒ³ãƒ‘ã‚¤ãƒ©è­¦å‘Šãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãªã— --- ã“ã“ã¾ã§
 end.
