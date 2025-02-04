@@ -288,7 +288,7 @@ void IncludeScript700File(u32 addr, u32 value, void *lpData) {
 
     if (_700Asc) {
         // get buffer size
-        if (_700DirSize + value > 2048) {
+        if (_700DirSize + value >= 2048) {
             FreeLibrary(hModule);
             free(lp700File);
             return;
@@ -300,8 +300,16 @@ void IncludeScript700File(u32 addr, u32 value, void *lpData) {
         LoadScript700(func, lp700File, addr);
     } else {
         // get buffer size
+        u32 cchWideChar = MultiByteToWideChar(CP_ACP, NULL, (LPCSTR)lpData, -1, NULL, NULL);
+        if (_700DirSize + cchWideChar + cchWideChar + 2 >= 2048) {
+            FreeLibrary(hModule);
+            free(lp700File);
+            return;
+        }
+
+        // ansi to wide char
         void *lpFile = (void*)((u32)lp700File + _700DirSize);
-        u32 result = MultiByteToWideChar(CP_ACP, NULL, (LPCSTR)lpData, -1, (LPWSTR)lpFile, 2048 - _700DirSize);
+        u32 result = MultiByteToWideChar(CP_ACP, NULL, (LPCSTR)lpData, -1, (LPWSTR)lpFile, cchWideChar);
         if (!result) {
             FreeLibrary(hModule);
             free(lp700File);
