@@ -1,5 +1,5 @@
 // *************************************************************************************************************************************************************
-//   SNES SPC700 Player with Customized SNESAPU.DLL Version 2.XX Kernel Source Code
+//   SNES SPC700 Player with Improved SNESAPU.DLL Version 2.XX Kernel Source Code
 // *************************************************************************************************************************************************************
 
 // =================================================================================================
@@ -49,18 +49,29 @@
 // =================================================================================================
 program spcplay;
 
-//{$DEFINE TIMERTRICK}                                      // TimerTrick DEBUG
-//{$DEFINE TRY700A}                                         // Try700 (Ansi) DEBUG
-//{$DEFINE TRY700W}                                         // Try700 (Wide) DEBUG
-//{$DEFINE TRANSMITSPC}                                     // TransmitSPC DEBUG
-//{$DEFINE CONTEXT}                                         // SNESAPU Context DEBUG
-//{$DEFINE SPCDEBUG}                                        // SNESAPU SPCDbg DEBUG
-//{$DEFINE SPCCYCLE}                                        // SNESAPU Cycles DEBUG
-//{$DEFINE DEBUGLOG}                                        // デバッグログ出力
-//{$DEFINE UACDROP}                                         // UAC を超えたドロップ操作
-//{$DEFINE ITASKBARLIST3}                                   // ITaskbarList3 対応
-//{$DEFINE PERFORMANCETEST}                                 // パフォーマンステスト
+// *************************************************************************************************************************************************************
+// デバッグ用オプション
+// *************************************************************************************************************************************************************
+
+//{$DEFINE TIMERTRICK}                                      // TimerTrick テスト
+//{$DEFINE TRY700A}                                         // Try700 (ANSI) テスト
+//{$DEFINE TRY700W}                                         // Try700 (Wide) テスト
+//{$DEFINE TRANSMITSPC}                                     // TransmitSPC テスト
+//{$DEFINE TRANSMITSPCLPT}                                  // TransmitSPCEx LPT 転送テスト
+//{$DEFINE TRANSMITSPCCBK}                                  // TransmitSPCEx コールバックテスト
+//{$DEFINE CONTEXT}                                         // SNESAPU Context テスト
+//{$DEFINE SPCDEBUG}                                        // SNESAPU SPCDbg テスト
 //{$DEFINE SPCBPMTEST}                                      // SPC_BPM.DLL テスト
+//{$DEFINE WAVEDUMMY}                                       // WAVE ファイル出力テスト
+//{$DEFINE EMUSAMPLES}                                      // EmuAPU をサンプル単位で実行
+//{$DEFINE DEBUGLOG}                                        // デバッグログ出力
+//{$DEFINE UACDROP}                                         // UAC を超えたドロップ操作 (実験中)
+//{$DEFINE ITASKBARLIST3}                                   // ITaskbarList3 対応 (実験中)
+
+
+// *************************************************************************************************************************************************************
+// コンパイルオプション
+// *************************************************************************************************************************************************************
 
 {$APPTYPE GUI}                                              // アプリケーションタイプ       : GUI モード
 {$ASSERTIONS OFF}                                           // ソースコードのアサート       : 無効
@@ -72,7 +83,6 @@ program spcplay;
 {$IMAGEBASE $00400000}                                      // イメージベースアドレス       : 0x00400000
 {$IMPORTEDDATA OFF}                                         // 別パッケージのメモリ参照     : 無効
 {$IOCHECKS OFF}                                             // I/O チェック                 : 無効
-{$LONGSTRINGS ON}                                           // AnsiString 使用              : 有効
 {$MAXSTACKSIZE $00100000}                                   // 最大スタック設定             : 0x00100000
 {$MINENUMSIZE 1}                                            // 列挙型の最大サイズ (x256)    : 1 (256)
 {$MINSTACKSIZE $00004000}                                   // 最小スタック設定             : 0x00004000
@@ -85,7 +95,6 @@ program spcplay;
 {$TYPEINFO OFF}                                             // 実行時型情報                 : 無効
 {$VARSTRINGCHECKS OFF}                                      // 文字列チェック               : 無効
 {$WARNINGS ON}                                              // 警告生成                     : 有効
-{$WEAKPACKAGEUNIT OFF}                                      // 弱いパッケージ化             : 無効
 {$WRITEABLECONST OFF}                                       // 定数書き換え                 : 無効
 
 {$IFDEF FREEPASCAL}     // for Free Pascal 3.2+
@@ -96,21 +105,25 @@ program spcplay;
 {$HINTS OFF}                                                // ヒント生成                   : 無効
 {$IEEEERRORS OFF}                                           // 浮動小数エラーチェック       : 無効
 {$MODE DELPHI}                                              // 言語モード                   : DELPHI
+{$LONGSTRINGS ON}                                           // AnsiString 使用              : 有効 ($MODE の後に定義)
 {$OPTIMIZATION LEVEL3,USEEBP}                               // 最適化コンパイル             : Lv3, EBP レジスタ使用
 {$POINTERMATH ON}                                           // ポインタ演算                 : 有効
 {$SAFEFPUEXCEPTIONS OFF}                                    // FPU エラー即時報告           : 無効
+{$SMARTLINK ON}                                             // スマートリンク               : 有効
 {$ELSE}                 // for Boland Delphi 6+
 {$DEFINITIONINFO OFF}                                       // シンボル宣言と参照情報       : 無効
 {$DESIGNONLY OFF}                                           // IDE 使用                     : 無効
 {$HINTS ON}                                                 // ヒント生成                   : 有効
 {$IMPLICITBUILD ON}                                         // ビルドのたびに再コンパイル   : 有効
 {$LOCALSYMBOLS OFF}                                         // ローカルシンボル情報         : 無効
+{$LONGSTRINGS ON}                                           // AnsiString 使用              : 有効
 {$OBJEXPORTALL OFF}                                         // シンボルのエクスポート       : 無効
 {$OPTIMIZATION ON}                                          // 最適化コンパイル             : 有効
 {$REALCOMPATIBILITY OFF}                                    // Real48 互換                  : 無効
 {$REFERENCEINFO OFF}                                        // 完全な参照情報の生成         : 無効
 {$RUNONLY OFF}                                              // 実行時のみコンパイル         : 無効
 {$SAFEDIVIDE OFF}                                           // 初期 Pentium FDIV バグ回避   : 無効
+{$WEAKPACKAGEUNIT OFF}                                      // 弱いパッケージ化             : 無効
 {$ENDIF}
 
 
@@ -369,7 +382,7 @@ type
 {$IFDEF TRY700W}
         Try700: function(lpFile: pointer): longint; stdcall;
 {$ENDIF}
-{$IFDEF TRANSMITSPC}
+{$IFDEF TRANSMITSPCLPT}
         TransmitSPC: function(addr: longword): longword; stdcall;
         TransmitSPCEx: function(table: pointer): longword; stdcall;
         StopTransmitSPC: function(): longword; stdcall;
@@ -881,13 +894,24 @@ type
         lParam: longword;                                   // コールバック関数のパラメータ
     end;
 
-{$IFDEF TRANSMITSPC}
-    // TRANSFERSPCEX 構造体
-    TTRANSFERSPCEX = record
+{$IFDEF TRANSMITSPCLPT}
+    // TRANSMITSPCEXLPT 構造体
+    TTRANSMITSPCEXLPT = record
         cbSize: longword;                                   // 構造体のサイズ
         transmitType: longword;                             // 送信種別
         bScript700: longbool;                               // Script700 使用フラグ
         lptPort: longword;                                  // LPT ポートアドレス
+    end;
+{$ENDIF}
+
+{$IFDEF TRANSMITSPCCBK}
+    // TRANSMITSPCEXCALLBACK 構造体
+    TTRANSMITSPCEXCALLBACK = record
+        cbSize: longword;                                   // 構造体のサイズ
+        transmitType: longword;                             // 送信種別
+        bScript700: longbool;                               // Script700 使用フラグ
+        pCallbackRead: pointer;                             // ポート読み取りコールバック関数のポインタ
+        pCallbackWrite: pointer;                            // ポート書き込みコールバック関数のポインタ
     end;
 {$ENDIF}
 
@@ -1046,6 +1070,7 @@ type
         cmSetupOrder: CMENU;                                // メニュークラス (設定 - 演奏順序)
         cmSetupSeek: CMENU;                                 // メニュークラス (設定 - シーク時間)
         cmSetupInfo: CMENU;                                 // メニュークラス (設定 - 情報表示)
+        cmSetupInfoFont: CMENU;                             // メニュークラス (設定 - 情報表示 - 数値フォント)
         cmSetupPriority: CMENU;                             // メニュークラス (設定 - 基本優先度)
         cmSetupOthers: CMENU;                               // メニュークラス (設定 - その他設定)
         cmList: CMENU;                                      // メニュークラス (プレイリスト)
@@ -1445,6 +1470,32 @@ const
     GWL_STYLE = -16;
     GWL_USERDATA = -21;
     GWL_WNDPROC = -4;
+    HTBORDER = 18;
+    HTBOTTOM = 15;
+    HTBOTTOMLEFT = 16;
+    HTBOTTOMRIGHT = 17;
+    HTCAPTION = 2;
+    HTCLIENT = 1;
+    HTCLOSE = 20;
+    HTERROR = -2;
+    HTGROWBOX = 4;
+    HTHELP = 21;
+    HTHSCROLL = 6;
+    HTLEFT = 10;
+    HTMENU = 5;
+    HTMAXBUTTON = 9;
+    HTMINBUTTON = 8;
+    HTNOWHERE = 0;
+    HTREDUCE = 8;
+    HTRIGHT = 11;
+    HTSIZE = 4;
+    HTSYSMENU = 3;
+    HTTOP = 12;
+    HTTOPLEFT = 13;
+    HTTOPRIGHT = 14;
+    HTTRANSPARENT = -1;
+    HTVSCROLL = 7;
+    HTZOOM = 9;
     HWND_BOTTOM = $1;
     HWND_NOTOPMOST = $FFFFFFFE;
     HWND_TOP = $0;
@@ -2621,6 +2672,11 @@ const
     PROCESS_VM_READ = $0010;
     PROCESS_VM_WRITE = $0020;
 
+    ATTACH_PARENT_PROCESS = $FFFFFFFF;                      // -1
+    STD_ERROR_HANDLE = $FFFFFFF4;                           // -12
+    STD_INPUT_HANDLE = $FFFFFFF6;                           // -10
+    STD_OUTPUT_HANDLE = $FFFFFFF5;                          // -11
+
     TYMED_ENHMF = $40;
     TYMED_FILE = $2;
     TYMED_HGLOBAL = $1;
@@ -2645,6 +2701,12 @@ const
     WC_DISCARDNS = $10;
     WC_NO_BEST_FIT_CHARS = $400;
     WC_SEPCHARS = $20;
+
+    WHDR_DONE = $1;
+    WHDR_PREPARED = $2;
+    WHDR_BEGINLOOP = $4;
+    WHDR_ENDLOOP = $8;
+    WHDR_INQUEUE = $10;
 
     MM_WOM_CLOSE = $3BC;
     MM_WOM_DONE = $3BD;
@@ -2683,7 +2745,7 @@ const
     SNESAPU_TITLE: utf8string = '[ SNES SPC700 Emulator ]' + CRLF + ' SNESAPU.DLL v';
     SPCPLAY_VERSION: utf8string = '$CAP_FILE_VER';
     SNESAPU_VERSION = $20000; // SNESAPU_VER
-    APPLINK_VERSION = $02190400;
+    APPLINK_VERSION = $02210000;
 
     CBE_DSPREG = $1;
     CBE_S700FCH = $2;
@@ -2704,18 +2766,19 @@ const
     COPY_SIZE_PATH = BUFFER_SIZE_PATH - 1;
     COPY_SIZE_TITLE = BUFFER_SIZE_TITLE - 1;
 
-{$IFDEF TRANSMITSPC}
-    CLASS_NAME: utf8string = 'SSDLabo_SPCPLAY_DEBUG';
-{$ELSE}
     CLASS_NAME: utf8string = 'SSDLabo_SPCPLAY';
-{$ENDIF}
     SNESAPU_FILE: utf8string = 'snesapu.dll';
+{$IFDEF TRANSMITSPCCBK}
+    SNESAPU_FILE_3RD: utf8string = 'snesapu-3rd\snesapu.dll';
+{$ENDIF}
     SPC_FILE_HEADER: utf8string = 'SNES-SPC700 Sound File Data ';
     SPC_FILE_HEADER_LEN = 28;
     INI_FILE: utf8string = 'spcplay.ini';
     SECTION_HEADER: utf8string = '◆◇＊＋・ String to detect UTF-8 in text editors ・＋＊◇◆';
     SECTION_USER_POLICY: utf8string = '[USER POLICY]';
+    SECTION_USER_POLICY_HELP: utf8string = '# You can adjust the behavior of SPCPLAY to suit your preferences.';
     SECTION_APP_SETTING: utf8string = '[APP SETTING]';
+    SECTION_APP_SETTING_HELP: utf8string = '# DO NOT TOUCH! You should change the settings from within SPCPLAY.';
     BUFFER_LENGTH = 13;
     BUFFER_START = BUFFER_LENGTH + 1;
     BUFFER_AMP_____: utf8string = 'AMP      0 : ';
@@ -2772,6 +2835,7 @@ const
     BUFFER_TOPTDISP: utf8string = 'TOPTDISP 0 : ';
     BUFFER_TOPTLOCK: utf8string = 'TOPTLOCK 0 : ';
     BUFFER_TREDRAW_: utf8string = 'TREDRAW  0 : ';
+    BUFFER_TUNESCAN: utf8string = 'TUNESCAN 0 : ';
     BUFFER_VERSION_: utf8string = 'VERSION  0 : ';
     BUFFER_VOLCOLOR: utf8string = 'VOLCOLOR 0 : ';
     BUFFER_VOLRESET: utf8string = 'VOLRESET 0 : ';
@@ -2779,6 +2843,7 @@ const
     BUFFER_WAITLENG: utf8string = 'WAITLENG 0 : ';
     BUFFER_WAVBLANK: utf8string = 'WAVBLANK 0 : ';
     BUFFER_WAVEFMT_: utf8string = 'WAVEFMT  0 : ';
+    FILE_DEFAULT: utf8string = 'FILE TRANSMIT WINDOW';
     FONT_NAME: array[0..1] of utf8string = ('Microsoft Applocale', 'Lucida Console');
     LIST_FILE: utf8string = 'spcplay.stk';
     LIST_FILE_HEADER_A: utf8string = 'SSDLabo Spcplay ListFile v1.0';
@@ -2799,9 +2864,6 @@ const
     SPC_BPM_FILE: utf8string = 'spc_bpm.dll';
 {$ENDIF}
 
-    BITMAP_NAME = 'MAINBMP';
-    ICON_NAME = 'MAINICON';
-    FILE_DEFAULT: utf8string = 'FILE TRANSMIT WINDOW';
     DRAG_START_THRESHOLD = 5;
     DRAG_LIMIT_THRESHOLD = 2;
     LIST_ADD_THRESHOLD = 297;
@@ -2841,8 +2903,9 @@ const
     WM_APP_FUNCTION = $F0000000;                            // 機能設定           ($F000???X, X:Type 0 or 2)
     WM_APP_GET_DSP = $F1000000;                             // DSP 読み取り       ($F100??XX, XX:DSP Address)
     WM_APP_SET_DSP = $F1010000;                             // DSP 書き込み       ($F101??XX, XX:DSP Address, lParam:Value)
-    WM_APP_GET_PORT = $F1100000;                            // ポート読み取り     ($F110???X, X:PORT Address)
-    WM_APP_SET_PORT = $F1110000;                            // ポート書き込み     ($F111???X, X:PORT Address, lParam:Value)
+    WM_APP_GET_OUT_PORT = $F1100000;                        // 出力ポート読み取り  ($F110???X, X:PORT Address)
+    WM_APP_SET_IN_PORT = $F1110000;                         // 入力ポート書き込み  ($F111???X, X:PORT Address, lParam:Value)
+    WM_APP_GET_IN_PORT = $F1120000;                         // 入力ポート読み取り  ($F112???X, X:PORT Address)
     WM_APP_GET_RAM = $F1200000;                             // RAM 読み取り       ($F120XXXX, XXXX:RAM Address)
     WM_APP_SET_RAM = $F1210000;                             // RAM 書き込み       ($F121XXXX, XXXX:RAM Address, lParam:Value)
     WM_APP_GET_WORK = $F1300000;                            // ワーク読み取り     ($F130???X, X:WORK Address)
@@ -2857,12 +2920,14 @@ const
     WM_APP_NEXT_TICK = $F4100000;                           // 次の命令で止める   ($F410????, lParam:0=CBE Flags)
     WM_APP_DSP_CHEAT = $F5000000;                           // DSP チート設定     ($F500??XX, XX:DSP Address, lParam:Value (-1:UNSET))
     WM_APP_DSP_THRU = $F5010000;                            // DSP チート全解除   ($F501????)
-    WM_APP_GET_MUTE = $F6000000;                            // ミュート取得       ($F60000??)
-    WM_APP_SET_MUTE = $F6010000;                            // ミュート設定       ($F60100??)
+    WM_APP_GET_AMP = $F8150000;                             // 音量取得           ($F81500??)
+    WM_APP_SET_AMP = $F8150100;                             // 音量設定           ($F81501??, lParam:Value)
+    WM_APP_GET_MUTE = $F8160000;                            // ミュート取得       ($F81600??)
+    WM_APP_SET_MUTE = $F8160100;                            // ミュート設定       ($F81601??, lParam:Value)
+    WM_APP_GET_NOISE = $F8170000;                           // ノイズ取得         ($F81700??)
+    WM_APP_SET_NOISE = $F8170100;                           // ノイズ設定         ($F81701??, lParam:Value)
     WM_APP_STATUS = $FF000000;                              // ステータス取得     ($FF00????)
     WM_APP_APPVER = $FF010000;                              // バージョン取得     ($FF01????)
-    WM_APP_EMU_APU = $FFFE0000;                             // 強制エミュレート   ($FFFE????)
-    WM_APP_EMU_DEBUG = $FFFF0000;                           // SPC700 転送テスト  ($FFFF???X, X:Flag)
 
     DRAW_INFO_ALWAYS = $1;                                  // 常に描画
 
@@ -2941,9 +3006,6 @@ const
     TIMER_ID_OPTION_LOCK = $3;                              // オプション変更ロック
     TIMER_ID_REDRAW_RESUME = $4;                            // サスペンド復帰後のウィンドウ再描画
     TIMER_INTERVAL_READY = 0;                               // 準備完了までの遅延時間
-    TIMER_INTERVAL_OPTION_DISPLAY = 1000;                   // オプション情報表示の時間
-    TIMER_INTERVAL_OPTION_LOCK = 300;                       // オプション変更ロックの時間
-    TIMER_INTERVAL_REDRAW_RESUME = 1000;                    // サスペンド復帰後のウィンドウ再描画の時間
 
     TITLE_HIDE = $0;                                        // 非表示
     TITLE_NORMAL = $100;                                    // 標準
@@ -2982,6 +3044,7 @@ const
     WAVE_THREAD_DEVICE_OPENED = $2;                         // デバイスのオープン完了
     WAVE_THREAD_DEVICE_CLOSED = $4;                         // デバイスのクローズ完了
 
+    COLOR_NUM = 3;                                          // インジケータバーカラー種類の数
     COLOR_BAR_NUM = 6;                                      // インジケータバーの数
     COLOR_BAR_NUM_X3 = 18;
     COLOR_BAR_NUM_X7 = 42;
@@ -3330,7 +3393,9 @@ const
     MENU_SETUP_INFO = 63;
     MENU_SETUP_INFO_SIZE = 9;
     MENU_SETUP_INFO_BASE = 630;
+    MENU_SETUP_INFO_BMPFONT = 656;
     MENU_SETUP_INFO_RESET = 659;
+    MENU_SETUP_INFO_BMPFONT_BASE = 660;
     MENU_SETUP_PRIORITY = 64;
     MENU_SETUP_PRIORITY_SIZE = 6;
     MENU_SETUP_PRIORITY_BASE = 640;
@@ -3425,17 +3490,27 @@ const
         'プレイリストをクリアしますか?' + CRLF + '※ この操作を行うと、元には戻せません。',
         'Are you sure you want to clear your playlist?' + CRLF + '* This action cannot be reversed.');
     WARN_WAVE_SIZE_1: array[0..1] of utf8string = (
-        'WAVE サウンド ファイルを作成しますか?' + CRLF + '※ ファイル サイズは最大約 ',
-        'Are you sure you want to create a WAVE file?' + CRLF + '* Maximum size of created file will be about ');
+        'WAVE サウンド ファイルを作成しますか?' + CRLF + '出力先： ',
+        'Are you sure you want to create a WAVE file?' + CRLF + 'Path: ');
     WARN_WAVE_SIZE_2: array[0..1] of utf8string = (
-        'MB です。' + CRLF + '※ 作成が完了するまで時間がかかる場合があります。 作成中は操作できません。',
-        'MB.' + CRLF + '* Processing might take time until completed, and you cannot cancel processing.');
+        CRLF + CRLF + '※ ファイル サイズは最大約 ',
+        CRLF + CRLF + '* Maximum size of created file will be about ');
+    WARN_WAVE_SIZE_3: array[0..1] of utf8string = (
+        'MB です。 同じ容量の空きが必要です。' + CRLF +
+        '※ 処理が完了するまで時間がかかる場合があります。 情報表示エリアを右ボタンでダブルクリックすると、処理を中止できます。',
+        'MB, need this amount of free space on your disk.' + CRLF +
+        '* Processing might take time until completed, you can interrupt by double-click right button on the information area.');
+    INFO_WAVE_PROC_CANCEL: array[0..1] of utf8string = ('※右ボタンのダブルクリックで中止',
+        '* Double-click right button to interrupt.');
+    INFO_WAVE_PROC_SPACE: array[0..1] of utf8string = ('                                        ', '                                   ');
+    INFO_WAVE_PROC_PERCENT: array[0..1] of utf8string = (' ％完了', ' % completed');
     INFO_WAVE_FINISH_1: array[0..1] of utf8string = (
         'WAVE サウンド ファイルを作成しました。' + CRLF + '※ ファイル サイズは約 ',
-        'WAVE file was created successfully.' + CRLF + '* Size of file is about ');
+        'WAVE file was created successfully.' + CRLF + '* File size is about ');
     INFO_WAVE_FINISH_2: array[0..1] of utf8string = (
         'MB です。',
         'MB.');
+    INFO_WAVE_CANCEL: array[0..1] of utf8string = ('WAVE サウンド ファイルの作成を中止しました。', 'WAVE file creation was interrupted.');
     DIALOG_OPEN_FILTER: array[0..1] of utf8string = (
         'SNES SPC700 サウンド (*.spc)' + NULLCHAR + '*.spc;*.sp0;*.sp1;*.sp2;*.sp3;*.sp4;*.sp5;*.sp6;*.sp7;*.sp8;*.sp9' + NULLCHAR +
         'プレイリスト (*.lst)' + NULLCHAR + '*.lst' + NULLCHAR +
@@ -3494,6 +3569,10 @@ const
     STR_MENU_SETUP_TIME_RESET: array[0..1] of utf8string = ('位置をリセット(&R)', '&Reset Position Marks');
     STR_MENU_SETUP_ORDER: array[0..1] of utf8string = ('演奏順序(&O)', 'Play &Order');
     STR_MENU_SETUP_INFO: array[0..1] of utf8string = ('情報表示(&A)', 'I&nformation Viewer');
+    STR_MENU_SETUP_INFO_BMPFONT: array[0..1] of utf8string = ('数値フォント(&F)', 'Numeric &Font');
+    STR_MENU_SETUP_INFO_BMPFONT_TYPE: array[0..1] of array[0..BITMAP_NUM_FONT - 1] of utf8string = (
+        ('アナログ(&A)', 'デジタル/7セグメント(&D)'),
+        ('&Analog like', '&Digital/7-segment like'));
     STR_MENU_SETUP_INFO_RESET: array[0..1] of utf8string = ('無音チャンネル非表示(&H)', '&Hide Muted Channels');
     STR_MENU_SETUP_SEEK: array[0..1] of utf8string = ('シーク時間(&K)', 'See&k Time');
     STR_MENU_SETUP_SEEK_FAST: array[0..1] of utf8string = ('高速シーク(&F)', '&Fast Seek');
@@ -3594,8 +3673,8 @@ const
     TITLE_NAME_HEADER: array[0..1] of utf8string = (' [', ' [');
     TITLE_NAME_FOOTER: array[0..1] of utf8string = (']', ']');
     TITLE_MAIN_HEADER: array[0..1] of utf8string = (' - ', ' - ');
-    TITLE_INFO_HEADER: array[0..1] of utf8string = ('《 ', '< ');
-    TITLE_INFO_FOOTER: array[0..1] of utf8string = (' 》', ' >');
+    TITLE_INFO_HEADER: array[0..1] of utf8string = ('《 ', '[[ ');
+    TITLE_INFO_FOOTER: array[0..1] of utf8string = (' 》', ' ]]');
     TITLE_INFO_SEPARATE_HEADER: array[0..1] of utf8string = ('左右拡散度 ', 'Separate ');
     TITLE_INFO_FEEDBACK_HEADER: array[0..1] of utf8string = ('フィードバック反転度 ', 'Echo Feedback ');
     TITLE_INFO_SPEED_HEADER: array[0..1] of utf8string = ('演奏速度 ', 'Speed ');
@@ -3606,8 +3685,7 @@ const
     TITLE_INFO_MULTIPLE: array[0..1] of utf8string = (' × ', '  x');
     TITLE_INFO_PERCENT: array[0..1] of utf8string = (' ％', ' %');
     TITLE_INFO_FILE_APPEND: array[0..1] of utf8string = ('ファイル読込中... ', 'Loading... ');
-    TITLE_INFO_FILE_HEADER: array[0..1] of utf8string = ('ファイル作成中... ', 'Storing... ');
-    TITLE_INFO_FILE_PROC: array[0..1] of utf8string = (' ％完了', ' % completed');
+    TITLE_INFO_FILE_HEADER: array[0..1] of utf8string = ('ファイル作成中... ', 'Saving... ');
 
 
 // *************************************************************************************************************************************************************
@@ -3634,9 +3712,6 @@ var
         cfMain: CWINDOWMAIN;                                    // メインウィンドウクラス
         hInstance: longword;                                    // インスタンスハンドル
         OsVersionInfo: TRTLOSVERSIONINFOW;                      // システムバージョン情報
-        dwChannel: longword;                                    // チャンネル
-        dwBit: longint;                                         // ビット
-        dwRate: longword;                                       // サンプリングレート
         dwLanguage: longword;                                   // 言語
         hDCWindow: longword;                                    // ウィンドウ全体のデバイスコンテキストのハンドル
         hDCStatic: longword;                                    // 情報表示ウィンドウのデバイスコンテキストのハンドル
@@ -3655,13 +3730,13 @@ var
         bOpen: longbool;                                        // Open フラグ
         bPlay: longbool;                                        // Play フラグ
         bPause: longbool;                                       // Pause フラグ
-        sCurrentPath: utf8string;                                   // カレントパス
-        lpCurrentSize: longword;                                // カレントパスのサイズ
-        sSPCFile: utf8string;                                       // SPC ファイルパス
-        sSPCDir: utf8string;                                        // SPC ディレクトリパス
-        sSPCName: utf8string;                                       // SPC ファイル名
-        sOpenPath: utf8string;                                      // ファイル読込フォルダバッファ
-        sSavePath: utf8string;                                      // ファイル保存フォルダバッファ
+        sCurrentPath: utf8string;                               // カレントパス
+        sSPCFile: utf8string;                                   // SPC ファイルパス
+        sSPCDir: utf8string;                                    // SPC ディレクトリパス
+        sSPCName: utf8string;                                   // SPC ファイル名
+        sOpenPath: utf8string;                                  // ファイル読込フォルダバッファ
+        sSavePath: utf8string;                                  // ファイル保存フォルダバッファ
+        dwCheckSum: longword;                                   // チェックサム
         dwFocusHandle: longword;                                // フォーカスハンドル
         dwDeviceNum: longword;                                  // デバイス数
         sDeviceName: array of utf8string;                       // デバイス名
@@ -3696,8 +3771,9 @@ var
         dwLastLimitTime: longword;                              // 最後のリピート終了位置
         dwTuningAddress: longword;                              // TUNING パラメータの開始アドレス
         dwTuningSize: longword;                                 // TUNING パラメータのサイズ
-        dwOpenFilterIndex: longint;                             // ファイルタイプのインデックス (Open)
-        dwSaveFilterIndex: longint;                             // ファイルタイプのインデックス (Save)
+        dwTuningTime: longword;                                 // TUNING 解析の最終時間
+        dwOpenFilterIndex: longint;                             // ファイル種別のインデックス (Open)
+        dwSaveFilterIndex: longint;                             // ファイル種別のインデックス (Save)
         DblClickPoint: TPOINT;                                  // ダブルクリック位置
         DragPoint: TPOINT;                                      // ドラッグ開始位置
         bDropCancel: longbool;                                  // ドロップ禁止フラグ
@@ -3705,7 +3781,6 @@ var
         BreakPoint: array[0..65535] of byte;                    // ブレイクポイントスイッチ
         dwNextTick: longword;                                   // 次の命令実行スイッチ
         DSPCheat: array[0..127] of word;                        // DSP チート
-        bEmuDebug: longbool;                                    // 転送テストモード
         dwNoSleepTime: longword;                                // スリープ解除時間
         NowLevel: TLEVEL;                                       // 現在のレベル
         LastLevel: TLEVEL;                                      // 最後のレベル
@@ -3737,12 +3812,12 @@ var
         dwCacheNum: longword;                                   // シークキャッシュ数
         dwChannel: longword;                                    // チャンネル
         dwDeviceID: longint;                                    // デバイス ID
-        sDeviceName: utf8string;                                    // デバイス名
+        sDeviceName: utf8string;                                // デバイス名
         dwDrawInfo: longword;                                   // 情報描画フラグ
         bEarSafe: longbool;                                     // イヤーセーフ
         dwFadeTime: longword;                                   // デフォルトフェードアウト時間
         dwFeedback: longword;                                   // フィードバック反転度
-        sFontName: utf8string;                                      // フォント名
+        sFontName: utf8string;                                  // フォント名
         dwHideTime: longword;                                   // デフォルトリセット時間
         dwInfo: longword;                                       // 情報表示
         dwInter: longword;                                      // 補間処理
@@ -3776,6 +3851,7 @@ var
         dwTimerOptionDisplay: longword;                         // オプション情報表示の時間
         dwTimerOptionLock: longword;                            // オプション変更ロックの時間
         dwTimerRedrawResume: longword;                          // サスペンド復帰後のウィンドウ再描画の時間
+        dwTuneScan: longword;                                   // TUNING 再スキャンの間隔
         dwVolumeColor: longword;                                // インジケータの色
         bVolumeReset: longbool;                                 // 無音チャンネル非表示
         dwVolumeSpeed: longword;                                // インジケータの減衰速度
@@ -3806,6 +3882,7 @@ var
 // *************************************************************************************************************************************************************
 
 function  API_AppendMenu(hMenu: longword; uFlags: longword; uIDNewItem: longword; lpNewItem: pointer): longbool; stdcall; external 'user32.dll' name 'AppendMenuW';
+function  API_AttachConsole(dwProcessId: longword): longbool; stdcall; external 'kernel32.dll' name 'AttachConsole';
 function  API_BitBlt(hdcDest: longword; nXDest: longint; nYDest: longint; nWidthDest: longint; nHeightDest: longint; hdcSrc: longword; nXSrc: longint; nYSrc: longint; dwRop: longword): longbool; stdcall; external 'gdi32.dll' name 'BitBlt';
 function  API_CallWindowProc(lpPrevWndFunc: pointer; hWnd: longword; msg: longword; wParam: longword; lParam: longword): longword; stdcall; external 'user32.dll' name 'CallWindowProcW';
 function  API_CheckMenuItem(hMenu: longword; uID: longword; uCheck: longword): longword; stdcall; external 'user32.dll' name 'CheckMenuItem';
@@ -3853,6 +3930,7 @@ function  API_GetFileSize(hFile: longword; pFileSizeHigh: pointer): longword; st
 function  API_GetFileTitle(lpszFile: pointer; lpszTitle: pointer; cbBuf: word): shortint; stdcall; external 'comdlg32.dll' name 'GetFileTitleW';
 function  API_GetFocus(): longword; stdcall; external 'user32.dll' name 'GetFocus';
 function  API_GetForegroundWindow(): longword; stdcall; external 'user32.dll' name 'GetForegroundWindow';
+function  API_GetFullPathName(lpFileName: pointer; nBufferLength: longword; lpBuffer: pointer; lpFilePart: pointer): longword; stdcall; external 'kernel32.dll' name 'GetFullPathNameW';
 function  API_GetKeyboardState(lpKeyState: pointer): longbool; stdcall; external 'user32.dll' name 'GetKeyboardState';
 function  API_GetLastError(): longword; stdcall; external 'kernel32.dll' name 'GetLastError';
 function  API_GetMenuBarInfo(hWnd: longword; idObject: longword; idItem: longword; pmbi: pointer): longbool; stdcall; external 'user32.dll' name 'GetMenuBarInfo';
@@ -3867,6 +3945,7 @@ function  API_GetPixel(hDC: longword; x: longint; y: longint): longword; stdcall
 function  API_GetPriorityClass(hProcess: longword): longword; stdcall; external 'kernel32.dll' name 'GetPriorityClass';
 function  API_GetProcAddress(hModule: longword; lpProcName: pointer): pointer; stdcall; external 'kernel32.dll' name 'GetProcAddress';
 function  API_GetSaveFileName(lpofn: pointer): longbool; stdcall; external 'comdlg32.dll' name 'GetSaveFileNameW';
+function  API_GetStdHandle(nStdHandle: longword): longword; stdcall; external 'kernel32.dll' name 'GetStdHandle';
 function  API_GetUserDefaultLCID(): longword; stdcall; external 'kernel32.dll' name 'GetUserDefaultLCID';
 function  API_GetSysColor(nIndex: longint): longword; stdcall; external 'user32.dll' name 'GetSysColor';
 function  API_GetSysColorBrush(nIndex: longint): longword; stdcall; external 'user32.dll' name 'GetSysColorBrush';
@@ -3914,6 +3993,7 @@ function  API_SelectObject(hDC: longword; hGdiObj: longword): longword; stdcall;
 function  API_SendMessage(hWnd: longword; msg: longword; wParam: longword; lParam: longword): longword; stdcall; external 'user32.dll' name 'SendMessageW';
 function  API_SetBkColor(hDC: longword; crColor: longword): longword; stdcall; external 'gdi32.dll' name 'SetBkColor';
 function  API_SetClassLong(hWnd: longword; nIndex: longint; dwNewLong: longword): longword; stdcall; external 'user32.dll' name 'SetClassLongA';
+function  API_SetDllDirectory(lpPathName: pointer): longbool; stdcall; external 'kernel32.dll' name 'SetDllDirectoryA';
 function  API_SetEndOfFile(hFile: longword): longbool; stdcall; external 'kernel32.dll' name 'SetEndOfFile';
 function  API_SetFilePointer(hFile: longword; lDistanceToMove: longword; lpDistanceToMoveHigh: pointer; dwMoveMethod: longword): longword; stdcall; external 'kernel32.dll' name 'SetFilePointer';
 function  API_SetFocus(hWnd: longword): longword; stdcall; external 'user32.dll' name 'SetFocus';
@@ -3952,9 +4032,6 @@ procedure API_ZeroMemory(Destination: pointer; Length: longword); stdcall; exter
 function  API_CoCreateInstance(rclsid: pointer; pUnkOuter: pointer; dwClsContext: longword; riid: pointer; ppv: pointer): longword; stdcall; external 'ole32.dll' name 'CoCreateInstance';
 function  API_CoInitialize(pvReserved: pointer): longword; stdcall; external 'ole32.dll' name 'CoInitialize';
 function  API_CoUninitialize(): longword; stdcall; external 'ole32.dll' name 'CoUninitialize';
-{$ENDIF}
-{$IFDEF PERFORMANCETEST}
-function  API_timeGetTime(): longword; stdcall; external 'winmm.dll' name 'timeGetTime';
 {$ENDIF}
 
 
@@ -4213,6 +4290,40 @@ begin
 end;
 
 // ================================================================================
+// IndexOf - 指定した文字列の最初の位置 (1開始) を取得
+// ================================================================================
+function IndexOf(const S: utf8string; const W: utf8string): longword;
+begin
+    result := Pos(W, S);
+end;
+
+// ================================================================================
+// Includes - 指定した文字列を含むかどうかを取得
+// ================================================================================
+function Includes(const S: utf8string; const W: utf8string): longbool;
+begin
+{$IFDEF FREEPASCAL}
+    // NOTE: Free Pascal の場合、longword を longbool にキャストしても、
+    // 内部的には -1 or 0 ではなく dwValue の値をそのまま使用するため、
+    // dwValue = 1 のとき、longbool(dwValue) and longbool(2) が false 扱いになる
+    // 確実に -1 or 0 に変換することで、上記判定が正しく true 扱いになる
+    if longbool(IndexOf(S, W)) then result := true else result := false;
+{$ELSE}
+    // NOTE: Boland Delphi の場合、longbool にキャストすると、内部的には必ず -1 or 0 になる
+    // ただし、ほとんどの場合無用な変換であるため、若干パフォーマンスが悪化する
+    result := longbool(IndexOf(S, W));
+{$ENDIF}
+end;
+
+// ================================================================================
+// StartWith - 指定した文字列から始まるかどうかを判定
+// ================================================================================
+function StartWith(const S: utf8string; const W: utf8string): longbool;
+begin
+    result := IndexOf(S, W) = 1;
+end;
+
+// ================================================================================
 // Log10 - Log を計算
 // ================================================================================
 function Log10(X: double): double;
@@ -4298,7 +4409,7 @@ begin
     // NOTE: Boland Delphi の場合、char の動的配列を引数に渡せないので、
     // ここで直接 SetString を呼び出す
     SetString(S, pwidechar(@C[0]), Length(C));
-    result := string(S);
+    result := utf8string(S);
     // NOTE: Boland Delphi の場合、文字列の長さが Length(C) と同じになるため、
     // Ansi のサイズで設定しなおす
     SetLength(result, GetAnsiSize(pchar(result), Length(result)));
@@ -4349,6 +4460,40 @@ begin
             result := result * 10 + byte(C) - $30;
         end else begin
             result := Def;
+            exit;
+        end;
+    end;
+end;
+
+// ================================================================================
+// StrOrHexToInt - 文字列を数値に変換
+// ================================================================================
+function StrOrHexToInt(const S: utf8string; Default: longword): longword; overload;
+var
+    I: longword;
+    Size: longword;
+    Start: longword;
+    C: char;
+    X: longword;
+begin
+    result := 0;
+    Size := Length(S);
+    Start := 1;
+    X := 10;
+    if (Start <= Size) and (S[Start] = '$') then begin
+        X := 16;
+        Inc(Start);
+    end;
+    for I := Start to Size do begin
+        C := S[I];
+        if (byte(C) >= $30) and (byte(C) <= $39) then begin
+            result := result * X + byte(C) - $30;
+        end else if (X > 10) and (byte(C) >= $41) and (byte(C) <= $46) then begin
+            result := result * X + byte(C) - $37;
+        end else if (X > 10) and (byte(C) >= $61) and (byte(C) <= $66) then begin
+            result := result * X + byte(C) - $57;
+        end else begin
+            result := Default;
             exit;
         end;
     end;
@@ -4720,7 +4865,7 @@ begin
         CBE_REQBP: RequestBreakPoint();
         CBE_DSPREG: begin
             dwTemp := dwAddr and $7F;
-            if longbool(Status.DSPCheat[dwTemp]) then result := Status.DSPCheat[dwTemp] and $FF;
+            if wordbool(Status.DSPCheat[dwTemp]) then result := Status.DSPCheat[dwTemp] and $FF;
             if Status.bWaveWrite and Option.bBPM then case dwTemp of
                 $4C: AnalyzeTempo();
                 $5C: Status.Tempo.cKOn := Status.Tempo.cKOn and (dwValue xor $FF and $FF);
@@ -4764,29 +4909,21 @@ var
     cwWindowMain: CWINDOW;
     dwBuffer: longword;
     bTransmitMsg: longbool;
-    Msg: TMSG;
     dwKeyCode: longword;
-    API_SetDllDirectory: function(lpPathName: pointer): longbool; stdcall;
+    Msg: TMSG;
 begin
     // 文字列ポインタバッファを初期化
     StrToPtrBuffer.dwCurrent := 0;
-    // KERNEL32.DLL をロード
-    dwBuffer := API_LoadLibraryEx(StrToPtr('kernel32.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
-    if longbool(dwBuffer) then begin
-        // 検索パスからカレントパスを削除 (for Windows XP SP1 以降)
-        @API_SetDllDirectory := API_GetProcAddress(dwBuffer, pchar('SetDllDirectoryA'));
-        if longbool(@API_SetDllDirectory) then API_SetDllDirectory(pchar(''));
-        // DLL を解放
-        API_FreeLibrary(dwBuffer);
-    end;
+    // 脆弱性防止のため、DLL 検索パスからカレントパスを削除 (for Windows XP SP1 以降)
+    API_SetDllDirectory(pchar(''));
     // wParam を初期化
-    Msg.wParam := 0;
+    Msg.wParam := NULL;
     // クリティカルセクションを作成
     API_InitializeCriticalSection(@CriticalSectionThread);
     API_InitializeCriticalSection(@CriticalSectionStatic);
     // ウィンドウクラスを作成
     Status.ccClass := CCLASS.Create();
-    Status.ccClass.CreateClass(@_WindowProc, hThisInstance, CLASS_NAME, CS_HREDRAW or CS_VREDRAW or CS_OWNDC, pchar(ICON_NAME),
+    Status.ccClass.CreateClass(@_WindowProc, hThisInstance, CLASS_NAME, CS_HREDRAW or CS_VREDRAW or CS_OWNDC, pchar('MAINICON'),
         NULLPOINTER, IDC_ARROW, ORG_COLOR_BTNFACE);
     // ウィンドウを作成
     cfMain := CWINDOWMAIN.Create();
@@ -5057,7 +5194,7 @@ begin
                     cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_WAVE_PROC, NULL);
                     Dec(Status.dwWaveMessage);
                 end;
-                // スリープ抑制メッセージを送信
+                // スリープ抑制メッセージを送信 (for Windows XP 以降)
                 if longbool(Option.dwNoSleep) then begin
                     Inc(Status.dwNoSleepTime, Option.dwBufferTime);
                     if Status.dwNoSleepTime >= NO_SLEEP_INTERVAL then API_SetThreadExecutionState(Option.dwNoSleep and $FFFF);
@@ -5488,6 +5625,36 @@ end;
 procedure _DSPDebug(reg: pointer; val: byte); cdecl;
 begin
 
+end;
+{$ENDIF}
+
+{$IFDEF TRANSMITSPCCBK}
+function _CallbackRead(dwPort: longword): longword; stdcall;
+var
+    lpBuffer: pointer;
+begin
+    // バッファを確保
+    GetMem(lpBuffer, 768); // 1ms
+    // 少しエミュレート
+    Apu.EmuAPU(lpBuffer, 384, 0);
+    // バッファを解放
+    FreeMem(lpBuffer, 768);
+    // ポート値を取得
+    result := Apu.SPCOutPort.Port[dwPort and $3];
+end;
+
+procedure _CallbackWrite(dwPort: longword; dwValue: longword); stdcall;
+var
+    lpBuffer: pointer;
+begin
+    // バッファを確保
+    GetMem(lpBuffer, 768); // 1ms
+    // 少しエミュレート
+    Apu.EmuAPU(lpBuffer, 384, 0);
+    // バッファを解放
+    FreeMem(lpBuffer, 768);
+    // ポート値を書き込み
+    Apu.InPort(dwPort and $3, dwValue and $FF);
 end;
 {$ENDIF}
 
@@ -6349,6 +6516,7 @@ var
     sCmdLine: utf8string;
     sChPath: utf8string;
     sFontName: utf8string;
+    dwLanguage: longword;
     dwLeft: longint;
     dwPlayDefault: longint;
     dwTop: longint;
@@ -6406,6 +6574,457 @@ begin
     result := Trim(Copy(sBuffer, dwStart, K - dwStart));
     // オフセットを取得
     dwStart := K + J;
+    // スペースをスキップ
+    for I := dwStart to dwLength do if not IsSingleByte(sBuffer, I, ' ') then begin
+        dwStart := I;
+        break;
+    end;
+end;
+
+function StartWithLength(const S: utf8string; const W: utf8string; var L: longword): longbool;
+begin
+    result := StartWith(S, W);
+    L := Length(W);
+end;
+
+function StartWithOrMatch(const S: utf8string; const W: utf8string; const M: utf8string; var L: longword): longbool;
+begin
+    if S = M then begin
+        result := true;
+        L := Length(M);
+    end else if StartWith(S, W) then begin
+        result := true;
+        L := Length(W);
+    end else begin
+        result := false;
+    end;
+end;
+
+procedure StdErr(const S: utf8string);
+var
+    I: longword;
+begin
+    API_WriteFile(dwBuffer, pchar(S), Length(S), @I, NULLPOINTER);
+end;
+
+procedure RequestWaveSave();
+var
+    I: longint;
+    J: longword;
+    K: longword;
+    C: char;
+    sSPCFile: utf8string;
+    sWAVFile: utf8string;
+    sMute: utf8string;
+    dwReverse: longword;
+    dwAmp: longword;
+    bForce: longbool;
+    dwOldAmp: longword;
+    dwOldMute: longword;
+    dwOldNoise: longword;
+begin
+    // 最初のパラメータを除外
+    sBuffer := sCmdLine;
+    I := 1;
+    J := Length(sBuffer);
+    GetParameter(I, J, false);
+    sBuffer := Copy(sBuffer, I, J);
+    // 初期化
+    sSPCFile := '';
+    sWAVFile := '';
+    sMute := '';
+    dwReverse := NULL;
+    bForce := false;
+    dwAmp := $FFFFFFFF;
+    // オプションを解析
+    while true do begin
+        I := 1;
+        J := Length(sBuffer);
+        if StartWithLength(sBuffer, '-o ', K) or StartWithLength(sBuffer, '-out ', K) then begin
+            Inc(I, K);
+            // 出力先パス
+            sWAVFile := GetParameter(I, J, false);
+        end else if StartWithLength(sBuffer, '-s ', K) or StartWithLength(sBuffer, '-solo ', K) then begin
+            Inc(I, K);
+            // チャンネルミュート
+            sMute := GetParameter(I, J, false);
+            dwReverse := $FF;
+        end else if StartWithLength(sBuffer, '-m ', K) or StartWithLength(sBuffer, '-mute ', K) then begin
+            Inc(I, K);
+            // チャンネルミュート
+            sMute := GetParameter(I, J, false);
+            dwReverse := NULL;
+        end else if StartWithLength(sBuffer, '-v ', K) or StartWithLength(sBuffer, '-volume ', K) then begin
+            Inc(I, K);
+            // 音量
+            K := StrToInt(GetParameter(I, J, false), $FFFFFFFF);
+            if K <= 400 then dwAmp := K * 65536 div 100;
+        end else if StartWithOrMatch(sBuffer, '-f ', '-f', K) then begin
+            Inc(I, K);
+            // 上書き強制
+            bForce := true;
+        end else begin
+            // SPC パスが指定されていない場合は終了
+            sSPCFile := GetParameter(I, J, true);
+            if not longbool(Length(sSPCFile)) then begin
+                StdErr('[ERROR] SPC file path is required.');
+                exit;
+            end;
+            // ファイルが読み取れない場合は終了
+            if GetFileType(sSPCFile, false, false) <> FILE_TYPE_SPC then begin
+                StdErr('[ERROR] This is not an SPC file, or file not found.');
+                exit;
+            end;
+            break;
+        end;
+        // 次のパラメータを取得
+        sBuffer := Copy(sBuffer, I, J);
+    end;
+    // 出力先パスが指定されていない場合、SPC ファイル名から作成
+    if not longbool(Length(sWAVFile)) then begin
+        J := Length(sSPCFile);
+        K := J;
+        for I := 1 to K do begin
+            if sSPCFile[I] = NULLCHAR then break;
+            if IsSingleByte(sSPCFile, I, '.') then J := I;
+        end;
+        sWAVFile := Concat(Copy(sSPCFile, 1, J), 'wav');
+    end;
+    // フルパスに変換
+    API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
+    API_GetFullPathName(StrToPtr(sSPCFile), (BUFFER_SIZE_PATH shr 1) - 1, lpBuffer, NULLPOINTER);
+    sSPCFile := PtrToStr(lpBuffer);
+    API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
+    API_GetFullPathName(StrToPtr(sWAVFile), (BUFFER_SIZE_PATH shr 1) - 1, lpBuffer, NULLPOINTER);
+    sWAVFile := PtrToStr(lpBuffer);
+    // .wav ファイルが存在する場合は終了
+    if not bForce and (GetFileType(sWAVFile, false, false) <> FILE_TYPE_NOTEXIST) then begin
+        StdErr('[ERROR] WAV file already exists. Add -f option to overwrite, or add -o option to output to another path.');
+        exit;
+    end;
+    // バッファにコピー
+    API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
+    CopyStrToWidePtr(lpBuffer, BUFFER_SIZE_PATH, sSPCFile);
+    // メッセージを送信
+    cwWindowMain.SendMessage(WM_COMMAND, MENU_FILE_STOP);
+    dwOldAmp := cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_GET_AMP);
+    dwOldMute := cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_GET_MUTE);
+    dwOldNoise := cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_GET_NOISE);
+    cwStaticFile.SendMessage(WM_SETTEXT, NULL, lpBuffer);
+    cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_TRANSMIT, cwStaticFile.hWnd xor Status.dwCheckSum); // bAutoPlay=false
+    // チャンネルミュートを設定
+    if longbool(Length(sMute)) then begin
+        J := Length(sMute);
+        K := 0;
+        for I := 1 to J do begin
+            C := sMute[I];
+            if (byte(C) >= $31) and (byte(C) <= $38) then K := K or (1 shl (byte(C) - $31));
+        end;
+        cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_SET_MUTE, K xor dwReverse);
+    end;
+    // 音量を設定
+    if dwAmp <= $40000 then cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_SET_AMP, dwAmp);
+    // 強制ノイズを設定
+    cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_SET_NOISE);
+    // ボタンが再描画されるまで少し待機
+    API_Sleep(50);
+    // バッファにコピー
+    API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
+    CopyStrToWidePtr(lpBuffer, BUFFER_SIZE_PATH, sWAVFile);
+    // メッセージを送信
+    cwStaticFile.SendMessage(WM_SETTEXT, NULL, lpBuffer);
+    cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_WAVE_OUTPUT or $2, cwStaticFile.hWnd xor Status.dwCheckSum); // bShift=false, bQuiet=true
+    cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_SET_AMP, dwOldAmp);
+    cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_SET_MUTE, dwOldMute);
+    cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_SET_NOISE, dwOldNoise);
+end;
+
+procedure RequestBreakPoint();
+var
+    I: longint;
+    J: longword;
+    K: longword;
+    dwMessage: longword;
+    dwOption: longword;
+    dwCount: longword;
+    dwAddr: array[0..255] of longword;
+
+procedure FlushBreakPoint();
+var
+    I: longint;
+begin
+    // メッセージが確定していない場合は終了
+    if not longbool(dwMessage) then exit;
+    // アドレスが確定していない場合は終了
+    if not longbool(dwCount) then exit;
+    // アドレス指定がないメッセージの場合は NULL をセット
+    if dwCount = $FFFFFFFF then begin
+        dwCount := 1;
+        dwAddr[0] := NULL;
+    end;
+    // 停止フラグが未指定の場合は SPC_HALT を設定
+    if dwOption = $FFFFFFFF then dwOption := 1;
+    // メッセージを送信
+    for I := 0 to dwCount - 1 do cwWindowMain.SendMessage(WM_APP_MESSAGE, dwMessage or (dwAddr[I] and $FFFF), dwOption);
+    // 初期化
+    dwMessage := NULL;
+    dwOption := NULL;
+    dwCount := NULL;
+    API_ZeroMemory(@dwAddr, 1024);
+end;
+
+begin
+    // 最初のパラメータを除外
+    sBuffer := sCmdLine;
+    I := 1;
+    J := Length(sBuffer);
+    GetParameter(I, J, false);
+    sBuffer := Copy(sBuffer, I, J);
+    // 初期化
+    dwMessage := WM_APP_BP_SET;
+    dwOption := $FFFFFFFF;
+    dwCount := NULL;
+    API_ZeroMemory(@dwAddr, 1024);
+    // オプションを解析
+    while true do begin
+        I := 1;
+        J := Length(sBuffer);
+        if longword(I) >= J then begin
+            // 最後まで到達した場合はループを抜ける
+            break;
+        end else if StartWithLength(sBuffer, '-s ', K) or StartWithLength(sBuffer, '-set ', K) then begin
+            Inc(I, K);
+            // 実行
+            FlushBreakPoint();
+            // ブレイクポイントをセット
+            dwMessage := WM_APP_BP_SET;
+            dwOption := $FFFFFFFF;
+        end else if StartWithLength(sBuffer, '-u ', K) or StartWithLength(sBuffer, '-unset ', K) then begin
+            Inc(I, K);
+            // 実行
+            FlushBreakPoint();
+            // ブレイクポイントを解除
+            dwMessage := WM_APP_BP_SET;
+            dwOption := NULL;
+        end else if StartWithOrMatch(sBuffer, '-n ', '-n', K) or StartWithOrMatch(sBuffer, '-next ', '-next', K) then begin
+            Inc(I, K);
+            // 実行
+            FlushBreakPoint();
+            // 次の命令へ進む
+            dwMessage := WM_APP_NEXT_TICK;
+            dwOption := $FFFFFFFF;
+            dwCount := $FFFFFFFF;
+        end else if (sBuffer = '-r') or (sBuffer = '-resume') then begin
+            // 次のブレイクポイントまで処理を進める
+            cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_NEXT_TICK);
+            exit;
+        end else if (sBuffer = '-c') or (sBuffer = '-clear') then begin
+            // すべて解除
+            cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_BP_CLEAR);
+            cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_NEXT_TICK);
+            exit;
+        end else if StartWithOrMatch(sBuffer, 'mixed ', 'mixed', K) then begin
+            Inc(I, K);
+            // SPC_HALT: SPC700・タイマーを停止、DSP 実行
+            dwOption := dwOption and $1;
+            // 実行
+            FlushBreakPoint();
+        end else if StartWithOrMatch(sBuffer, 'soft ', 'soft', K) then begin
+            Inc(I, K);
+            // NOP: SPC700・タイマー・DSP 実行
+            dwOption := dwOption and $2;
+            // 実行
+            FlushBreakPoint();
+        end else if StartWithOrMatch(sBuffer, 'hard ', 'hard', K) then begin
+            Inc(I, K);
+            // SPC_HALT+DSP_PAUSE: SPC700・タイマー・DSP 停止
+            dwOption := dwOption and $3;
+            // 実行
+            FlushBreakPoint();
+        end else begin
+            // アドレス
+            K := StrOrHexToInt(GetParameter(I, J, false), $FFFFFFFF);
+            // アドレスを記録
+            if (dwCount < 256) and (K <= $FFFF) then begin
+                dwAddr[dwCount] := K;
+                Inc(dwCount);
+            end;
+        end;
+        // 次のパラメータを取得
+        sBuffer := Copy(sBuffer, I, J);
+    end;
+    // 実行
+    FlushBreakPoint();
+end;
+
+procedure RequestDSPCheat();
+var
+    I: longint;
+    J: longword;
+    K: longword;
+    dwOption: longword;
+    sTemp: utf8string;
+    dwAddr: longword;
+    dwValue: longword;
+begin
+    // 最初のパラメータを除外
+    sBuffer := sCmdLine;
+    I := 1;
+    J := Length(sBuffer);
+    GetParameter(I, J, false);
+    sBuffer := Copy(sBuffer, I, J);
+    // 初期化
+    dwOption := $1;
+    // オプションを解析
+    while true do begin
+        I := 1;
+        J := Length(sBuffer);
+        if longword(I) >= J then begin
+            // 最後まで到達した場合はループを抜ける
+            break;
+        end else if StartWithLength(sBuffer, '-s ', K) or StartWithLength(sBuffer, '-set ', K) then begin
+            Inc(I, K);
+            // DSP チートを設定
+            dwOption := $1;
+        end else if StartWithLength(sBuffer, '-u ', K) or StartWithLength(sBuffer, '-unset ', K) then begin
+            Inc(I, K);
+            // DSP チートを解除
+            dwOption := $2;
+        end else if (sBuffer = '-c') or (sBuffer = '-clear') then begin
+            // DSP チートをすべて解除
+            cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_DSP_THRU);
+            exit;
+        end else begin
+            // 値
+            sTemp := GetParameter(I, J, false);
+            case dwOption of
+                $1: begin
+                    // アドレス・設定値を取得
+                    K := IndexOf(sTemp, '=');
+                    dwAddr := StrOrHexToInt(Copy(sTemp, 1, K - 1), $FFFFFFFF);
+                    dwValue := StrOrHexToInt(Copy(sTemp, K + 1, Length(sTemp)), $FFFFFFFF);
+                    // メッセージを送信
+                    if (dwAddr <= $7F) and (dwValue <= $FF) then begin
+                        cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_SET_DSP or dwAddr, dwValue);
+                        cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_DSP_CHEAT or dwAddr, dwValue);
+                    end;
+                end;
+                $2: begin
+                    // アドレスを取得
+                    K := IndexOf(sTemp, '=');
+                    if longbool(K) then dwAddr := StrOrHexToInt(Copy(sTemp, 1, K - 1), $FFFFFFFF)
+                    else dwAddr := StrOrHexToInt(sTemp, $FFFFFFFF);
+                    // メッセージを送信
+                    if (dwAddr <= $7F) then cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_DSP_CHEAT or dwAddr, $FFFFFFFF);
+                end;
+            end;
+        end;
+        // 次のパラメータを取得
+        sBuffer := Copy(sBuffer, I, J);
+    end;
+end;
+
+procedure RequestIOPort();
+var
+    I: longint;
+    J: longword;
+    K: longword;
+    dwOldValue: array[0..3] of longword;
+    dwNewValue: array[0..3] of longword;
+    bDuplicate: array[0..3] of longbool;
+    bTest: longbool;
+    dwOption: longword;
+    sTemp: utf8string;
+    dwAddr: longword;
+    dwValue: longword;
+begin
+    // 最初のパラメータを除外
+    sBuffer := sCmdLine;
+    I := 1;
+    J := Length(sBuffer);
+    GetParameter(I, J, false);
+    sBuffer := Copy(sBuffer, I, J);
+    // 初期化
+    API_ZeroMemory(@dwOldValue, 16);
+    API_ZeroMemory(@dwNewValue, 16);
+    API_ZeroMemory(@bDuplicate, 16);
+    bTest := false;
+    dwOption := $1;
+    // オプションを解析
+    while true do begin
+        I := 1;
+        J := Length(sBuffer);
+        if longword(I) >= J then begin
+            // 最後まで到達した場合はループを抜ける
+            break;
+        end else if StartWithLength(sBuffer, '-s ', K) or StartWithLength(sBuffer, '-set ', K) then begin
+            Inc(I, K);
+            // ポート値を書き込み
+            dwOption := $1;
+        end else if StartWithLength(sBuffer, '-w ', K) or StartWithLength(sBuffer, '-wait ', K) then begin
+            Inc(I, K);
+            // 待機
+            dwOption := $2;
+        end else if StartWithLength(sBuffer, '-t ', K) or StartWithLength(sBuffer, '-test ', K) then begin
+            Inc(I, K);
+            // ポート値をバックアップ
+            for K := 0 to 3 do dwOldValue[K] := cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_GET_IN_PORT or K);
+            bTest := true;
+        end else begin
+            // 値
+            sTemp := GetParameter(I, J, false);
+            case dwOption of
+                $1: begin
+                    // アドレス・設定値を取得
+                    K := IndexOf(sTemp, '=');
+                    dwAddr := StrOrHexToInt(Copy(sTemp, 1, K - 1), $FFFFFFFF);
+                    dwValue := StrOrHexToInt(Copy(sTemp, K + 1, Length(sTemp)), $FFFFFFFF);
+                    // アドレスが 0xF4-0xF7 の場合は 0x00-0x03 に変換
+                    if (dwAddr >= $F4) and (dwAddr <= $F7) then dwAddr := dwAddr - $F4;
+                    // アドレス値と変更値が範囲内の場合
+                    if (dwAddr <= $3) and (dwValue <= $FF) then begin
+                        // 書き込み済みの場合は待機
+                        if bDuplicate[dwAddr] then API_Sleep(100);
+                        // メッセージを送信
+                        cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_SET_IN_PORT or dwAddr, dwValue);
+                        // 書き込み済みを記録
+                        bDuplicate[dwAddr] := true;
+                    end;
+                end;
+                $2: begin
+                    // 待機
+                    dwValue := StrToInt(sTemp, $FFFFFFFF);
+                    if dwValue <= 60000 then begin
+                        API_Sleep(dwValue);
+                        API_ZeroMemory(@bDuplicate, 16);
+                    end;
+                    // 初期化
+                    dwOption := NULL;
+                end;
+            end;
+        end;
+        // 次のパラメータを取得
+        sBuffer := Copy(sBuffer, I, J);
+    end;
+    // 変更値を元に戻す
+    if bTest then begin
+        API_Sleep(100);
+        for K := 0 to 3 do cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_SET_IN_PORT or K, dwOldValue[K]);
+    end;
+end;
+
+procedure RequestFileOpen();
+begin
+    // フルパスに変換
+    API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
+    API_GetFullPathName(StrToPtr(sCmdLine), (BUFFER_SIZE_PATH shr 1) - 1, lpBuffer, NULLPOINTER);
+    sCmdLine := PtrToStr(lpBuffer);
+    // バッファにコピー
+    API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
+    CopyStrToWidePtr(lpBuffer, BUFFER_SIZE_PATH, sCmdLine);
+    // メッセージを送信
+    cwStaticFile.SendMessage(WM_SETTEXT, NULL, lpBuffer);
+    cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_TRANSMIT or $1, cwStaticFile.hWnd xor Status.dwCheckSum); // bAutoPlay=true
 end;
 
 function SimpleWindowBox(nLeft: longint; nTop: longint; nWidth: longint; nHeight: longint): TBOX;
@@ -6449,6 +7068,8 @@ begin
     // チェックサムが一致しない場合は終了
     result := dwBase + 9;
     if dwHeaderSum <> dwCheckSum then exit;
+    // チェックサムを記録
+    if dwBase = 10 then Status.dwCheckSum := dwCheckSum;
     // 終了
     result := 0;
 end;
@@ -6478,8 +7099,8 @@ begin
     // メニューテキストを設定
     for I := 0 to nSize - 1 do begin
         if longbool(PerIndex[I]) then begin
-            sBuffer := Concat('&', IntToStr(STR_MENU_SETUP_PER_INTEGER[PerIndex[I]]), STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
-            if longbool(TipIndex[I]) then sBuffer := Concat(sBuffer, #9, STR_MENU_SETUP_TIP[Status.dwLanguage][TipIndex[I]]);
+            sBuffer := Concat('&', IntToStr(STR_MENU_SETUP_PER_INTEGER[PerIndex[I]]), STR_MENU_SETUP_PERCENT[dwLanguage]);
+            if longbool(TipIndex[I]) then sBuffer := Concat(sBuffer, #9, STR_MENU_SETUP_TIP[dwLanguage][TipIndex[I]]);
             cmMenu.AppendMenu(dwBase + I, sBuffer, true);
         end else begin
             cmMenu.AppendSeparator();
@@ -6549,8 +7170,8 @@ begin
     result := ChrToStr(cBuffer);
 {$ELSE}
     // NOTE: Boland Delphi の場合、char の動的配列を string にキャストする場合は、
-    // 直接 string() を使用する
-    result := string(cBuffer);
+    // 直接 utf8string() を使用する
+    result := utf8string(cBuffer);
 {$ENDIF}
 end;
 
@@ -6614,17 +7235,30 @@ begin
             hWndApp := API_FindWindowEx(hWndApp, NULL, StrToPtr(ITEM_STATIC), StrToPtr(FILE_DEFAULT));
             // ウィンドウが見つかった場合
             if longbool(hWndApp) then begin
+                // チェックサムを取得
+                API_MapFileAndCheckSum(StrToPtr(sEXEPath), @dwBuffer, @Status.dwCheckSum);
+                // 親コンソールをアタッチ
+                API_AttachConsole(ATTACH_PARENT_PROCESS);
+                dwBuffer := API_GetStdHandle(STD_ERROR_HANDLE);
                 // バッファを確保
                 GetMem(lpBuffer, BUFFER_SIZE_PATH);
-                // バッファにコピー
-                API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
-                CopyStrToWidePtr(lpBuffer, BUFFER_SIZE_PATH, sCmdLine);
                 // ウィンドウを登録
                 cwStaticFile := CWINDOW.Create();
                 cwStaticFile.hWnd := hWndApp;
-                // メッセージを送信
-                cwStaticFile.SendMessage(WM_SETTEXT, NULL, lpBuffer);
-                cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_TRANSMIT or $1, hWndApp);
+                // コマンド実行
+                if StartWith(sCmdLine, '-wav ') or StartWith(sCmdLine, '-wave ') then RequestWaveSave()
+                else if StartWith(sCmdLine, '-bp ') or StartWith(sCmdLine, '-breakpoint ') then RequestBreakPoint()
+                else if StartWith(sCmdLine, '-dsp ') then RequestDSPCheat()
+                else if StartWith(sCmdLine, '-port ') then RequestIOPort()
+                else if (sCmdLine = '-p') or (sCmdLine = '-play') then cwWindowMain.SendMessage(WM_COMMAND, MENU_FILE_PLAY)
+                else if (sCmdLine = '-r') or (sCmdLine = '-restart') then cwWindowMain.SendMessage(WM_COMMAND, MENU_FILE_RESTART)
+                else if (sCmdLine = '-s') or (sCmdLine = '-stop') then cwWindowMain.SendMessage(WM_COMMAND, MENU_FILE_STOP)
+                else if (sCmdLine = '-q') or (sCmdLine = '-quit') then cwWindowMain.SendMessage(WM_COMMAND, MENU_FILE_EXIT)
+                else if (sCmdLine = '-l') or (sCmdLine = '-low') then cwWindowMain.SendMessage(WM_COMMAND, MENU_SETUP_AMP_BASE)
+                else if sCmdLine = '-next' then cwWindowMain.SendMessage(WM_COMMAND, MENU_LIST_PLAY_BASE)
+                else if sCmdLine = '-prev' then cwWindowMain.SendMessage(WM_COMMAND, MENU_LIST_PLAY_BASE + 1)
+                else if sCmdLine = '-rand' then cwWindowMain.SendMessage(WM_COMMAND, MENU_LIST_PLAY_BASE + 2)
+                else RequestFileOpen();
                 // ウィンドウを解放
                 cwStaticFile.Free();
                 // バッファを解放
@@ -6633,6 +7267,12 @@ begin
         end;
         // ウィンドウを解放
         cwWindowMain.Free();
+        // フラグを設定
+        Apu.hSNESAPU := NULL;
+        result := 99;
+        // 終了
+        exit;
+    end else if StartWith(sCmdLine, '-') and not Includes(sCmdLine, '.') then begin
         // フラグを設定
         Apu.hSNESAPU := NULL;
         result := 99;
@@ -6649,10 +7289,19 @@ begin
     dwBuffer := GetPosSeparator(sEXEPath);
     if longbool(dwBuffer) then sEXEPath := Copy(sEXEPath, dwBuffer + 1, Length(sEXEPath));
     if (Length(sEXEPath) < 5) or (sEXEPath[Length(sEXEPath) - 3] <> '.') then sEXEPath := Concat(sEXEPath, '.exe');
-    // カレントパスを取得
+    // バッファを確保
     GetMem(lpBuffer, BUFFER_SIZE_PATH);
+    // フルパスに変換
+    if longbool(Length(sCmdLine)) then begin
+        API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
+        API_GetFullPathName(StrToPtr(sCmdLine), (BUFFER_SIZE_PATH shr 1) - 1, lpBuffer, NULLPOINTER);
+        sCmdLine := PtrToStr(lpBuffer);
+    end;
+    // カレントパスを取得
+    API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
     API_GetModuleFileName(hThisInstance, lpBuffer, BUFFER_SIZE_PATH);
     sChPath := PtrToStr(lpBuffer);
+    // バッファを解放
     FreeMem(lpBuffer, BUFFER_SIZE_PATH);
     // カレントパスを記録
     sChPath := Copy(sChPath, 1, GetPosSeparator(sChPath));
@@ -6690,7 +7339,6 @@ begin
     API_ZeroMemory(@Status.BreakPoint, 65536);
     Status.dwNextTick := 0;
     API_ZeroMemory(@Status.DSPCheat, 256);
-    Status.bEmuDebug := false;
     Status.dwNoSleepTime := 0;
 {$IFDEF CONTEXT}
     Status.dwContextSize := 0;
@@ -6748,9 +7396,10 @@ begin
     Option.dwTheme := THEME_DEFAULT;
     dwTop := 100;
     Option.bTopMost := false;
-    Option.dwTimerOptionDisplay := TIMER_INTERVAL_OPTION_DISPLAY;
-    Option.dwTimerOptionLock := TIMER_INTERVAL_OPTION_LOCK;
-    Option.dwTimerRedrawResume := TIMER_INTERVAL_REDRAW_RESUME;
+    Option.dwTimerOptionDisplay := 1000;
+    Option.dwTimerOptionLock := 300;
+    Option.dwTimerRedrawResume := 1000;
+    Option.dwTuneScan := 64000;
     Option.dwVolumeColor := 0;
     Option.bVolumeReset := true;
     Option.dwVolumeSpeed := 1;
@@ -6821,6 +7470,7 @@ begin
             if sBuffer = BUFFER_TOPTDISP then Option.dwTimerOptionDisplay := GetINIValue(Option.dwTimerOptionDisplay);
             if sBuffer = BUFFER_TOPTLOCK then Option.dwTimerOptionLock := GetINIValue(Option.dwTimerOptionLock);
             if sBuffer = BUFFER_TREDRAW_ then Option.dwTimerRedrawResume := GetINIValue(Option.dwTimerRedrawResume);
+            if sBuffer = BUFFER_TUNESCAN then Option.dwTuneScan := GetINIValue(Option.dwTuneScan);
             if sBuffer = BUFFER_VOLCOLOR then Option.dwVolumeColor := GetINIValue(Option.dwVolumeColor);
             if sBuffer = BUFFER_VOLRESET then Option.bVolumeReset := ToBool(GetINIValue(longint(Option.bVolumeReset)));
             if sBuffer = BUFFER_VOLSPEED then Option.dwVolumeSpeed := GetINIValue(Option.dwVolumeSpeed);
@@ -6831,6 +7481,10 @@ begin
         // ファイルをクローズ
         API_CloseHandle(hFile);
     end;
+    // 設定値を調整 (BIT)
+    if not (((Option.dwBit >= 1) and (Option.dwBit <= 4)) or (Option.dwBit = -4)) then Option.dwBit := 2;
+    // 設定値を調整 (BMPFONT)
+    if Option.dwBmpFont >= BITMAP_NUM_FONT then Option.dwBmpFont := 0;
     // 設定値を調整 (BUFNUM)
     if Option.dwBufferNum < 4 then Option.dwBufferNum := 4;
     if Option.dwBufferNum > 100 then Option.dwBufferNum := 100;
@@ -6839,6 +7493,8 @@ begin
     if Option.dwBufferTime > 5000 then Option.dwBufferTime := 5000;
     // 設定値を調整 (CACHENUM)
     if Option.dwCacheNum > 1000 then Option.dwCacheNum := 1000;
+    // 設定値を調整 (CHANNEL)
+    if not ((Option.dwChannel = 1) or (Option.dwChannel = 2)) then Option.dwChannel := 2;
     // 設定値を調整 (EARSAFE, OPTION)
     if longbool(Option.dwOption and OPTION_NOEARSAFE) then Option.bEarSafe := false;
 {$IFDEF FREEPASCAL}
@@ -6847,17 +7503,22 @@ begin
     Option.dwOption := Option.dwOption and not (OPTION_NOEARSAFE or OPTION_FLOATOUT);
 {$ENDIF}
     // 設定値を調整 (LANGUAGE)
-    if longbool(Option.dwLanguage) and (Option.dwLanguage <= LANGUAGE_NUM) then Status.dwLanguage := Option.dwLanguage - 1
-    else if API_GetUserDefaultLCID() and $FFFF = $0411 then Status.dwLanguage := 0
-    else Status.dwLanguage := 1;
-    if Status.dwLanguage > 1 then Status.dwLanguage := 0;
+    if Option.dwLanguage > LANGUAGE_NUM then Option.dwLanguage := 0;
+    if longbool(Option.dwLanguage) then dwLanguage := Option.dwLanguage - 1
+    else if API_GetUserDefaultLCID() and $FFFF = $0411 then dwLanguage := 0
+    else dwLanguage := 1;
+    Status.dwLanguage := dwLanguage;
     // 設定値を調整 (PLAYTIME)
     if (Option.dwPlayMax >= 1) and (dwPlayDefault >= 0) then Option.dwPlayMax := (Option.dwPlayMax and 1) + (dwPlayDefault and 1);
     // 設定値を調整 (PLAYTYPE)
     Status.dwPlayOrder := Option.dwPlayOrder;
+    // 設定値を調整 (RATE)
+    if (Option.dwRate < 8000) or (Option.dwRate > 192000) then Option.dwRate := 32000;
     // 設定値を調整 (SCALE)
     if Option.dwScale >= 200 then Status.dwScale := 4
     else if Option.dwScale >= 150 then Status.dwScale := 3;
+    // 設定値を調整 (VOLCOLOR)
+    if Option.dwVolumeColor > COLOR_NUM then Option.dwVolumeColor := 0;
 {$IFNDEF TRY700A}{$IFNDEF TRY700W}{$IFDEF SIGNATURE}
     // SPCPLAY.EXE の破損を確認
     if not longbool(result) then result := CheckImageHash(sEXEPath, 10);
@@ -6903,7 +7564,7 @@ begin
 {$IFDEF TRY700W}
             @Apu.Try700 := GetProcAddress(pchar('try700'));
 {$ENDIF}
-{$IFDEF TRANSMITSPC}
+{$IFDEF TRANSMITSPCLPT}
             @Apu.TransmitSPC := GetProcAddress(pchar('TransmitSPC'));
             @Apu.TransmitSPCEx := GetProcAddress(pchar('TransmitSPCEx'));
             @Apu.StopTransmitSPC := GetProcAddress(pchar('StopTransmitSPC'));
@@ -6920,7 +7581,7 @@ begin
             if longbool(I) then result := 2;
             Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_INCS700 or CBE_INCDATA or CBE_REQBP);
             Apu.SNESAPUInfo(@K, NULLPOINTER, NULLPOINTER);
-{$IFNDEF TRANSMITSPC}{$IFDEF SIGNATURE}
+{$IFNDEF TRANSMITSPCLPT}{$IFDEF SIGNATURE}
             if K <> SNESAPU_VERSION then result := 3;
 {$ENDIF}{$ENDIF}
         end else result := 1;
@@ -7050,10 +7711,44 @@ begin
         ChrToStr(cBuffer),
 {$ELSE}
         // NOTE: Boland Delphi の場合、char の動的配列を string にキャストする場合は、
-        // 直接 string() を使用する
-        string(cBuffer),
+        // 直接 utf8string() を使用する
+        utf8string(cBuffer),
 {$ENDIF}
-        1, GetAnsiSize(@cBuffer[0], COPY_SIZE_TITLE)));
+        1, GetAnsiSize(@cBuffer[0], COPY_SIZE_TITLE)), CRLF,
+{$IFDEF TIMERTRICK}
+        CRLF, 'DEBUG: TIMERTRICK',
+{$ENDIF}
+{$IFDEF TRY700A}
+        CRLF, 'DEBUG: TRY700A',
+{$ENDIF}
+{$IFDEF TRY700W}
+        CRLF, 'DEBUG: TRY700W',
+{$ENDIF}
+{$IFDEF TRANSMITSPC}
+        CRLF, 'DEBUG: TRANSMITSPC',
+{$ENDIF}
+{$IFDEF TRANSMITSPCLPT}
+        CRLF, 'DEBUG: TRANSMITSPCLPT',
+{$ENDIF}
+{$IFDEF TRANSMITSPCCBK}
+        CRLF, 'DEBUG: TRANSMITSPCCBK',
+{$ENDIF}
+{$IFDEF CONTEXT}
+        CRLF, 'DEBUG: CONTEXT',
+{$ENDIF}
+{$IFDEF SPCDEBUG}
+        CRLF, 'DEBUG: SPCDEBUG',
+{$ENDIF}
+{$IFDEF SPCBPMTEST}
+        CRLF, 'DEBUG: SPCBPMTEST',
+{$ENDIF}
+{$IFDEF WAVEDUMMY}
+        CRLF, 'DEBUG: WAVEDUMMY',
+{$ENDIF}
+{$IFDEF EMUSAMPLES}
+        CRLF, 'DEBUG: EMUSAMPLES',
+{$ENDIF}
+        '');
     if K <> SNESAPU_VERSION then sInfo := Concat(sInfo, #32#42); // バージョン不一致マーク
     // ブラシを作成
     if Option.dwTheme = THEME_DARK then begin
@@ -7074,37 +7769,37 @@ begin
     // ファイルメニューを作成
     cmFile := CMENU.Create();
     cmFile.CreatePopupMenu();
-    for I := 0 to MENU_FILE_OPEN_SIZE - 1 do cmFile.AppendMenu(MENU_FILE_OPEN_BASE + I, STR_MENU_FILE_OPEN_SUB[Status.dwLanguage][I]);
+    for I := 0 to MENU_FILE_OPEN_SIZE - 1 do cmFile.AppendMenu(MENU_FILE_OPEN_BASE + I, STR_MENU_FILE_OPEN_SUB[dwLanguage][I]);
     cmFile.AppendSeparator();
-    for I := 0 to MENU_FILE_PLAY_SIZE - 1 do cmFile.AppendMenu(MENU_FILE_PLAY_BASE + I, STR_MENU_FILE_PLAY_SUB[Status.dwLanguage][I]);
+    for I := 0 to MENU_FILE_PLAY_SIZE - 1 do cmFile.AppendMenu(MENU_FILE_PLAY_BASE + I, STR_MENU_FILE_PLAY_SUB[dwLanguage][I]);
     cmFile.AppendSeparator();
-    cmFile.AppendMenu(MENU_FILE_EXIT, STR_MENU_FILE_EXIT[Status.dwLanguage]);
+    cmFile.AppendMenu(MENU_FILE_EXIT, STR_MENU_FILE_EXIT[dwLanguage]);
     // デバイスメニューを作成
     cmSetupDevice := CMENU.Create();
     cmSetupDevice.CreatePopupMenu();
     Status.dwDeviceNum := 0;
     UpdateDevice(Option.dwDeviceID, WAVE_DEVICE_INITIALIZE);
     // チャンネルメニューを作成
-    SetMenuTextAndTip(cmSetupChannel, MENU_SETUP_CHANNEL_SIZE, MENU_SETUP_CHANNEL_BASE, STR_MENU_SETUP_CHANNEL_SUB[Status.dwLanguage], true);
+    SetMenuTextAndTip(cmSetupChannel, MENU_SETUP_CHANNEL_SIZE, MENU_SETUP_CHANNEL_BASE, STR_MENU_SETUP_CHANNEL_SUB[dwLanguage], true);
     // ビットメニューを作成
-    SetMenuTextAndTip(cmSetupBit, MENU_SETUP_BIT_SIZE, MENU_SETUP_BIT_BASE, STR_MENU_SETUP_BIT_SUB[Status.dwLanguage], true);
+    SetMenuTextAndTip(cmSetupBit, MENU_SETUP_BIT_SIZE, MENU_SETUP_BIT_BASE, STR_MENU_SETUP_BIT_SUB[dwLanguage], true);
     // サンプリングレートメニューを作成
-    SetMenuTextAndTip(cmSetupRate, MENU_SETUP_RATE_SIZE, MENU_SETUP_RATE_BASE, STR_MENU_SETUP_RATE_SUB[Status.dwLanguage], true);
+    SetMenuTextAndTip(cmSetupRate, MENU_SETUP_RATE_SIZE, MENU_SETUP_RATE_BASE, STR_MENU_SETUP_RATE_SUB[dwLanguage], true);
     // 補間処理メニューを作成
-    SetMenuTextAndTip(cmSetupInter, MENU_SETUP_INTER_SIZE, MENU_SETUP_INTER_BASE, STR_MENU_SETUP_INTER_SUB[Status.dwLanguage], true);
+    SetMenuTextAndTip(cmSetupInter, MENU_SETUP_INTER_SIZE, MENU_SETUP_INTER_BASE, STR_MENU_SETUP_INTER_SUB[dwLanguage], true);
     // ピッチキーメニューを作成
     cmSetupPitchKey := CMENU.Create();
     cmSetupPitchKey.CreatePopupMenu();
     for I := 0 to MENU_SETUP_PITCH_KEY_SIZE - 1 do cmSetupPitchKey.AppendMenu(MENU_SETUP_PITCH_KEY_BASE + I,
-        Concat(STR_MENU_SETUP_PITCH_PLUS[Status.dwLanguage], IntToStr(MENU_SETUP_PITCH_KEY_SIZE - I)), true);
+        Concat(STR_MENU_SETUP_PITCH_PLUS[dwLanguage], IntToStr(MENU_SETUP_PITCH_KEY_SIZE - I)), true);
     cmSetupPitchKey.AppendMenu(MENU_SETUP_PITCH_KEY_BASE + MENU_SETUP_PITCH_KEY_SIZE, STR_MENU_SETUP_PITCH_ZERO, true);
     for I := 0 to MENU_SETUP_PITCH_KEY_SIZE - 1 do cmSetupPitchKey.AppendMenu(MENU_SETUP_PITCH_KEY_BASE + MENU_SETUP_PITCH_KEY_SIZE + I + 1,
-        Concat(STR_MENU_SETUP_PITCH_MINUS[Status.dwLanguage], char($31 + I)), true);
+        Concat(STR_MENU_SETUP_PITCH_MINUS[dwLanguage], char($31 + I)), true);
     // ピッチメニューを作成
-    SetMenuTextAndTip(cmSetupPitch, MENU_SETUP_PITCH_SIZE, MENU_SETUP_PITCH_BASE, STR_MENU_SETUP_PITCH_SUB[Status.dwLanguage], true);
+    SetMenuTextAndTip(cmSetupPitch, MENU_SETUP_PITCH_SIZE, MENU_SETUP_PITCH_BASE, STR_MENU_SETUP_PITCH_SUB[dwLanguage], true);
     cmSetupPitch.AppendSeparator();
-    cmSetupPitch.AppendMenu(MENU_SETUP_PITCH_KEY, STR_MENU_SETUP_PITCH_KEY[Status.dwLanguage], cmSetupPitchKey.hMenu);
-    cmSetupPitch.AppendMenu(MENU_SETUP_PITCH_ASYNC, STR_MENU_SETUP_PITCH_ASYNC[Status.dwLanguage]);
+    cmSetupPitch.AppendMenu(MENU_SETUP_PITCH_KEY, STR_MENU_SETUP_PITCH_KEY[dwLanguage], cmSetupPitchKey.hMenu);
+    cmSetupPitch.AppendMenu(MENU_SETUP_PITCH_ASYNC, STR_MENU_SETUP_PITCH_ASYNC[dwLanguage]);
     // 左右拡散度メニューを作成
     SetMenuTextAndTip(cmSetupSeparate, MENU_SETUP_SEPARATE_SIZE, MENU_SETUP_SEPARATE_BASE, STR_MENU_SETUP_SEPARATE_PER_INDEX,
         STR_MENU_SETUP_SEPARATE_TIP_INDEX);
@@ -7119,107 +7814,113 @@ begin
     cmSetupMute := CMENU.Create();
     cmSetupMute.CreatePopupMenu();
     for I := 0 to MENU_SETUP_MUTE_NOISE_ALL_SIZE - 1 do
-        cmSetupMute.AppendMenu(MENU_SETUP_MUTE_ALL_BASE + I, STR_MENU_SETUP_MUTE_NOISE_ALL_SUB[Status.dwLanguage][I]);
+        cmSetupMute.AppendMenu(MENU_SETUP_MUTE_ALL_BASE + I, STR_MENU_SETUP_MUTE_NOISE_ALL_SUB[dwLanguage][I]);
     cmSetupMute.AppendSeparator();
     for I := 0 to MENU_SETUP_MUTE_NOISE_SIZE - 1 do
-        cmSetupMute.AppendMenu(MENU_SETUP_MUTE_BASE + I, Concat(STR_MENU_SETUP_SWITCH_CHANNEL[Status.dwLanguage], '&', string(char($31 + I))));
+        cmSetupMute.AppendMenu(MENU_SETUP_MUTE_BASE + I, Concat(STR_MENU_SETUP_SWITCH_CHANNEL[dwLanguage], '&', utf8string(char($31 + I))));
     // チャンネルノイズメニューを作成
     cmSetupNoise := CMENU.Create();
     cmSetupNoise.CreatePopupMenu();
     for I := 0 to MENU_SETUP_MUTE_NOISE_ALL_SIZE - 1 do
-        cmSetupNoise.AppendMenu(MENU_SETUP_NOISE_ALL_BASE + I, STR_MENU_SETUP_MUTE_NOISE_ALL_SUB[Status.dwLanguage][I]);
+        cmSetupNoise.AppendMenu(MENU_SETUP_NOISE_ALL_BASE + I, STR_MENU_SETUP_MUTE_NOISE_ALL_SUB[dwLanguage][I]);
     cmSetupNoise.AppendSeparator();
     for I := 0 to MENU_SETUP_MUTE_NOISE_SIZE - 1 do
-        cmSetupNoise.AppendMenu(MENU_SETUP_NOISE_BASE + I, Concat(STR_MENU_SETUP_SWITCH_CHANNEL[Status.dwLanguage], '&', string(char($31 + I))));
+        cmSetupNoise.AppendMenu(MENU_SETUP_NOISE_BASE + I, Concat(STR_MENU_SETUP_SWITCH_CHANNEL[dwLanguage], '&', utf8string(char($31 + I))));
     // 拡張設定メニューを作成
-    SetMenuTextAndTip(cmSetupOption, MENU_SETUP_OPTION_SIZE, MENU_SETUP_OPTION_BASE, STR_MENU_SETUP_OPTION_SUB[Status.dwLanguage], false);
+    SetMenuTextAndTip(cmSetupOption, MENU_SETUP_OPTION_SIZE, MENU_SETUP_OPTION_BASE, STR_MENU_SETUP_OPTION_SUB[dwLanguage], false);
     // 演奏時間メニューを作成
     cmSetupTime := CMENU.Create();
     cmSetupTime.CreatePopupMenu();
-    cmSetupTime.AppendMenu(MENU_SETUP_TIME_DISABLE, STR_MENU_SETUP_TIME_DISABLE[Status.dwLanguage], true);
-    cmSetupTime.AppendMenu(MENU_SETUP_TIME_ID666, STR_MENU_SETUP_TIME_ID666[Status.dwLanguage], true);
-    cmSetupTime.AppendMenu(MENU_SETUP_TIME_DEFAULT, STR_MENU_SETUP_TIME_DEFAULT[Status.dwLanguage], true);
+    cmSetupTime.AppendMenu(MENU_SETUP_TIME_DISABLE, STR_MENU_SETUP_TIME_DISABLE[dwLanguage], true);
+    cmSetupTime.AppendMenu(MENU_SETUP_TIME_ID666, STR_MENU_SETUP_TIME_ID666[dwLanguage], true);
+    cmSetupTime.AppendMenu(MENU_SETUP_TIME_DEFAULT, STR_MENU_SETUP_TIME_DEFAULT[dwLanguage], true);
     cmSetupTime.AppendSeparator();
-    cmSetupTime.AppendMenu(MENU_SETUP_TIME_START, STR_MENU_SETUP_TIME_START[Status.dwLanguage]);
-    cmSetupTime.AppendMenu(MENU_SETUP_TIME_LIMIT, STR_MENU_SETUP_TIME_LIMIT[Status.dwLanguage]);
+    cmSetupTime.AppendMenu(MENU_SETUP_TIME_START, STR_MENU_SETUP_TIME_START[dwLanguage]);
+    cmSetupTime.AppendMenu(MENU_SETUP_TIME_LIMIT, STR_MENU_SETUP_TIME_LIMIT[dwLanguage]);
     cmSetupTime.AppendSeparator();
-    cmSetupTime.AppendMenu(MENU_SETUP_TIME_RESET, STR_MENU_SETUP_TIME_RESET[Status.dwLanguage]);
+    cmSetupTime.AppendMenu(MENU_SETUP_TIME_RESET, STR_MENU_SETUP_TIME_RESET[dwLanguage]);
     // 演奏順序メニューを作成
-    SetMenuTextAndTip(cmSetupOrder, MENU_SETUP_ORDER_SIZE, MENU_SETUP_ORDER_BASE, STR_MENU_SETUP_ORDER_SUB[Status.dwLanguage], true);
+    SetMenuTextAndTip(cmSetupOrder, MENU_SETUP_ORDER_SIZE, MENU_SETUP_ORDER_BASE, STR_MENU_SETUP_ORDER_SUB[dwLanguage], true);
     // シーク時間メニューを作成
-    SetMenuTextAndTip(cmSetupSeek, MENU_SETUP_SEEK_SIZE, MENU_SETUP_SEEK_BASE, STR_MENU_SETUP_SEEK_SUB[Status.dwLanguage], true);
+    SetMenuTextAndTip(cmSetupSeek, MENU_SETUP_SEEK_SIZE, MENU_SETUP_SEEK_BASE, STR_MENU_SETUP_SEEK_SUB[dwLanguage], true);
     cmSetupSeek.AppendSeparator();
-    cmSetupSeek.AppendMenu(MENU_SETUP_SEEK_FAST, STR_MENU_SETUP_SEEK_FAST[Status.dwLanguage]);
-    cmSetupSeek.AppendMenu(MENU_SETUP_SEEK_ASYNC, STR_MENU_SETUP_SEEK_ASYNC[Status.dwLanguage]);
+    cmSetupSeek.AppendMenu(MENU_SETUP_SEEK_FAST, STR_MENU_SETUP_SEEK_FAST[dwLanguage]);
+    cmSetupSeek.AppendMenu(MENU_SETUP_SEEK_ASYNC, STR_MENU_SETUP_SEEK_ASYNC[dwLanguage]);
+    // 数値フォントメニューを作成
+    cmSetupInfoFont := CMENU.Create();
+    cmSetupInfoFont.CreatePopupMenu();
+    for I := 0 to BITMAP_NUM_FONT - 1 do
+        cmSetupInfoFont.AppendMenu(MENU_SETUP_INFO_BMPFONT_BASE + I, STR_MENU_SETUP_INFO_BMPFONT_TYPE[dwLanguage][I], true);
     // 情報表示メニューを作成
-    SetMenuTextAndTip(cmSetupInfo, MENU_SETUP_INFO_SIZE, MENU_SETUP_INFO_BASE, STR_MENU_SETUP_INFO_SUB[Status.dwLanguage], true);
+    SetMenuTextAndTip(cmSetupInfo, MENU_SETUP_INFO_SIZE, MENU_SETUP_INFO_BASE, STR_MENU_SETUP_INFO_SUB[dwLanguage], true);
     cmSetupInfo.AppendSeparator();
-    cmSetupInfo.AppendMenu(MENU_SETUP_INFO_RESET, STR_MENU_SETUP_INFO_RESET[Status.dwLanguage]);
+    cmSetupInfo.AppendMenu(MENU_SETUP_INFO_BMPFONT, STR_MENU_SETUP_INFO_BMPFONT[dwLanguage], cmSetupInfoFont.hMenu);
+    cmSetupInfo.AppendMenu(MENU_SETUP_INFO_RESET, STR_MENU_SETUP_INFO_RESET[dwLanguage]);
     // 基本優先度メニューを作成
-    SetMenuTextAndTip(cmSetupPriority, MENU_SETUP_PRIORITY_SIZE, MENU_SETUP_PRIORITY_BASE, STR_MENU_SETUP_PRIORITY_SUB[Status.dwLanguage], true);
+    SetMenuTextAndTip(cmSetupPriority, MENU_SETUP_PRIORITY_SIZE, MENU_SETUP_PRIORITY_BASE, STR_MENU_SETUP_PRIORITY_SUB[dwLanguage], true);
     // その他設定メニューを作成
     cmSetupOthers := CMENU.Create();
     cmSetupOthers.CreatePopupMenu();
-    cmSetupOthers.AppendMenu(MENU_SETUP_TOPMOST, STR_MENU_SETUP_TOPMOST[Status.dwLanguage]);
-    cmSetupOthers.AppendMenu(MENU_SETUP_NOSLEEP, STR_MENU_SETUP_NOSLEEP[Status.dwLanguage]);
+    cmSetupOthers.AppendMenu(MENU_SETUP_TOPMOST, STR_MENU_SETUP_TOPMOST[dwLanguage]);
+    cmSetupOthers.AppendMenu(MENU_SETUP_NOSLEEP, STR_MENU_SETUP_NOSLEEP[dwLanguage]);
     // 設定メニューを作成
     cmSetup := CMENU.Create();
     cmSetup.CreatePopupMenu();
-    cmSetup.AppendMenu(MENU_SETUP_DEVICE, STR_MENU_SETUP_DEVICE[Status.dwLanguage], cmSetupDevice.hMenu);
-    cmSetup.AppendMenu(MENU_SETUP_CHANNEL, STR_MENU_SETUP_CHANNEL[Status.dwLanguage], cmSetupChannel.hMenu);
-    cmSetup.AppendMenu(MENU_SETUP_BIT, STR_MENU_SETUP_BIT[Status.dwLanguage], cmSetupBit.hMenu);
-    cmSetup.AppendMenu(MENU_SETUP_RATE, STR_MENU_SETUP_RATE[Status.dwLanguage], cmSetupRate.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_DEVICE, STR_MENU_SETUP_DEVICE[dwLanguage], cmSetupDevice.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_CHANNEL, STR_MENU_SETUP_CHANNEL[dwLanguage], cmSetupChannel.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_BIT, STR_MENU_SETUP_BIT[dwLanguage], cmSetupBit.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_RATE, STR_MENU_SETUP_RATE[dwLanguage], cmSetupRate.hMenu);
     cmSetup.AppendSeparator();
-    cmSetup.AppendMenu(MENU_SETUP_INTER, STR_MENU_SETUP_INTER[Status.dwLanguage], cmSetupInter.hMenu);
-    cmSetup.AppendMenu(MENU_SETUP_PITCH, STR_MENU_SETUP_PITCH[Status.dwLanguage], cmSetupPitch.hMenu);
-    cmSetup.AppendMenu(MENU_SETUP_SEPARATE, STR_MENU_SETUP_SEPARATE[Status.dwLanguage], cmSetupSeparate.hMenu);
-    cmSetup.AppendMenu(MENU_SETUP_FEEDBACK, STR_MENU_SETUP_FEEDBACK[Status.dwLanguage], cmSetupFeedback.hMenu);
-    cmSetup.AppendMenu(MENU_SETUP_SPEED, STR_MENU_SETUP_SPEED[Status.dwLanguage], cmSetupSpeed.hMenu);
-    cmSetup.AppendMenu(MENU_SETUP_AMP, STR_MENU_SETUP_AMP[Status.dwLanguage], cmSetupAmp.hMenu);
-    cmSetup.AppendMenu(MENU_SETUP_MUTE, STR_MENU_SETUP_MUTE[Status.dwLanguage], cmSetupMute.hMenu);
-    cmSetup.AppendMenu(MENU_SETUP_NOISE, STR_MENU_SETUP_NOISE[Status.dwLanguage], cmSetupNoise.hMenu);
-    cmSetup.AppendMenu(MENU_SETUP_OPTION, STR_MENU_SETUP_OPTION[Status.dwLanguage], cmSetupOption.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_INTER, STR_MENU_SETUP_INTER[dwLanguage], cmSetupInter.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_PITCH, STR_MENU_SETUP_PITCH[dwLanguage], cmSetupPitch.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_SEPARATE, STR_MENU_SETUP_SEPARATE[dwLanguage], cmSetupSeparate.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_FEEDBACK, STR_MENU_SETUP_FEEDBACK[dwLanguage], cmSetupFeedback.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_SPEED, STR_MENU_SETUP_SPEED[dwLanguage], cmSetupSpeed.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_AMP, STR_MENU_SETUP_AMP[dwLanguage], cmSetupAmp.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_MUTE, STR_MENU_SETUP_MUTE[dwLanguage], cmSetupMute.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_NOISE, STR_MENU_SETUP_NOISE[dwLanguage], cmSetupNoise.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_OPTION, STR_MENU_SETUP_OPTION[dwLanguage], cmSetupOption.hMenu);
     cmSetup.AppendSeparator();
-    cmSetup.AppendMenu(MENU_SETUP_TIME, STR_MENU_SETUP_TIME[Status.dwLanguage], cmSetupTime.hMenu);
-    cmSetup.AppendMenu(MENU_SETUP_ORDER, STR_MENU_SETUP_ORDER[Status.dwLanguage], cmSetupOrder.hMenu);
-    cmSetup.AppendMenu(MENU_SETUP_SEEK, STR_MENU_SETUP_SEEK[Status.dwLanguage], cmSetupSeek.hMenu);
-    cmSetup.AppendMenu(MENU_SETUP_INFO, STR_MENU_SETUP_INFO[Status.dwLanguage], cmSetupInfo.hMenu);
-    cmSetup.AppendMenu(MENU_SETUP_PRIORITY, STR_MENU_SETUP_PRIORITY[Status.dwLanguage], cmSetupPriority.hMenu);
-    cmSetup.AppendMenu(MENU_SETUP_OTHERS, STR_MENU_SETUP_OTHERS[Status.dwLanguage], cmSetupOthers.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_TIME, STR_MENU_SETUP_TIME[dwLanguage], cmSetupTime.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_ORDER, STR_MENU_SETUP_ORDER[dwLanguage], cmSetupOrder.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_SEEK, STR_MENU_SETUP_SEEK[dwLanguage], cmSetupSeek.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_INFO, STR_MENU_SETUP_INFO[dwLanguage], cmSetupInfo.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_PRIORITY, STR_MENU_SETUP_PRIORITY[dwLanguage], cmSetupPriority.hMenu);
+    cmSetup.AppendMenu(MENU_SETUP_OTHERS, STR_MENU_SETUP_OTHERS[dwLanguage], cmSetupOthers.hMenu);
     // 演奏開始メニューを作成
     cmListPlay := CMENU.Create();
     cmListPlay.CreatePopupMenu();
-    cmListPlay.AppendMenu(MENU_LIST_PLAY_SELECT, STR_MENU_LIST_PLAY_SELECT[Status.dwLanguage]);
+    cmListPlay.AppendMenu(MENU_LIST_PLAY_SELECT, STR_MENU_LIST_PLAY_SELECT[dwLanguage]);
     cmListPlay.AppendSeparator();
-    for I := 0 to MENU_LIST_PLAY_SIZE - 1 do cmListPlay.AppendMenu(MENU_LIST_PLAY_BASE + I, STR_MENU_LIST_PLAY_SUB[Status.dwLanguage][I], true);
+    for I := 0 to MENU_LIST_PLAY_SIZE - 1 do cmListPlay.AppendMenu(MENU_LIST_PLAY_BASE + I, STR_MENU_LIST_PLAY_SUB[dwLanguage][I], true);
     // プレイリストメニューを作成
     cmList := CMENU.Create();
     cmList.CreatePopupMenu();
-    cmList.AppendMenu(MENU_LIST_PLAY, STR_MENU_LIST_PLAY[Status.dwLanguage], cmListPlay.hMenu);
+    cmList.AppendMenu(MENU_LIST_PLAY, STR_MENU_LIST_PLAY[dwLanguage], cmListPlay.hMenu);
     cmList.AppendSeparator();
-    for I := 0 to MENU_LIST_EDIT_SIZE - 1 do cmList.AppendMenu(MENU_LIST_EDIT_BASE + I, STR_MENU_LIST_EDIT_SUB[Status.dwLanguage][I]);
+    for I := 0 to MENU_LIST_EDIT_SIZE - 1 do cmList.AppendMenu(MENU_LIST_EDIT_BASE + I, STR_MENU_LIST_EDIT_SUB[dwLanguage][I]);
     cmList.AppendSeparator();
-    for I := 0 to MENU_LIST_MOVE_SIZE - 1 do cmList.AppendMenu(MENU_LIST_MOVE_BASE + I, STR_MENU_LIST_MOVE_SUB[Status.dwLanguage][I]);
+    for I := 0 to MENU_LIST_MOVE_SIZE - 1 do cmList.AppendMenu(MENU_LIST_MOVE_BASE + I, STR_MENU_LIST_MOVE_SUB[dwLanguage][I]);
     // システムメニューを作成
     cmSystem := cwWindowMain.GetSystemMenu();
     cmSystem.RemoveItem(SC_MAXIMIZE);
     cmSystem.RemoveItem(SC_SIZE);
-    cmSystem.InsertMenu(MENU_FILE, SC_CLOSE, STR_MENU_FILE[Status.dwLanguage], cmFile.hMenu);
-    cmSystem.InsertMenu(MENU_SETUP, SC_CLOSE, STR_MENU_SETUP[Status.dwLanguage], cmSetup.hMenu);
-    cmSystem.InsertMenu(MENU_LIST, SC_CLOSE, STR_MENU_LIST[Status.dwLanguage], cmList.hMenu);
+    cmSystem.InsertMenu(MENU_FILE, SC_CLOSE, STR_MENU_FILE[dwLanguage], cmFile.hMenu);
+    cmSystem.InsertMenu(MENU_SETUP, SC_CLOSE, STR_MENU_SETUP[dwLanguage], cmSetup.hMenu);
+    cmSystem.InsertMenu(MENU_LIST, SC_CLOSE, STR_MENU_LIST[dwLanguage], cmList.hMenu);
     cmSystem.InsertSeparator(SC_CLOSE);
     // ウィンドウメニューを作成
     cmMain := CMENUBAR.Create();
     cmMain.CreateMenu();
-    cmMain.AppendMenu(MENU_FILE, STR_MENU_FILE[Status.dwLanguage], cmFile.hMenu);
-    cmMain.AppendMenu(MENU_SETUP, STR_MENU_SETUP[Status.dwLanguage], cmSetup.hMenu);
-    cmMain.AppendMenu(MENU_LIST, STR_MENU_LIST[Status.dwLanguage], cmList.hMenu);
+    cmMain.AppendMenu(MENU_FILE, STR_MENU_FILE[dwLanguage], cmFile.hMenu);
+    cmMain.AppendMenu(MENU_SETUP, STR_MENU_SETUP[dwLanguage], cmSetup.hMenu);
+    cmMain.AppendMenu(MENU_LIST, STR_MENU_LIST[dwLanguage], cmList.hMenu);
     API_SetMenu(hWndApp, cmMain.hMenu);
     // フォントを作成
     cfMain := CFONT.Create();
     Box := ScalableWindowBox(0, 0, 6, 12);
     if Length(Option.sFontName) > 0 then sFontName := Option.sFontName
-    else sFontName := FONT_NAME[Status.dwLanguage];
+    else sFontName := FONT_NAME[dwLanguage];
     cfMain.CreateFont(sFontName, Box.height, Box.width, false, false, false, false);
     // プレイリスト、ボタンを作成
     hFontApp := cfMain.hFont;
@@ -7299,10 +8000,10 @@ begin
     cwButtonListClear.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_CLEAR, ID_BUTTON_CLEAR,
         WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(413, 127, 54, 21));
     cwButtonListUp := CBUTTON.Create();
-    cwButtonListUp.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_UP[Status.dwLanguage], ID_BUTTON_UP,
+    cwButtonListUp.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_UP[dwLanguage], ID_BUTTON_UP,
         WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(472, 127, 21, 21));
     cwButtonListDown := CBUTTON.Create();
-    cwButtonListDown.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_DOWN[Status.dwLanguage], ID_BUTTON_DOWN,
+    cwButtonListDown.CreateItem(hThisInstance, hWndApp, hFontApp, ITEM_BUTTON, STR_BUTTON_DOWN[dwLanguage], ID_BUTTON_DOWN,
         WS_TABSTOP or WS_VISIBLE, ScalableWindowBox(495, 127, 21, 21));
     // Static を作成
     cwStaticFile := CWINDOW.Create();
@@ -7454,7 +8155,7 @@ begin
         Writeln(SECTION_HEADER);
         Writeln('');
         Writeln(SECTION_USER_POLICY);
-        Writeln(BUFFER_BMPFONT_, IntToStr(Option.dwBmpFont));
+        Writeln(SECTION_USER_POLICY_HELP);
         Writeln(BUFFER_BPM_____, GetBoolToInt(Option.bBPM));
         Writeln(BUFFER_BUFNUM__, IntToStr(Option.dwBufferNum));
         Writeln(BUFFER_BUFTIME_, IntToStr(Option.dwBufferTime));
@@ -7481,6 +8182,7 @@ begin
         Writeln(BUFFER_TOPTDISP, IntToStr(Option.dwTimerOptionDisplay));
         Writeln(BUFFER_TOPTLOCK, IntToStr(Option.dwTimerOptionLock));
         Writeln(BUFFER_TREDRAW_, IntToStr(Option.dwTimerRedrawResume));
+        Writeln(BUFFER_TUNESCAN, IntToStr(Option.dwTuneScan));
         Writeln(BUFFER_VOLCOLOR, IntToStr(Option.dwVolumeColor));
         Writeln(BUFFER_VOLSPEED, IntToStr(Option.dwVolumeSpeed));
         Writeln(BUFFER_WAITLENG, IntToStr(Option.dwWaitTime));
@@ -7488,8 +8190,10 @@ begin
         Writeln(BUFFER_WAVEFMT_, IntToStr(Option.dwWaveFormat));
         Writeln('');
         Writeln(SECTION_APP_SETTING);
+        Writeln(SECTION_APP_SETTING_HELP);
         Writeln(BUFFER_AMP_____, IntToStr(Option.dwAmp));
         Writeln(BUFFER_BIT_____, IntToStr(Option.dwBit));
+        Writeln(BUFFER_BMPFONT_, IntToStr(Option.dwBmpFont));
         Writeln(BUFFER_CHANNEL_, IntToStr(Option.dwChannel));
         Writeln(BUFFER_DEVICE__, IntToStr(Option.dwDeviceID));
         Writeln(BUFFER_DEVNAME_, Option.sDeviceName);
@@ -7595,6 +8299,8 @@ begin
     cmSetupOrder.Free();
     cmSetupSeek.DeleteMenu();
     cmSetupSeek.Free();
+    cmSetupInfoFont.DeleteMenu();
+    cmSetupInfoFont.Free();
     cmSetupInfo.DeleteMenu();
     cmSetupInfo.Free();
     cmSetupPriority.DeleteMenu();
@@ -7864,8 +8570,6 @@ procedure CWINDOWMAIN.DrawInfo(pApuData: pointer; bWave: longbool);
 var
     I: longint;
     J: longword;
-    K: longword;
-    L: longword;
     V: longword;
     X: longint;
     Y: longint;
@@ -7964,22 +8668,23 @@ begin
     DrawInfoFillRect(@Rect, Status.hBackBrush);
 end;
 
-procedure UpdateNumWrite(dwX: longint; dwL: longword);
+procedure UpdateNumWrite(dwX: longint; dwLength: longword);
 var
-    dwI: longint;
-    dwJ: longint;
+    I: longint;
+    J: longword;
+    dwPointer: longint;
+    dwY: longword;
     cV: byte;
 begin
     // デジタル文字を描画
-    dwJ := Y * COLOR_BAR_HEIGHT + dwX;
+    dwPointer := Y * COLOR_BAR_HEIGHT + dwX;
     dwX := dwX * BITMAP_NUM_WIDTH + Z;
-    K := dwL - 1;
-    L := Y * 12 + 25;
-    for dwI := 0 to K do begin
-        cV := StrData.bData[dwI];
+    dwY := Y * 12 + 25;
+    for I := 0 to dwLength - 1 do begin
+        cV := StrData.bData[I];
         // 全体を描画する場合、または、前回描画値から変化した場合
-        if bRedrawInfo or (Status.NumCache[dwJ] <> cV) then begin
-            Status.NumCache[dwJ] := cV;
+        if bRedrawInfo or (Status.NumCache[dwPointer] <> cV) then begin
+            Status.NumCache[dwPointer] := cV;
             J := longword(cV);
             case J of
                 $20: J := BITMAP_NUM;  // SPACE
@@ -7987,9 +8692,9 @@ begin
                 $41..$5A: Dec(J, $37); // A ～ Z
                 $61..$7A: Dec(J, $3D); // a ～ z
             end;
-            DrawInfoBitBlt(dwX, L, BITMAP_NUM_WIDTH, BITMAP_NUM_HEIGHT, Status.hDCStringBuffer, J * BITMAP_NUM_WIDTH, 0);
+            DrawInfoBitBlt(dwX, dwY, BITMAP_NUM_WIDTH, BITMAP_NUM_HEIGHT, Status.hDCStringBuffer, J * BITMAP_NUM_WIDTH, 0);
         end;
-        Inc(dwJ);
+        Inc(dwPointer);
         Inc(dwX, BITMAP_NUM_WIDTH);
     end;
 end;
@@ -8036,7 +8741,7 @@ begin
     result := byte(Max(0, Min(COLOR_BAR_HEIGHT, Round(22 * Log10((dwLevel and $3FFF) + 1)) - 44)));
 end;
 
-procedure UpdateChannelSource(bDec: boolean);
+procedure UpdateChannelSource(bDec: longbool);
 begin
     // 音色番号を描画
     J := DspVoice.SoundSourcePlayBack;
@@ -8050,44 +8755,82 @@ begin
     end;
 end;
 
-function SearchTuneAddress(dwPhase: longword): bytebool;
+function SearchTuneAddress(dwPhase: longword; var dwProgress: longword): longbool;
 var
-    dwI: longint;
-    dwJ: longint;
-    dwK: longint;
+    I: longint;
+    J: longint;
+    K: longint;
     dwSource: longint;
     dwMatch: longword;
+    cFlags: array[0..7] of byte;
     TmpVoice: ^TVOICE;
     TmpDspVoice: ^TDSPVOICE;
 begin
     // 探索済みの場合は終了
-    if longbool(Status.dwTuningSize) then begin
-        result := true;
+    if longbool(Status.dwTuningSize) and (Status.dwTuningSize < $FFFFFF00) then begin
+        result := Status.dwTuningSize < $FFFF0000;
         exit;
     end;
     // 初期化
     result := false;
+    // 波形チェック
+    if longbool(dwProgress) then begin
+        // 前回波形チェックでエラーの場合は終了
+        if longbool(Status.dwTuningSize) and (Status.dwTuningSize = $FFFFFFFF) then exit;
+    end else begin
+        // 初期化
+        dwSource := -1;
+        dwMatch := 0;
+        dwProgress := 1;
+        Status.dwTuningTime := T64Count;
+        // 全チャンネルを探索
+        for I := 0 to 7 do begin
+            // 初期化
+            K := 0;
+            // 音が出力されている場合はフラグをセット
+            TmpVoice := @Voices.Voice[I];
+            if longbool(TmpVoice.VolumeMaxLeft) or longbool(TmpVoice.VolumeMaxRight) then K := K or $1;
+            // ADSR が指定されている場合はフラグをセット
+            TmpDspVoice := @DspReg.Voice[I];
+{$IFDEF FREEPASCAL}
+            if not (not longbool(TmpDspVoice.EnvelopeADSR1 and $80) or not (longbool(TmpDspVoice.EnvelopeADSR1) or longbool(TmpDspVoice.EnvelopeADSR2)))
+{$ELSE}
+            if longbool(TmpDspVoice.EnvelopeADSR1 and $80) and (longbool(TmpDspVoice.EnvelopeADSR1) or longbool(TmpDspVoice.EnvelopeADSR2))
+{$ENDIF}
+                then K := K or $2;
+            // フラグを保存
+            cFlags[I] := K;
+            // ADSR が有効な波形番号を記録
+            J := longint(TmpDspVoice.SoundSourcePlayBack);
+            if longbool(K and $2) then if dwSource = -1 then dwSource := J else if dwSource <> J then dwSource := -2;
+            // 音が出力されているチャンネル数 (同じ波形番号を除く) をカウント
+            if K = $3 then Inc(dwMatch);
+        end;
+        // TUNING 値を音符表示
+        Status.dwTuningSize := $FFFFFFFF;
+        // 音が出力されているチャンネルがない場合は終了
+        if not longbool(dwMatch) then exit;
+        // 2つ以上の波形番号が見つからない場合は終了
+        if dwSource <> -2 then exit;
+    end;
+    // 初期化
     dwSource := -1;
     // 全チャンネルを探索
-    for dwI := 0 to 7 do begin
-        // 音が出力されていない場合はループを再開
-        TmpVoice := @Voices.Voice[dwI];
-        if not longbool(TmpVoice.VolumeMaxLeft) and not longbool(TmpVoice.VolumeMaxRight) then continue;
-        // ADSR が指定されていない場合はループを再開
-        TmpDspVoice := @DspReg.Voice[dwI];
-        if not longbool(TmpDspVoice.EnvelopeADSR1) and not longbool(TmpDspVoice.EnvelopeADSR2) then continue;
+    for I := 0 to 7 do begin
+        // 音が出力されていない、または、ADSR が指定されていない場合はループを再開
+        if cFlags[I] <> $3 then continue;
         // ADSR パラメータを探索
-        for dwJ := Status.dwTuningAddress + 1 to $FFBB do begin
+        TmpDspVoice := @DspReg.Voice[I];
+        for J := Status.dwTuningAddress + 1 to $FFBB do begin
             // ADSR パラメータが見つからない場合はループを再開
-            if Apu.Ram.Ram[dwJ + 0] <> TmpDspVoice.EnvelopeADSR1 then continue;
-            if Apu.Ram.Ram[dwJ + 1] <> TmpDspVoice.EnvelopeADSR2 then continue;
-            if not longbool(dwPhase) then begin
-                if Apu.Ram.Ram[dwJ + 2] <> TmpDspVoice.EnvelopeGain then continue;
-            end else begin
-                if Apu.Ram.Ram[dwJ - 1] <> TmpDspVoice.SoundSourcePlayBack then continue;
+            if Apu.Ram.Ram[J + 0] <> TmpDspVoice.EnvelopeADSR1 then continue;
+            if Apu.Ram.Ram[J + 1] <> TmpDspVoice.EnvelopeADSR2 then continue;
+            case dwPhase of
+                1: if Apu.Ram.Ram[J + 2] <> TmpDspVoice.EnvelopeGain then continue;
+                0: if Apu.Ram.Ram[J - 1] <> TmpDspVoice.SoundSourcePlayBack then continue;
             end;
             // ADSR パラメータ位置を記録
-            Status.dwTuningAddress := longword(dwJ);
+            Status.dwTuningAddress := longword(J);
             dwSource := longint(TmpDspVoice.SoundSourcePlayBack);
             // ループを抜ける
             break;
@@ -8097,38 +8840,36 @@ begin
         // ループを抜ける
         break;
     end;
+    // TUNING 値を非表示、最後フェーズの場合は次回探索を保留
+    if longbool(dwPhase) then Status.dwTuningSize := $FFFFFF00 else Status.dwTuningSize := $FFFF0000;
     // ADSR パラメータが見つからない場合は終了
     if dwSource < 0 then exit;
     // 次のチャンネルを探索
-    for dwMatch := 0 to 1 do for dwI := 0 to 7 do begin
+    for dwMatch := 0 to 1 do for I := 0 to 7 do begin
         // 音が出力されていない場合はループを再開
-        if not longbool(dwMatch) then begin
-            TmpVoice := @Voices.Voice[dwI];
-            if not longbool(TmpVoice.VolumeMaxLeft) and not longbool(TmpVoice.VolumeMaxRight) then continue;
-        end;
+        if not longbool(dwMatch) and not bytebool(cFlags[I] and $1) then continue;
         // ADSR が指定されていない場合はループを再開
-        TmpDspVoice := @DspReg.Voice[dwI];
-        if not longbool(TmpDspVoice.EnvelopeADSR1) and not longbool(TmpDspVoice.EnvelopeADSR2) then continue;
+        if not bytebool(cFlags[I] and $2) then continue;
         // 1回目のチャンネルと同じ波形番号の場合はループを再開
+        TmpDspVoice := @DspReg.Voice[I];
         if byte(dwSource) = TmpDspVoice.SoundSourcePlayBack then continue;
         // ADSR パラメータを探索
-        for dwJ := 5 to 8 do begin
+        for J := 5 to 8 do begin
             // アドレスが範囲外になる場合はループを再開
-            dwK := longint(TmpDspVoice.SoundSourcePlayBack) - dwSource;
-            dwK := longint(Status.dwTuningAddress) + dwK * dwJ;
-            if (dwK < $200) or (dwK > $FFBB) then continue;
+            K := longint(TmpDspVoice.SoundSourcePlayBack) - dwSource;
+            K := longint(Status.dwTuningAddress) + K * J;
+            if (K < $200) or (K > $FFBB) then continue;
             // ADSR パラメータが見つからない場合はループを再開
-            if Apu.Ram.Ram[dwK + 0] <> TmpDspVoice.EnvelopeADSR1 then continue;
-            if Apu.Ram.Ram[dwK + 1] <> TmpDspVoice.EnvelopeADSR2 then continue;
-            if not longbool(dwPhase) then begin
-                if Apu.Ram.Ram[dwK + 2] <> TmpDspVoice.EnvelopeGain then continue;
-            end else begin
-                if Apu.Ram.Ram[dwK - 1] <> TmpDspVoice.SoundSourcePlayBack then continue;
+            if Apu.Ram.Ram[K + 0] <> TmpDspVoice.EnvelopeADSR1 then continue;
+            if Apu.Ram.Ram[K + 1] <> TmpDspVoice.EnvelopeADSR2 then continue;
+            case dwPhase of
+                1: if Apu.Ram.Ram[K + 2] <> TmpDspVoice.EnvelopeGain then continue;
+                0: if Apu.Ram.Ram[K - 1] <> TmpDspVoice.SoundSourcePlayBack then continue;
             end;
             // ADSR パラメータ位置から TUNING 開始アドレスを取得
-            Dec(Status.dwTuningAddress, dwSource * dwJ - 3);
+            Dec(Status.dwTuningAddress, dwSource * J - 3);
             // ADSR パラメータサイズを記録
-            Status.dwTuningSize := dwJ;
+            Status.dwTuningSize := J;
             // 成功
             result := true;
             exit;
@@ -8492,17 +9233,25 @@ begin
                 UpdateNumWrite(X +  9, 1);
                 UpdateNumWrite(X + 12, 1);
                 // TUNING
-                if SearchTuneAddress(0) or SearchTuneAddress(1) then begin
-                    V := longword(Apu.Ram) or ((Status.dwTuningAddress + Status.dwTuningSize * DspVoice.SoundSourcePlayBack) and $FFFF);
+                J := 0;
+                if SearchTuneAddress(1, J) or SearchTuneAddress(0, J) then begin
+                    V := (Status.dwTuningAddress + Status.dwTuningSize * DspVoice.SoundSourcePlayBack) and $FFFF;
+                    V := longword(Apu.Ram) or V;
                     API_MoveMemory(@V, pointer(V), 4);
                     UpdateNumWrite(X + 16, IntToHex(StrData, V shr 8, 2));
                     Z := 3;
                     UpdateNumWrite(X + 13, IntToHex(StrData, V, 2));
                 end else begin
-                    StrData.dwData[0] := $5656; // 'VV'
+                    V := (T64Count div 32000) and $1;
+                    if (Status.dwTuningSize = $FFFFFFFF) and longbool(V) then StrData.dwData[0] := $4847 // 'GH'
+                    else StrData.dwData[0] := $5656; // 'VV'
                     UpdateNumWrite(X + 16, 2);
                     Z := 3;
+                    if (Status.dwTuningSize = $FFFFFFFF) and not longbool(V) then StrData.dwData[0] := $4847 // 'GH'
+                    else StrData.dwData[0] := $5656; // 'VV'
                     UpdateNumWrite(X + 13, 2);
+                    // TUNING 解析を初期化
+                    if longbool(Option.dwTuneScan) and (T64Count - Status.dwTuningTime >= Option.dwTuneScan) then Status.dwTuningSize := 0;
                 end;
             end else if bytebool(DspVoice.EnvelopeADSR1 and $80) then begin
                 // ADSR
@@ -8705,15 +9454,18 @@ var
 
 procedure SearchFolder();
 var
+    dwLanguage: longword;
     dwLast: longword;
     sChDir: utf8string;
     hFile: longword;
     sFile: utf8string;
     Win32_Find_Data: TWIN32FINDDATA;
 begin
+    // 初期化
+    dwLanguage := Status.dwLanguage;
     // タイトルを更新
-    cwWindowMain.SetCaption(Concat(TITLE_INFO_HEADER[Status.dwLanguage], TITLE_INFO_FILE_APPEND[Status.dwLanguage],
-        TITLE_INFO_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage], DEFAULT_TITLE));
+    cwWindowMain.SetCaption(Concat(TITLE_INFO_HEADER[dwLanguage], TITLE_INFO_FILE_APPEND[dwLanguage],
+        TITLE_INFO_FOOTER[dwLanguage], TITLE_MAIN_HEADER[dwLanguage], DEFAULT_TITLE));
     // ファイルパスの最後に '\*' を追加
     dwLast := Length(sPath) - 1;
     if not IsPathSeparator(sPath, dwLast) then sPath := Concat(sPath, '\');
@@ -8811,7 +9563,7 @@ begin
 end;
 
 // ================================================================================
-// GetFileType - ファイルタイプ取得
+// GetFileType - ファイル種別取得
 // ================================================================================
 function CWINDOWMAIN.GetFileType(const sPath: utf8string; bShowMsg: longbool; bScript700: longbool): longword;
 var
@@ -9640,7 +10392,6 @@ var
     hFile: longword;
     dwSize: longword;
     dwHigh: longword;
-    dwReadSize: longword;
     lpBuffer: pointer;
 begin
     // 初期化
@@ -9660,7 +10411,7 @@ begin
         // バッファを初期化
         API_ZeroMemory(lpBuffer, dwSize + 1);
         // バッファに格納
-        API_ReadFile(hFile, lpBuffer, dwSize, @dwReadSize, NULLPOINTER);
+        API_ReadFile(hFile, lpBuffer, dwSize, @dwHigh, NULLPOINTER);
         // Script700 をコンパイル
         if dwAddr = SCRIPT700_TEXT then Status.Script700.dwProgSize := Apu.SetScript700(lpBuffer)
         else Status.Script700.dwProgSize := Apu.SetScript700Data(dwAddr, lpBuffer, dwSize);
@@ -9755,6 +10506,7 @@ end;
 procedure CWINDOWMAIN.OpenFile();
 var
     I: longint;
+    dwLanguage: longword;
     sFilter: utf8string;
     lpFiles: pointer;
     lpFile: pointer;
@@ -9767,12 +10519,14 @@ var
     sPath: utf8string;
     OpenFileName: TOPENFILENAME;
 begin
+    // 初期化
+    dwLanguage := Status.dwLanguage;
     // バッファを確保
     GetMem(lpFiles, BUFFER_SIZE_FILES);
     // ファイル選択ダイアログを開く
-    sFilter := DIALOG_OPEN_FILTER[Status.dwLanguage];
-    if Status.bOpen then sFilter := Concat(sFilter, DIALOG_SCRIPT700_FILTER[Status.dwLanguage]);
-    sFilter := Concat(sFilter, DIALOG_ALL_FILTER[Status.dwLanguage]);
+    sFilter := DIALOG_OPEN_FILTER[dwLanguage];
+    if Status.bOpen then sFilter := Concat(sFilter, DIALOG_SCRIPT700_FILTER[dwLanguage]);
+    sFilter := Concat(sFilter, DIALOG_ALL_FILTER[dwLanguage]);
     API_ZeroMemory(lpFiles, BUFFER_SIZE_FILES);
     API_ZeroMemory(@OpenFileName, SizeOf(TOPENFILENAME));
     OpenFileName.hwndOwner := cwWindowMain.hWnd;
@@ -9957,6 +10711,7 @@ var
     I: longint;
     J: longword;
     K: longword;
+    dwLanguage: longword;
     bShift: longbool;
     sFilter: utf8string;
     sPath: utf8string;
@@ -9965,13 +10720,15 @@ var
     dwIndex: longint;
     OpenFileName: TOPENFILENAME;
 begin
+    // 初期化
+    dwLanguage := Status.dwLanguage;
     // バッファを確保
     GetMem(lpFile, BUFFER_SIZE_PATH);
     // ファイル選択ダイアログを開く
     bShift := Status.bShiftButton;
-    sFilter := DIALOG_LIST_FILTER[Status.dwLanguage];
-    if Status.bOpen then sFilter := Concat(sFilter, DIALOG_WAVE_FILTER[Status.dwLanguage]);
-    if Status.bPlay then sFilter := Concat(sFilter, DIALOG_SNAP_FILTER[Status.dwLanguage]);
+    sFilter := DIALOG_LIST_FILTER[dwLanguage];
+    if Status.bOpen then sFilter := Concat(sFilter, DIALOG_WAVE_FILTER[dwLanguage]);
+    if Status.bPlay then sFilter := Concat(sFilter, DIALOG_SNAP_FILTER[dwLanguage]);
     API_ZeroMemory(lpFile, BUFFER_SIZE_PATH);
     API_ZeroMemory(@OpenFileName, SizeOf(TOPENFILENAME));
     if Status.bOpen then begin
@@ -10251,7 +11008,7 @@ begin
     API_FillRect(Status.hDCVolumeBuffer, @Rect, Status.hTextBrush);
     Color.dwColor := API_GetPixel(Status.hDCVolumeBuffer, 1, 0);
     K := 299 * Color.r + 587 * Color.g + 114 * Color.b;
-    if longbool(Option.dwVolumeColor) and (Option.dwVolumeColor <= 3) then L := (Option.dwVolumeColor - 1) * COLOR_BAR_NUM
+    if longbool(Option.dwVolumeColor) then L := (Option.dwVolumeColor - 1) * COLOR_BAR_NUM
     else if K >= COLOR_BRIGHT_FORE then L := COLOR_BAR_NUM + COLOR_BAR_NUM
     else if J >= COLOR_BRIGHT_BACK then L := COLOR_BAR_NUM
     else L := 0;
@@ -10276,10 +11033,11 @@ begin
     API_StretchBlt(Status.hDCStringBuffer, 0, 0, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT, Status.hDCStringBuffer, 0, 0, 1, 1, SRCCOPY);
     // ビットマップリソース用のデバイスコンテキストを作成
     hDCBitmapBuffer := API_CreateCompatibleDC(Status.hDCStatic);
-    hBitmap := API_SelectObject(hDCBitmapBuffer, API_LoadBitmap(Status.hInstance, pchar(BITMAP_NAME)));
+    hBitmap := API_SelectObject(hDCBitmapBuffer, API_LoadBitmap(Status.hInstance, pchar('MAINBMP')));
     // ビットマップリソースから文字表示用のデバイスコンテキストへ画像を転送 (AND 処理)
-    if longbool(Option.dwBmpFont) and (Option.dwBmpFont < BITMAP_NUM_FONT) then begin
-        API_BitBlt(Status.hDCStringBuffer, 0, 0, BITMAP_NUM_HEX_X6, BITMAP_NUM_HEIGHT, hDCBitmapBuffer, BITMAP_NUM_X6 * Option.dwBmpFont, 0, SRCAND);
+    if longbool(Option.dwBmpFont) then begin
+        API_BitBlt(Status.hDCStringBuffer, 0, 0, BITMAP_NUM_HEX_X6, BITMAP_NUM_HEIGHT, hDCBitmapBuffer, BITMAP_NUM_HEX_X6 * (Option.dwBmpFont - 1),
+            BITMAP_NUM_HEIGHT, SRCAND);
         API_BitBlt(Status.hDCStringBuffer, BITMAP_NUM_HEX_X6, 0, BITMAP_NUM_X6 - BITMAP_NUM_HEX_X6, BITMAP_NUM_HEIGHT, hDCBitmapBuffer,
             BITMAP_NUM_HEX_X6, 0, SRCAND);
     end else begin
@@ -10344,19 +11102,22 @@ end;
 // ================================================================================
 procedure CWINDOWMAIN.ShowErrMsg(dwCode: longword);
 var
+    dwLanguage: longword;
     sMsg: utf8string;
 begin
+    // 初期化
+    dwLanguage := Status.dwLanguage;
     // エラーの種類を判別
     case dwCode of
-        100..109: sMsg := ERROR_SNESAPU[Status.dwLanguage];
-        110..129: sMsg := ERROR_CHECKSUM[Status.dwLanguage];
-        200..249: sMsg := ERROR_FILE_READ[Status.dwLanguage];
-        250..299: sMsg := ERROR_FILE_WRITE[Status.dwLanguage];
-        300..599: sMsg := ERROR_DEVICE[Status.dwLanguage];
+        100..109: sMsg := ERROR_SNESAPU[dwLanguage];
+        110..129: sMsg := ERROR_CHECKSUM[dwLanguage];
+        200..249: sMsg := ERROR_FILE_READ[dwLanguage];
+        250..299: sMsg := ERROR_FILE_WRITE[dwLanguage];
+        300..599: sMsg := ERROR_DEVICE[dwLanguage];
         else sMsg := '';
     end;
     // メッセージを表示
-    sMsg := Concat(sMsg, ERROR_CODE_1[Status.dwLanguage], IntToStr(dwCode), ERROR_CODE_2[Status.dwLanguage]);
+    sMsg := Concat(sMsg, ERROR_CODE_1[dwLanguage], IntToStr(dwCode), ERROR_CODE_2[dwLanguage]);
     cwWindowMain.MessageBox(sMsg, DEFAULT_TITLE, MB_ICONEXCLAMATION or MB_OK);
 end;
 
@@ -10401,7 +11162,8 @@ begin
         // 演奏を一時停止
         WavePause();
     end;
-    // インデックスのズレを補正
+    // ファイルを開くダイアログのファイル種別の選択位置を調整
+    // ファイル種別の4番目に "Script700" が増えるため、4番目以降を選択していた場合は1つずらす
     if not Status.bOpen and (Status.dwOpenFilterIndex >= 4) then Inc(Status.dwOpenFilterIndex);
     // フラグを設定
     Status.bOpen := true;
@@ -10508,19 +11270,21 @@ var
     I: longint;
     V: byte;
     dwOption: longword;
+    qwSpeed: int64;
     dwPitch: longword;
 begin
     // 拡張設定を設定 (dwBit は負数になる場合があるため shl は使わない)
     dwOption := Option.dwOption or OPTION_FLOATOUT;
     if not longbool(Option.bEarSafe) then dwOption := dwOption or OPTION_NOEARSAFE;
-    Apu.SetAPUOption(1, Status.dwChannel, Status.dwBit * 8, Status.dwRate, Option.dwInter, dwOption);
+    Apu.SetAPUOption(1, Option.dwChannel, Option.dwBit * 8, Option.dwRate, Option.dwInter, dwOption);
     // 演奏速度を設定
-    Apu.SetAPUSpeed(Option.dwSpeedBas + longword(longint(Option.dwSpeedBas) * Option.dwSpeedTun div SPEED_100));
+    qwSpeed := Option.dwSpeedBas + longword(int64(Option.dwSpeedBas) * Option.dwSpeedTun div SPEED_100);
+    Apu.SetAPUSpeed(longword(qwSpeed));
     // ピッチを設定
     if Option.dwPitch < 16384 then dwPitch := 16384
     else if Option.dwPitch > 262144 then dwPitch := 262144
     else dwPitch := Option.dwPitch;
-    if Option.bPitchAsync then Apu.SetDSPPitch(Option.dwSpeedBas * dwPitch div SPEED_100)
+    if Option.bPitchAsync then Apu.SetDSPPitch(longword(qwSpeed * dwPitch div SPEED_100))
     else Apu.SetDSPPitch(dwPitch);
     // 左右拡散度を設定
     Apu.SetDSPStereo(Option.dwSeparate);
@@ -10528,7 +11292,7 @@ begin
     Apu.SetDSPFeedback(32768 - Option.dwFeedback);
     // 音量を設定
     Apu.SetDSPAmp(Option.dwAmp);
-    // チャンネルマスクを設定
+    // チャンネルマスク・強制ノイズを設定
     for I := 0 to 7 do begin
         V := Apu.Voices.Voice[I].MixFlag and $FC;
         if bytebool(Option.dwMute and (1 shl I)) then V := V or $1;
@@ -10546,15 +11310,19 @@ var
     J: longword;
     K: longword;
     SPCHdr: ^TSPCHDR;
-{$IFDEF TRANSMITSPC}
-    TSPCEx: TTRANSFERSPCEX;
+{$IFDEF TRANSMITSPCLPT}
+    TSPCEx: TTRANSMITSPCEXLPT;
 {$ENDIF}
-{$IFDEF PERFORMANCETEST}
-    lpBuffer: pointer;
+{$IFDEF TRANSMITSPCCBK}
+    hSNESAPU: longword;
+    TSPCEx: TTRANSMITSPCEXCALLBACK;
+    LoadSPCFile: procedure(pSPCFile: pointer); stdcall;
+    TransmitSPCEx: function(table: pointer): longword; stdcall;
 {$ENDIF}
+
 begin
     // 演奏の種類を判別
-    if not Status.bEmuDebug then case dwType of
+    case dwType of
         PLAY_TYPE_AUTO, PLAY_TYPE_PLAY: if not Status.bOpen then begin // 自動
             ListPlay(Option.dwPlayOrder, LIST_PLAY_INDEX_SELECTED, NULL);
             exit;
@@ -10567,17 +11335,6 @@ begin
             ListNextPlay(PLAY_ORDER_RANDOM, LIST_NEXT_PLAY_SELECT);
             exit;
         end;
-    end else begin
-        // バッファをクリア
-        API_ZeroMemory(@Spc.Hdr, SizeOf(TSPCHDR));
-        // インデックスのズレを補正
-        if not Status.bOpen and (Status.dwOpenFilterIndex >= 4) then Inc(Status.dwOpenFilterIndex);
-        // フラグを設定
-        Status.bOpen := true;
-        // 情報を更新
-        UpdateInfo(false);
-        // タイトルを更新
-        UpdateTitle(NULL);
     end;
     // SPC が開かれていない場合は終了
     if not Status.bOpen then exit;
@@ -10587,18 +11344,14 @@ begin
     if Status.bPause then begin
         // 一時停止指定の場合は終了
         if dwType = PLAY_TYPE_PAUSE then exit;
-{$IFNDEF TRANSMITSPC}
         // スレッドに演奏再開を通知
         API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_RESUME, NULL);
-{$ENDIF}
     // 演奏中の場合
     end else if Status.bPlay then begin
         // 演奏開始指定の場合は終了
         if dwType = PLAY_TYPE_PLAY then exit;
-{$IFNDEF TRANSMITSPC}
         // スレッドに一時停止を通知
         API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_PAUSE, NULL);
-{$ENDIF}
     // 演奏停止中の場合
     end else begin
         // 一時停止指定の場合は終了
@@ -10606,17 +11359,29 @@ begin
         // クリティカルセクションを開始
         API_EnterCriticalSection(@CriticalSectionThread);
         // Script700 で設定されたブレイクポイントを解除
-        for I := 0 to 65535 do if longbool(Status.BreakPoint[I] and $80) then Status.BreakPoint[I] := 0;
+        for I := 0 to 65535 do if longbool(Status.BreakPoint[I] and $80) then Status.BreakPoint[I] := NULL;
 {$IFDEF TIMERTRICK}
         // TimerTrick を設定
         Apu.SetTimerTrick(0, 16661);
 {$ENDIF}
-        // SPC を APU に転送
-        if Status.bEmuDebug then begin
-            Apu.SetScript700(NULLPOINTER);
-            Apu.ResetAPU($FFFFFFFF);
-        end else Apu.LoadSPCFile(@Spc);
 {$IFDEF TRANSMITSPC}
+        // APU をリセット
+        Apu.SetScript700(NULLPOINTER);
+        Apu.ResetAPU($FFFFFFFF);
+{$ELSE}
+        // SPC を APU に転送
+        Apu.LoadSPCFile(@Spc);
+{$ENDIF}
+        // SPC 演奏設定
+        SPCOption();
+        // 演奏時間、フェードアウト時間を設定
+        SPCTime(true, false, true);
+        // クリティカルセクションを終了
+        API_LeaveCriticalSection(@CriticalSectionThread);
+{$IFDEF TRANSMITSPCLPT}
+        // バッファを確保
+        GetMem(lpBuffer, 768); // 1ms
+        // SPC を転送
         //I := Apu.TransmitSPC($D050); // $EC00
         API_ZeroMemory(@TSPCEx, SizeOf(TSPCEx));
         TSPCEx.cbSize := SizeOf(TSPCEx);
@@ -10625,29 +11390,32 @@ begin
         TSPCEx.lptPort := $D050;
         I := Apu.TransmitSPCEx(@TSPCEx);
         if longbool(I) then cwWindowMain.MessageBox(IntToStr(longint(I)), DEFAULT_TITLE, NULL);
-{$ENDIF}
-        // SPC 演奏設定
-        SPCOption();
-        // 演奏時間、フェードアウト時間を設定
-        SPCTime(true, false, true);
-        // クリティカルセクションを終了
-        API_LeaveCriticalSection(@CriticalSectionThread);
-{$IFDEF PERFORMANCETEST}
-        // バッファを確保
-        GetMem(lpBuffer, 96000 * 2 * 4);
-        // 現在時刻を取得
-        J := API_timeGetTime();
-        // 299 秒分をエミュレート
-        for I := 0 to 299 do Apu.EmuAPU(lpBuffer, 24576000, 0);
-        // 現在時刻を取得
-        J := API_timeGetTime() - J;
         // バッファを解放
-        FreeMem(lpBuffer, 96000 * 2 * 4);
-        // 時間を表示
-        cwWindowMain.SetCaption(IntToStr(J));
+        FreeMem(lpBuffer, 768);
+{$ENDIF}
+{$IFDEF TRANSMITSPCCBK}
+        // SNESAPU.DLL をロード
+        hSNESAPU := API_LoadLibraryEx(StrToPtr(Concat(Status.sCurrentPath, SNESAPU_FILE_3RD)), NULL, LOAD_LIBRARY_SEARCH_APPLICATION_DIR);
+        if longbool(hSNESAPU) then begin
+            // API を検索
+            @LoadSPCFile := API_GetProcAddress(hSNESAPU, pchar('LoadSPCFile'));
+            @TransmitSPCEx := API_GetProcAddress(hSNESAPU, pchar('TransmitSPCEx'));
+            // SPC を転送
+            LoadSPCFile(@Spc);
+            API_ZeroMemory(@TSPCEx, SizeOf(TSPCEx));
+            TSPCEx.cbSize := SizeOf(TSPCEx);
+            TSPCEx.transmitType := 3;
+            TSPCEx.bScript700 := false;
+            TSPCEx.pCallbackRead := @_CallbackRead;
+            TSPCEx.pCallbackWrite := @_CallbackWrite;
+            I := TransmitSPCEx(@TSPCEx);
+            if longbool(I) then cwWindowMain.MessageBox(IntToStr(longint(I)), DEFAULT_TITLE, NULL);
+            // DLL を解放
+            API_FreeLibrary(hSNESAPU);
+        end;
 {$ENDIF}
         // 新しい SPC が読み込まれた場合
-        if Status.bEmuDebug or Status.bSPCRefresh then begin
+        if Status.bSPCRefresh then begin
             // シークキャッシュを初期化
             if longbool(Option.dwCacheNum) then begin
                 J := 0;
@@ -10667,9 +11435,10 @@ begin
             Status.dwStartTime := 0;
             Status.dwLimitTime := Status.dwDefaultTimeout;
             Status.bTimeRepeat := false;
-            // TUNING 開始アドレスを初期化
+            // TUNING 解析を初期化
             Status.dwTuningAddress := $1FF;
             Status.dwTuningSize := 0;
+            Status.dwTuningTime := 0;
         end;
         // テンポ解析が有効な場合
         if Option.bBPM then begin
@@ -10685,13 +11454,8 @@ begin
         end;
         // デバイスをオープン
         Status.dwWaveMessage := WAVE_MESSAGE_MAX_COUNT;
-{$IFDEF TRANSMITSPC}
-        Status.bPlay := true;
-        Status.bPause := false;
-{$ELSE}
         Status.bPlay := Status.bSPCRestart;
         if Status.bSPCRestart then I := 0 else I := WaveOpen();
-{$ENDIF}
         // フラグを設定
         Status.bSPCRestart := false;
         Status.bSPCRefresh := false;
@@ -10700,7 +11464,6 @@ begin
         UpdateMenu();
         // インジケータをリセット
         if not Status.bTimeRepeat then ResetInfo(true);
-{$IFNDEF TRANSMITSPC}
         // エラーがある場合
         if longbool(I) then begin
             // メッセージを表示
@@ -10709,7 +11472,6 @@ begin
             // スレッドに演奏開始を通知
             API_PostThreadMessage(Status.dwThreadID, WM_APP_MESSAGE, WM_APP_SPC_PLAY, NULL);
         end;
-{$ENDIF}
     end;
 end;
 
@@ -10797,8 +11559,9 @@ var
     J: longint;
     T64Count: longword;
     T64Cache: longword;
-    dwCacheDiff: longword;
     dwTarget: longword;
+    dwFast: longword;
+    dwSlow: longword;
 
 procedure CacheSeek();
 var
@@ -10839,9 +11602,9 @@ begin
     if Option.bBPM then Status.Tempo.bDisable := true;
 {$ENDIF}
     // キャッシュの基準位置を取得
-    dwCacheDiff := Option.dwCacheDiff shl 6;
+    dwSlow := Option.dwCacheDiff shl 6;
     dwTarget := dwTime;
-    if not Option.bSeekFast then if dwTarget > dwCacheDiff then Dec(dwTarget, dwCacheDiff) else dwTarget := 0;
+    if dwTarget > dwSlow then Dec(dwTarget, dwSlow) else dwTarget := 0;
     // シーク位置に最も近いキャッシュの場所を取得
     J := -1;
     for I := 0 to Option.dwCacheNum - 1 do if dwTarget >= Status.SPCCache[I].Spc.Hdr.dwSongLen then J := I;
@@ -10853,8 +11616,20 @@ begin
         if T64Cache > T64Count then CacheSeek();
         // キャッシュ位置が経過するまでループ
         while longbool(Status.dwNextCache) and (Status.dwNextCache < dwTime) do begin
-            // キャッシュする位置までシーク
-            if Status.dwNextCache > T64Count then Apu.SeekAPU(Status.dwNextCache - T64Count, byte(bCache and Option.bSeekFast));
+            // 次のキャッシュ位置を経過していない場合
+            if Status.dwNextCache > T64Count then begin
+                // シーク時間を計算
+                dwSlow := (Status.dwNextCache - T64Count + 63) shr 6 shl 6;
+                // シーク時間のうち、高速シーク時間を計算
+                if not (bCache and Option.bSeekFast) then dwFast := 0
+                else if dwTarget >= T64Count + dwSlow then dwFast := dwSlow
+                else if dwTarget <= T64Count then dwFast := 0
+                else dwFast := (dwTarget - T64Count + 63) shr 6 shl 6;
+                // シーク実行
+                if longbool(dwFast) then Apu.SeekAPU(dwFast, 1);
+                Dec(dwSlow, dwFast);
+                if longbool(dwSlow) then Apu.SeekAPU(dwSlow, 0);
+            end;
             // キャッシュを更新
             Inc(J);
             SaveSeekCache(J);
@@ -10865,8 +11640,19 @@ begin
         // シーク位置に最も近いキャッシュを読み込む
         CacheSeek();
     end;
-    // 最終的な位置までシーク
-    if dwTime > T64Count then Apu.SeekAPU(dwTime - T64Count, byte(bCache and Option.bSeekFast));
+    // 最終的な目標位置までシーク
+    if dwTime > T64Count then begin
+        // シーク時間を計算
+        dwSlow := (dwTime - T64Count + 63) shr 6 shl 6;
+        // シーク時間のうち、高速シーク時間を計算
+        if not (bCache and Option.bSeekFast) then dwFast := 0
+        else if dwTarget <= T64Count then dwFast := 0
+        else dwFast := (dwTarget - T64Count + 63) shr 6 shl 6;
+        // シーク実行
+        if longbool(dwFast) then Apu.SeekAPU(dwFast, 1);
+        Dec(dwSlow, dwFast);
+        if longbool(dwSlow) then Apu.SeekAPU(dwSlow, 0);
+    end;
     // 無音検出フラグをリセット
     Status.dwMuteTimeout := 0;
     Status.dwMuteCounter := Option.dwBufferNum;
@@ -10897,24 +11683,19 @@ begin
     if not Status.bOpen or not Status.bPlay then exit;
     // フラグを設定
     Status.bSPCRestart := bRestart;
-{$IFDEF TRANSMITSPC}
-    Status.bPlay := false;
-    Status.bPause := false;
+{$IFDEF TRANSMITSPCLPT}
+    // 演奏を停止
     Apu.StopTransmitSPC();
 {$ENDIF}
     // すぐに再演奏する場合
     if Status.bSPCRestart then begin
-{$IFNDEF TRANSMITSPC}
         // 演奏を停止
         WaveReset(false);
-{$ENDIF}
         // 再演奏
         SPCPlay(PLAY_TYPE_PLAY);
     end else begin
-{$IFNDEF TRANSMITSPC}
         // 演奏を停止
         WaveClose(false);
-{$ENDIF}
         // デバイスを更新
         UpdateDevice(Option.dwDeviceID, WAVE_DEVICE_UPDATE_LIST);
         // メニューを更新
@@ -10980,6 +11761,7 @@ procedure CWINDOWMAIN.UpdateDevice(dwDeviceID: longint; dwFlag: longword);
 var
     I: longint;
     J: longint;
+    dwLanguage: longword;
     sBuffer: utf8string;
     WaveOutCaps: TWAVEOUTCAPS;
 begin
@@ -10997,13 +11779,15 @@ begin
         // デバイスメニューを作成
         if (dwFlag and WAVE_DEVICE_INITIALIZE) = WAVE_DEVICE_INITIALIZE then J := -1 else J := 0;
         for I := J to Status.dwDeviceNum - 1 do begin
+            // 初期化
+            dwLanguage := Status.dwLanguage;
             // デバイス名を取得
             if I < 0 then begin
-                sBuffer := STR_MENU_SETUP_DEVICE_MAPPER[Status.dwLanguage];
+                sBuffer := STR_MENU_SETUP_DEVICE_MAPPER[dwLanguage];
             end else begin
                 API_waveOutGetDevCaps(I, @WaveOutCaps, SizeOf(TWAVEOUTCAPS));
                 sBuffer := ChrToStr(WaveOutCaps.szPname);
-                if not longbool(Length(sBuffer)) then sBuffer := STR_MENU_SETUP_DEVICE_UNKNOWN[Status.dwLanguage];
+                if not longbool(Length(sBuffer)) then sBuffer := STR_MENU_SETUP_DEVICE_UNKNOWN[dwLanguage];
             end;
             Status.sDeviceName[I + 1] := sBuffer;
             // デバイス名を簡略化するため、' (' 以降を削除
@@ -11011,7 +11795,7 @@ begin
                 cmSetupDevice.AppendMenu(MENU_SETUP_DEVICE_BASE + I + 1, sBuffer, true);
                 cmSetupDevice.AppendSeparator();
             end else begin
-                J := Pos(' (', sBuffer);
+                J := IndexOf(sBuffer, ' (');
                 if longbool(J) then sBuffer := Copy(sBuffer, 1, J - 1);
                 cmSetupDevice.AppendMenu(MENU_SETUP_DEVICE_BASE + I + 1, Concat('&', char($31 + I), ' : ', sBuffer), true);
             end;
@@ -11037,11 +11821,14 @@ end;
 // ================================================================================
 procedure CWINDOWMAIN.UpdateInfo(bRedraw: longbool);
 var
+    dwLanguage: longword;
     sInfo: utf8string;
     sBuffer: utf8string;
 begin
     // SPC が開かれていない場合は終了
     if not Status.bOpen then exit;
+    // 初期化
+    dwLanguage := Status.dwLanguage;
     // 情報を作成
     sInfo := 'Title    : ';
     if not bytebool(Spc.Hdr.Title[0]) then sInfo := Concat(sInfo, '(Unknown)')
@@ -11065,7 +11852,7 @@ begin
             case Option.dwInfo of
                 INFO_MIXER: begin
                     sInfo := Concat(sInfo, CRLF, 'MainLv   : L=    R=      EchoLv   : L=    R=', CRLF,
-                        'Delay    :    (    ms)   Feedback :    (   ', STR_MENU_SETUP_PERCENT[Status.dwLanguage], ')', CRLF);
+                        'Delay    :    (    ms)   Feedback :    (   ', STR_MENU_SETUP_PERCENT[dwLanguage], ')', CRLF);
                     if Status.bBreakButton then begin
                         sInfo := Concat(sInfo, 'SrcAddr  :     -         EchoAddr :     -', CRLF, 'FIR      :');
 {$IFDEF SPCBPMTEST}
@@ -11107,9 +11894,9 @@ begin
             if not bytebool(Spc.Hdr.TagFormat) or not longbool(Spc.Hdr.dwSongLen) then sInfo := Concat(sInfo, '(Unknown)')
             else begin
                 sBuffer := IntToStr(Spc.Hdr.dwSongLen);
-                sInfo := Concat(sInfo, sBuffer, STR_MENU_SETUP_SEC2[Status.dwLanguage], StringOfChar(' ', 10 - Length(sBuffer)));
+                sInfo := Concat(sInfo, sBuffer, STR_MENU_SETUP_SEC2[dwLanguage], StringOfChar(' ', 10 - Length(sBuffer)));
                 if not longbool(Spc.Hdr.dwFadeLen) then sInfo := Concat(sInfo, '(No Fadeout)')
-                else sInfo := Concat(sInfo, 'FadeTime : ', IntToStr(Spc.Hdr.dwFadeLen), STR_MENU_SETUP_MSEC[Status.dwLanguage]);
+                else sInfo := Concat(sInfo, 'FadeTime : ', IntToStr(Spc.Hdr.dwFadeLen), STR_MENU_SETUP_MSEC[dwLanguage]);
             end;
         end;
         INFO_SPC_2: begin
@@ -11239,11 +12026,10 @@ begin
     for I := 0 to MENU_SETUP_INFO_SIZE - 1 do
         cmSetupInfo.SetMenuCheck(MENU_SETUP_INFO_BASE + I, Option.dwInfo = longword(I));
     cmSetupInfo.SetMenuCheck(MENU_SETUP_INFO_RESET, Option.bVolumeReset);
-    for I := 0 to MENU_SETUP_PRIORITY_SIZE - 1 do begin
+    for I := 0 to BITMAP_NUM_FONT - 1 do
+        cmSetupInfoFont.SetMenuCheck(MENU_SETUP_INFO_BMPFONT_BASE + I, Option.dwBmpFont = longword(I));
+    for I := 0 to MENU_SETUP_PRIORITY_SIZE - 1 do
         cmSetupPriority.SetMenuCheck(MENU_SETUP_PRIORITY_BASE + I, Option.dwPriority = MENU_SETUP_PRIORITY_VALUE[I]);
-        cmSetupPriority.SetMenuEnable(MENU_SETUP_PRIORITY_BASE + I, (Status.OsVersionInfo.dwMajorVersion >= 5)
-            or (MENU_SETUP_PRIORITY_VALUE[I] <= REALTIME_PRIORITY_CLASS));
-    end;
     cmSetupOthers.SetMenuCheck(MENU_SETUP_TOPMOST, Option.bTopMost);
     cmSetupOthers.SetMenuCheck(MENU_SETUP_NOSLEEP, Option.dwNoSleep = NOSLEEP_DISPLAY);
     // ボタンを更新
@@ -11309,6 +12095,7 @@ begin
 end;
 
 var
+    dwLanguage: longword;
     dwInfo: longword;
     sInfo: utf8string;
 begin
@@ -11323,32 +12110,34 @@ begin
         API_SetTimer(cwWindowMain.hWnd, TIMER_ID_OPTION_DISPLAY, Option.dwTimerOptionDisplay, NULLPOINTER);
         Status.dwTitle := (Status.dwTitle and TITLE_ALWAYS_FLAG) or dwFlag;
     end;
+    // 初期化
+    dwLanguage := Status.dwLanguage;
     // タイトルを設定
     sInfo := '';
     dwInfo := Status.dwTitle and not TITLE_ALWAYS_FLAG;
     // オプションが変更された場合
     if longbool(dwInfo) then begin
-        sInfo := Concat(sInfo, TITLE_INFO_HEADER[Status.dwLanguage]);
+        sInfo := Concat(sInfo, TITLE_INFO_HEADER[dwLanguage]);
         case dwInfo of
-            TITLE_INFO_SEPARATE: sInfo := Concat(sInfo, TITLE_INFO_SEPARATE_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo),
-                STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
-            TITLE_INFO_FEEDBACK: sInfo := Concat(sInfo, TITLE_INFO_FEEDBACK_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo),
-                STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
-            TITLE_INFO_SPEED: sInfo := Concat(sInfo, TITLE_INFO_SPEED_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo),
-                STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
-            TITLE_INFO_AMP: sInfo := Concat(sInfo, TITLE_INFO_AMP_HEADER[Status.dwLanguage], IntToStr(Status.dwInfo),
-                STR_MENU_SETUP_PERCENT[Status.dwLanguage]);
+            TITLE_INFO_SEPARATE: sInfo := Concat(sInfo, TITLE_INFO_SEPARATE_HEADER[dwLanguage], IntToStr(Status.dwInfo),
+                STR_MENU_SETUP_PERCENT[dwLanguage]);
+            TITLE_INFO_FEEDBACK: sInfo := Concat(sInfo, TITLE_INFO_FEEDBACK_HEADER[dwLanguage], IntToStr(Status.dwInfo),
+                STR_MENU_SETUP_PERCENT[dwLanguage]);
+            TITLE_INFO_SPEED: sInfo := Concat(sInfo, TITLE_INFO_SPEED_HEADER[dwLanguage], IntToStr(Status.dwInfo),
+                STR_MENU_SETUP_PERCENT[dwLanguage]);
+            TITLE_INFO_AMP: sInfo := Concat(sInfo, TITLE_INFO_AMP_HEADER[dwLanguage], IntToStr(Status.dwInfo),
+                STR_MENU_SETUP_PERCENT[dwLanguage]);
             TITLE_INFO_SEEK: begin
-                sInfo := Concat(sInfo, TITLE_INFO_SEEK_HEADER[Status.dwLanguage]);
-                if Status.dwInfo >= 0 then sInfo := Concat(sInfo, TITLE_INFO_PLUS[Status.dwLanguage])
-                else sInfo := Concat(sInfo, TITLE_INFO_MINUS[Status.dwLanguage]);
-                if longbool(Abs(Status.dwInfo) mod 1000) then sInfo := Concat(sInfo, IntToStr(Abs(Status.dwInfo)), STR_MENU_SETUP_MSEC[Status.dwLanguage])
-                else sInfo := Concat(sInfo, IntToStr(Abs(Status.dwInfo) div 1000), STR_MENU_SETUP_SEC1[Status.dwLanguage]);
-                if Option.bSeekAsync and (Option.dwSpeedBas <> 65536) then sInfo := Concat(sInfo, TITLE_INFO_MULTIPLE[Status.dwLanguage],
-                    IntToStr(GetPercentOfSpeed()), TITLE_INFO_PERCENT[Status.dwLanguage]);
+                sInfo := Concat(sInfo, TITLE_INFO_SEEK_HEADER[dwLanguage]);
+                if Status.dwInfo >= 0 then sInfo := Concat(sInfo, TITLE_INFO_PLUS[dwLanguage])
+                else sInfo := Concat(sInfo, TITLE_INFO_MINUS[dwLanguage]);
+                if longbool(Abs(Status.dwInfo) mod 1000) then sInfo := Concat(sInfo, IntToStr(Abs(Status.dwInfo)), STR_MENU_SETUP_MSEC[dwLanguage])
+                else sInfo := Concat(sInfo, IntToStr(Abs(Status.dwInfo) div 1000), STR_MENU_SETUP_SEC1[dwLanguage]);
+                if Option.bSeekAsync and (Option.dwSpeedBas <> 65536) then sInfo := Concat(sInfo, TITLE_INFO_MULTIPLE[dwLanguage],
+                    IntToStr(GetPercentOfSpeed()), TITLE_INFO_PERCENT[dwLanguage]);
             end;
         end;
-        sInfo := Concat(sInfo, TITLE_INFO_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage]);
+        sInfo := Concat(sInfo, TITLE_INFO_FOOTER[dwLanguage], TITLE_MAIN_HEADER[dwLanguage]);
     // SPC が開かれている場合
     end else if Status.bOpen then begin
         // 最小化している場合
@@ -11361,12 +12150,12 @@ begin
 {$ELSE}
             if bytebool(Spc.Hdr.TagFormat) and bytebool(Spc.Hdr.Game[0]) then
 {$ENDIF}
-                sInfo := Concat(sInfo, TITLE_NAME_SEPARATOR[Status.dwLanguage], AnsiToStr(Spc.Hdr.Game));
-            sInfo := Concat(sInfo, TITLE_NAME_HEADER[Status.dwLanguage], Status.sSPCName, TITLE_NAME_FOOTER[Status.dwLanguage],
-                TITLE_MAIN_HEADER[Status.dwLanguage]);
+                sInfo := Concat(sInfo, TITLE_NAME_SEPARATOR[dwLanguage], AnsiToStr(Spc.Hdr.Game));
+            sInfo := Concat(sInfo, TITLE_NAME_HEADER[dwLanguage], Status.sSPCName, TITLE_NAME_FOOTER[dwLanguage],
+                TITLE_MAIN_HEADER[dwLanguage]);
         end else begin
             // SPC のファイル名を追加
-            sInfo := Concat(sInfo, Status.sSPCName, TITLE_MAIN_HEADER[Status.dwLanguage]);
+            sInfo := Concat(sInfo, Status.sSPCName, TITLE_MAIN_HEADER[dwLanguage]);
         end;
     end;
     // タイトルを更新
@@ -11392,13 +12181,13 @@ var
 begin
     // デバイスをリセット
     WaveReset(bForce);
-    // サウンドバッファを解放
-    for I := 0 to Option.dwBufferNum - 1 do API_waveOutUnprepareHeader(Wave.dwHandle, @Wave.Header[I], SizeOf(TWAVEHDR));
     // デバイスをクローズ
     if longbool(API_waveOutClose(Wave.dwHandle)) then API_Sleep(50)
     // デバイスが完全にクローズされるまで待機
     else while not longbool(Status.dwThreadStatus and WAVE_THREAD_DEVICE_CLOSED) do API_Sleep(16);
     Status.dwThreadStatus := Status.dwThreadStatus xor WAVE_THREAD_DEVICE_CLOSED;
+    // サウンドバッファを解放
+    for I := 0 to Option.dwBufferNum - 1 do API_waveOutUnprepareHeader(Wave.dwHandle, @Wave.Header[I], SizeOf(TWAVEHDR));
     // ハンドルを初期化
     Wave.dwHandle := 0;
 end;
@@ -11413,13 +12202,13 @@ begin
         WAVE_FORMAT_EXTENSIBLE: begin // WAVEFORMATEXTENSIBLE 構造体
             Wave.Format.wFormatTag := WAVE_FORMAT_EXTENSIBLE;
             Wave.Format.cbSize := 22;
-            case Status.dwBit of
+            case Option.dwBit of
                 BIT_IEEE: Wave.Format.SubFormat := KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
                 else Wave.Format.SubFormat := KSDATAFORMAT_SUBTYPE_PCM;
             end;
         end;
         WAVE_FORMAT_PCM: begin // WAVEFORMATEX 構造体
-            case Status.dwBit of
+            case Option.dwBit of
                 BIT_IEEE: Wave.Format.wFormatTag := WAVE_FORMAT_IEEE_FLOAT;
                 else Wave.Format.wFormatTag := WAVE_FORMAT_PCM;
             end;
@@ -11436,32 +12225,27 @@ var
     I: longint;
     dwBit: longword;
 begin
-    // 設定値を調整 (チャンネル)
-    if not ((Option.dwChannel = 1) or (Option.dwChannel = 2)) then Status.dwChannel := 2
-    else Status.dwChannel := Option.dwChannel;
-    // 設定値を調整 (ビット)
-    if not (((Option.dwBit >= 1) and (Option.dwBit <= 4)) or (Option.dwBit = -4)) then Status.dwBit := 2
-    else Status.dwBit := Option.dwBit;
-    // 設定値を調整 (サンプリングレート)
-    if Option.dwRate < 8000 then Status.dwRate := 8000
-    else if Option.dwRate > 192000 then Status.dwRate := 192000
-    else Status.dwRate := Option.dwRate;
     // フラグを設定
     Status.dwWaveMessage := WAVE_MESSAGE_MAX_COUNT;
     Status.bPlay := false;
     Status.bPause := false;
     // フォーマットを初期化
-    dwBit := Abs(Status.dwBit);
+    dwBit := Abs(Option.dwBit);
     Wave.Format.wBitsPerSample := word(dwBit shl 3);
-    Wave.Format.nSamplesPerSec := Status.dwRate;
-    Wave.Format.nChannels := word(Status.dwChannel);
-    Wave.Format.nBlockAlign := word(Status.dwChannel * dwBit);
-    Wave.Format.nAvgBytesPerSec := Status.dwChannel * dwBit * Status.dwRate;
+    Wave.Format.nSamplesPerSec := Option.dwRate;
+    Wave.Format.nChannels := word(Option.dwChannel);
+    Wave.Format.nBlockAlign := word(Option.dwChannel * dwBit);
+    Wave.Format.nAvgBytesPerSec := Option.dwChannel * dwBit * Option.dwRate;
     Wave.Format.wValidBitsPerSample := Wave.Format.wBitsPerSample;
     Wave.Format.dwChannelMask := $3; // FL, FR
     // バッファサイズを計算
+{$IFDEF EMUSAMPLES}
     Wave.dwEmuSize := Option.dwBufferTime * Wave.Format.nAvgBytesPerSec div 1000 div Wave.Format.nBlockAlign;
     Wave.dwBufSize := Wave.dwEmuSize * Wave.Format.nBlockAlign;
+{$ELSE}
+    Wave.dwEmuSize := Option.dwBufferTime * 24576; // ms * APU_CLK / 1000
+    Wave.dwBufSize := Option.dwBufferTime * Wave.Format.nAvgBytesPerSec div 1000 + 64; // 端数を考慮し 64byte 予備を取る
+{$ENDIF}
     // バッファを確保
     for I := 0 to Option.dwBufferNum - 1 do GetMem(Wave.lpData[I], Wave.dwBufSize);
 end;
@@ -11539,8 +12323,10 @@ var
     dwIndex: longword;
     bInit: longbool;
     bWave: longbool;
+    lpBuffer: pointer;
     T64Count: longword;
     T64Cache: longword;
+    WaveHdr: ^TWAVEHDR;
     ApuData: ^TAPUDATA;
     DspReg: ^TDSPREG;
     Voice: ^TVOICE;
@@ -11553,6 +12339,10 @@ begin
     bWave := longbool(dwFlag and WAVE_PROC_WRITE_WAVE);
     // 音声データを転送する場合
     if bWave then begin
+        // 初期化
+        lpBuffer := Wave.lpData[dwIndex];
+        WaveHdr := @Wave.Header[dwIndex];
+        WaveHdr.dwFlags := WaveHdr.dwFlags and not WHDR_DONE;
         // 出力レベル値を初期化
         Apu.VolumeMaxLeft^ := 0;
         Apu.VolumeMaxRight^ := 0;
@@ -11562,18 +12352,16 @@ begin
             Voice.VolumeMaxRight := 0;
         end;
         // 新しいバッファを取得
-{$IFDEF SPCCYCLE}
-        if Status.Script700.Data.dwWork[0] = 0 then begin
-          Apu.EmuAPU(Wave.lpData[dwIndex], 768, 0);
-        end;
-        Inc(Status.Script700.Data.dwWork[0]);
-        API_ZeroMemory(Wave.lpData[dwIndex], Wave.dwBufSize);
+        if Status.bWaveWrite then begin
+{$IFDEF EMUSAMPLES}
+            Apu.EmuAPU(lpBuffer, Wave.dwEmuSize, 1);
 {$ELSE}
-        if Status.bWaveWrite then Apu.EmuAPU(Wave.lpData[dwIndex], Wave.dwEmuSize, 1);
-        // if Status.bWaveWrite then Apu.EmuAPU(Wave.lpData[dwIndex], 24576 * 23, 0);
+            K := longword(Apu.EmuAPU(lpBuffer, Wave.dwEmuSize, 0));
+            WaveHdr.dwBufferLength := K - longword(lpBuffer);
 {$ENDIF}
+        end;
         // バッファをデバイスに転送
-        if longbool(API_waveOutWrite(Wave.dwHandle, @Wave.Header[dwIndex], SizeOf(TWAVEHDR))) then begin
+        if longbool(API_waveOutWrite(Wave.dwHandle, WaveHdr, SizeOf(TWAVEHDR))) then begin
             // すでに再試行済みの場合は終了
             if Status.bPause then exit;
             // フラグを設定
@@ -11675,10 +12463,8 @@ procedure CWINDOWMAIN.WaveQuit();
 var
     I: longint;
 begin
-{$IFNDEF TRANSMITSPC}
     // 演奏中の場合はデバイスをクローズ
     if Status.bPlay then WaveClose(false);
-{$ENDIF}
     // バッファを解放
     for I := 0 to Option.dwBufferNum - 1 do FreeMem(Wave.lpData[I], Wave.dwBufSize);
 end;
@@ -11748,8 +12534,16 @@ end;
 function CWINDOWMAIN.WaveSave(const sPath: utf8string; bShift: longbool; bQuiet: longbool): longbool;
 var
     I: longint;
+{$IFNDEF WAVEDUMMY}
     J: longword;
     K: longword;
+{$ENDIF}
+    dwLanguage: longword;
+    bCancel: longbool;
+    sInfo: utf8string;
+    sBuffer: utf8string;
+{$IFNDEF WAVEDUMMY}
+    sWaveFile: utf8string;
     hFile: longword;
     dwWaveL: longword;
     dwWaveB: longword;
@@ -11764,6 +12558,7 @@ var
     qwWaveL: int64;
     qwData: TLONGLONG;
     lpData: pointer;
+{$ENDIF}
 
 function GetMBString(dwSize: longword): utf8string;
 var
@@ -11778,9 +12573,88 @@ begin
     result := Concat(IntToStr(dwInt), '.', IntToStr(dwDec1), IntToStr(dwDec2));
 end;
 
+procedure WriteWaveInfo(dwPCent: longword);
+var
+    dwProgress: longword;
 begin
+    // 進捗を計算
+    dwProgress := Round(dwPCent * 0.4);
+    // 情報を作成
+    sBuffer := IntToStr(dwPCent);
+    sBuffer := Concat(Copy(INFO_WAVE_PROC_SPACE[dwLanguage], Length(sBuffer), 100), sBuffer, INFO_WAVE_PROC_PERCENT[dwLanguage],
+        CRLF, '  [ ', Copy('########################################', 1, dwProgress),
+        Copy('----------------------------------------', dwProgress + 1, 100), ' ]');
+    // 情報を表示
+    cwStaticMain.SetCaption(Concat(sInfo, sBuffer, CRLF, INFO_WAVE_PROC_CANCEL[dwLanguage]));
+end;
+
+procedure DoEvents();
+var
+    Msg: TMSG;
+begin
+    // メッセージを取得
+    while API_PeekMessage(@Msg, NULL, NULL, NULL, PM_REMOVE) do while true do begin
+        // 情報表示ラベルが右ダブルクリックされた場合はキャンセル
+        if (Msg.hWnd = cwStaticMain.hWnd) and (Msg.msg = WM_RBUTTONDBLCLK) then bCancel := true;
+        // メニューがクリックされた場合はスキップ (キーなどでの操作は考慮しない)
+        if (Msg.msg = WM_NCLBUTTONDOWN) and (Msg.wParam = HTMENU) then break;
+        // メッセージを処理
+        API_DefWindowProc(Msg.hWnd, Msg.msg, Msg.wParam, Msg.lParam);
+        // 次のメッセージ
+        break;
+    end;
+end;
+
+begin
+{$IFDEF WAVEDUMMY}
     // 初期化
     result := false;
+    dwLanguage := Status.dwLanguage;
+    bCancel := false;
+    // 確認メッセージを表示
+    if not bQuiet then if cwWindowMain.MessageBox(Concat(WARN_WAVE_SIZE_1[dwLanguage], sPath, WARN_WAVE_SIZE_2[dwLanguage],
+        GetMBString(0), WARN_WAVE_SIZE_3[dwLanguage]), DEFAULT_TITLE, MB_ICONQUESTION or MB_YESNO or MB_DEFBUTTON2) <> IDYES
+        then exit;
+    // 情報を作成
+    sInfo := 'Title    : ';
+    if not bytebool(Spc.Hdr.Title[0]) then sInfo := Concat(sInfo, '(Unknown)')
+    else sInfo := Concat(sInfo, AnsiToStr(Spc.Hdr.Title));
+    sInfo := Concat(sInfo, CRLF, 'Game     : ');
+    if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Game[0]) then sInfo := Concat(sInfo, '(Unknown)')
+    else sInfo := Concat(sInfo, AnsiToStr(Spc.Hdr.Game));
+    sInfo := Concat(sInfo, CRLF, 'SPC File : ', Status.sSPCName, CRLF, 'WAV File : ', CRLF, CRLF);
+    WriteWaveInfo(0);
+    // 進行状況を表示
+    cwWindowMain.SetCaption(Concat(TITLE_INFO_HEADER[dwLanguage], TITLE_INFO_FILE_HEADER[dwLanguage],
+        TITLE_INFO_FOOTER[dwLanguage], TITLE_MAIN_HEADER[dwLanguage], DEFAULT_TITLE));
+    // 10秒間待機
+    for I := 1 to 100 do begin
+        // スリープ
+        API_Sleep(100);
+        // 情報を作成
+        WriteWaveInfo(I);
+        // メッセージを処理 (ハング防止)
+        DoEvents();
+        // 処理がキャンセルされた場合はループを抜ける
+        if bCancel then break;
+    end;
+    // 情報を更新
+    UpdateInfo(true);
+    // タイトルを更新
+    UpdateTitle(NULL);
+    // メッセージを表示
+    if not bQuiet then if not bCancel then cwWindowMain.MessageBox(Concat(INFO_WAVE_FINISH_1[dwLanguage], GetMBString(0),
+        INFO_WAVE_FINISH_2[dwLanguage]), DEFAULT_TITLE, MB_ICONINFORMATION or MB_OK)
+    else cwWindowMain.MessageBox(INFO_WAVE_CANCEL[dwLanguage], DEFAULT_TITLE, MB_ICONEXCLAMATION or MB_OK);
+    // 成功
+    result := true;
+{$ELSE}
+    // 初期化
+    result := false;
+    dwLanguage := Status.dwLanguage;
+    bCancel := false;
+    // パスの安全性を確認
+    if not IsSafePath(sPath) then exit;
     // 演奏停止
     SPCStop(false);
     // クリティカルセクションを開始
@@ -11793,11 +12667,13 @@ begin
     SPCTime(true, true, true);
     // クリティカルセクションを終了
     API_LeaveCriticalSection(@CriticalSectionThread);
+    // 情報を更新
+    UpdateInfo(true);
     // ヘッダサイズを計算
     case Option.dwWaveFormat of
         1: WaveFormat(WAVE_FORMAT_INDEX_PCM);
         2: WaveFormat(WAVE_FORMAT_INDEX_EXTENSIBLE);
-        else case Status.dwBit of
+        else case Option.dwBit of
             BIT_8, BIT_16: WaveFormat(WAVE_FORMAT_INDEX_PCM);
             else WaveFormat(WAVE_FORMAT_INDEX_EXTENSIBLE);
         end;
@@ -11823,29 +12699,44 @@ begin
     dwSizeB := dwWaveB * longword(Wave.Format.nBlockAlign); // 100ms ごとのバイト数
     dwSizeT := dwSizeP + (dwBlank + dwCount + 10) * dwSizeB; // ヘッダ + 最初の無音 + 音声 + 最後の無音
     // 確認メッセージを表示
-    if not bQuiet then if cwWindowMain.MessageBox(Concat(WARN_WAVE_SIZE_1[Status.dwLanguage], GetMBString(dwSizeT),
-        WARN_WAVE_SIZE_2[Status.dwLanguage]), DEFAULT_TITLE, MB_ICONQUESTION or MB_YESNO or MB_DEFBUTTON2) <> IDYES then exit;
+    if not bQuiet then if cwWindowMain.MessageBox(Concat(WARN_WAVE_SIZE_1[dwLanguage], sPath, WARN_WAVE_SIZE_2[dwLanguage],
+        GetMBString(dwSizeT), WARN_WAVE_SIZE_3[dwLanguage]), DEFAULT_TITLE, MB_ICONQUESTION or MB_YESNO or MB_DEFBUTTON2) <> IDYES
+        then exit;
     // ファイルをオープン
-    hFile := INVALID_HANDLE_VALUE;
-    if IsSafePath(sPath) then begin
-        J := Length(sPath);
-        K := J;
-        for I := 1 to K do begin
-            if sPath[I] = NULLCHAR then break;
-            if IsPathSeparator(sPath, I) then J := I;
-        end;
-        API_SHCreateDirectoryEx(cwWindowMain.hWnd, StrToPtr(Copy(sPath, 1, J - 1)), NULLPOINTER);
-        hFile := API_CreateFile(StrToPtr(sPath), GENERIC_WRITE, FILE_SHARE_READ, NULLPOINTER, CREATE_ALWAYS,
-            FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    J := Length(sPath);
+    K := J;
+    for I := 1 to K do begin
+        if sPath[I] = NULLCHAR then break;
+        if IsPathSeparator(sPath, I) then J := I;
     end;
+    API_SHCreateDirectoryEx(cwWindowMain.hWnd, StrToPtr(Copy(sPath, 1, J - 1)), NULLPOINTER);
+    hFile := API_CreateFile(StrToPtr(sPath), GENERIC_WRITE, FILE_SHARE_READ, NULLPOINTER, CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
     // ファイルのオープンに失敗した場合はメッセージを表示して終了
     if hFile = INVALID_HANDLE_VALUE then begin
         ShowErrMsg(252);
         exit;
     end;
+    // ファイル名を取得
+    J := Length(sPath);
+    K := J;
+    for I := 1 to K do begin
+        if sPath[I] = NULLCHAR then break;
+        if IsPathSeparator(sPath, I) then J := I;
+    end;
+    sWaveFile := Copy(sPath, J + 1, Length(sPath));
+    // 情報を作成
+    sInfo := 'Title    : ';
+    if not bytebool(Spc.Hdr.Title[0]) then sInfo := Concat(sInfo, '(Unknown)')
+    else sInfo := Concat(sInfo, AnsiToStr(Spc.Hdr.Title));
+    sInfo := Concat(sInfo, CRLF, 'Game     : ');
+    if not bytebool(Spc.Hdr.TagFormat) or not bytebool(Spc.Hdr.Game[0]) then sInfo := Concat(sInfo, '(Unknown)')
+    else sInfo := Concat(sInfo, AnsiToStr(Spc.Hdr.Game));
+    sInfo := Concat(sInfo, CRLF, 'SPC File : ', Status.sSPCName, CRLF, 'WAV File : ', sWaveFile, CRLF, CRLF);
+    WriteWaveInfo(0);
     // 進行状況を表示
-    cwWindowMain.SetCaption(Concat(TITLE_INFO_HEADER[Status.dwLanguage], TITLE_INFO_FILE_HEADER[Status.dwLanguage],
-        TITLE_INFO_FOOTER[Status.dwLanguage], TITLE_MAIN_HEADER[Status.dwLanguage], DEFAULT_TITLE));
+    cwWindowMain.SetCaption(Concat(TITLE_INFO_HEADER[dwLanguage], TITLE_INFO_FILE_HEADER[dwLanguage],
+        TITLE_INFO_FOOTER[dwLanguage], TITLE_MAIN_HEADER[dwLanguage], DEFAULT_TITLE));
     // クリティカルセクションを開始
     API_EnterCriticalSection(@CriticalSectionThread);
     // WAVE ヘッダを出力 (サイズ = WaveHeader + 28)
@@ -11863,7 +12754,7 @@ begin
     // バッファを確保
     GetMem(lpData, dwSizeB);
     // 最初の無音を出力
-    if Status.dwBit = BIT_8 then API_FillMemory(lpData, dwSizeB, $80)
+    if Option.dwBit = BIT_8 then API_FillMemory(lpData, dwSizeB, $80)
     else API_ZeroMemory(lpData, dwSizeB);
     if longbool(dwBlank) then for I := 0 to dwBlank - 1 do begin
         API_WriteFile(hFile, lpData, dwSizeB, @dwSizeT, NULLPOINTER);
@@ -11889,45 +12780,60 @@ begin
             if (Apu.VolumeMaxLeft^ >= MIN_WAVE_LEVEL) or (Apu.VolumeMaxRight^ >= MIN_WAVE_LEVEL) then dwSizeL := dwSizeP;
         end;
         // 進行状況を表示
-        dwWaveL := longword(I + 1) * 10 div dwCount * 10;
+        dwWaveL := longword(I + 1) * 100 div dwCount;
         if dwWaveL <> dwPCent then begin
+            // 情報を作成
             dwPCent := dwWaveL;
-            cwWindowMain.SetCaption(Concat(TITLE_INFO_HEADER[Status.dwLanguage], TITLE_INFO_FILE_HEADER[Status.dwLanguage],
-                IntToStr(dwPCent), TITLE_INFO_FILE_PROC[Status.dwLanguage], TITLE_INFO_FOOTER[Status.dwLanguage],
-                TITLE_MAIN_HEADER[Status.dwLanguage], DEFAULT_TITLE));
+            WriteWaveInfo(dwPCent);
+            // メッセージを処理 (ハング防止)
+            DoEvents();
+            // 処理がキャンセルされた場合はループを抜ける
+            if bCancel then break;
         end;
     end;
-    // 最後の無音 (1000ms) を出力
-    if Status.dwBit = BIT_8 then API_FillMemory(lpData, dwSizeB, $80)
-    else API_ZeroMemory(lpData, dwSizeB);
-    for I := 0 to 9 do begin
-        API_WriteFile(hFile, lpData, dwSizeB, @dwSizeT, NULLPOINTER);
-        Inc(dwSizeL, dwSizeB);
+    // 最終処理
+    if bCancel then begin
+        // キャンセルされた場合はファイルサイズを 0 に設定
+        dwSizeB := NULL;
+        API_SetFilePointer(hFile, NULL, @dwSizeB, FILE_BEGIN);
+        API_SetEndOfFile(hFile);
+    end else begin
+        // 最後の無音 (1000ms) を出力
+        if Option.dwBit = BIT_8 then API_FillMemory(lpData, dwSizeB, $80)
+        else API_ZeroMemory(lpData, dwSizeB);
+        for I := 0 to 9 do begin
+            API_WriteFile(hFile, lpData, dwSizeB, @dwSizeT, NULLPOINTER);
+            Inc(dwSizeL, dwSizeB);
+        end;
+        // バッファを解放
+        FreeMem(lpData, dwSizeB);
+        // バッファサイズを出力
+        dwSizeB := 0;
+        API_SetFilePointer(hFile, 4, @dwSizeB, FILE_BEGIN);
+        dwSizeP := dwSizeL - 8; // ファイルサイズ - ("RIFF" + 4)
+        API_WriteFile(hFile, @dwSizeP, 4, @dwSizeT, NULLPOINTER);
+        API_SetFilePointer(hFile, dwSizeH + 24, @dwSizeB, FILE_BEGIN);
+        dwSizeP := dwSizeL - dwSizeH - 28; // データサイズ
+        API_WriteFile(hFile, @dwSizeP, 4, @dwSizeT, NULLPOINTER);
+        // ファイルの終端位置を設定
+        API_SetFilePointer(hFile, dwSizeL, @dwSizeB, FILE_BEGIN);
+        API_SetEndOfFile(hFile);
     end;
-    // バッファを解放
-    FreeMem(lpData, dwSizeB);
-    // バッファサイズを出力
-    dwSizeB := 0;
-    API_SetFilePointer(hFile, 4, @dwSizeB, FILE_BEGIN);
-    dwSizeP := dwSizeL - 8; // ファイルサイズ - ("RIFF" + 4)
-    API_WriteFile(hFile, @dwSizeP, 4, @dwSizeT, NULLPOINTER);
-    API_SetFilePointer(hFile, dwSizeH + 24, @dwSizeB, FILE_BEGIN);
-    dwSizeP := dwSizeL - dwSizeH - 28; // データサイズ
-    API_WriteFile(hFile, @dwSizeP, 4, @dwSizeT, NULLPOINTER);
-    // ファイルの終端位置を設定
-    API_SetFilePointer(hFile, dwSizeL, @dwSizeB, FILE_BEGIN);
-    API_SetEndOfFile(hFile);
     // ファイルをクローズ
     API_CloseHandle(hFile);
     // クリティカルセクションを終了
     API_LeaveCriticalSection(@CriticalSectionThread);
+    // 情報を更新
+    UpdateInfo(true);
     // タイトルを更新
     UpdateTitle(NULL);
     // メッセージを表示
-    if not bQuiet then cwWindowMain.MessageBox(Concat(INFO_WAVE_FINISH_1[Status.dwLanguage], GetMBString(dwSizeL),
-        INFO_WAVE_FINISH_2[Status.dwLanguage]), DEFAULT_TITLE, MB_ICONINFORMATION or MB_OK);
-    // 成功
-    result := true;
+    if not bQuiet then if not bCancel then cwWindowMain.MessageBox(Concat(INFO_WAVE_FINISH_1[dwLanguage], GetMBString(dwSizeL),
+        INFO_WAVE_FINISH_2[dwLanguage]), DEFAULT_TITLE, MB_ICONINFORMATION or MB_OK)
+    else cwWindowMain.MessageBox(INFO_WAVE_CANCEL[dwLanguage], DEFAULT_TITLE, MB_ICONEXCLAMATION or MB_OK);
+    // キャンセルされていない場合は成功
+    result := not bCancel;
+{$ENDIF}
 end;
 
 // ================================================================================
@@ -12094,22 +13000,30 @@ var
 begin
     // 初期化
     result := false;
+{$IFDEF SIGNATURE}
+    // チェックサムが一致しない場合
+    if lParam <> cwStaticFile.hWnd xor Status.dwCheckSum then begin
+        // 元に戻す
+        cwStaticFile.SetCaption(FILE_DEFAULT);
+        exit;
+    end;
+{$ENDIF}
     // メッセージボックス表示中の場合
     if cwWindowMain.bMessageBox then begin
         // 元に戻す
         cwStaticFile.SetCaption(FILE_DEFAULT);
-    end else begin
-        // ファイル名を取得
-        sPath := cwStaticFile.GetCaption(BUFFER_SIZE_PATH);
-        // 元に戻す
-        cwStaticFile.SetCaption(FILE_DEFAULT);
-        // ファイルを開く
-        dwType := GetFileType(sPath, true, true);
-        case dwType of
-            FILE_TYPE_SPC: result := SPCLoad(sPath, bAutoPlay);
-            FILE_TYPE_LIST_A, FILE_TYPE_LIST_B: result := ListLoad(sPath, dwType, false);
-            FILE_TYPE_SCRIPT700: result := ReloadScript700(sPath);
-        end;
+        exit;
+    end;
+    // ファイル名を取得
+    sPath := cwStaticFile.GetCaption(BUFFER_SIZE_PATH);
+    // 元に戻す
+    cwStaticFile.SetCaption(FILE_DEFAULT);
+    // ファイルを開く
+    dwType := GetFileType(sPath, true, true);
+    case dwType of
+        FILE_TYPE_SPC: result := SPCLoad(sPath, bAutoPlay);
+        FILE_TYPE_LIST_A, FILE_TYPE_LIST_B: result := ListLoad(sPath, dwType, false);
+        FILE_TYPE_SCRIPT700: result := ReloadScript700(sPath);
     end;
 end;
 
@@ -12132,7 +13046,7 @@ begin
     UpdateMenu();
 end;
 
-procedure RedrawInfo(bWindow: boolean);
+procedure RedrawInfo(bWindow: longbool);
 begin
     // クリティカルセクションを開始
     API_EnterCriticalSection(@CriticalSectionStatic);
@@ -12273,42 +13187,32 @@ begin
     end;
 end;
 
-procedure ForceEmuAPU();
-var
-    lpData: pointer;
-begin
-    // 演奏停止中の場合は終了
-    if not Status.bEmuDebug or not Status.bPlay then exit;
-    // クリティカルセクションを開始
-    API_EnterCriticalSection(@CriticalSectionThread);
-    // バッファを確保
-    GetMem(lpData, 16);
-    // 強制エミュレート
-    Apu.EmuAPU(lpData, 1, 1);
-    // クリティカルセクションを終了
-    API_LeaveCriticalSection(@CriticalSectionThread);
-    // バッファを解放
-    FreeMem(lpData, 16);
-end;
-
 function WaveOutput(bShift: longbool; bQuiet: longbool): longbool;
 var
     sPath: utf8string;
 begin
     // 初期化
     result := false;
+{$IFDEF SIGNATURE}
+    // チェックサムが一致しない場合
+    if lParam <> cwStaticFile.hWnd xor Status.dwCheckSum then begin
+        // 元に戻す
+        cwStaticFile.SetCaption(FILE_DEFAULT);
+        exit;
+    end;
+{$ENDIF}
     // メッセージボックス表示中の場合
     if cwWindowMain.bMessageBox then begin
         // 元に戻す
         cwStaticFile.SetCaption(FILE_DEFAULT);
-    end else begin
-        // ファイル名を取得
-        sPath := cwStaticFile.GetCaption(BUFFER_SIZE_PATH);
-        // 元に戻す
-        cwStaticFile.SetCaption(FILE_DEFAULT);
-        // WAVE ファイルを保存
-        result := WaveSave(sPath, bShift, bQuiet);
+        exit;
     end;
+    // ファイル名を取得
+    sPath := cwStaticFile.GetCaption(BUFFER_SIZE_PATH);
+    // 元に戻す
+    cwStaticFile.SetCaption(FILE_DEFAULT);
+    // WAVE ファイルを保存
+    result := WaveSave(sPath, bShift, bQuiet);
 end;
 
 procedure RedrawResume(lParam: longword);
@@ -12344,7 +13248,7 @@ begin
         if not longbool(API_GetMenuState(lParam, wParam, MF_BYCOMMAND) and MF_GRAYED) then begin
             if msg = WM_MENUCHAR then result := $30000 or wParam else result := 0;
             msg := WM_COMMAND;
-            lParam := 0;
+            lParam := NULL;
             dwDef := 1;
         end;
     end;
@@ -12373,6 +13277,12 @@ begin
                     MENU_SETUP_TIME_LIMIT: SetLimitTimeMark();
                     MENU_SETUP_TIME_RESET: ResetTimeMark();
                     MENU_SETUP_INFO_RESET: Option.bVolumeReset := not Option.bVolumeReset;
+                    MENU_SETUP_INFO_BMPFONT_BASE..MENU_SETUP_INFO_BMPFONT_BASE + BITMAP_NUM_FONT - 1: begin
+                        // 数値フォントを設定
+                        Option.dwBmpFont := wParam - MENU_SETUP_INFO_BMPFONT_BASE;
+                        // 再描画
+                        cwWindowMain.PostMessage(WM_SYSCOLORCHANGE, NULL, NULL);
+                    end;
                     MENU_SETUP_TOPMOST: begin
                         // フラグを設定
                         Option.bTopMost := not Option.bTopMost;
@@ -12504,8 +13414,8 @@ begin
         WM_APP_MESSAGE: begin // ユーザー定義
             // 初期化
             dwDef := 1;
-            // メッセージ処理
-            case wParam and $FFFF0000 of
+            // 演奏スレッドが有効な場合はメッセージを処理 (終了処理中はメッセージを無視)
+            if longbool(Status.dwThreadStatus) then case wParam and $FFFF0000 of
                 WM_APP_TRANSMIT: result := longword(TransmitFile(longbool(wParam and $1))); // ファイル名が転送されてきた
                 WM_APP_ACTIVATE: GetFocusWindowAfter(); // ウィンドウにフォーカスが移った
                 WM_APP_REDRAW: RedrawInfo(longbool(wParam and $1)); // 再描画の必要が生じた
@@ -12523,11 +13433,12 @@ begin
                     // クリティカルセクションを終了
                     API_LeaveCriticalSection(@CriticalSectionThread);
                 end;
-                WM_APP_GET_PORT, WM_APP_SET_PORT: begin // I/O ポート読み取り・書き込み
+                WM_APP_GET_OUT_PORT, WM_APP_SET_IN_PORT, WM_APP_GET_IN_PORT: begin // I/O ポート読み取り・書き込み
                     // クリティカルセクションを開始
                     API_EnterCriticalSection(@CriticalSectionThread);
                     // I/O ポート
-                    result := Apu.SPCOutPort.Port[wParam and $3];
+                    if longbool(wParam and $20000) then result := (Apu.Ram.dwPort shr ((wParam and $3) shl 3)) and $FF
+                    else result := Apu.SPCOutPort.Port[wParam and $3];
                     if longbool(wParam and $10000) then Apu.InPort(byte(wParam), byte(lParam));
                     // クリティカルセクションを終了
                     API_LeaveCriticalSection(@CriticalSectionThread);
@@ -12582,6 +13493,8 @@ begin
                 WM_APP_NEXT_TICK: begin // 次の命令で止める
                     // クリティカルセクションを開始
                     API_EnterCriticalSection(@CriticalSectionThread);
+                    // コールバックを追加設定
+                    Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_S700FCH);
                     // 次の命令実行スイッチ
                     if longbool(lParam) then Status.dwNextTick := (lParam and $FF) or BRKP_NEXT_STOP
                     else Status.dwNextTick := BRKP_RELEASE;
@@ -12595,17 +13508,37 @@ begin
                     Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_DSPREG);
                     // DSP チート設定
                     if longbool(wParam and $10000) then API_ZeroMemory(@Status.DSPCheat, 256)
-                    else if lParam >= $100 then Status.DSPCheat[wParam and $7F] := 0
+                    else if lParam >= $100 then Status.DSPCheat[wParam and $7F] := NULL
                     else Status.DSPCheat[wParam and $7F] := (lParam and $FF) or $100;
                     // クリティカルセクションを終了
                     API_LeaveCriticalSection(@CriticalSectionThread);
                 end;
-                WM_APP_GET_MUTE, WM_APP_SET_MUTE: begin // ミュート設定
+                WM_APP_GET_AMP: begin // 音量設定
+                    // 音量
+                    result := Option.dwAmp;
+                    if longbool(wParam and $100) then begin
+                        // 音量を設定
+                        Option.dwAmp := lParam;
+                        // 設定をリセット
+                        SPCReset(false);
+                    end;
+                end;
+                WM_APP_GET_MUTE: begin // ミュート設定
                     // チャンネルマスク
                     result := Option.dwMute;
-                    if longbool(wParam and $10000) then begin
+                    if longbool(wParam and $100) then begin
                         // チャンネルマスクを設定
-                        Option.dwMute := wParam and $FF;
+                        Option.dwMute := lParam and $FF;
+                        // 設定をリセット
+                        SPCReset(false);
+                    end;
+                end;
+                WM_APP_GET_NOISE: begin // ノイズ設定
+                    // 強制ノイズ
+                    result := Option.dwNoise;
+                    if longbool(wParam and $100) then begin
+                        // 強制ノイズを設定
+                        Option.dwNoise := lParam and $FF;
                         // 設定をリセット
                         SPCReset(false);
                     end;
@@ -12613,8 +13546,6 @@ begin
                 WM_APP_STATUS: result := (longword(Status.bOpen) and STATUS_OPEN) or (longword(Status.bPlay) and STATUS_PLAY)
                     or (longword(Status.bPause) and STATUS_PAUSE); // ステータス取得
                 WM_APP_APPVER: result := APPLINK_VERSION; // バージョン取得
-                WM_APP_EMU_APU: ForceEmuAPU(); // 強制エミュレート
-                WM_APP_EMU_DEBUG: Status.bEmuDebug := longbool(wParam and $1); // SPC700 転送テスト
                 WM_APP_DRAG_DONE: Status.bDropCancel := false; // ドラッグ終了
                 WM_APP_UPDATE_INFO: UpdateInfo(longbool(wParam and $1)); // 情報を更新
                 WM_APP_UPDATE_MENU: UpdateMenu(); // メニューを更新

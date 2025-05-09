@@ -19,10 +19,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2024 degrade-factory
+;                                                   Copyright (C) 2003-2025 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2024-01-18
+;   - degrade-factory in 2025-04-02
 ;   - Zenith in 2024-06-19
 ;===================================================================================================
 
@@ -214,7 +214,7 @@ SECTION .data ALIGN=32
     fp1_5       DD  1.5
 
     fpA         DD  20534.298825777156115789949213172                           ;(sqrt(2 * pi) * 32768) / 4
-    fp32km1     DD  32767.0                                                     ;Cubic interporation
+    fp32km1     DD  32767.0                                                     ;Cubic interpolation
     fpMaxLv     DD  8589934592.0                                                ;(2 ^ 31) * 4
     fpLowRt     DD  192000.0                                                    ;BASS-BOOST base sampling rate
     fpLowLv1    DD  0.005                                                       ;BASS-BOOST level (base 192kHz)
@@ -422,8 +422,9 @@ SECTION .bss ALIGN=64
     smpDec      resd    1                                                       ;Sample rate (decimal)
     smpSize     resd    1                                                       ;Emulate sample size
     smpCur      resd    1                                                       ;Ratio between samples
-    smpCnt      resd    1                                                       ;Ratio adjustment counter
-                resd    2
+    smpCnt      resd    1                                                       ;Ratio adjustment rate counter
+    smpDen      resd    1                                                       ;Ratio adjustment reset timing
+    smpRst      resd    1                                                       ;Ratio adjustment reset counter
 
     ;Storage buffers ------------------ [4740]
     mixBuf      resd    MIX_SIZE*4                                              ;Temporary mixing buffer (linear buffer)
@@ -854,6 +855,9 @@ ENDP
 
 PROC ResetResamp
 
+    Mov     EAX,[smpDen]
+    Mov     [smpRst],EAX
+
     XOr     EAX,EAX
 
     Mov     [smpSize],EAX
@@ -1179,11 +1183,29 @@ USES ALL
 
         Cmp     EAX,32000                                                       ;Is the sampling rate less than 32kHz?
         JBE     short .SMPROK                                                   ;   Yes
-            Mov     EDX,32000
-            Mov     ECX,EAX
+            Mov     EAX,32000                                                   ;EAX = Least common multiple of 32000 and smpRate
+            Mov     ECX,[smpRate]
+
+            .LoopGCM:
+            XOr     EDX,EDX
+            Div     ECX
+            Mov     EAX,ECX
+            Test    EDX,EDX
+            JZ      short .ExitGCM
+                Mov     ECX,EDX
+                Jmp     short .LoopGCM
+
+            .ExitGCM:
+            Mov     ECX,EAX                                                     ;smpDen = Reduced denominator of 32000 / smpRate
+            Mov     EAX,[smpRate]
+            Div     ECX
+            Mov     [smpDen],EAX
+
+            Mov     EDX,32000                                                   ;smpAdj = 32000 * (2^32) / smpRate
+            Mov     ECX,[smpRate]
             XOr     EAX,EAX
             Div     ECX
-            Mov     EDX,EAX                                                     ;smpAdj = 32000 * (2^32) / smpRate
+            Mov     EDX,EAX
 
             Mov     EAX,32000                                                   ;dspRate = 32000
             Mov     ECX,[smpRate]
@@ -1296,8 +1318,8 @@ USES ALL
 
         Or      dword [fixVol],-1                                               ;Force volumes to be recalculated
 
-        ;Anti-Alies filter 1st filter ---------
-        ;Omega * Delta-T = (2 * PI * cut-off frequency) * (1 / dspRate)
+        ;Anti-Alies 1st filter ---------
+        ;Omega * Delta-T (wdt) = (2 * PI * cut-off frequency) * (1 / dspRate)
         FLdPi                                                                   ;                                   |pi
         FAdd    ST,ST                                                           ;                                   |pi*2
         FMul    dword [fpAafCF1]                                                ;                                   |pi*2*cf=Omega
@@ -1305,7 +1327,7 @@ USES ALL
         FIDiv   dword [dspRate]                                                 ;                                   |Omega 1/dspRate=Delta-T
         FMulP   ST1,ST                                                          ;                                   |Omega*Delta-T=wdt
 
-        ;A1 = (-2 + wdt) / (2 + wdt)
+        ;A0 = 1 (omit), A1 = (-2 + wdt) / (2 + wdt)
         FLd     ST                                                              ;                                   |wdt wdt
         Mov     dword [ESP-4],2
         FISub   dword [ESP-4]                                                   ;                                   |wdt -2+wdt
@@ -1314,7 +1336,7 @@ USES ALL
         FDivP   ST1,ST                                                          ;                                   |wdt -2+wdt/2+wdt
         FStP    dword [aaf1A1]                                                  ;                                   |wdt
 
-        ;B1 = B2 = wdt / (2 + wdt)
+        ;B0 = B1 = wdt / (2 + wdt)
         Mov     dword [ESP-4],2
         FILd    dword [ESP-4]                                                   ;                                   |wdt 2
         FAdd    ST,ST1                                                          ;                                   |wdt 2+wdt
@@ -1322,8 +1344,8 @@ USES ALL
         FSt     dword [aaf1B0]                                                  ;                                   |wdt/2+wdt
         FStP    dword [aaf1B1]                                                  ;                                   |(empty)
 
-        ;Anti-Alies filter 2nd filter ---------
-        ;Omega * Delta-T = (2 * PI * cut-off frequency) * (1 / dspRate)
+        ;Anti-Alies 2nd filter ---------
+        ;Omega * Delta-T (wdt) = (2 * PI * cut-off frequency) * (1 / dspRate)
         FLdPi                                                                   ;                                   |pi
         FAdd    ST,ST                                                           ;                                   |pi*2
         FMul    dword [fpAafCF2]                                                ;                                   |pi*2*cf=Omega
@@ -1331,7 +1353,7 @@ USES ALL
         FIDiv   dword [dspRate]                                                 ;                                   |Omega 1/dspRate=Delta-T
         FMulP   ST1,ST                                                          ;                                   |Omega*Delta-T=wdt
 
-        ;A1 = (-2 + wdt) / (2 + wdt)
+        ;A0 = 1 (omit), A1 = (-2 + wdt) / (2 + wdt)
         FLd     ST                                                              ;                                   |wdt wdt
         Mov     dword [ESP-4],2
         FISub   dword [ESP-4]                                                   ;                                   |wdt -2+wdt
@@ -1340,7 +1362,7 @@ USES ALL
         FDivP   ST1,ST                                                          ;                                   |wdt -2+wdt/2+wdt
         FStP    dword [aaf2A1]                                                  ;                                   |wdt
 
-        ;B1 = B2 = wdt / (2 + wdt)
+        ;B0 = B1 = wdt / (2 + wdt)
         Mov     dword [ESP-4],2
         FILd    dword [ESP-4]                                                   ;                                   |wdt 2
         FAdd    ST,ST1                                                          ;                                   |wdt 2+wdt
@@ -1593,7 +1615,7 @@ USES ECX,EDI
     .NoReset:
     Call    ResetEcho
     Call    ResetLow
-    Call    ResetResamp
+;   Call    ResetResamp                                                         ;Do not reset because noise occurs by seek
     Call    SetFade
 
 ENDP
@@ -2502,6 +2524,7 @@ ENDP
     Mov     ESI,dsp
 
     %%Next:
+%if INTBK
         Test    byte [EBX+mKOn],-1                                              ;Is already voice in key on mode?
         JNZ     short %%CheckKOff                                               ;   Yes
             Test    CL,CH
@@ -2522,10 +2545,8 @@ ENDP
             Jmp     %%Skip
 
         %%CheckKOff:
-%if DSPBK || INTBK
         Cmp     byte [EBX+mKOn],KON_CHKKOFF                                     ;Did time for checked KOFF after KON had been written?
         JA      short %%CheckEnv                                                ;   No
-%endif
 
         Test    [dsp+kof],CH                                                    ;Is KOFF still written?
         JZ      short %%CheckEnv                                                ;   No
@@ -2550,6 +2571,29 @@ ENDP
         Dec     byte [EBX+mKOn]                                                 ;Did time for enabled voice pass after KON had been
         JNZ     %%Skip                                                          ; written?  No, do nothing
             And     byte [EBX+mFlg],MFLG_USER                                   ;Leave user voice flags (mute and noise)
+%else
+        Test    CL,CH
+        JZ      %%Skip
+            XOr     EDX,EDX
+            And     byte [EBX+mFlg],MFLG_USER                                   ;Leave user voice flags (mute and noise)
+            Or      byte [EBX+mFlg],MFLG_KOFF                                   ;Flag voice as keying off
+            Mov     [EBX+mKOn],DL                                               ;Start playing immediately
+
+        Test    [dsp+kof],CH                                                    ;Is KOFF still written?
+        JNZ     %%Skip                                                          ;   No
+            And     byte [EBX+mFlg],~MFLG_KOFF                                  ;Cancel keying off flag
+
+            Or      [konRun],CH                                                 ;Start KON working
+            Not     CH
+            And     [dsp+endx],CH                                               ;Clear ENDX register if started KON
+            Not     CH
+
+            Mov     DX,[ESI+adsr]                                               ;Save ADSR parameters
+            Mov     [EBX+vAdsr],DX
+            MovZX   DX,byte [ESI+gain]                                          ;Save Gain parameters
+            Mov     [EBX+vGain],DL
+            Mov     [EBX+vRsv],DH                                               ;Reset ADSR/Gain changed flag
+%endif
 
             ;Set voice volume ------------------
 %if STEREO
@@ -4430,6 +4474,9 @@ ENDP
     Sub     EDI,[echoCurD]
     Add     EDI,echoBuf
 
+    ZeroDN  4+EDI
+    ZeroDN  EDI
+
     FLd     dword [4+EDI]                                                       ;                                   |FBR
     FLd     dword [EDI]                                                         ;                                   |FBR FBL
 
@@ -4742,11 +4789,10 @@ ENDP
         FLd     ST1                                                             ;                                   |z1 in z1
         FMul    dword [aaf2A1]                                                  ;                                   |z1 in z1*a1
         FSubP   ST1,ST                                                          ;                                   |z1 in-z1*a1
-        FSt     dword [aafBufL]                                                 ;                                   |z1 in-z1*a1
         FMul    dword [aaf2B0]                                                  ;                                   |z1 (in-z1*a1)*b0
         FLd     ST1                                                             ;                                   |z1 (in-z1*a1)*b0 z1
         FMul    dword [aaf2B1]                                                  ;                                   |z1 (in-z1*a1)*b0 z1*b1
-        FAddP   ST1,ST                                                          ;                                   |z1 (in-z1*a1)*b0+z1*b1=out
+        FAddP   ST1,ST                                                          ;                                   |z1 (in-z1*a1)*b0+z1*b1=in
         FLd     ST1                                                             ;                                   |z1 in z1
         FMul    dword [aaf2A1]                                                  ;                                   |z1 in z1*a1
         FSubP   ST1,ST                                                          ;                                   |z1 in-z1*a1
@@ -4778,11 +4824,10 @@ ENDP
         FLd     ST1                                                             ;                                   |z1 in z1
         FMul    dword [aaf2A1]                                                  ;                                   |z1 in z1*a1
         FSubP   ST1,ST                                                          ;                                   |z1 in-z1*a1
-        FSt     dword [aafBufR]                                                 ;                                   |z1 in-z1*a1
         FMul    dword [aaf2B0]                                                  ;                                   |z1 (in-z1*a1)*b0
         FLd     ST1                                                             ;                                   |z1 (in-z1*a1)*b0 z1
         FMul    dword [aaf2B1]                                                  ;                                   |z1 (in-z1*a1)*b0 z1*b1
-        FAddP   ST1,ST                                                          ;                                   |z1 (in-z1*a1)*b0+z1*b1=out
+        FAddP   ST1,ST                                                          ;                                   |z1 (in-z1*a1)*b0+z1*b1=in
         FLd     ST1                                                             ;                                   |z1 in z1
         FMul    dword [aaf2A1]                                                  ;                                   |z1 in z1*a1
         FSubP   ST1,ST                                                          ;                                   |z1 in-z1*a1
@@ -4828,6 +4873,17 @@ ENDP
     SetNC   DL                                                                  ;If don't have enough samples, DL = 1
     Mov     [smpCur],EAX
 
+    XOr     EBX,EBX                                                             ;If smpRst completes one cycle,
+    Dec     dword [smpRst]                                                      ;   reset smpCur, smpCnt, smpRst, and DL = 0
+    SetZ    BL                                                                  ;   (probably DL is already 0, just to be sure)
+    Dec     EBX
+    And     [smpCur],EBX
+    And     [smpCnt],EBX
+    And     DL,BL
+    Not     EBX
+    And     EBX,[smpDen]
+    Or      [smpRst],EBX
+
     Cmp     dword [smpSize],-1                                                  ;Adjustment samples mode?
     JE      short %%SkipSize                                                    ;   Yes
 
@@ -4841,8 +4897,8 @@ ENDP
 %endmacro
 
 %macro Resampling 0
-    Test    dword [smpAdj],-1
-    JZ      %%Direct
+    Test    dword [smpAdj],-1                                                   ;Convert sample rate?
+    JZ      %%Direct                                                            ;   No
 
     InitSampling
 
@@ -4938,8 +4994,8 @@ ENDP
 %endmacro
 
 %macro MuteSampling 0
-    Test    dword [smpAdj],-1
-    JZ      %%Exit
+    Test    dword [smpAdj],-1                                                   ;Convert sample rate?
+    JZ      %%Exit                                                              ;   No
 
     InitSampling
 
@@ -5353,7 +5409,16 @@ PROC RunDSP
     XOr     EDI,EDI
 
     Test    byte [disFlag],8h                                                   ;Is pBuf NULL? (disFlag = [3])
-    JNZ     .Noop                                                               ;   Yes
+    JZ      .MuteNext                                                           ;   No
+    Test    dword [smpAdj],-1                                                   ;Convert sample rate?
+    JZ      .MuteDone                                                           ;   No, done
+
+    .SampleNext:
+        InitSampling
+
+    Dec     EBP
+    JNZ     .SampleNext
+    Jmp     .MuteDone
 
     .MuteNext:
         FLdZ
@@ -5364,7 +5429,7 @@ PROC RunDSP
     Dec     EBP
     JNZ     .MuteNext
 
-    .Noop:
+    .MuteDone:
     Pop     EDX,EAX,EBX,EBP
     Mov     EDX,EDI
     Mov     EDI,EAX

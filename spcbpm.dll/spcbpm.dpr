@@ -83,10 +83,11 @@ library spcbpm;
 {$FPUTYPE x87}                                              // 浮動小数演算命令             : x87
 {$HINTS OFF}                                                // ヒント生成                   : 無効
 {$IEEEERRORS OFF}                                           // 浮動小数エラーチェック       : 無効
-{$MODE delphi}                                              // 言語モード                   : delphi
+{$MODE DELPHI}                                              // 言語モード                   : DELPHI
 {$OPTIMIZATION LEVEL3,USEEBP}                               // 最適化コンパイル             : Lv3, EBP レジスタ使用
 {$POINTERMATH ON}                                           // ポインタ演算                 : 有効
 {$SAFEFPUEXCEPTIONS OFF}                                    // FPU エラー即時報告           : 無効
+{$SMARTLINK ON}                                             // スマートリンク               : 有効
 {$ELSE}                 // for Boland Delphi 6+
 {$DEFINITIONINFO OFF}                                       // シンボル宣言と参照情報       : 無効
 {$DESIGNONLY OFF}                                           // IDE 使用                     : 無効

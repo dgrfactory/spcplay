@@ -931,9 +931,9 @@ int LocalTransmitSPC(int type) {
         0x78, 0x00, 0xf7,   // CMP $f7, #$0     ; LPORT3: $0013: Port3
         0xd0, 0xfb,         // BNE LPORT3:      ;
 
-        0x8f, 0x6c, 0xf2,   // MOV $f2, #$6c    ; point to flg register
+        0x8f, 0x6c, 0xf2,   // MOV $f2, #$6c    ; point to FLG register
         0x8f, 0x00, 0xf3,   // MOV $f3, #$0     ; $001b: DSP FLG register
-        0x8f, 0x4c, 0xf2,   // MOV $f2, #$4c    ; point to kon register
+        0x8f, 0x4c, 0xf2,   // MOV $f2, #$4c    ; point to KON register
         0x8f, 0x00, 0xf3,   // MOV $f3, #$0     ; $0021: DSP KON register
         0x8f, 0x00, 0xf2,   // MOV $f2, #$0     ; $0024: SPC dsp reg addr.
         0xcd, 0x00,         // MOV X, #$0       ; $0027: SPC stack pointer
@@ -942,13 +942,13 @@ int LocalTransmitSPC(int type) {
         0x8d, 0x00,         // MOV Y, #$0       ; $002c: SPC Y register
         0xcd, 0x00,         // MOV X, #$0       ; $002e: SPC X register
 
-        0x7f                // RETI             ;
+        0x7f                // RETI             ; Restore PSW, and start driver
     };
 
     int i = 0, j = 0, count = 0;
     int echosize1, echoregion1, echomax1, echosize2, echoregion2, echomax2, bootptr;
     unsigned short spc_pc;
-    unsigned char spc_pcl, spc_pch, spc_a, spc_x, spc_y, spc_sw, spc_sp;
+    unsigned char spc_pcl, spc_pch, spc_a, spc_x, spc_y, spc_psw, spc_sp;
     unsigned char spcdata[65536], spcdata2[65536], spcxram[64], dspdata[128], dspdata1[128], dspdata2[128], buf[65536];
     boot = 0;
 
@@ -970,7 +970,7 @@ int LocalTransmitSPC(int type) {
     MoveMemory(&spcxram, &extraRAM, 64);
     MoveMemory(&dspdata, &dsp, 128);
     MoveMemory(&dspdata1, &dspdata, 128);
-    GetSPCRegs(&spc_pc, &spc_a, &spc_y, &spc_x, &spc_sw, &spc_sp);
+    GetSPCRegs(&spc_pc, &spc_a, &spc_y, &spc_x, &spc_psw, &spc_sp);
     spc_pcl = spc_pc & 0xff;
     spc_pch = (spc_pc >> 8) & 0xff;
 
@@ -995,7 +995,7 @@ int LocalTransmitSPC(int type) {
     // push program counter and status ward on stack
     spcdata[0x100 + ((spc_sp - 0) & 0xff)] = spc_pch;
     spcdata[0x100 + ((spc_sp - 1) & 0xff)] = spc_pcl;
-    spcdata[0x100 + ((spc_sp - 2) & 0xff)] = spc_sw;
+    spcdata[0x100 + ((spc_sp - 2) & 0xff)] = spc_psw;
     bootcode[BOOT_SP] = (spc_sp - 3) & 0xff; // save new stack pointer
 
     // mute all voices
@@ -1039,7 +1039,7 @@ int LocalTransmitSPC(int type) {
     MoveMemory((void *)pAPURAM, &spcdata2, 65536);
     MoveMemory(&extraRAM, &spcxram, 64);
     MoveMemory(&dsp, &dspdata1, 128);
-    FixAPU(spc_pc, spc_a, spc_y, spc_x, spc_sw, spc_sp);
+    FixAPU(spc_pc, spc_a, spc_y, spc_x, spc_psw, spc_sp);
 
     // try find a place to install bootcode (step 1)
     for (bootptr = 0xffbf; bootptr >= 0x100; bootptr--) {
