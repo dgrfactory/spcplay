@@ -19,10 +19,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 2003-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2024 degrade-factory
+;                                                   Copyright (C) 2003-2025 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2024-01-18
+;   - degrade-factory in 2025-04-02
 ;===================================================================================================
 
 CPU     386
@@ -112,6 +112,7 @@ SECTION .bss ALIGN=64
 
     rawRate     resd    1                                                       ;Sample rate (max 192kHz)
     rawRDec     resd    1                                                       ;Sample rate (decimal)
+    rawCDec     resd    1                                                       ;Clock rate (decimal)
     dspOpts     resd    1                                                       ;DSP option
 
     apuCbMask   resd    1                                                       ;SNESAPU callback mask
@@ -348,6 +349,7 @@ PROC ResetAPU, amp
     Mov     [cycLeft],EAX
     Mov     [smpDec],EAX
     Mov     [rawRDec],EAX
+    Mov     [rawCDec],EAX
 
 ENDP
 
@@ -470,7 +472,9 @@ USES EDX
 %endif
 
         Mov     [smpRate],EAX
-        Mov     dword [rawRDec],0
+        XOr     EAX,EAX
+        Mov     [rawRDec],EAX
+        Mov     [rawCDec],EAX
         Call    SetAPUSmpClk,[smpRAdj]                                          ;Calculate the number of clock cycles per sample
 
     .KeepRate:
@@ -530,29 +534,50 @@ USES ECX,EDX,EBX,EDI
     Mov     dword [smpSize],0
 
 %if INTBK
-    Test    byte [type],-1                                                      ;Is the unit of len sample?
-    JZ      short .NextSec                                                      ;   No
-
     Mov     EDX,[smpRate]
     Cmp     EDX,[rawRate]                                                       ;Is actual emulation mode?
     JE      short .NextSec                                                      ;   No
 
-    Mov     [smpSize],EBX
-    Mov     EAX,EBX
-    XOr     EDX,EDX                                                             ;EBX = Emulation time (based on below 32kHz)
-    Mov     ECX,[smpRate]                                                       ;   EBX * smpRate / rawRate
-    Mul     ECX
-    Mov     ECX,[rawRate]
-    Div     ECX
-    Mov     EBX,EAX
+    Test    byte [type],-1                                                      ;Is the unit of len samples?
+    JZ      short .InitCycles                                                   ;   No
+        Mov     [smpSize],EBX
 
-    Sub     [rawRDec],EDX                                                       ;rawRDec -= smpRate % rawRate
-    SetNC   DL
-    MovZX   EDX,DL
-    Dec     EDX
-    Sub     EBX,EDX                                                             ;If rawRDec < 0, EBX++
-    And     EDX,ECX                                                             ;If rawRDec < 0, rawRDec += rawRate
-    Add     [rawRDec],EDX
+        Mov     EAX,EBX                                                         ;EBX = Emulation time (based on 32kHz)
+        XOr     EDX,EDX                                                         ;   len * smpRate / rawRate
+        Mov     ECX,[smpRate]
+        Mul     ECX
+        Mov     ECX,[rawRate]
+        Div     ECX
+        Mov     EBX,EAX
+
+        Sub     [rawRDec],EDX                                                   ;rawRDec -= smpRate % rawRate
+        SetNC   DL
+        MovZX   EDX,DL
+        Dec     EDX
+        Sub     EBX,EDX                                                         ;If rawRDec < 0, EBX++
+        And     EDX,ECX                                                         ;If rawRDec < 0, rawRDec += rawRate
+        Add     [rawRDec],EDX
+        Jmp     short .NextSec
+
+    .InitCycles:
+        Mov     EAX,EBX                                                         ;EBX = Emulation time (based on output rate)
+        XOr     EDX,EDX                                                         ;   len * rawRate / APU_CLK
+        Mov     ECX,[rawRate]
+        Mul     ECX
+        Mov     ECX,APU_CLK
+        Div     ECX
+        Mov     EBX,EAX
+
+        Sub     [rawCDec],EDX                                                   ;rawCDec -= rawRate % APU_CLK
+        SetNC   DL
+        MovZX   EDX,DL
+        Dec     EDX
+        Sub     EBX,EDX                                                         ;If rawCDec < 0, EBX++
+        And     EDX,ECX                                                         ;If rawCDec < 0, rawCDec += APU_CLK
+        Add     [rawCDec],EDX
+
+        Mov     [smpSize],EBX
+        Mov     EBX,[len]                                                       ;EBX = Emulation cycles
 %endif
 
     .NextSec:
@@ -721,6 +746,7 @@ USES ECX,EDX
     Mov     EAX,[time]                                                          ;numSeconds = time / 64000
     Test    EAX,EAX
     RetZF
+
     Mov     ECX,64000
     Div     ECX
     Mov     ECX,EAX                                                             ;ECX = time / 64000
