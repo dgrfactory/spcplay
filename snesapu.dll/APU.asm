@@ -22,7 +22,7 @@
 ;                                                   Copyright (C) 2003-2025 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2025-04-02
+;   - degrade-factory in 2025-05-22
 ;===================================================================================================
 
 CPU     386
@@ -530,64 +530,71 @@ USES ECX,EDX,EBX,EDI
 
 %if DSPINTEG
     Mov     EDI,[pBuf]
-    Mov     EBX,[len]
+    Mov     EAX,[len]
     Mov     dword [smpSize],0
 
 %if INTBK
+    Test    byte [type],-1                                                      ;Is the unit of len samples?
+    JLE     short .InitCycles                                                   ;   No
+
     Mov     EDX,[smpRate]
     Cmp     EDX,[rawRate]                                                       ;Is actual emulation mode?
-    JE      short .NextSec                                                      ;   No
+    JE      .NextSec                                                            ;   No
+        Mov     [smpSize],EAX
 
-    Test    byte [type],-1                                                      ;Is the unit of len samples?
-    JZ      short .InitCycles                                                   ;   No
-        Mov     [smpSize],EBX
-
-        Mov     EAX,EBX                                                         ;EBX = Emulation time (based on 32kHz)
-        XOr     EDX,EDX                                                         ;   len * smpRate / rawRate
-        Mov     ECX,[smpRate]
+        XOr     EDX,EDX                                                         ;EAX = Emulation time (based on 32kHz)
+        Mov     ECX,[smpRate]                                                   ;   len * smpRate / rawRate
         Mul     ECX
         Mov     ECX,[rawRate]
         Div     ECX
-        Mov     EBX,EAX
 
         Sub     [rawRDec],EDX                                                   ;rawRDec -= smpRate % rawRate
         SetNC   DL
         MovZX   EDX,DL
         Dec     EDX
-        Sub     EBX,EDX                                                         ;If rawRDec < 0, EBX++
+        Sub     EAX,EDX                                                         ;If rawRDec < 0, EAX++
         And     EDX,ECX                                                         ;If rawRDec < 0, rawRDec += rawRate
         Add     [rawRDec],EDX
         Jmp     short .NextSec
 
     .InitCycles:
-        Mov     EAX,EBX                                                         ;EBX = Emulation time (based on output rate)
-        XOr     EDX,EDX                                                         ;   len * rawRate / APU_CLK
-        Mov     ECX,[rawRate]
+    Mov     EDX,[smpRate]
+    Cmp     EDX,[rawRate]                                                       ;Is actual emulation mode?
+    JE      short .SpeedCycles                                                  ;   No
+        XOr     EDX,EDX                                                         ;EAX = Emulation time (based on output rate)
+        Mov     ECX,[rawRate]                                                   ;   len * rawRate / APU_CLK
         Mul     ECX
         Mov     ECX,APU_CLK
         Div     ECX
-        Mov     EBX,EAX
 
         Sub     [rawCDec],EDX                                                   ;rawCDec -= rawRate % APU_CLK
         SetNC   DL
         MovZX   EDX,DL
         Dec     EDX
-        Sub     EBX,EDX                                                         ;If rawCDec < 0, EBX++
+        Sub     EAX,EDX                                                         ;If rawCDec < 0, EAX++
         And     EDX,ECX                                                         ;If rawCDec < 0, rawCDec += APU_CLK
         Add     [rawCDec],EDX
 
-        Mov     [smpSize],EBX
-        Mov     EBX,[len]                                                       ;EBX = Emulation cycles
+        Mov     [smpSize],EAX
+        Mov     EAX,[len]                                                       ;EAX = Emulation cycles
+
+    .SpeedCycles:
+    Test    byte [type],-1                                                      ;Adjust cycles to APU speed?
+    JS      short .NextSec                                                      ;   No
+        XOr     EDX,EDX                                                         ;EAX = EAX * smpRAdj / 65536
+        Mov     ECX,[smpRAdj]
+        Mul     ECX
+        ShRD    EAX,EDX,16
 %endif
 
     .NextSec:
     Mov     ECX,APU_CLK
     XOr     EDX,EDX
-    Mov     EAX,EBX
+    Mov     EBX,EAX
 
     ;Fixup samples/cycles --------------------
-    Test    byte [type],-1
-    JZ      short .Cycles
+    Test    byte [type],-1                                                      ;Is the unit of len samples?
+    JLE     short .Cycles                                                       ;   No
         Sub     EAX,[smpRate]                                                   ;If EAX > smpRate, EAX = smpRate
         SetA    DL
         Dec     EDX
@@ -624,6 +631,8 @@ USES ECX,EDX,EBX,EDI
         AdC     EDX,0
         Div     ECX
         Mov     [smpDec],EDX
+        Inc     EAX
+        And     EAX,~1
         Call    SetEmuDSP,EDI,EAX,[smpREmu]
         Pop     EAX
 
@@ -638,10 +647,15 @@ USES ECX,EDX,EBX,EDI
     .NoCycles:
     Mov     [cycLeft],EAX
     Call    SetEmuDSP,0,0,0                                                     ;Create any remaining samples
-    Mov     EDI,EAX                                                             ;EAX = End of buffer
+    Mov     EDI,EAX                                                             ;EDI = End of buffer
 
+    Mov     EAX,EBX
     Test    EBX,EBX                                                             ;Is emulation complete?
     JNZ     .NextSec                                                            ;   No, continue
+
+    Mov     EAX,EDI                                                             ;EAX = End of buffer
+    Test    byte [type],-1                                                      ;Is the unit of len samples?
+    JLE     short .Done                                                         ;   No, done
 
     Mov     EBX,[smpSize]
     Test    EBX,EBX                                                             ;Had emulated all the samples?
@@ -791,7 +805,7 @@ USES ECX,EDX
         JZ      short .EmuAPU
 
         Call    SetAPUSmpClk,EDI
-        Call    EmuAPU,0,EDX,0
+        Call    EmuAPU,0,EDX,-1                                                 ;Do not adjust cycles to APU speed
         Test    ECX,ECX
         JZ      short .DoneSlow
 
@@ -803,7 +817,7 @@ USES ECX,EDX
         Dec     EAX
         Or      EAX,EDI
         Call    SetAPUSmpClk,EAX
-        Call    EmuAPU,0,APU_CLK,0
+        Call    EmuAPU,0,APU_CLK,-1                                             ;Do not adjust cycles to APU speed
         Dec     ECX
         JNZ     short .EmuAPU
 
