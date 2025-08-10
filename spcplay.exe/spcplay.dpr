@@ -7349,8 +7349,8 @@ begin
     Option.dwBit := BIT_16;
     Option.dwBmpFont := 0;
     Option.bBPM := true;
-    Option.dwBufferNum := 22;
-    Option.dwBufferTime := 23;
+    Option.dwBufferNum := 8;
+    Option.dwBufferTime := 17;
     Option.dwCacheDiff := 5000;
     Option.dwCacheInt := 10000;
     Option.dwCacheKOn := $40;
@@ -7385,9 +7385,9 @@ begin
     Option.dwRate := 32000;
     Option.dwScale := 100;
     Option.dwSeekBar := 180000;
-    Option.bSeekFast := false;
+    Option.bSeekFast := true;
     Option.dwSeekMax := 600000;
-    Option.bSeekAsync := false;
+    Option.bSeekAsync := true;
     Option.dwSeekTime := 5000;
     Option.dwSeparate := SEPARATE_050;
     Option.dwShiftKey := 0;

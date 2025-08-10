@@ -205,7 +205,6 @@ PUBLIC  vMMaxL                                                  ;Maximum absolut
 PUBLIC  vMMaxR
 PUBLIC  envFlag                                                 ;Update envelope flags
 PUBLIC  adsrAdj                                                 ;Update envelope rate adjustment (16.16)
-PUBLIC  smpSize                                                 ;Emulate sample size
 PUBLIC  dspVarEP                                                ;Endpoint of DSP.asm variables
 
 
