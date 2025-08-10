@@ -259,7 +259,7 @@ void SetAPUOpt(u32 mixType, u32 numChn, u32 bits, u32 rate, u32 inter, u32 opts)
 // song without affecting the pitch.
 //
 // In:
-//    speed = Multiplier [16.16] (1/2x to 16x)
+//    speed = Multiplier [16.16] (1/64x to 16x)
 
 void SetAPUSmpClk(u32 speed);
 
