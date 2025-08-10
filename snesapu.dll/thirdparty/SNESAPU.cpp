@@ -19,10 +19,10 @@
 * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                                        *
 *                                                                                                  *
 *                                                 Copyright (C) 2001-2004 Alpha-II Productions     *
-*                                                 Copyright (C) 2003-2024 degrade-factory          *
+*                                                 Copyright (C) 2003-2025 degrade-factory          *
 *                                                                                                  *
 * List of users and dates who/when modified this file:                                             *
-*    - degrade-factory in 2024-01-12                                                               *
+*    - degrade-factory in 2025-05-31                                                               *
 ***************************************************************************************************/
 
 #define WIN32_LEAN_AND_MEAN                                     //Leave out unnecessary grunt in windows.h
@@ -588,11 +588,11 @@ int BidirAvailable(void) {
     // try to change to input mode
     io_outp(CONTROL, INPUT_MODE);
 
-    // see if it worked
+    // start initialization
     io_outp(DATA, 0x55);
     if (io_inp(DATA) != 0x55) bidir = 1;
 
-    // make sure we didn't accidentally choose the state the port was in
+    // wait for initialization to complete
     io_outp(DATA, 0xaa);
     if (io_inp(DATA) != 0xaa) bidir = 1;
 

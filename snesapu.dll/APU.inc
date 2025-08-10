@@ -232,7 +232,7 @@ PUBLIC SetAPUOpt, mixType:dword, numChn:dword, bits:dword, rate:dword, inter:dwo
 ;song without affecting the pitch.
 ;
 ;In:
-;   speed = Multiplier [16.16] (1/2x to 16x)
+;   speed = Multiplier [16.16] (1/64x to 16x)
 
 PUBLIC SetAPUSmpClk, speed:dword
 

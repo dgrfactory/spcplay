@@ -22,10 +22,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2008 Alpha-II Productions
-;                                                   Copyright (C) 2003-2024 degrade-factory
+;                                                   Copyright (C) 2003-2025 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2024-01-18
+;   - degrade-factory in 2025-05-31
 ;===================================================================================================
 
 CPU     386
@@ -202,7 +202,6 @@ SECTION .bss ALIGN=64
     pOpFetch    resd    1                                                       ;Pointer to opcode fetcher
     pDebug      resd    1                                                       ;Pointer to tracing routine
     dbgOpt      resd    1                                                       ;Debugging options
-                resd    1
 
     PSW         resd    8                                                       ;Flags in dword form
     regPC       resd    1                                                       ;Storage for registers between calls
@@ -398,12 +397,14 @@ USES EDX
         Mov     dword [pOpFetch],SPCTrace
 
     .TraceOff:
+%ifdef DSP_INC
     Mov     AL,[opts]                                                           ;Update disable envelope flags
     And     AL,DSP_PAUSE
     Mov     AH,[envFlag]
     And     AH,~DSP_PAUSE
     Or      AH,AL
     Mov     [envFlag],AH
+%endif
 
     Mov     EAX,[opts]                                                          ;Save options
     Mov     [dbgOpt],EAX
@@ -1518,16 +1519,13 @@ PROC EmuSPC, cyc
 
     ;Setup clock cycle execution -------------
     ;clkLeft contains the number of clock cycles to emulate until timer 2 increases or it's time to quit
-    XOr     EDX,EDX
     Mov     [clkTotal],EAX
-
     Sub     EAX,[t64kHz]                                                        ;If clkTotal > t64kHz, clkExec = t64kHz
-    SetA    DL                                                                  ;else clkExec = clkTotal
-    Dec     EDX
+    CDQ                                                                         ;else clkExec = clkTotal (EAX)
     And     EAX,EDX
     Add     EAX,[t64kHz]
 
-    Mov     [clkExec],EAX                                                       ;Save the number we want to execute this lap
+    Mov     [clkExec],EAX                                                       ;Save cycles to want to execute this lap
     Mov     [clkLeft],EAX
 
     ;Load x86 registers ----------------------
@@ -1568,8 +1566,8 @@ ENDP
 
 SPCTrace:
 %if DEBUG
-    Cmp     dword [clkLeft],0                                                   ;Have we executed all clock cycles?
-    JLE     SPCTimers                                                           ;   Yes, Update timers
+    Cmp     dword [clkLeft],0                                                   ;Already executed all clock cycles?
+    JLE     SPCTimers                                                           ;   Yes, update timers
 
 SPCBreak:
     ;Call SPCTrace ---------------------------
@@ -1632,8 +1630,8 @@ SPCFetch:                                                                       
     Call    RunScript700,1
 
     .No700:
-    Cmp     dword [clkLeft],0                                                   ;Have we executed all clock cycles?
-    JLE     SPCTimers                                                           ;   Yes, Update timers
+    Cmp     dword [clkLeft],0                                                   ;Already executed all clock cycles?
+    JLE     SPCTimers                                                           ;   Yes, update timers
 
     Test    dword [apuCbMask],CBE_S700FCH
     JZ      short .NoCallback
@@ -1692,7 +1690,7 @@ SPCTimers:
 
     ;Update timers ---------------------------
     Sub     [t64kHz],EDX                                                        ;Subtract cycles from timer clock.  Has it rolled over?
-    JNS     .NoT64Inc                                                           ;   No, Don't update timers
+    JNS     .NoT64Inc                                                           ;   No, don't update timers
         Add     dword [t64kHz],T64_CYC                                          ;Restore timer 2 clock
         Inc     dword [t64Cnt]                                                  ;Increase 64kHz counter
 
@@ -1822,8 +1820,8 @@ SPCTimers:
     ;passed in.  If we've emulated all clock cycles requested by the caller, then quit.  Otherwise
     ;add another 32 and return to the fetcher.
 
-    Sub     [clkTotal],EDX                                                      ;Have we executed all clock cycles?
-    JLE     SPCExit                                                             ;   Yes, Quit
+    Sub     [clkTotal],EDX                                                      ;Already executed all clock cycles?
+    JLE     SPCExit                                                             ;   Yes, quit
 
     Mov     BX,AX                                                               ;Save SPC.A, SPC.Y
 
@@ -1833,7 +1831,7 @@ SPCTimers:
     And     EAX,EDX
     Add     EAX,[clkTotal]
 
-    Mov     [clkExec],EAX                                                       ;Save the number we want to execute this lap
+    Mov     [clkExec],EAX                                                       ;Save cycles to want to execute this lap
     Mov     [clkLeft],EAX
 
     Mov     AX,BX                                                               ;Restore SPC.A, SPC.Y
@@ -1848,7 +1846,7 @@ SPCTimers:
 ;which greatly increases emulation speed.
 ;
 ;In:
-;   EBX -> Counter just read (FD-FFh)
+;   EBX-> Counter just read (FD-FFh)
 ;
 ;Out:
 ;   Counter = 0
@@ -1860,7 +1858,7 @@ SPCTimers:
 CntHack:
 
     Test    byte [EBX],-1                                                       ;Is counter > 0?
-    JNZ     .Reset                                                              ;   Yes, No need to speed up then
+    JNZ     .Reset                                                              ;   Yes, no need to speed up then
 
     Test    byte [tControl],7                                                   ;Are any timers enabled?
     JNZ     .Reset
@@ -1912,7 +1910,7 @@ CntHack:
         Or      EAX,ECX
 
         Cmp     EAX,EDX                                                         ;Does counter 1 have less time than counter 2?
-        JB      short .Cnt1                                                     ;   Yes, Leave EAX with counter 1
+        JB      short .Cnt1                                                     ;   Yes, leave EAX with counter 1
             Mov     EAX,EDX                                                     ;EAX = Clocks left until counter 2 increases
         .Cnt1:
 
@@ -1937,11 +1935,11 @@ CntHack:
 
         Cmp     EAX,[clkTotal]                                                  ;Are there enough clocks left for shortest cnt to inc?
         JB      short .Clk
-            Mov     EAX,[clkTotal]                                              ;   No, Change EAX to the # of cycles left to emulate
+            Mov     EAX,[clkTotal]                                              ;   No, change EAX to the # of cycles left to emulate
         .Clk:
 
         Cmp     EAX,T64_CYC                                                     ;Are there enough cycles for a 64kHz pulse?
-        JB      short .NoHack                                                   ;   No, Quit since nothing will be modified
+        JB      short .NoHack                                                   ;   No, quit since nothing will be modified
 
         ;Now's the time to actually skip emulating clock cycles.  All we care about are 64kHz timer
         ;increases, so first we divide the number of cycles to skip by T64_CYC and throw away the
@@ -2326,8 +2324,8 @@ Ret
     Cmp     BX,0FFF0h                                                           ;Was a function register written to?
 
 %if DEBUG
-    JAE     short %%WReg                                                        ;   Yes, Jump to handler
-        Jmp     EBP                                                             ;   No, Jump to next opcode
+    JAE     short %%WReg                                                        ;   Yes, jump to handler
+        Jmp     EBP                                                             ;   No, jump to next opcode
     %%WReg:
 %else
     JB      SPCFetch
@@ -2505,7 +2503,7 @@ ENDP
     Jmp     SPCFetch
 %endif
 %else
-    JB      short %%RNext                                                       ;   No, Continue with opcode
+    JB      short %%RNext                                                       ;   No, continue with opcode
     ResetCnt
     %%RNext:
 %endif
@@ -2529,13 +2527,13 @@ ENDP
 ;        NZ, NZC(s), NVZ, NVZC(s)
 %macro CleanUp 2-*
     %if %0 >= 4                                                                 ;Is flag paramater not blank?
-        Get%4                                                                   ;   Yes, Get modified flags
+        Get%4                                                                   ;   Yes, get modified flags
     %endif
 
     Sub     dword [clkLeft],%1*CPU_CYC                                          ;Subtract cycles instruction takes to execute
 
     %if %2 > 1                                                                  ;Is number of instruction bytes greater than 1?
-        %rep %2-1                                                               ;   Yes, Increase PC for each operand byte
+        %rep %2-1                                                               ;   Yes, increase PC for each operand byte
             Inc     PC
         %endrep
     %endif
@@ -2543,7 +2541,7 @@ ENDP
     %if %0 >= 3                                                                 ;Is memory check parameter not blank?
         %ifidn %3,na                                                            ;Is parameter equal to nothing (0)?
 %if DEBUG
-            Jmp     EBP                                                         ;   Yes, Fetch next opcode
+            Jmp     EBP                                                         ;   Yes, fetch next opcode
 %else
             Jmp     SPCFetch
 %endif
@@ -2551,8 +2549,8 @@ ENDP
 
         %if %3 & 1                                                              ;Is write check bit in parameter set?
             %if %3 & 8                                                          ;Is it possible to write to IPL ROM region?
-                WrPost  80h                                                     ;   Yes, Check for ROM writes
-            %else                                                               ;   No, Just check for function register writes
+                WrPost  80h                                                     ;   Yes, check for ROM writes
+            %else                                                               ;   No, just check for function register writes
                 %if %3 & 4                                                      ;Was a 16-bit value written?
                     WrPost  1                                                   ;   Yes
                 %else
@@ -2570,7 +2568,7 @@ ENDP
         %endif
     %else
 %if DEBUG
-        Jmp     EBP                                                             ;   No, Grab next opcode
+        Jmp     EBP                                                             ;   No, grab next opcode
 %else
         Jmp     SPCFetch
 %endif
@@ -2961,7 +2959,7 @@ ENDP
 ;And1 C,mem.bit
 %macro Opc4A 0
     Cmp     byte [PSW+CF],0                                                     ;Is carry zero?
-    JZ      short %%Nc                                                          ;   Yes, Result will be zero anyway so quit
+    JZ      short %%Nc                                                          ;   Yes, result will be zero anyway so quit
         Lmbit
         CheckIO RA
         Mov     BL,[ABSL]
@@ -3037,7 +3035,7 @@ ENDP
         Ldp                                                                     ;Load DP pointer
         CheckIO RD
         Test    byte [DPI],1 << %1                                              ;Test requested bit, is it clear?
-        JNZ     short %%BCDone                                                  ;   No, Clean up
+        JNZ     short %%BCDone                                                  ;   No, clean up
             MovSX   EDX,byte [OP2]                                              ;EDX = Relative adjustment
             Add     PC,DX                                                       ;Adjust PC
             CleanUp 7,3,RD
@@ -3099,7 +3097,7 @@ ENDP
         Ldp
         CheckIO RD
         Test    byte [DPI],1 << %1                                              ;Test the requested bit, is it set?
-        JZ      short %%BSDone                                                  ;   No, Clean up
+        JZ      short %%BSDone                                                  ;   No, clean up
             MovSX   EDX,byte [OP2]                                              ;DX = Relative adjustment
             Add     PC,DX                                                       ;Add relative displacement to PC
             CleanUp 7,3,RD
@@ -5061,12 +5059,12 @@ ENDP
 ;Sleep
 %macro OpcEF 0
     Test    byte [portMod],80h                                                  ;Is the SPC700 sleeping?
-    SetZ    DL                                                                  ;   No, Erase port status
+    SetZ    DL                                                                  ;   No, erase port status
     Dec     DL
     And     [portMod],DL
 
     Test    byte [portMod],0Fh                                                  ;Has the 65816 written to the SPC700?
-    JNZ     %%WakeUp                                                            ;   Yes, Wake up
+    JNZ     %%WakeUp                                                            ;   Yes, wake up
         Or      byte [portMod],80h                                              ;SPC700 is in sleep mode
         Dec     PC                                                              ;Sleep by repeating the instruction
 
@@ -5318,7 +5316,7 @@ ALIGN 16
         Mov     ECX,10h
 
         Test    BL,BL                                                           ;Is ROM readable?
-        JNS     short %%NoRR                                                    ;   No, Perform move as intended
+        JNS     short %%NoRR                                                    ;   No, perform move as intended
             XChg    ESI,EDI                                                     ;Reverse original operation, move IPL to Extra RAM
             Rep     MovSD
 
@@ -5354,10 +5352,10 @@ ALIGN 16
 
     Not     AL
     And     BL,AL                                                               ;BL=1 if new timer=1 and old timer=0
-    And     BL,7
-    JZ      short %%NoTR                                                        ;   Quit if no timers are reset
+    And     BL,7                                                                ;Has timers been reset?
+    JZ      short %%NoTR                                                        ;   No, quit
         ;Branching method ---------------------
-        ShR     BL,1                                                            ;Do we need to reset timer 0?
+        ShR     BL,1                                                            ;Need to reset timer 0?
         JNC     short %%NoRT0                                                   ;   No
             Mov     AL,[RAM+t0]                                                 ;Get timer register
             Dec     AL
