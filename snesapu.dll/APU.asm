@@ -22,7 +22,7 @@
 ;                                                   Copyright (C) 2003-2025 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2025-05-22
+;   - degrade-factory in 2025-05-31
 ;===================================================================================================
 
 CPU     386
@@ -69,7 +69,7 @@ SECTION .bss ALIGN=64
                 resd    2                                                       ;   Overflow reference area
                 resd    6                                                       ;Extend function pointer address
     scrRAMBuf   resb    SCR700SIZE                                              ;Script700 RAM buffer
-                resd    2                                                       ;   Overflow reference area
+                resd    4                                                       ;   Overflow reference area
 
     scr700lbl   resd    1024                                                    ;Script700 Label work area
     scr700dsp   resb    256                                                     ;Script700 DSP enable flags (Source)
@@ -97,9 +97,9 @@ SECTION .bss ALIGN=64
     scr700stp   resd    1                                                       ;Script700 Stack pointer
 
     scr700jmp   resd    1                                                       ;Script700 Jump address
+    scr700inc   resd    3                                                       ;Script700 Include depth
     scr700tmp   resd    1                                                       ;Script700 Temporary
     scr700stk   resd    128                                                     ;Script700 Stack area
-    scr700inc   resd    3                                                       ;Script700 Include depth
     scr700pth   resd    256                                                     ;Script700 Include path
 
     pAPURAM     resd    1                                                       ;Pointer to SNESAPU 64KB RAM
@@ -110,10 +110,16 @@ SECTION .bss ALIGN=64
     smpRAdj     resd    1                                                       ;Sample rate adjustment (16.16)
     smpREmu     resd    1                                                       ;Number of emulated samples per second
 
+    rawChn      resb    1                                                       ;Number of channels being output
+    rawBits     resb    1                                                       ;Size of samples in bits
+    rawByte     resb    1                                                       ;Size of samples in bytes
+                resb    1
     rawRate     resd    1                                                       ;Sample rate (max 192kHz)
-    rawRDec     resd    1                                                       ;Sample rate (decimal)
-    rawCDec     resd    1                                                       ;Clock rate (decimal)
     dspOpts     resd    1                                                       ;DSP option
+
+    outCur      resd    1                                                       ;Temporary buffer cursor
+    outLen      resd    1                                                       ;Temporary buffer used length
+    outBuf      resd    64                                                      ;Temporary buffer
 
     apuCbMask   resd    1                                                       ;SNESAPU callback mask
     apuCbFunc   resd    1                                                       ;SNESAPU callback function
@@ -164,6 +170,9 @@ PROC InitAPU, reason
 
     Mov     dword [smpRate],32000
     Mov     dword [smpRAdj],10000h
+    Mov     byte [rawChn],2
+    Mov     byte [rawBits],16
+    Mov     byte [rawByte],4
     Mov     dword [rawRate],32000
 
     Call    SetAPUSmpClk,[smpRAdj]
@@ -236,6 +245,7 @@ USES EBX
         Mov     [EBX],EAX
     .ppRAMNext:
 
+%ifdef SPC700_INC
     Mov     EBX,[ppXRAM]
     Test    EBX,EBX
     JZ      short .ppXRAMNext
@@ -256,6 +266,7 @@ USES EBX
         Mov     EAX,t64Cnt
         Mov     [EBX],EAX
     .ppT64CntNext:
+%endif
 
     Mov     EBX,[ppDSP]
     Test    EBX,EBX
@@ -271,6 +282,7 @@ USES EBX
         Mov     [EBX],EAX
     .ppVoiceNext:
 
+%ifdef DSP_INC
     Mov     EBX,[ppVMMaxL]
     Test    EBX,EBX
     JZ      short .ppVMMaxLNext
@@ -284,6 +296,7 @@ USES EBX
         Mov     EAX,vMMaxR
         Mov     [EBX],EAX
     .ppVMMaxRNext:
+%endif
 
 ENDP
 
@@ -315,12 +328,14 @@ USES EBX
         Mov     [EBX+1Ch],EAX
     .pDLLVerNext:
 
+%ifdef SPC700_INC
     Mov     EBX,[ppSPCReg]
     Test    EBX,EBX
     JZ      short .ppSPCRegNext
         Mov     EAX,[pSPCReg]
         Mov     [EBX],EAX
     .ppSPCRegNext:
+%endif
 
     Mov     EBX,[ppScript700]
     Test    EBX,EBX
@@ -348,8 +363,8 @@ PROC ResetAPU, amp
     XOr     EAX,EAX
     Mov     [cycLeft],EAX
     Mov     [smpDec],EAX
-    Mov     [rawRDec],EAX
-    Mov     [rawCDec],EAX
+    Mov     [outCur],EAX
+    Mov     [outLen],EAX
 
 ENDP
 
@@ -412,7 +427,46 @@ ENDP
 ;Set Audio Processor Options
 
 PROC SetAPUOpt, mixType, numChn, bits, rate, inter, opts
-USES EDX
+USES ECX,EDX
+
+    XOr     EDX,EDX
+
+    ;numChn ----------------------------------
+    Mov     AL,[rawChn]
+    Mov     AH,[numChn]
+    Cmp     AH,-1
+    JE      short .DefChn
+        Mov     AL,AH
+        Mov     [outCur],EDX
+        Mov     [outLen],EDX
+
+    .DefChn:
+    Mov     [rawChn],AL
+
+    ;bits ------------------------------------
+    Mov     CL,[rawBits]
+    Mov     CH,[bits]
+    Cmp     CH,-1
+    JE      short .DefBits
+        Mov     CL,CH
+        Mov     [outCur],EDX
+        Mov     [outLen],EDX
+
+    .DefBits:
+    Mov     [rawBits],CL
+
+    ;bytes -----------------------------------
+    Test    CL,CL                                                               ;rawByte = numChn * abs(bits) / 8
+    SetNS   CH
+    Dec     CH
+    XOr     CL,CH
+    Sub     CL,CH
+
+    MovZX   EAX,AL
+    MovZX   ECX,CL
+    Mul     ECX
+    ShR     AL,3
+    Mov     [rawByte],AL
 
     ;rate ------------------------------------
     Mov     EAX,[rawRate]
@@ -473,8 +527,6 @@ USES EDX
 
         Mov     [smpRate],EAX
         XOr     EAX,EAX
-        Mov     [rawRDec],EAX
-        Mov     [rawCDec],EAX
         Call    SetAPUSmpClk,[smpRAdj]                                          ;Calculate the number of clock cycles per sample
 
     .KeepRate:
@@ -490,18 +542,20 @@ PROC SetAPUSmpClk, speed
 USES EDX
 
     Mov     EAX,[speed]
-    Cmp     EAX,64                                                              ;If speed < 64, speed = 64
-    JAE     short .OKL
-        Mov     EAX,64
+    Cmp     EAX,1024                                                            ;If speed < 1024, speed = 1024 (~1.5%)
+    JAE     short .OKL                                                          ;Note: If lower any more, will crash or noisy.
+        Mov     EAX,1024
 
     .OKL:
-    Cmp     EAX,1048576                                                         ;If speed > 1048576, speed = 1048576
+    Cmp     EAX,1048576                                                         ;If speed > 1048576, speed = 1048576 (x16)
     JBE     short .OKH
         Mov     EAX,1048576
 
     .OKH:
     Mov     [smpRAdj],EAX
+%ifdef DSP_INC
     Mov     [adsrAdj],EAX
+%endif
 
     Mov     EAX,[smpRate]                                                       ;smpREmu = (smpRate << 16) / smpRAdj;
     MovZX   EDX,word [2+smpRate]
@@ -528,224 +582,206 @@ ENDP
 PROC EmuAPU, pBuf, len, type
 USES ECX,EDX,EBX,EDI
 
-%if DSPINTEG
     Mov     EDI,[pBuf]
     Mov     EAX,[len]
-    Mov     dword [smpSize],0
+    Test    EAX,EAX
+    JZ      .Done
 
-%if INTBK
     Test    byte [type],-1                                                      ;Is the unit of len samples?
-    JLE     short .InitCycles                                                   ;   No
+    JS      short .NextSec                                                      ;   No, not adjust clock cycles (for seek)
+    JZ      short .AdjCycles                                                    ;   No, adjust clock cycles to APU speed
+        Call    EmuAPUBySmp                                                     ;   Yes
+        Jmp     .Done
 
-    Mov     EDX,[smpRate]
-    Cmp     EDX,[rawRate]                                                       ;Is actual emulation mode?
-    JE      .NextSec                                                            ;   No
-        Mov     [smpSize],EAX
-
-        XOr     EDX,EDX                                                         ;EAX = Emulation time (based on 32kHz)
-        Mov     ECX,[smpRate]                                                   ;   len * smpRate / rawRate
-        Mul     ECX
-        Mov     ECX,[rawRate]
-        Div     ECX
-
-        Sub     [rawRDec],EDX                                                   ;rawRDec -= smpRate % rawRate
-        SetNC   DL
-        MovZX   EDX,DL
-        Dec     EDX
-        Sub     EAX,EDX                                                         ;If rawRDec < 0, EAX++
-        And     EDX,ECX                                                         ;If rawRDec < 0, rawRDec += rawRate
-        Add     [rawRDec],EDX
-        Jmp     short .NextSec
-
-    .InitCycles:
-    Mov     EDX,[smpRate]
-    Cmp     EDX,[rawRate]                                                       ;Is actual emulation mode?
-    JE      short .SpeedCycles                                                  ;   No
-        XOr     EDX,EDX                                                         ;EAX = Emulation time (based on output rate)
-        Mov     ECX,[rawRate]                                                   ;   len * rawRate / APU_CLK
-        Mul     ECX
-        Mov     ECX,APU_CLK
-        Div     ECX
-
-        Sub     [rawCDec],EDX                                                   ;rawCDec -= rawRate % APU_CLK
-        SetNC   DL
-        MovZX   EDX,DL
-        Dec     EDX
-        Sub     EAX,EDX                                                         ;If rawCDec < 0, EAX++
-        And     EDX,ECX                                                         ;If rawCDec < 0, rawCDec += APU_CLK
-        Add     [rawCDec],EDX
-
-        Mov     [smpSize],EAX
-        Mov     EAX,[len]                                                       ;EAX = Emulation cycles
-
-    .SpeedCycles:
-    Test    byte [type],-1                                                      ;Adjust cycles to APU speed?
-    JS      short .NextSec                                                      ;   No
-        XOr     EDX,EDX                                                         ;EAX = EAX * smpRAdj / 65536
-        Mov     ECX,[smpRAdj]
-        Mul     ECX
-        ShRD    EAX,EDX,16
-%endif
+    .AdjCycles:
+    XOr     EDX,EDX                                                             ;EAX = EAX * smpRAdj / 65536
+    Mov     ECX,[smpRAdj]
+    Mul     ECX
+    ShRD    EAX,EDX,16
 
     .NextSec:
     Mov     ECX,APU_CLK
     XOr     EDX,EDX
     Mov     EBX,EAX
 
-    ;Fixup samples/cycles --------------------
-    Test    byte [type],-1                                                      ;Is the unit of len samples?
-    JLE     short .Cycles                                                       ;   No
-        Sub     EAX,[smpRate]                                                   ;If EAX > smpRate, EAX = smpRate
-        SetA    DL
-        Dec     EDX
-        And     EAX,EDX
-        Add     EAX,[smpRate]
+    ;Fixup cycles ----------------------------
+    Sub     EAX,ECX                                                             ;If EAX > APU_CLK, EAX = APU_CLK
+    CDQ
+    And     EAX,EDX
+    Add     EAX,ECX
 
-        Sub     EBX,EAX                                                         ;len -= emulate samples
-        Push    EAX
-        Call    SetEmuDSP,EDI,EAX,[smpREmu]
-        Pop     EAX
+    Sub     EBX,EAX                                                             ;len -= clock cycles
+    Mov     EDX,EAX
+    Add     EAX,[cycLeft]                                                       ;Is emulation completed?
+    JLE     short .NoCycles                                                     ;   Yes
 
-        Mul     ECX                                                             ;cycles = (APU_CLK * EAX) / smpREmu
-        Div     dword [smpREmu]
-        Add     EAX,[cycLeft]
-        JLE     short .NoCycles
-        Jmp     short .Samples
+    ;Initialize DSP --------------------------
+    Push    EAX
 
-    .Cycles:
-        Sub     EAX,APU_CLK                                                     ;If EAX > APU_CLK, EAX = APU_CLK
-        SetA    DL
-        Dec     EDX
-        And     EAX,EDX
-        Add     EAX,APU_CLK
+    Mov     EAX,EDX                                                             ;samples = ((smpREmu * cycles) + smpDec) / APU_CLK
+    Mul     dword [smpREmu]
+    Add     EAX,[smpDec]
+    AdC     EDX,0
+    Div     ECX
+    Mov     [smpDec],EDX
+    Inc     EAX                                                                 ;Adjusting for sample size error
+    And     EAX,~1
 
-        Sub     EBX,EAX                                                         ;len -= emulate cycles
-        Mov     EDX,EAX
-        Add     EAX,[cycLeft]
-        JLE     short .NoCycles
-
-        Push    EAX
-        Mov     EAX,EDX
-        Mul     dword [smpREmu]                                                 ;samples = ((smpREmu * len) + smpDec) / APU_CLK
-        Add     EAX,[smpDec]
-        AdC     EDX,0
-        Div     ECX
-        Mov     [smpDec],EDX
-        Inc     EAX
-        And     EAX,~1
-        Call    SetEmuDSP,EDI,EAX,[smpREmu]
-        Pop     EAX
-
-    .Samples:
+    Call    SetEmuDSP,EDI,EAX,[smpREmu]
+    Pop     EAX
 
     ;Emulate APU -----------------------------
-    ;Note: For more accurate emulation, instead of waiting for cycles after doing all the processing,
+    ;Note: For more accurate emulation, instead of waiting for cycles after doing 1 opcode processing,
     ; running opcode should be processed internally every cycle.
     ; However, this requires complex logic and sophisticated analysis.
     Call    EmuSPC,EAX
+    Mov     ECX,EAX                                                             ;ECX = len - emulated clock cycles
+
+    Call    SetEmuDSP,0,0,0                                                     ;Create any remaining samples
+    Mov     EDI,EAX                                                             ;EDI = End of buffer
+    Mov     EAX,ECX
 
     .NoCycles:
     Mov     [cycLeft],EAX
-    Call    SetEmuDSP,0,0,0                                                     ;Create any remaining samples
-    Mov     EDI,EAX                                                             ;EDI = End of buffer
-
     Mov     EAX,EBX
-    Test    EBX,EBX                                                             ;Is emulation complete?
+    Test    EBX,EBX                                                             ;Is emulation completed?
     JNZ     .NextSec                                                            ;   No, continue
 
+    .Done:
     Mov     EAX,EDI                                                             ;EAX = End of buffer
-    Test    byte [type],-1                                                      ;Is the unit of len samples?
-    JLE     short .Done                                                         ;   No, done
 
-    Mov     EBX,[smpSize]
-    Test    EBX,EBX                                                             ;Had emulated all the samples?
-    JZ      short .Done                                                         ;   Yes, done
-        XOr     EDX,EDX
-        Mov     [smpSize],EDX
+ENDP
 
-        Mov     EAX,[rawRate]                                                   ;EAX = rawRate / smpRate
-        Mov     ECX,[smpRate]                                                   ;EDX = rawRate % smpRate
-        Div     ECX
 
-        Test    EDX,EDX                                                         ;If EDX = 0 and EAX = EBX,
-        SetZ    DH                                                              ; then EDX = 1, else EDX = 0
-        Cmp     EAX,EBX
-        SetE    DL
-        And     DL,DH
-        MovZX   EDX,DL
-        Sub     EBX,EDX
+;===================================================================================================
+;Emulate Audio Processing Unit (by sample units)
+;
+;If the sampling rate is not divisible by 1000 (ex. 44100, 88200Hz), the length of the generated
+;waveform data will not be constant, and forcibly interpolating waveform will cause noise.
+;
+;This procedure returns only the specified size, with adjusting the beginning and end of the
+;generated waveform data.
+;
+;In:
+;   EAX = len (sample units)
+;   EDI-> Buffer to store output
+;
+;Out:
+;   EAX-> End of buffer
+;   EBX = Number of samples not output
+;
+;Destroys:
+;   ECX,EDX
 
-        Call    EmuDSP,EDI,EDX                                                  ;Force emulate DSP with UpdateEnv,UpdateSrc
-        Dec     dword [smpSize]
-        Call    EmuDSP,EAX,EBX                                                  ;Force emulate DSP without UpdateEnv,UpdateSrc
-        Inc     dword [smpSize]
+PROC EmuAPUBySmp
+USES ESI
 
-    .Done:
-%else
-    ;Note: Setting DSPINTEG to '0', causes a minor bug here.
-    ; If 'len' parameter is given a value greater than about 87 seconds, will be occurred overflow.
-    ; If you want DSPINTEG to be '0', you must specify a small value for 'len' parameter.
+    Mov     EBX,EAX                                                             ;EBX = len (samples)
+    Mov     EAX,[outLen]
+    Test    EAX,EAX                                                             ;Has already been emulated?
+    JZ      short .BefEnd                                                       ;   No, skip
 
+    ;Copy before buffer ----------------------
+    Mov     ESI,outBuf
+    Add     ESI,[outCur]
+    MovZX   EDX,byte [rawByte]
+
+    .BefLoop:
+        Mov     ECX,EDX                                                         ;Copy from outBuf to pBuf
+        Rep     MovSB
+        Add     [outCur],EDX
+        Sub     [outLen],EDX
+
+        Dec     EBX                                                             ;Is emulation completed?
+        JZ      .Done                                                           ;   Yes, done
+
+        Sub     EAX,EDX                                                         ;Is outBuf empty?
+        JNZ     short .BefLoop                                                  ;   No, continue
+
+    .BefEnd:
+    Mov     [outCur],EAX                                                        ;EAX = 0
+
+    ;Fixup samples ---------------------------
+    XOr     EDX,EDX                                                             ;EAX = samples * APU_CLK / rawRate
+    Mov     EAX,EBX                                                             ;EDX = samples * APU_CLK % rawRate .. (1)
     Mov     ECX,APU_CLK
+    Mul     ECX
+    Mov     ECX,[rawRate]
+    Div     ECX
+    Push    EDX
 
-    ;If samples were passed, convert to clock cycles
-    Mov     EAX,[len]
-    Cmp     byte [type],0
-    JZ      short .Cycles
-        Mul     ECX                                                             ;cycles = (APU_CLK * len) / smpREmu
-        Div     dword [smpREmu]
+    XOr     EDX,EDX                                                             ;EAX = samples * smpRate / rawRate
+    Mov     EAX,EBX                                                             ;EDX = samples * smpRate % rawRate .. (2)
+    Mov     ECX,[smpRate]
+    Mul     ECX
+    Mov     ECX,[rawRate]
+    Div     ECX
 
-    .Cycles:
-    Add     [cycLeft],EAX
+    Mov     EAX,EBX                                                             ;EAX = samples
+    Pop     ECX
+    Or      EDX,ECX                                                             ;Is (1) and (2) equal 0?
+    JZ      short .MainEmu                                                      ;   Yes, not need fixup
+        Sub     EAX,8                                                           ;Need more than 8 samples?
+        JLE     short .AftEmu                                                   ;   No, skip
 
-    ;Emulate APU -----------------------------
-    XOr     EBX,EBX                                                             ;Number of samples generated
-    Mov     EDI,[pBuf]
+    ;Emulate to pBuf -------------------------
+    .MainEmu:
+    XOr     EDX,EDX                                                             ;EAX = samples to clock cycles
+    Mov     ECX,APU_CLK
+    Mul     ECX
+    Mov     ECX,[rawRate]
+    Div     ECX
+    Call    EmuAPU,EDI,EAX,0
 
-    .Next:
-        Mov     EAX,[cycLeft]
-        Test    EAX,EAX
-        JLE     short .Done
+    Mov     EDX,EAX
+    Sub     EAX,EDI                                                             ;EAX = Emulated buffer size (bytes)
+    Mov     EDI,EDX                                                             ;EDI = End of buffer
 
-        ;SPC700 -------------------------------
-        Mov     EDX,EAX
-        Call    EmuSPC,EAX
-        Mov     [cycLeft],EAX
+    XOr     EDX,EDX                                                             ;EAX = Bytes to samples
+    MovZX   ECX,byte [rawByte]
+    Div     ECX
+    Sub     EBX,EAX                                                             ;Is emulation completed?
+    JZ      .Done                                                               ;   Yes, done
 
-        ;DSP ----------------------------------
-        Sub     EDX,EAX                                                         ;Calculate number of samples to create
-        Mov     EAX,EDX                                                         ;EAX = Number of cycles emulated
-        Mul     dword [smpREmu]
-        Add     EAX,[smpDec]
-        AdC     EDX,0
-        Div     ECX                                                             ;samples = (((cycles - cycLeft) * smpREmu) + smpDec)
-        Mov     [smpDec],EDX                                                    ; / APU_CLK
+    ;Emulate to outBuf -----------------------
+    .AftEmu:
+    Mov     EAX,EBX                                                             ;EAX = samples
 
-        Add     EBX,EAX                                                         ;size += samples
-        Cmp     EBX,[len]                                                       ;Sometimes sample count will go over by one
-        JBE     short .LenOK
-            Add     EAX,[len]
-            Sub     EAX,EBX
-            Mov     EBX,[len]
+    XOr     EDX,EDX                                                             ;EAX = samples to clock cycles
+    Mov     ECX,APU_CLK
+    Mul     ECX
+    Mov     ECX,[rawRate]
+    Div     ECX
 
-        .LenOK:
-        Call    EmuDSP,EDI,EAX                                                  ;pBuf = EmuDSP(pBuf,samples)
-        Mov     EDI,EAX
-        Jmp     short .Next
+    Mov     ESI,outBuf
+    Mov     ECX,EAX                                                             ;ECX = clock cycles (min. 0x1000 = 16 samples at 96000Hz)
+    Cmp     ECX,1000h                                                           ;Note: If clock cycles is less than 0x1000 and playback
+    JAE     short .EmuLoop                                                      ; speed is below 25%, will crash or noisy.
+        Mov     ECX,1000h
+
+    .EmuLoop:
+    Call    EmuAPU,ESI,ECX,0
+    Sub     EAX,ESI                                                             ;EAX = Emulated buffer size (bytes)
+    JZ      short .EmuLoop                                                      ;Continue until the waveform is output
+
+    ;Copy after buffer -----------------------
+    Mov     [outLen],EAX
+    MovZX   EDX,byte [rawByte]
+
+    .AftLoop:
+        Mov     ECX,EDX                                                         ;Copy from outBuf to pBuf
+        Rep     MovSB
+        Add     [outCur],EDX
+        Sub     [outLen],EDX
+
+        Dec     EBX                                                             ;Is emulation completed?
+        JZ      short .Done                                                     ;   Yes, done
+
+        Sub     EAX,EDX                                                         ;Is outBuf empty?
+        JNZ     short .AftLoop                                                  ;   No, continue
+        Jmp     short .AftEmu                                                   ;   Yes, re-run emulation
 
     .Done:
-
-    ;Make sure enough samples were created to fill buffer
-    Cmp     byte [type],0                                                       ;If (type && size<len), EmuDSP(pBuf, len-size)
-    Mov     EDX,[len]
-    SetNZ   AL
-    Sub     EDX,EBX
-    SetG    AH
-    Test    AL,AH
-    RetZ    EDI
-
-    Call    EmuDSP,EAX,EDX
-%endif
 
 ENDP
 
@@ -805,7 +841,7 @@ USES ECX,EDX
         JZ      short .EmuAPU
 
         Call    SetAPUSmpClk,EDI
-        Call    EmuAPU,0,EDX,-1                                                 ;Do not adjust cycles to APU speed
+        Call    EmuAPU,0,EDX,-1                                                 ;Do not adjust clock cycles to APU speed
         Test    ECX,ECX
         JZ      short .DoneSlow
 
@@ -817,7 +853,7 @@ USES ECX,EDX
         Dec     EAX
         Or      EAX,EDI
         Call    SetAPUSmpClk,EAX
-        Call    EmuAPU,0,APU_CLK,-1                                             ;Do not adjust cycles to APU speed
+        Call    EmuAPU,0,APU_CLK,-1                                             ;Do not adjust clock cycles to APU speed
         Dec     ECX
         JNZ     short .EmuAPU
 
@@ -867,6 +903,7 @@ USES ECX,ESI
         Mov     dword [ESI+0Ah],02000000h
         Mov     dword [ESI+0Fh],00000005h
         Mov     dword [scr700lbl],0
+
     .EXIT:
 
 ENDP

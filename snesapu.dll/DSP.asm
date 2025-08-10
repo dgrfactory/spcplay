@@ -22,7 +22,7 @@
 ;                                                   Copyright (C) 2003-2025 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2025-04-02
+;   - degrade-factory in 2025-05-31
 ;   - Zenith in 2024-06-19
 ;===================================================================================================
 
@@ -82,7 +82,7 @@ BITS    32
     FIRBUF      EQU 2*2*64                                                      ;Stereo * Ring loop * 256kHz / 32kHz
     ECHOBUF     EQU 2*((192000*240)/1000)                                       ;Size of echo buffer (stereo * 192kHz * 240ms)
     LOWBUF1     EQU 384                                                         ;Size of BASS-BOOST buffer (base 192kHz)
-    LOWBUF2     EQU 6144
+    LOWBUF2     EQU 1152
     LOWLEN1     EQU LOWBUF1*2+LOWBUF2*2                                         ;Total size of BASS-BOOST buffer (without lowSize, lowLv)
     LOWLEN2     EQU 10
 
@@ -217,10 +217,10 @@ SECTION .data ALIGN=32
     fp32km1     DD  32767.0                                                     ;Cubic interpolation
     fpMaxLv     DD  8589934592.0                                                ;(2 ^ 31) * 4
     fpLowRt     DD  192000.0                                                    ;BASS-BOOST base sampling rate
-    fpLowLv1    DD  0.005                                                       ;BASS-BOOST level (base 192kHz)
-    fpLowLv2    DD  0.0003125
+    fpLowLv1    DD  0.003                                                       ;BASS-BOOST level (base 192kHz)
+    fpLowLv2    DD  0.003
     fpLowBs1    DD  0.002                                                       ;BASS-BOOST buffer size (base 192kHz) (=LOWBUF1/192000)
-    fpLowBs2    DD  0.032                                                       ;                                     (=LOWBUF2/192000)
+    fpLowBs2    DD  0.006                                                       ;                                     (=LOWBUF2/192000)
     fpAafCF1    DD  8038.1284389846                                             ;Anti-Alies 1st filter cut-off frequency
     fpAafCF2    DD  16176.421441299                                             ;Anti-Alies 2nd filter cut-off frequency
 
@@ -420,11 +420,11 @@ SECTION .bss ALIGN=64
     smpRate     resd    1                                                       ;Sample rate (max 192kHz)
     smpAdj      resd    1                                                       ;Sample rate adjustment
     smpDec      resd    1                                                       ;Sample rate (decimal)
-    smpSize     resd    1                                                       ;Emulate sample size
     smpCur      resd    1                                                       ;Ratio between samples
     smpCnt      resd    1                                                       ;Ratio adjustment rate counter
     smpDen      resd    1                                                       ;Ratio adjustment reset timing
     smpRst      resd    1                                                       ;Ratio adjustment reset counter
+                resd    1
 
     ;Storage buffers ------------------ [4740]
     mixBuf      resd    MIX_SIZE*4                                              ;Temporary mixing buffer (linear buffer)
@@ -688,12 +688,16 @@ USES ECX,EDX,EBX,ESI,EDI
     ;  sin(4pi x)
     ;  ---------- * (0.5 + 0.5cos(pi x))
     ;    4pi x
+    ;
+
+    ;If ipD were initialized to -768 (-3.0), a divide by zero error would occur when building the table.
+    ;So we manually initialize the first row, which is easy to do.
 
     Mov     EDI,sincTab
-    XOr     EAX,EAX                                                             ;If ipD were initialized to -768 (-3.0), a divide by
-    Mov     [EDI],EAX                                                           ; zero error would occur when building the table.
-    Mov     [4+EDI],EAX                                                         ; So we manually initialize the first row, which is
-    Mov     [8+EDI],EAX                                                         ; easy to do.
+    XOr     EAX,EAX
+    Mov     [EDI],EAX
+    Mov     [4+EDI],EAX
+    Mov     [8+EDI],EAX
     Mov     [12+EDI],EAX
     Mov     word [6+EDI],32767                                                  ;Set first row to 0 0 0 1 0 0 0 0
     Add     EDI,16
@@ -859,8 +863,6 @@ PROC ResetResamp
     Mov     [smpRst],EAX
 
     XOr     EAX,EAX
-
-    Mov     [smpSize],EAX
     Mov     [smpCur],EAX
     Mov     [smpCnt],EAX
 
@@ -2202,7 +2204,7 @@ ChgSus:
 ChgGain:
     Mov     AL,[ESI+gain]
     Test    AL,80h                                                              ;Is gain direct?
-    JNZ     short .GainMode                                                     ;   No, Program envelope
+    JNZ     short .GainMode                                                     ;   No, program envelope
         Mov     dword [EBX+eAdj],A_DIRECT                                       ;Set adjustment rate to 1.0
 
         And     AL,7Fh                                                          ;Isolate direct value
@@ -2426,7 +2428,7 @@ DSPInB:
     JE      REndX
 
     Cmp     AL,[EBX+dsp]                                                        ;Is the new data the same as the current data?
-    JZ      short DSPDone                                                       ;   Yes, Don't bother updating
+    JZ      short DSPDone                                                       ;   Yes, don't bother updating
 
     Mov     [EBX+dsp],AL                                                        ;Update DSP RAM
 
@@ -2440,7 +2442,7 @@ DSPInC:
     And     AH,MFLG_OFF                                                         ;AH = 08h if the register is in dsp.voice
 
     Test    [EBX+mix+mFlg],AH                                                   ;Is the voice inactive?
-    JNZ     short DSPDone                                                       ;   Yes, Don't bother updating
+    JNZ     short DSPDone                                                       ;   Yes, don't bother updating
 
 %if DSPBK && DSPINTEG
     Test    CL,CL                                                               ;If write was from SPC700, emulate DSP before
@@ -2854,7 +2856,7 @@ RPitch:
 RADSR:
     XOr     EAX,EAX
     Test    byte [EBX+mix+mFlg],MFLG_KOFF                                       ;Is voice in key off mode?
-    JNZ     short .NoChg                                                        ;   Yes, Envelope setting can't be changed now
+    JNZ     short .NoChg                                                        ;   Yes, envelope setting can't be changed now
 
     Test    byte [EBX+mix+mKOn],-1
     SetNZ   AL
@@ -2895,7 +2897,7 @@ RADSR:
 RGain:
     XOr     EAX,EAX
     Test    byte [EBX+mix+mFlg],MFLG_KOFF                                       ;Is voice in key off mode?
-    JNZ     short .NoChg                                                        ;   Yes, Envelope setting can't be changed now
+    JNZ     short .NoChg                                                        ;   Yes, envelope setting can't be changed now
 
     Test    byte [EBX+mix+mKOn],-1
     SetNZ   AL
@@ -2906,7 +2908,7 @@ RGain:
 
     ShR     EBX,3
     Test    byte [EBX+dsp+adsr],80h                                             ;Is envelope in gain mode?
-    JNZ     short .NoChg                                                        ;   No, Setting gain register has no effect
+    JNZ     short .NoChg                                                        ;   No, setting gain register has no effect
         Push    .Return
         Push    ESI                                                             ;StartEnv will pop ESI on return
         LEA     ESI,[EBX+dsp]
@@ -3400,10 +3402,10 @@ ENDP
         Add     word [EBX+bCur],9                                               ;Move to next sample block
 
         Test    byte [EBX+bHdr],1                                               ;Was this the end block?
-        JZ      short %%NotEndB                                                 ;   No, Decompress next block
+        JZ      short %%NotEndB                                                 ;   No, decompress next block
         Or      [dsp+endx],CH                                                   ;Set flag in ENDX
         Test    byte [EBX+bHdr],2                                               ;Is this source looped?
-        JNZ     short %%LoopB                                                   ;   Yes, Start over at loop point
+        JNZ     short %%LoopB                                                   ;   Yes, start over at loop point
 
         ;End voice playback -------------------
         %%EndPlay:
@@ -3507,7 +3509,7 @@ ENDP
     ;Adjust Envelope -------------------------
     %%AdjExp:
     Test    CL,E_TYPE                                                           ;Is the adjustment an exponential decrease?
-    JZ      short %%AdjLin                                                      ;   No, Go to linear
+    JZ      short %%AdjLin                                                      ;   No, go to linear
         Mov     EAX,[EBX+eVal]                                                  ;Get now envelope height
         Neg     EAX
         SAR     EAX,8
@@ -3964,13 +3966,15 @@ ENDP
 
 ;===================================================================================================
 ;Set Automatic EmuDSP Parameters
+;
+;Destroys:
+;   ECX,EDX
 
 PROC SetEmuDSP, pBufD, numD, rateD
 
     Mov     EAX,[rateD]
     Test    EAX,EAX
     JZ      short .Final
-        Push    ECX,EDX
         XOr     EDX,EDX
         Mov     [outDec],EDX
 
@@ -3979,7 +3983,6 @@ PROC SetEmuDSP, pBufD, numD, rateD
         Mov     ECX,32000
         Div     ECX
         Mov     [outRate],EAX
-        Pop     EDX,ECX
 
         Mov     EAX,[numD]
         Mov     [outLeft],EAX
@@ -4009,15 +4012,6 @@ USES ALL
     Test    EDX,EDX
     JZ      .Done
 
-    Test    EAX,EAX                                                             ;If pBuf is null by called SeekAPU
-    JZ      short .SkipSize                                                     ;   Yes, force emulation
-
-    Test    dword [smpAdj],-1                                                   ;Buffer overflow check
-    JZ      short .SkipSize                                                     ;If half-hearted sampling rate (ex. 44100Hz),
-        Test    dword [smpSize],-1                                              ; it will be write a few over samples due to
-        JZ      .Done                                                           ; calculate errors
-
-    .SkipSize:
     Test    EAX,EAX
     SetZ    BL                                                                  ;BL = 0 if output pointer is null, otherwise it indexes
     Dec     BL                                                                  ; the emulation routine
@@ -4884,16 +4878,7 @@ ENDP
     And     EBX,[smpDen]
     Or      [smpRst],EBX
 
-    Cmp     dword [smpSize],-1                                                  ;Adjustment samples mode?
-    JE      short %%SkipSize                                                    ;   Yes
-
     Add     EBP,EDX
-    Dec     dword [smpSize]                                                     ;Buffer overflow check
-    JNZ     short %%SkipSize                                                    ;If half-hearted sampling rate (ex. 44100Hz),
-        XOr     EBP,EBP                                                         ; it will be write a few over samples due to
-        Inc     EBP                                                             ; calculate errors
-
-    %%SkipSize:                                                                 ;If the sample reference point has moved, DL = 0
 %endmacro
 
 %macro Resampling 0
@@ -5092,29 +5077,21 @@ PROC RunDSP
             JZ      .VoiceDone
 
             Test    [dspPMod],CH                                                ;Is pitch modulation enabled?
-            JZ      short .NoPMod                                               ;   No, Pitch doesn't need to be adjusted
+            JZ      short .NoPMod                                               ;   No, pitch doesn't need to be adjusted
                 PitchMod                                                        ;Apply pitch modulation
             .NoPMod:
 
-%ifdef SPC700_INC
             Test    byte [envFlag],-1                                           ;Do nothing if envelope is suspended
             JNZ     .NoEnv
-%endif
-
-            Cmp     dword [smpSize],-1                                          ;Adjustment samples mode?
-            JE      .NoEnv                                                      ;   Yes
                 UpdateEnv                                                       ;Update envelope
-
             .NoEnv:
+
             MixSample                                                           ;                                   |smp
             MixVoice
 
             .VoiceOff:
             FStP    ST                                                          ;                                   |(empty)
-
-            Cmp     dword [smpSize],-1                                          ;Adjustment samples mode?
-            JE      .VoiceDone                                                  ;   Yes
-                UpdateSrc                                                       ;Update sample position
+            UpdateSrc                                                           ;Update sample position
 
             .VoiceDone:
             Sub     EBX,-80h
