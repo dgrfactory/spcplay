@@ -1,0 +1,101 @@
+name: Build SPCPLAY
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Free Pascal
+        run: choco install lazarus -y --x86
+
+      - name: Add FPC to PATH
+        shell: powershell
+        run: |
+          # Chocolatey installs FPC under a versioned directory such as:
+          # C:\lazarus\fpc\3.2.2\bin\x86_64-win64
+          #
+          # Avoid hardcoding the version number so the workflow
+          # keeps working when the package is updated.
+          $fpcDir = Get-ChildItem "C:\lazarus\fpc" -Directory |
+            Select-Object -First 1
+
+          if (-not $fpcDir) {
+            Write-Error "FPC installation directory was not found."
+            exit 1
+          }
+
+          $fpcBin = Join-Path $fpcDir.FullName "bin\i386-win32"
+
+          if (-not (Test-Path $fpcBin)) {
+            Write-Error "FPC binary directory was not found: $fpcBin"
+            exit 1
+          }
+
+          echo $fpcBin >> $env:GITHUB_PATH
+
+          Write-Host "FPC found at: $fpcBin"
+
+      - name: Show FPC versions
+        shell: cmd
+        run: |
+          fpc -iV
+          windres --version
+
+      - name: Replace build variables
+        shell: powershell
+        run: |
+          $vars = @{
+            'CAP_FILE_VER'    = '0.0.0.0'
+            'CAP_PRODUCT_VER' = '0.0.0'
+            'YEAR'            = (Get-Date).Year.ToString()
+            'DSP_ALIGN'       = '0'
+          }
+
+          Get-ChildItem -Recurse -Include *.dpr,*.rc,*.asm |
+            ForEach-Object {
+              $text = Get-Content $_.FullName -Raw
+
+              foreach ($key in $vars.Keys) {
+                $text = $text.Replace("`$$key", $vars[$key])
+              }
+
+              Set-Content $_.FullName $text
+            }
+
+      - name: Build SPCBPM.DLL
+        shell: cmd
+        working-directory: spcbpm.dll
+        run: |
+          windres.exe -l 0x411 -D "NDEBUG" -i spcbpm.rc -o spcbpm.res
+          fpc.exe -dFREEPASCAL -Pi386 -Twin32 -vewin -ospcbpm.dll spcbpm.dpr
+
+      - name: Build SPCPLAY.EXE
+        shell: cmd
+        working-directory: spcplay.exe
+        run: |
+          windres.exe -l 0x411 -D "NDEBUG" -i spcplay.rc -o spcplay.res
+          fpc.exe -dFREEPASCAL -Pi386 -Twin32 -vewin -ospcplay.exe spcplay.dpr
+
+      - name: Prepare artifact files
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Path artifact
+
+          Copy-Item "spcplay.exe/spcplay.exe" "artifact/"
+          Copy-Item "spcbpm.dll/spcbpm.dll" "artifact/"
+
+          Copy-Item "LICENSE" "artifact/"
+          Copy-Item "README.md" "artifact/"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: spcplay-preview
+          path: artifact
