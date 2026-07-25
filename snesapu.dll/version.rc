@@ -11,8 +11,10 @@ BEGIN
     BEGIN
         BLOCK "041103A4"
         BEGIN
+            VALUE "CompanyName", "dgrfactory.jp\0"
             VALUE "FileDescription", "SNES SPC700 Emulator\0"
             VALUE "FileVersion", "$CAP_FILE_VER\0"
+            VALUE "InternalName", "SNESAPU\0"
             VALUE "LegalCopyright", "Copyright (C) 1999-2008 Alpha-II Productions; (C) 2003-$YEAR degrade-factory.\0"
             VALUE "LegalTrademarks", "SNES is a registered trademark of Nintendo.\0"
             VALUE "OriginalFilename", "snesapu.dll\0"

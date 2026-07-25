@@ -19,10 +19,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 2003-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2025 degrade-factory
+;                                                   Copyright (C) 2003-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2025-05-31
+;   - degrade-factory in 2026-07-23
 ;===================================================================================================
 
 CPU     386
@@ -65,7 +65,7 @@ SECTION .bss ALIGN=256
 SECTION .bss ALIGN=64
 %endif
 
-    apuRAMBuf   resb    APURAMSIZE*2                                            ;SNESAPU 64KB APU RAM buffer
+    apuRAMBuf   resw    APURAMSIZE                                              ;SNESAPU 64KB APU RAM buffer (double size)
                 resd    2                                                       ;   Overflow reference area
                 resd    6                                                       ;Extend function pointer address
     scrRAMBuf   resb    SCR700SIZE                                              ;Script700 RAM buffer
@@ -97,10 +97,10 @@ SECTION .bss ALIGN=64
     scr700stp   resd    1                                                       ;Script700 Stack pointer
 
     scr700jmp   resd    1                                                       ;Script700 Jump address
-    scr700inc   resd    3                                                       ;Script700 Include depth
-    scr700tmp   resd    1                                                       ;Script700 Temporary
     scr700stk   resd    128                                                     ;Script700 Stack area
     scr700pth   resd    256                                                     ;Script700 Include path
+    scr700inc   resd    3                                                       ;Script700 Include depth
+    scr700tmp   resd    1                                                       ;Script700 Temporary
 
     pAPURAM     resd    1                                                       ;Pointer to SNESAPU 64KB RAM
     pSCRRAM     resd    1                                                       ;Pointer to Script700 RAM
@@ -119,7 +119,7 @@ SECTION .bss ALIGN=64
 
     outCur      resd    1                                                       ;Temporary buffer cursor
     outLen      resd    1                                                       ;Temporary buffer used length
-    outBuf      resd    64                                                      ;Temporary buffer
+    outBuf      resq    192                                                     ;Temporary buffer (max 192 samples * 2ch * 32bit)
 
     apuCbMask   resd    1                                                       ;SNESAPU callback mask
     apuCbFunc   resd    1                                                       ;SNESAPU callback function
@@ -305,7 +305,7 @@ ENDP
 ;Get Script700 Data Pointers
 
 PROC GetScript700Data, pDLLVer, ppSPCReg, ppScript700
-USES EBX
+USES EBX,ECX
 
     Mov     EBX,[pDLLVer]
     Test    EBX,EBX
@@ -340,8 +340,17 @@ USES EBX
     Mov     EBX,[ppScript700]
     Test    EBX,EBX
     JZ      short .ppScript700Next
+        Mov     ECX,[EBX]
+        Cmp     ECX,4
+        JL      short .ppScript700Next
+
         Mov     EAX,scr700wrk
-        Mov     [EBX],EAX
+        Mov     [EBX+4],EAX
+        Cmp     ECX,8
+        JL      short .ppScript700Next
+
+        Mov     EAX,scr700dsp
+        Mov     [EBX+8],EAX
     .ppScript700Next:
 
 ENDP
@@ -624,8 +633,6 @@ USES ECX,EDX,EBX,EDI
     AdC     EDX,0
     Div     ECX
     Mov     [smpDec],EDX
-    Inc     EAX                                                                 ;Adjusting for sample size error
-    And     EAX,~1
 
     Call    SetEmuDSP,EDI,EAX,[smpREmu]
     Pop     EAX
@@ -667,8 +674,8 @@ ENDP
 ;   EDI-> Buffer to store output
 ;
 ;Out:
-;   EAX-> End of buffer
 ;   EBX = Number of samples not output
+;   EDI-> End of buffer
 ;
 ;Destroys:
 ;   ECX,EDX
@@ -731,8 +738,8 @@ USES ESI
     Mul     ECX
     Mov     ECX,[rawRate]
     Div     ECX
-    Call    EmuAPU,EDI,EAX,0
 
+    Call    EmuAPU,EDI,EAX,0
     Mov     EDX,EAX
     Sub     EAX,EDI                                                             ;EAX = Emulated buffer size (bytes)
     Mov     EDI,EDX                                                             ;EDI = End of buffer
@@ -754,10 +761,10 @@ USES ESI
     Div     ECX
 
     Mov     ESI,outBuf
-    Mov     ECX,EAX                                                             ;ECX = clock cycles (min. 0x1000 = 16 samples at 96000Hz)
-    Cmp     ECX,1000h                                                           ;Note: If clock cycles is less than 0x1000 and playback
+    Mov     ECX,EAX                                                             ;ECX = clock cycles (min. 24576 = 192 samples at 192000Hz)
+    Cmp     ECX,24576                                                           ;Note: If clock cycles is less than 24576 and playback
     JAE     short .EmuLoop                                                      ; speed is below 25%, will crash or noisy.
-        Mov     ECX,1000h
+        Mov     ECX,24576
 
     .EmuLoop:
     Call    EmuAPU,ESI,ECX,0
