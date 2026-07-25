@@ -14,8 +14,10 @@ BEGIN
     BEGIN
         BLOCK "041103A4"
         BEGIN
+            VALUE "CompanyName", "dgrfactory.jp\0"
             VALUE "FileDescription", "SNES SPC700 Player\0"
             VALUE "FileVersion", "$CAP_FILE_VER\0"
+            VALUE "InternalName", "SPCPLAY\0"
             VALUE "LegalCopyright", "Copyright (C) 2003-$YEAR degrade-factory.\0"
             VALUE "LegalTrademarks", "SNES is a registered trademark of Nintendo.\0"
             VALUE "OriginalFilename", "spcplay.exe\0"
@@ -28,3 +30,5 @@ BEGIN
         VALUE "Translation", 0x0411, 0x03A4
     END
 END
+
+1 24 "manifest.xml"
