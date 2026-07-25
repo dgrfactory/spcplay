@@ -11,8 +11,10 @@ BEGIN
     BEGIN
         BLOCK "041103A4"
         BEGIN
+            VALUE "CompanyName", "dgrfactory.jp\0"
             VALUE "FileDescription", "BPM Analyzer for SNESAPU\0"
             VALUE "FileVersion", "$CAP_FILE_VER\0"
+            VALUE "InternalName", "SPCBPM\0"
             VALUE "LegalCopyright", "Copyright (C) 2023-$YEAR degrade-factory.\0"
             VALUE "LegalTrademarks", "SNES is a registered trademark of Nintendo.\0"
             VALUE "OriginalFilename", "spc_bpm.dll\0"
