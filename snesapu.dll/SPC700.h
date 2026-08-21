@@ -77,8 +77,8 @@
 //
 //Writes to the DSP envelope will have no update.
 //
-//When debugging a program of SPC700 which influences a DSP, it's necessary to stop both of SPC700
-// and DSP.  Therefore it's appropriate to use this flag with SPC_HALT.
+//When debugging a program of SPC700 which influences a DSP, it is necessary to stop both of SPC700
+// and DSP.  Therefore it is appropriate to use this flag with SPC_HALT.
 
 #define DSP_PAUSE   0x20
 

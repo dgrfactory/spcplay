@@ -139,7 +139,7 @@ PUBLIC SNESAPUInfo, pVer:ptr, pMin:ptr, pOpt:ptr
 ;   cbMask   = SNESAPU callback mask
 ;
 ;Out:
-;   EAX -> before SNESAPU callback function
+;   PAX -> before SNESAPU callback function
 
 PUBLIC SNESAPUCallback, pCbFunc:ptr, cbMask:dword
 
@@ -197,7 +197,7 @@ PUBLIC FixAPU, pc:word, a:byte, y:byte, x:byte, psw:byte, s:byte
 ;Load SPC File
 ;
 ;Restores the APU state from an SPC file.  This eliminates the need to call ResetAPU, copy memory,
-;and call FixAPU.
+; and call FixAPU.
 ;
 ;In:
 ;   pFile -> 66048 byte SPC file
@@ -229,7 +229,7 @@ PUBLIC SetAPUOpt, mixType:dword, numChn:dword, bits:dword, rate:dword, inter:dwo
 ;Set Audio Processor Sample Clock
 ;
 ;Calculates the ratio of emulated clock cycles to sample output.  Used to speed up or slow down a
-;song without affecting the pitch.
+; song without affecting the pitch.
 ;
 ;In:
 ;   speed = Multiplier [16.16] (1/64x to 16x)
@@ -260,7 +260,7 @@ PUBLIC SetAPULength, song:dword, fade:dword
 ;Emulate Audio Processing Unit
 ;
 ;Emulates the APU for a specified amount of time.  DSP output is placed in a buffer to be handled
-;by the main program.
+; by the main program.
 ;
 ;In:
 ;   pBuf -> Buffer to store output samples
@@ -269,7 +269,7 @@ PUBLIC SetAPULength, song:dword, fade:dword
 ;           0 - len is the number of APU clock cycles to emulate (APU_CLK = 1 second)
 ;           1 - len is the number of samples to generate
 ;Out:
-;   EAX -> End of buffer
+;   PAX -> End of buffer
 
 PUBLIC EmuAPU, pBuf:ptr, len:dword, type:byte
 

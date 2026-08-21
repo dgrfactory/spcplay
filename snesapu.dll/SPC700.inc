@@ -48,7 +48,7 @@ FCH_HALT    EQU 01h
 FCH_NOP     EQU 02h
 FCH_PAUSE   EQU 03h
 
-%ifdef SHVC_SOUND_SUPPORT
+%ifdef SHVC
 ;Extend function pointer address ------------
 EXT_WRPORT  EQU 10014h                                          ;Callback function to write port
 EXT_RDPORT  EQU 10018h                                          ;Callback function to read port
@@ -102,7 +102,7 @@ PUBLIC ResetSPC, NULL
 ;Debug SPC700
 ;
 ;Installs a vector that gets called between each opcode for debugging purposes.  The function is
-;called with the C calling convention.
+; called with the C calling convention.
 ;
 ;Upon entrance to the function:
 ;   [ESP+4] -> Current opcode (low word = PC)
@@ -127,13 +127,14 @@ PUBLIC ResetSPC, NULL
 ;   Previously installed vector
 
 PUBLIC SetSPCDbg, pTrace:ptr, opts:dword
+PUBLIC SetSPCDbgI, pTraceI:ptr, optsI:dword                     ;for internal call
 
 
 ;===================================================================================================
 ;Fix SPC700 After Load
 ;
 ;Loads timer steps with the values in the timer registers, resets the counters, sets up the in/out
-;ports, and stores the registers.
+; ports, and stores the registers.
 ;
 ;In:
 ;   SPC internal registers
@@ -162,7 +163,7 @@ PUBLIC GetSPCRegs, pPC:ptr, pA:ptr, pY:ptr, pX:ptr, pPSW:ptr, pSP:ptr
 ;Write to APU RAM
 ;
 ;Writes a value to APU RAM.  Use this instead of writing to RAM directly so any necessary internal
-;changes can be made.
+; changes can be made.
 ;
 ;In:
 ;   addr = Address to write to (only the lower 16-bits are used)
@@ -193,7 +194,7 @@ PUBLIC InPort, addr:byte, val:byte
 ;Emulate SPC700
 ;
 ;Emulates the SPC700 for the number of clock cycles specified, or if the counter break option is
-;enabled, until a counter is increased, whichever happens first.
+; enabled, until a counter is increased, whichever happens first.
 ;
 ;In:
 ;   cyc = Number of 24.576MHz clock cycles to execute (signed, must be > 0)

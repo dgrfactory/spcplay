@@ -19,21 +19,25 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 1999-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2025 degrade-factory
+;                                                   Copyright (C) 2003-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2025-05-31
+;   - degrade-factory in 2026-08-21
 ;   - Zenith in 2024-06-19
 ;===================================================================================================
 
-CPU     386
-BITS    32
+%ifdef WIN64
+    CPU     X64
+    BITS    64
+%else
+    CPU     386
+    BITS    32
+%endif
 
 ;===================================================================================================
 ;Header files
 
 %include "macro.inc"
-%include "SNESAPU.inc"
 %include "SPC700.inc"
 %include "APU.inc"
 %define INTERNAL
@@ -95,7 +99,7 @@ BITS    32
 ;===================================================================================================
 ;Data
 
-%ifndef WIN32
+%ifndef WINDOWS
 SECTION .data ALIGN=256
 %else
 SECTION .data ALIGN=32
@@ -168,28 +172,28 @@ SECTION .data ALIGN=32
                 DW      0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0 ;e3
 
                 ;Jump table for DSP register writes (see DSPIn)
-    dspRegs     DD  RVolL,  RVolR,  RPitch, RPitch, RNull,  RADSR,  RADSR,  RGain
-                DD  RNull,  RNull,  RNull,  RNull,  RMVolL, REFB,   RNull,  RFCf
-                DD  RVolL,  RVolR,  RPitch, RPitch, RNull,  RADSR,  RADSR,  RGain
-                DD  RNull,  RNull,  RNull,  RNull,  RMVolR, RNull,  RNull,  RFCf
-                DD  RVolL,  RVolR,  RPitch, RPitch, RNull,  RADSR,  RADSR,  RGain
-                DD  RNull,  RNull,  RNull,  RNull,  REVolL, RPMOn,  RNull,  RFCf
-                DD  RVolL,  RVolR,  RPitch, RPitch, RNull,  RADSR,  RADSR,  RGain
-                DD  RNull,  RNull,  RNull,  RNull,  REVolR, RNull,  RNull,  RFCf
-                DD  RVolL,  RVolR,  RPitch, RPitch, RNull,  RADSR,  RADSR,  RGain
-                DD  RNull,  RNull,  RNull,  RNull,  RKOn,   RNull,  RNull,  RFCf
-                DD  RVolL,  RVolR,  RPitch, RPitch, RNull,  RADSR,  RADSR,  RGain
-                DD  RNull,  RNull,  RNull,  RNull,  RKOff,  RNull,  RNull,  RFCf
-                DD  RVolL,  RVolR,  RPitch, RPitch, RNull,  RADSR,  RADSR,  RGain
-                DD  RNull,  RNull,  RNull,  RNull,  RFlg,   REDl,   RNull,  RFCf
-                DD  RVolL,  RVolR,  RPitch, RPitch, RNull,  RADSR,  RADSR,  RGain
-                DD  RNull,  RNull,  RNull,  RNull,  RNull,  REDl,   RNull,  RFCf
+    dspRegs     PTRTAB  RVolL,  RVolR,  RPitch, RPitch, RNull,  RADSR,  RADSR,  RGain
+                PTRTAB  RNull,  RNull,  RNull,  RNull,  RMVolL, REFB,   RNull,  RFCf
+                PTRTAB  RVolL,  RVolR,  RPitch, RPitch, RNull,  RADSR,  RADSR,  RGain
+                PTRTAB  RNull,  RNull,  RNull,  RNull,  RMVolR, RNull,  RNull,  RFCf
+                PTRTAB  RVolL,  RVolR,  RPitch, RPitch, RNull,  RADSR,  RADSR,  RGain
+                PTRTAB  RNull,  RNull,  RNull,  RNull,  REVolL, RPMOn,  RNull,  RFCf
+                PTRTAB  RVolL,  RVolR,  RPitch, RPitch, RNull,  RADSR,  RADSR,  RGain
+                PTRTAB  RNull,  RNull,  RNull,  RNull,  REVolR, RNull,  RNull,  RFCf
+                PTRTAB  RVolL,  RVolR,  RPitch, RPitch, RNull,  RADSR,  RADSR,  RGain
+                PTRTAB  RNull,  RNull,  RNull,  RNull,  RKOn,   RNull,  RNull,  RFCf
+                PTRTAB  RVolL,  RVolR,  RPitch, RPitch, RNull,  RADSR,  RADSR,  RGain
+                PTRTAB  RNull,  RNull,  RNull,  RNull,  RKOff,  RNull,  RNull,  RFCf
+                PTRTAB  RVolL,  RVolR,  RPitch, RPitch, RNull,  RADSR,  RADSR,  RGain
+                PTRTAB  RNull,  RNull,  RNull,  RNull,  RFlg,   REDl,   RNull,  RFCf
+                PTRTAB  RVolL,  RVolR,  RPitch, RPitch, RNull,  RADSR,  RADSR,  RGain
+                PTRTAB  RNull,  RNull,  RNull,  RNull,  RNull,  REDl,   RNull,  RFCf
 
                 ;Pointers to interpolation functions for each mixing routine
-    intRout     DD  NoneInt,    LinearInt,  Point4Int,  Point4Int,  Point8Int,  Point4Int,  Point4Int,  Point4Int
+    intRout     PTRTAB  NoneInt,    LinearInt,  Point4Int,  Point4Int,  Point8Int,  Point4Int,  Point4Int,  Point4Int
 
                 ;Pointers to interpolation table for each interpolation type
-    tabRout     DD  0,          0,          cubicTab,   gaussTab,   sincTab,    gauss4Tab,  gauss4Tab,  gauss4Tab
+    tabRout     PTRTAB  0,          0,          cubicTab,   gaussTab,   sincTab,    gauss4Tab,  gauss4Tab,  gauss4Tab
 
     ;Frequency table -------------------------
     freqTab     DD     0
@@ -244,16 +248,16 @@ SECTION .data ALIGN=32
 ;===================================================================================================
 ;Variables
 
-%ifndef WIN32
+%ifndef WINDOWS
 SECTION .bss ALIGN=256
 %else
 SECTION .bss ALIGN=64
 
-;The BSS must be aligned on at least a 256-byte boundary.  (If it's not, you'll know as soon as you
-; play a song.)  This is tricky in Windows because the win32 object files can only specify 64-byte
-; alignment.  Try padding with multiples of 64 until it works.
+;This BSS must be aligned on at least a 256-byte boundary, if it is not, you will know as soon as
+; you play a song.  Since neither the WIN32 or WIN64 build allows a maximum value greater than 64,
+; the value is forcibly padded with zeros until it aligns with the 256-byte boundary.
 
-    resb    DSP_ALIGN                                                           ;Force page alignment
+    ALIGN  256, DB  0                                                           ;Force page alignment
 
 %endif
 
@@ -273,12 +277,12 @@ SECTION .bss ALIGN=64
     interTab    resq    512                                                     ;Interpolation Table
 
     ;Globals -------------------------- [4500]
-    pTrace      resd    1                                                       ;-> Debugging vector
-    pOutBuf     resd    1                                                       ;-> output buffer
+    pTrace      resPTR  1                                                       ;-> Debugging vector
+    pOutBuf     resPTR  1                                                       ;-> output buffer
     outLeft     resd    1                                                       ;Number of samples left to fill output buffer
     outCnt      resd    1                                                       ;t64 count at last call to EmuDSP
     outDec      resd    1                                                       ;Fractional number of samples to be generated
-                resd    3
+                resd    3-(PTRSIZE/4-1)*2
 
     ;DSP Options ---------------------- [4520]
     dspMix      resb    1                                                       ;Mixing routine
@@ -290,15 +294,16 @@ SECTION .bss ALIGN=64
     dspOpts     resd    1                                                       ;Option flags passed to SetDSPOpt
     pitchBas    resd    1                                                       ;Base sample rate
     pitchAdj    resd    1                                                       ;Amount to adjust pitch rates [16.16]
-    pInter      resd    1                                                       ;-> interpolation function
-    pDecomp     resd    1                                                       ;-> sample decompression routine
+    pInter      resPTR  1                                                       ;-> interpolation function
+    pDecomp     resPTR  1                                                       ;-> sample decompression routine
+                resd    4-(PTRSIZE/4-1)*2
 
     dspInter    resb    1                                                       ;Interpolation method
     voiceMix    resb    1                                                       ;Voices that are currently being mixed
     surround    resb    1                                                       ;Turn on surround sound  (OFF:0x00 / ON:0xFF)
     surroff     resb    1                                                       ;Turn off surround sound (OFF:0x00 / ON:0x80)
 
-    ;Volume --------------------------- [4540]
+    ;Volume --------------------------- [4550]
     volSepar    resd    1                                                       ;Stereo separation
     volRamp1    resd    1                                                       ;Amount to ramp volume per sample
     volRamp2    resd    1                                                       ;Amount to ramp volume per sample
@@ -316,7 +321,7 @@ SECTION .bss ALIGN=64
     vMMaxL      resd    1                                                       ;Maximum absolute sample output
     vMMaxR      resd    1
 
-    ;Noise ---------------------------- [4580]
+    ;Noise ---------------------------- [4590]
     nRate       resd    1                                                       ;Noise sample rate reciprocal [.32]
     nfRate      resd    1
     nAcc        resd    1                                                       ;Noise accumulator [.32] (>= 1 generate a new sample)
@@ -326,13 +331,13 @@ SECTION .bss ALIGN=64
     nSeed       resd    1                                                       ;Noise random seed
                 resd    1
 
-    ;Echo filtering ------------------- [45A0]
+    ;Echo filtering ------------------- [45B0]
     firCur      resd    1                                                       ;Index of the first sample to feed into the filter
     firRate     resd    1                                                       ;Rate to feed samples into filter
                 resd    2
     firTaps     resd    8                                                       ;Filter coefficents
 
-    ;Echo ----------------------------- [45D0]
+    ;Echo ----------------------------- [45E0]
     echoLenD    resd    1                                                       ;Size of delay in echo area (in bytes)
     echoMaxD    resd    1                                                       ;Maximum position in echo area (in bytes)
     echoCurD    resd    1                                                       ;Writing position counter (in bytes)
@@ -347,7 +352,7 @@ SECTION .bss ALIGN=64
     echoFBCT    resd    1                                                       ;Echo feedback crosstalk
                 resd    1
 
-    ;Single source playback ----------- [4600]
+    ;Single source playback ----------- [4610]
     tBRR        resb    8                                                       ;Temporary buffer for storing BRR block
                 resw    4                                                       ;Temporary buffer for single sound playback
     tBuf        resw    16
@@ -360,7 +365,7 @@ SECTION .bss ALIGN=64
     tP2         resd    1
                 resd    1
 
-    ;Emulation work ------------------- [4650]
+    ;Emulation work ------------------- [4660]
     songLen     resd    1                                                       ;Length of song (in ticks)
     fadeLen     resd    1                                                       ;Length of fade (in ticks)
     outRate     resd    1                                                       ;Out sampling rate
@@ -380,7 +385,7 @@ SECTION .bss ALIGN=64
                 resb    3
                 resd    4
 
-    ;BASS BOOST ----------------------- [4680]
+    ;BASS BOOST ----------------------- [4690]
     lowRstL1    resd    1                                                       ;BASS-BOOST reset counter (Left)
     lowRstL2    resd    1
     lowRstR1    resd    1                                                       ;BASS-BOOST reset counter (Right)
@@ -397,7 +402,7 @@ SECTION .bss ALIGN=64
     lowLv2      resd    1
                 resd    2
 
-    ;Anti-Alies filter ---------------- [46C0]
+    ;Anti-Alies filter ---------------- [46D0]
     aaf1A1      resd    1                                                       ;Anti-Alies 1st filter coefficients
     aaf1B0      resd    1
     aaf1B1      resd    1
@@ -407,7 +412,7 @@ SECTION .bss ALIGN=64
     aafBufL     resd    3                                                       ;Anti-Alies filter buffer (Left)
     aafBufR     resd    3                                                       ;Anti-Alies filter buffer (Right)
 
-    ;ADSR/Gain ------------------------ [46F0]
+    ;ADSR/Gain ------------------------ [4700]
     adsrAdj     resd    1                                                       ;Update envelope rate adjustment (16.16)
     adsrClk     resw    1                                                       ;Update envelope rate clock
     adsrCnt     resw    1                                                       ;Number of times to update envelope
@@ -415,7 +420,7 @@ SECTION .bss ALIGN=64
                 resb    3
                 resd    1
 
-    ;Sampling rate converter ---------- [4700]
+    ;Sampling rate converter ---------- [4710]
     smpBuf      resd    8                                                       ;Sample history buffer
     smpRate     resd    1                                                       ;Sample rate (max 192kHz)
     smpAdj      resd    1                                                       ;Sample rate adjustment
@@ -426,7 +431,7 @@ SECTION .bss ALIGN=64
     smpRst      resd    1                                                       ;Ratio adjustment reset counter
                 resd    1
 
-    ;Storage buffers ------------------ [4740]
+    ;Storage buffers ------------------ [4750]
     mixBuf      resd    MIX_SIZE*4                                              ;Temporary mixing buffer (linear buffer)
     echoBuf     resd    ECHOBUF                                                 ;External echo memory, 240ms @ 192kHz (ring buffer)
     firBuf      resd    FIRBUF                                                  ;Unaltered echo samples fed into FIR filter (ring buffer)
@@ -442,7 +447,7 @@ SECTION .bss ALIGN=64
 ;===================================================================================================
 ;Code
 
-%ifndef WIN32
+%ifndef WINDOWS
 SECTION .text ALIGN=256
 %else
 SECTION .text ALIGN=16
@@ -469,10 +474,16 @@ SECTION .text ALIGN=16
 
 PROC Exp
 
-    FStCW   [ESP-4]                                                             ;Save control state
-    FStCW   [ESP-8]                                                             ;Set FPU to truncate when rounding
-    Or      byte [ESP-7],1100b
-    FLdCW   [ESP-8]
+    ;NOTE (amd64 port): this used to write scratch FPU control words to [PSP-4]/[PSP-8], i.e. below the
+    ; stack pointer without reserving that space. x86's stdcall/cdecl ABI has no formal guarantee about
+    ; that memory either, and Win64 in particular defines no red zone at all (unlike SysV) -- so this
+    ; is reserved for real with Sub/Add PSP instead of assumed safe.
+
+    Sub     PSP,8
+    FStCW   [PSP+4]                                                             ;Save control state
+    FStCW   [PSP+0]                                                             ;Set FPU to truncate when rounding
+    Or      byte [PSP+1],1100b
+    FLdCW   [PSP+0]
 
     FLdL2e                                                                      ;                                   |x Log2(e)
     FMulP   ST1,ST                                                              ;                                   |x*Log2(e)
@@ -494,7 +505,8 @@ PROC Exp
 
     FMulP   ST1,ST                                                              ;                                   |f*i
 
-    FLdCW   [ESP-4]                                                             ;Restore control state
+    FLdCW   [PSP+4]                                                             ;Restore control state
+    Add     PSP,8
 
 ENDP
 
@@ -529,13 +541,13 @@ USES ECX,EDX,EBX,ESI,EDI
     ShL     EAX,E_SHIFT
     Mov     [envVal],EAX
 
-    Mov     EDI,mix                                                             ;Erase all mixer settings
+    LoadPtr PDI,mix                                                             ;Erase all mixer settings
     XOr     EAX,EAX
     Mov     ECX,256
     Rep     StoSD
 
     ;Build a look-up table for all possible expanded values in a BRR block.
-    Mov     EDI,brrTab
+    LoadPtr PDI,brrTab
     XOr     EBX,EBX                                                             ;EBX = Nybble to shift right by range
     Mov     CL,28                                                               ;ECX = Max range (+16 for 32-bit numbers)
 
@@ -544,17 +556,17 @@ USES ECX,EDX,EBX,ESI,EDI
             Mov     EAX,EBX                                                     ;EAX = Nybble >> Range
             SAR     EAX,CL
             And     EAX,~1                                                      ;All numbers used by DSP are even
-            Mov     [EDI],EAX
-            Add     EDI,4
+            Mov     [PDI],EAX
+            Add     PDI,4
 
         Add     EBX,10000000h                                                   ;Add 1 to uppermost nybble
-        JNZ     short .Nybble
+        JNZ     .Nybble
 
-        Add     EDI,0C0h
+        Add     PDI,0C0h
 
     Dec     CL
     Cmp     CL,15
-    JA      short .Range
+    JA      .Range
 
     Mov     BL,3
     XOr     ECX,ECX
@@ -568,10 +580,10 @@ USES ECX,EDX,EBX,ESI,EDI
         Mov     CL,8
         Rep     StoSD
 
-        Add     EDI,0C0h
+        Add     PDI,0C0h
 
     Dec     BL
-    JNZ     short .Invalid
+    JNZ     .Invalid
 
     ;Build a look-up table to calculate a cubic spline with only four integer multiplies.
     ;The table is built from the following equation, simplified for s:
@@ -599,7 +611,7 @@ USES ECX,EDX,EBX,ESI,EDI
     FInit                                                                       ;Reset FPU, otherwise there'll be problems
     Mov     dword [ipD],0                                                       ;Start with a delta of 0 (calculate 256 points)
 
-    Mov     EDI,cubicTab                                                        ;EDI->Cubic array                   |FPU Stack after execution
+    LoadPtr PDI,cubicTab                                                        ;PDI -> Cubic array                 |FPU Stack after execution
     .NextC:
         ;x1=(n/256)  x2=(n/256)^2  x3=(n/256)^3
         FILd    dword [ipD]                                                     ;Load (int) delta                   |D
@@ -617,7 +629,7 @@ USES ECX,EDX,EBX,ESI,EDI
         FMul    ST,ST2                                                          ;                                   |X1 X2 X3 T1 -0.5*X3=T2
         FAddP   ST1,ST                                                          ;                                   |X1 X2 X3 T1+T2
         FMul    dword [fp32km1]                                                 ;Convert to fixed point (-.15)      |X1 X2 X3 (T1+T2)*32767
-        FIStP   word [EDI]                                                      ;Store value in cubicTab            |X1 X2 X3
+        FIStP   word [PDI]                                                      ;Store value in cubicTab            |X1 X2 X3
 
         ;s[0] *= 1.5(x^3) - 2.5(x^2) + 1 ------
         FLd     dword [fn2_5]                                                   ;                                   |X1 X2 X3 -2.5
@@ -628,7 +640,7 @@ USES ECX,EDX,EBX,ESI,EDI
         FAddP   ST1,ST                                                          ;                                   |X1 X2 X3 T1 T2+1
         FAddP   ST1,ST                                                          ;                                   |X1 X2 X3 T1+T2
         FMul    dword [fp32km1]                                                 ;                                   |X1 X2 X3 (T1+T2)*32767
-        FIStP   word [2+EDI]                                                    ;                                   |X1 X2 X3
+        FIStP   word [PDI+2]                                                    ;                                   |X1 X2 X3
 
         ;s[1] *= -1.5(x^3) + 2(x^2) + .5x -----
         FLd     dword [fp0_5]                                                   ;                                   |X1 X2 X3 0.5
@@ -640,7 +652,7 @@ USES ECX,EDX,EBX,ESI,EDI
         FAddP   ST1,ST                                                          ;                                   |X1 X2 X3 T1 T2+T3
         FAddP   ST1,ST                                                          ;                                   |X1 X2 X3 T1+T2
         FMul    dword [fp32km1]                                                 ;                                   |X1 X2 X3 (T1+T2)*32767
-        FIStP   word [4+EDI]                                                    ;                                   |X1 X2 X3
+        FIStP   word [PDI+4]                                                    ;                                   |X1 X2 X3
 
         ;s[2] *= .5(x^3) - .5(x^2) ------------
         FLd     dword [fn0_5]                                                   ;                                   |X1 X2 X3 -0.5
@@ -649,8 +661,8 @@ USES ECX,EDX,EBX,ESI,EDI
         FMul    ST,ST2                                                          ;                                   |X1 X2 X3 T1 0.5*X3=T2
         FAddP   ST1,ST                                                          ;                                   |X1 X2 X3 T1+T2
         FMul    dword [fp32km1]                                                 ;                                   |X1 X2 X3 (T1+T2)*32767
-        FIStP   word [6+EDI]                                                    ;                                   |X1 X2 X3
-        Add     EDI,8
+        FIStP   word [PDI+6]                                                    ;                                   |X1 X2 X3
+        Add     PDI,8
 
         FStP    ST                                                              ;Pop X's off stack                  |X1 X2
         FStP    ST                                                              ;                                   |X1
@@ -660,28 +672,28 @@ USES ECX,EDX,EBX,ESI,EDI
     JNZ     .NextC
 
     ;Interleave Gaussian table ---------------
-    Mov     ESI,gaussTab
-    Mov     EDI,mixBuf
+    LoadPtr PSI,gaussTab
+    LoadPtr PDI,mixBuf
     Mov     ECX,512
     Rep     MovSD
-    Mov     ESI,mixBuf
-    Mov     EDI,gaussTab
+    LoadPtr PSI,mixBuf
+    LoadPtr PDI,gaussTab
 
     XOr     CL,CL
     .NextG:
-        Mov     AX,[ESI]
-        Mov     [6+EDI],AX
-        Mov     AX,[512+ESI]
-        Mov     [4+EDI],AX
-        Mov     AX,[1024+ESI]
-        Mov     [2+EDI],AX
-        Mov     AX,[1536+ESI]
-        Mov     [0+EDI],AX
-        Add     EDI,8
-        Add     ESI,2
+        Mov     AX,[PSI]
+        Mov     [PDI+6],AX
+        Mov     AX,[PSI+512]
+        Mov     [PDI+4],AX
+        Mov     AX,[PSI+1024]
+        Mov     [PDI+2],AX
+        Mov     AX,[PSI+1536]
+        Mov     [PDI+0],AX
+        Add     PDI,8
+        Add     PSI,2
 
     Dec     CL
-    JNZ     short .NextG
+    JNZ     .NextG
 
     ;Build a look-up table for 8-point sinc interpolation with a Hanning window.
     ;
@@ -693,14 +705,14 @@ USES ECX,EDX,EBX,ESI,EDI
     ;If ipD were initialized to -768 (-3.0), a divide by zero error would occur when building the table.
     ;So we manually initialize the first row, which is easy to do.
 
-    Mov     EDI,sincTab
+    LoadPtr PDI,sincTab
     XOr     EAX,EAX
-    Mov     [EDI],EAX
-    Mov     [4+EDI],EAX
-    Mov     [8+EDI],EAX
-    Mov     [12+EDI],EAX
-    Mov     word [6+EDI],32767                                                  ;Set first row to 0 0 0 1 0 0 0 0
-    Add     EDI,16
+    Mov     [PDI],EAX
+    Mov     [PDI+4],EAX
+    Mov     [PDI+8],EAX
+    Mov     [PDI+12],EAX
+    Mov     word [PDI+6],32767                                                  ;Set first row to 0 0 0 1 0 0 0 0
+    Add     PDI,16
     Mov     dword [ipD],-769                                                    ;Fill remaining rows -769 to -1023 (-3.004 to -3.996)
 
     Mov     CH,255
@@ -727,8 +739,8 @@ USES ECX,EDX,EBX,ESI,EDI
 
             FMulP   ST1,ST                                                      ;Multiply by window                 |sinc*window
             FMul    dword [fp32k]                                               ;Convert to integer                 |sinc<<15
-            FIStP   word [EDI]                                                  ;Store                              |(empty)
-            Add     EDI,2
+            FIStP   word [PDI]                                                  ;Store                              |(empty)
+            Add     PDI,2
 
         Add     dword [ipD],256                                                 ;Move to next point of interpolation (x += 256)
         Dec     CL
@@ -747,7 +759,7 @@ USES ECX,EDX,EBX,ESI,EDI
     ;            4
 
     Mov     dword [ipD],-512
-    Mov     EDI,gauss4Tab                                                       ;EDI->Gauss array                   |FPU Stack after execution
+    LoadPtr PDI,gauss4Tab                                                       ;PDI -> Gauss array                 |FPU Stack after execution
     FLd     dword [fpA]                                                         ;(sqrt(2 * pi) * 32768) / 4         |A = 20534.29882577715611578994921317
     FLd     dword [fp512]                                                       ;                                   |A 512
     FLdPi                                                                       ;                                   |A 512 3.14
@@ -764,7 +776,7 @@ USES ECX,EDX,EBX,ESI,EDI
         FChS                                                                    ;                                   |A pi 256 x -p
         Call    Exp                                                             ;                                   |A pi 256 x e^p
         FMul    ST,ST4                                                          ;                                   |A pi 256 x e*A
-        FIStP   word [6+EDI]                                                    ;                                   |A pi 256 x
+        FIStP   word [PDI+6]                                                    ;                                   |A pi 256 x
 
         FAdd    ST,ST1                                                          ;                                   |A pi 256 x+256
         FLd     ST                                                              ;                                   |A pi 256 x x
@@ -774,7 +786,7 @@ USES ECX,EDX,EBX,ESI,EDI
         FChS                                                                    ;                                   |A pi 256 x -p
         Call    Exp                                                             ;                                   |A pi 256 x e^p
         FMul    ST,ST4                                                          ;                                   |A pi 256 x e*A
-        FIStP   word [4+EDI]                                                    ;                                   |A pi 256 x
+        FIStP   word [PDI+4]                                                    ;                                   |A pi 256 x
 
         FAdd    ST,ST1                                                          ;                                   |A pi 256 x+256
         FLd     ST                                                              ;                                   |A pi 256 x x
@@ -784,7 +796,7 @@ USES ECX,EDX,EBX,ESI,EDI
         FChS                                                                    ;                                   |A pi 256 x -p
         Call    Exp                                                             ;                                   |A pi 256 x e^p
         FMul    ST,ST4                                                          ;                                   |A pi 256 x e*A
-        FIStP   word [2+EDI]                                                    ;                                   |A pi 256 x
+        FIStP   word [PDI+2]                                                    ;                                   |A pi 256 x
 
         FAdd    ST,ST1                                                          ;                                   |A pi 256 x+256
         FDiv    ST,ST2                                                          ;                                   |A pi 256 x/pi
@@ -793,9 +805,9 @@ USES ECX,EDX,EBX,ESI,EDI
         FChS                                                                    ;                                   |A pi 256 -p
         Call    Exp                                                             ;                                   |A pi 256 e^p
         FMul    ST,ST3                                                          ;                                   |A pi 256 e*A
-        FIStP   word [EDI]                                                      ;                                   |A pi 256
+        FIStP   word [PDI]                                                      ;                                   |A pi 256
 
-        Add     EDI,8
+        Add     PDI,8
 
     Inc     byte [ipD]
     JNZ     .NextG4
@@ -805,7 +817,7 @@ USES ECX,EDX,EBX,ESI,EDI
     FStP    ST                                                                  ;                                   |(empty)
 
     Call    SetDSPOpt,1,2,16,32000,INT_GAUSS,0
-    Call    SetDSPDbg,0
+    Call    SetDSPDbgI,0
 
 ENDP
 
@@ -817,11 +829,11 @@ PROC ResetEcho
 
     XOr     EAX,EAX
 
-    Mov     EDI,echoBuf
+    LoadPtr PDI,echoBuf
     Mov     ECX,ECHOBUF
     Rep     StoSD
 
-    Mov     EDI,firBuf
+    LoadPtr PDI,firBuf
     Mov     ECX,FIRBUF
     Add     ECX,FIRBUF/2
     Rep     StoSD
@@ -836,10 +848,10 @@ PROC ResetLow
 
     XOr     EAX,EAX
 
-    Mov     EDI,lowBufL1
+    LoadPtr PDI,lowBufL1
     Mov     ECX,LOWLEN1
     Rep     StoSD
-    Mov     EDI,lowRstL1
+    LoadPtr PDI,lowRstL1
     Mov     ECX,LOWLEN2
     Rep     StoSD
     Inc     dword [lowRstL1]
@@ -847,7 +859,7 @@ PROC ResetLow
     Inc     dword [lowRstR1]
     Inc     dword [lowRstR2]
 
-    Mov     EDI,aafBufL
+    LoadPtr PDI,aafBufL
     Mov     ECX,6
     Rep     StoSD
 
@@ -866,7 +878,7 @@ PROC ResetResamp
     Mov     [smpCur],EAX
     Mov     [smpCnt],EAX
 
-    Mov     EDI,smpBuf
+    LoadPtr PDI,smpBuf
     Mov     ECX,8
     Rep     StoSD
 
@@ -899,26 +911,26 @@ USES ECX,EBX,EDI
     XOr     EAX,EAX
 
     ;Erase DSP Registers ---------------------
-    Mov     EDI,dsp
+    LoadPtr PDI,dsp
     Mov     ECX,32
     Rep     StoSD
     Mov     byte [dsp+flg],0E0h                                                 ;Place DSP in power up mode
 
     ;Erase internal mixing settings ----------
     Mov     BH,8
-    Mov     EDI,mix
+    LoadPtr PDI,mix
 
     .ClrMix:
-        Mov     BL,[EDI+mFlg]
+        Mov     BL,[PDI+mFlg]
         And     BL,MFLG_USER                                                    ;Leave user voice flags (mute and noise)
         Or      BL,MFLG_OFF                                                     ;Set voice to inactive
 
         Mov     CL,32
         Rep     StoSD
-        Mov     [EDI-80h+mFlg],BL
+        Mov     [PDI-80h+mFlg],BL
 
     Dec     BH
-    JNZ     short .ClrMix
+    JNZ     .ClrMix
 
     ;Erase global volume settings ------------
     Mov     [volMainL],EAX
@@ -950,7 +962,7 @@ USES ECX,EBX,EDI
     Call    ResetLow
     Call    ResetResamp
 
-    Mov     EDI,firTaps                                                         ;Reset filter coefficients
+    LoadPtr PDI,firTaps                                                         ;Reset filter coefficients
     Mov     CL,8
     Rep     StoSD
     Mov     [firCur],EAX                                                        ;Reset filter variables
@@ -980,7 +992,7 @@ USES ECX,EBX,EDI
     Mov     [nfRate],EAX
 
     ;Reset fade volume -----------------------
-    Call    SetDSPVol,10000h
+    Call    SetDSPVolI,10000h
 
 ENDP
 
@@ -1002,7 +1014,7 @@ USES ALL
     MovZX   EAX,byte [dspMix]
     Mov     EDX,[mixType]
     Cmp     EDX,-1
-    JE      short .DefMix
+    JE      .DefMix
         XOr     EAX,EAX
         Test    EDX,EDX
         SetNZ   AL
@@ -1014,13 +1026,13 @@ USES ALL
     MovZX   EAX,byte [dspChn]
     Mov     EDX,[numChn]
     Cmp     EDX,-1
-    JE      short .DefChn
+    JE      .DefChn
         Mov     EAX,EDX
 
         Cmp     EDX,1
-        JE      short .DefChn
+        JE      .DefChn
         Cmp     EDX,2
-        JE      short .DefChn
+        JE      .DefChn
 ;       Cmp     EDX,4
 ;       JE      short .DefChn
 
@@ -1033,20 +1045,20 @@ USES ALL
     MovZX   EAX,byte [dspSize]
     Mov     EDX,[bits]
     Cmp     EDX,-1
-    JE      short .DefBits
+    JE      .DefBits
         Mov     EAX,EDX
         SAR     EAX,3
 
         Cmp     EDX,8
-        JE      short .DefBits
+        JE      .DefBits
         Cmp     EDX,16
-        JE      short .DefBits
+        JE      .DefBits
         Cmp     EDX,24
-        JE      short .DefBits
+        JE      .DefBits
         Cmp     EDX,32
-        JE      short .DefBits
+        JE      .DefBits
         Cmp     EDX,-32
-        JE      short .DefBits
+        JE      .DefBits
 
         Mov     EAX,2
 
@@ -1057,7 +1069,7 @@ USES ALL
     Mov     EAX,[smpRate]
     Mov     EDX,[rate]
     Cmp     EDX,-1
-    JE      short .DefRate
+    JE      .DefRate
         Mov     EAX,EDX
         XOr     ECX,ECX
 
@@ -1066,7 +1078,7 @@ USES ALL
         Cmp     EDX,192000
         SetA    CH
         Test    ECX,ECX
-        JZ      short .DefRate
+        JZ      .DefRate
 
         Mov     EAX,32000
 
@@ -1077,21 +1089,20 @@ USES ALL
     MovZX   EAX,byte [dspInter]
     Mov     EDX,[inter]
     Cmp     EDX,-1
-    JE      short .DefInter
+    JE      .DefInter
         Mov     EAX,EDX
         Cmp     EDX,7
-        JBE     short .DefInter
+        JBE     .DefInter
 
         Mov     EAX,3
 
     .DefInter:
     Mov     [inter],EAX
 
-    ShL     EAX,2
-    Mov     ESI,[tabRout+EAX]
-    Test    ESI,ESI
-    JZ      short .NoCopyTable
-        Mov     EDI,interTab
+    IdxLd   Mov,PSI,tabRout,PAX*PTRSIZE
+    Test    PSI,PSI
+    JZ      .NoCopyTable
+        LoadPtr PDI,interTab
         Mov     ECX,1024
         Rep     MovSD
 
@@ -1101,7 +1112,7 @@ USES ALL
     Mov     EDX,[dspOpts]
     Mov     EAX,[opts]
     Cmp     EAX,-1
-    JE      short .DefOpts
+    JE      .DefOpts
         Mov     EDX,EAX
 
     .DefOpts:
@@ -1111,10 +1122,10 @@ USES ALL
     ;Options
 
     ;Select ADPCM routine --------------------
-    Mov     dword [pDecomp],UnpckSrc
+    LblSt   pDecomp,UnpckSrc
     Test    EDX,DSP_OLDSMP
-    JZ      short .NewSmp
-        Mov     dword [pDecomp],UnpckSrcOld
+    JZ      .NewSmp
+        LblSt   pDecomp,UnpckSrcOld
 
     .NewSmp:
 
@@ -1164,9 +1175,9 @@ USES ALL
 
     MovZX   EDX,byte [mixType]                                                  ;If mixType != MIX_NONE
     Test    EDX,EDX
-    JZ      short .NoMix
-        Mov     EAX,[EAX*4+intRout]
-        Mov     [pInter],EAX
+    JZ      .NoMix
+        IdxLd   Mov,PAX,intRout,PAX*PTRSIZE
+        Mov     [pInter],PAX
 
     .NoMix:
 
@@ -1181,10 +1192,10 @@ USES ALL
 
 %if INTBK
         Test    dword [dspOpts],DSP_ECHOFIR                                     ;Is actual emulation mode?
-        JZ      short .SMPROK                                                   ;   No
+        JZ      .SMPROK                                                         ;   No
 
         Cmp     EAX,32000                                                       ;Is the sampling rate less than 32kHz?
-        JBE     short .SMPROK                                                   ;   Yes
+        JBE     .SMPROK                                                         ;   Yes
             Mov     EAX,32000                                                   ;EAX = Least common multiple of 32000 and smpRate
             Mov     ECX,[smpRate]
 
@@ -1193,9 +1204,9 @@ USES ALL
             Div     ECX
             Mov     EAX,ECX
             Test    EDX,EDX
-            JZ      short .ExitGCM
+            JZ      .ExitGCM
                 Mov     ECX,EDX
-                Jmp     short .LoopGCM
+                Jmp     .LoopGCM
 
             .ExitGCM:
             Mov     ECX,EAX                                                     ;smpDen = Reduced denominator of 32000 / smpRate
@@ -1230,31 +1241,31 @@ USES ALL
         Mov     [pitchAdj],EAX
 
         ;Calculate update rate for envelopes and noise
-        Mov     ESI,freqTab
-        Mov     EDI,rateTab
+        LoadPtr PSI,freqTab
+        LoadPtr PDI,rateTab
         Mov     EBX,32000
         Mov     ECX,31
 
         .CalcRT:
-            Mov     EAX,[ECX*4+ESI]
+            Mov     EAX,[PSI+PCX*4]
             ShL     EAX,16
             Mul     dword [dspRate]
             Div     EBX
 
             Cmp     EAX,10000h
-            JAE     short .RTOK
+            JAE     .RTOK
                 Mov     EAX,10000h
 
             .RTOK:
-            Mov     [ECX*4+EDI],EAX
+            Mov     [PDI+PCX*4],EAX
 
         Dec     ECX
-        JNZ     short .CalcRT
-        Mov     [EDI],ECX
+        JNZ     .CalcRT
+        Mov     [PDI],ECX
 
         ;Volume ramping rate ------------------
-        Mov     dword [ESP-4],32000
-        FILd    dword [ESP-4]
+        Mov     dword [PSP-4],32000
+        FILd    dword [PSP-4]
         FIDiv   dword [dspRate]
         FMul    dword [fpShR8]
         FSt     dword [volRamp1]
@@ -1266,7 +1277,7 @@ USES ALL
         Mov     [firCur],EAX
 
         Mov     EAX,[dspRate]
-        MovZX   EDX,word [2+dspRate]
+        MovZX   EDX,word [dspRate+2]
         ShL     EAX,16
         Mov     ECX,32000
         Div     ECX
@@ -1276,22 +1287,22 @@ USES ALL
         Mov     EBX,7*80h                                                       ;Adjust the current rates in each voice incase the
                                                                                 ; sample rate is being changed during emulation
         .Voice:
-            Mov     EAX,[EBX+mix+mOrgP]                                         ;Set pitch
-            MovZX   EDX,byte [EBX+mix+mSrc]                                     ;EDX = Source
-            Add     EAX,[scr700det+EDX*4]                                       ;EAX += Detune[EDX]
+            IdxLd   Mov,EAX,mix,PBX+mOrgP                                       ;Set pitch
+            IdxLdX  MovZX,PDX,byte,mix,PBX+mSrc                                 ;EDX = Source
+            IdxLd   Add,EAX,scr700det,PDX*4                                     ;EAX += Detune[EDX]
 
             Mul     dword [pitchAdj]
             ShRD    EAX,EDX,16
             AdC     EAX,0
-            Mov     [EBX+mix+mRate],EAX
+            IdxSt   Mov,mix,PBX+mRate,EAX
 
-            MovZX   EDI,byte [EBX+mix+eRIdx]                                    ;Set envelope adjustment
-            Mov     EAX,[EDI*4+rateTab]
-            Mov     [EBX+mix+eRate],EAX
-            Mov     [EBX+mix+eCnt],EAX
+            IdxLdX  MovZX,PDI,byte,mix,PBX+eRIdx                                ;Set envelope adjustment
+            IdxLd   Mov,EAX,rateTab,PDI*4,PDX
+            IdxSt   Mov,mix,PBX+eRate,EAX
+            IdxSt   Mov,mix,PBX+eCnt,EAX
 
         Add     EBX,-80h
-        JNS     short .Voice
+        JNS     .Voice
 
         ;Adjust echo delay --------------------
         Call    REDl
@@ -1331,16 +1342,16 @@ USES ALL
 
         ;A0 = 1 (omit), A1 = (-2 + wdt) / (2 + wdt)
         FLd     ST                                                              ;                                   |wdt wdt
-        Mov     dword [ESP-4],2
-        FISub   dword [ESP-4]                                                   ;                                   |wdt -2+wdt
-        FILd    dword [ESP-4]                                                   ;                                   |wdt -2+wdt 2
+        Mov     dword [PSP-4],2
+        FISub   dword [PSP-4]                                                   ;                                   |wdt -2+wdt
+        FILd    dword [PSP-4]                                                   ;                                   |wdt -2+wdt 2
         FAdd    ST,ST2                                                          ;                                   |wdt -2+wdt 2+wdt
         FDivP   ST1,ST                                                          ;                                   |wdt -2+wdt/2+wdt
         FStP    dword [aaf1A1]                                                  ;                                   |wdt
 
         ;B0 = B1 = wdt / (2 + wdt)
-        Mov     dword [ESP-4],2
-        FILd    dword [ESP-4]                                                   ;                                   |wdt 2
+        Mov     dword [PSP-4],2
+        FILd    dword [PSP-4]                                                   ;                                   |wdt 2
         FAdd    ST,ST1                                                          ;                                   |wdt 2+wdt
         FDivP   ST1,ST                                                          ;                                   |wdt/2+wdt
         FSt     dword [aaf1B0]                                                  ;                                   |wdt/2+wdt
@@ -1357,16 +1368,16 @@ USES ALL
 
         ;A0 = 1 (omit), A1 = (-2 + wdt) / (2 + wdt)
         FLd     ST                                                              ;                                   |wdt wdt
-        Mov     dword [ESP-4],2
-        FISub   dword [ESP-4]                                                   ;                                   |wdt -2+wdt
-        FILd    dword [ESP-4]                                                   ;                                   |wdt -2+wdt 2
+        Mov     dword [PSP-4],2
+        FISub   dword [PSP-4]                                                   ;                                   |wdt -2+wdt
+        FILd    dword [PSP-4]                                                   ;                                   |wdt -2+wdt 2
         FAdd    ST,ST2                                                          ;                                   |wdt -2+wdt 2+wdt
         FDivP   ST1,ST                                                          ;                                   |wdt -2+wdt/2+wdt
         FStP    dword [aaf2A1]                                                  ;                                   |wdt
 
         ;B0 = B1 = wdt / (2 + wdt)
-        Mov     dword [ESP-4],2
-        FILd    dword [ESP-4]                                                   ;                                   |wdt 2
+        Mov     dword [PSP-4],2
+        FILd    dword [PSP-4]                                                   ;                                   |wdt 2
         FAdd    ST,ST1                                                          ;                                   |wdt 2+wdt
         FDivP   ST1,ST                                                          ;                                   |wdt/2+wdt
         FSt     dword [aaf2B0]                                                  ;                                   |wdt/2+wdt
@@ -1379,7 +1390,7 @@ USES ALL
 
     Mov     AL,[bits]
     Cmp     AL,[dspSize]                                                        ;If the sample size has changed, CL = 1
-    JE      short .SameBits
+    JE      .SameBits
         Mov     [dspSize],AL
 
     .SameBits:
@@ -1398,7 +1409,7 @@ USES ALL
 
     Mov     AL,[mixType]
     Cmp     AL,[dspMix]
-    JE      short .SameMix
+    JE      .SameMix
         Mov     [dspMix],AL
         Or      dword [fixVol],-1                                               ;Force volumes to be recalculated
 
@@ -1408,17 +1419,17 @@ USES ALL
     ;Erase sample buffers
 
     Test    byte [fixVol+1],-1
-    JZ      short .NoEraseBuf
+    JZ      .NoEraseBuf
         Call    ResetEcho
 
     .NoEraseBuf:
     Test    byte [fixVol+2],-1
-    JZ      short .NoEraseLow
+    JZ      .NoEraseLow
         Call    ResetLow
 
     .NoEraseLow:
     Test    byte [fixVol+3],-1
-    JZ      short .NoEraseResamp
+    JZ      .NoEraseResamp
         Call    ResetResamp
 
     .NoEraseResamp:
@@ -1433,23 +1444,23 @@ USES ALL
         Mov     ECX,70h
         .NextVoice:
             LEA     EBX,[ECX+volL]
-            Mov     AL,[ECX+dsp+volL]
+            IdxLd   Mov,AL,dsp,PCX+volL
             Call    InitReg
-            Mov     EAX,[ECX*8+mix+mTgtL]
-            Mov     [ECX*8+mix+mChnL],EAX
+            IdxLd   Mov,EAX,mix,PCX*8+mTgtL
+            IdxSt   Mov,mix,PCX*8+mChnL,EAX
 
             LEA     EBX,[ECX+volR]
-            Mov     AL,[ECX+dsp+volR]
+            IdxLd   Mov,AL,dsp,PCX+volR
             Call    InitReg
-            Mov     EAX,[ECX*8+mix+mTgtR]
-            Mov     [ECX*8+mix+mChnR],EAX
+            IdxLd   Mov,EAX,mix,PCX*8+mTgtR
+            IdxSt   Mov,mix,PCX*8+mChnR,EAX
 
             LEA     EBX,[ECX+fc]
-            Mov     AL,[ECX+dsp+fc]
+            IdxLd   Mov,AL,dsp,PCX+fc
             Call    InitReg
 
         Sub     CL,10h
-        JNC     short .NextVoice
+        JNC     .NextVoice
 
         Mov     EBX,mvolL
         Mov     AL,[dsp+mvolL]
@@ -1481,18 +1492,28 @@ ENDP
 ;===================================================================================================
 ;Debug DSP
 
-PROC SetDSPDbg, pTraceFunc
+;Called internally by InitDSP (see x64.inc's EXPROC for why a DEF-exported name also called
+; internally needs this split).
+
+EXPROC SetDSPDbg, pTraceFunc
+
+    Mov     PAX,[pTraceFunc]
+    Call    SetDSPDbgI,PAX
+
+ENDP
+
+PROC SetDSPDbgI, pTraceFuncI
 USES EDX
 
-    Mov     EDX,[pTrace]
+    Mov     PDX,[pTrace]
 
-    Mov     EAX,[pTraceFunc]
-    Cmp     EAX,-1
-    JE      short .NoFunc
-        Mov     [pTrace],EAX
+    Mov     PAX,[pTraceFuncI]
+    Cmp     PAX,-1
+    JE      .NoFunc
+        Mov     [pTrace],PAX
 
     .NoFunc:
-    Mov     EAX,EDX
+    Mov     PAX,PDX
 
 ENDP
 
@@ -1502,6 +1523,10 @@ ENDP
 
 PROC FixDSP
 USES ALL
+
+    ;NOTE (amd64 port): EBX/ECX/AL here are DSP register numbers/values (per InitReg/DSPInC's own
+    ; documented 'EBX = DSP register number' interface), not pointers -- no width change needed for
+    ; those. The dsp/mix accesses below use IdxLd/IdxSt (RIP-relative cannot include an index register).
 
     ;Enable voices currently keyed on --------
     Mov     byte [voiceMix],0
@@ -1542,23 +1567,23 @@ USES ALL
     Mov     ECX,70h
     .NextTap:
         LEA     EBX,[ECX+volL]
-        Mov     AL,[ECX+dsp+volL]
+        IdxLd   Mov,AL,dsp,PCX+volL
         Call    InitReg
-        Mov     EAX,[ECX*8+mix+mTgtL]
-        Mov     [ECX*8+mix+mChnL],EAX
+        IdxLd   Mov,EAX,mix,PCX*8+mTgtL
+        IdxSt   Mov,mix,PCX*8+mChnL,EAX
 
         LEA     EBX,[ECX+volR]
-        Mov     AL,[ECX+dsp+volR]
+        IdxLd   Mov,AL,dsp,PCX+volR
         Call    InitReg
-        Mov     EAX,[ECX*8+mix+mTgtR]
-        Mov     [ECX*8+mix+mChnR],EAX
+        IdxLd   Mov,EAX,mix,PCX*8+mTgtR
+        IdxSt   Mov,mix,PCX*8+mChnR,EAX
 
         LEA     EBX,[ECX+fc]
-        Mov     AL,[ECX+dsp+fc]
+        IdxLd   Mov,AL,dsp,PCX+fc
         Call    InitReg
 
     Sub     CL,10h
-    JNC     short .NextTap
+    JNC     .NextTap
 
     Call    ResetVol
 
@@ -1589,28 +1614,28 @@ USES ECX,EDI
         Mov     [konRsv],AX                                                     ;Reset konRsv, koffRsv
 
         Mov     CL,8
-        Mov     EDI,mix
+        LoadPtr PDI,mix
 
         .ResetMix:
-            Mov     [EDI+eVal],EAX
-            Mov     [EDI+mOut],EAX
-            And     byte [EDI+mFlg],MFLG_USER                                   ;Leave user voice flags (mute and noise)
-            Or      byte [EDI+mFlg],MFLG_OFF                                    ;Set voice to inactive
-            Sub     EDI,-80h
+            Mov     [PDI+eVal],EAX
+            Mov     [PDI+mOut],EAX
+            And     byte [PDI+mFlg],MFLG_USER                                   ;Leave user voice flags (mute and noise)
+            Or      byte [PDI+mFlg],MFLG_OFF                                    ;Set voice to inactive
+            Sub     PDI,-80h
 
         Dec     CL
-        JNZ     short .ResetMix
+        JNZ     .ResetMix
 
         Mov     CL,8
-        Mov     EDI,dsp
+        LoadPtr PDI,dsp
 
         .ResetDSP:
-            Mov     [EDI+envx],AL
-            Mov     [EDI+outx],AL
-            Add     EDI,10h
+            Mov     [PDI+envx],AL
+            Mov     [PDI+outx],AL
+            Add     PDI,10h
 
         Dec     CL
-        JNZ     short .ResetDSP
+        JNZ     .ResetDSP
 
         Call    FixDSP
 
@@ -1626,7 +1651,7 @@ ENDP
 ;===================================================================================================
 ;DSP Pitch Adjustment
 
-PROC SetDSPPitch, base
+EXPROC SetDSPPitch, base
 USES EDX,EBX
 
     ;Calculate amount to adjust SPC pitch values
@@ -1642,17 +1667,17 @@ USES EDX,EBX
     ;Adjust voice rates to new pitch ---------
     Mov     EBX,7*80h                                                           ;Adjust the current rates in each voice incase the
     .Voice:                                                                     ; sample rate is being changed during emulation
-        Mov     EAX,[EBX+mix+mOrgP]                                             ;Set pitch
-        MovZX   EDX,byte [EBX+mix+mSrc]                                         ;EDX = Source
-        Add     EAX,[scr700det+EDX*4]                                           ;EAX += Detune[EDX]
+        IdxLd   Mov,EAX,mix,PBX+mOrgP                                           ;Set pitch
+        IdxLdX  MovZX,PDX,byte,mix,PBX+mSrc                                     ;EDX = Source
+        IdxLd   Add,EAX,scr700det,PDX*4                                         ;EAX += Detune[EDX]
 
         Mul     dword [pitchAdj]
         ShRD    EAX,EDX,16
         AdC     EAX,0
-        Mov     [EBX+mix+mRate],EAX
+        IdxSt   Mov,mix,PBX+mRate,EAX
 
     Add     EBX,-80h
-    JNS     short .Voice
+    JNS     .Voice
 
 ENDP
 
@@ -1660,16 +1685,25 @@ ENDP
 ;===================================================================================================
 ;DSP Amplification
 
-PROC SetDSPAmp, amp
+;Called internally by ResetAPUI (see x64.inc's EXPROC for why a DEF-exported name also called
+; internally needs this split).
+
+EXPROC SetDSPAmp, amp
+
+    Call    SetDSPAmpI,[amp]
+
+ENDP
+
+PROC SetDSPAmpI, ampI
 USES ECX,EDX,EBX
 
-    Mov     EAX,[amp]                                                           ;If amp < 0, amp = 0
+    Mov     EAX,[ampI]                                                          ;If amp < 0, amp = 0
     CDQ
     Not     EDX
     And     EAX,EDX
 
     Cmp     EAX,256
-    JA      short .NewScale
+    JA      .NewScale
         ShL     EAX,12
 
     .NewScale:
@@ -1709,10 +1743,19 @@ ENDP
 ;===================================================================================================
 ;DSP Fade Volume
 
-PROC SetDSPVol, vol
+;Called internally by ResetDSP/SetFade (see x64.inc's EXPROC for why a DEF-exported name also called
+; internally needs this split).
+
+EXPROC SetDSPVol, vol
+
+    Call    SetDSPVolI,[vol]
+
+ENDP
+
+PROC SetDSPVolI, volI
 USES ECX,EDX,EBX
 
-    Mov     EAX,[vol]                                                           ;If EAX < 0, EAX = 0
+    Mov     EAX,[volI]                                                          ;If EAX < 0, EAX = 0
     CDQ
     Not     EDX
     And     EAX,EDX
@@ -1738,7 +1781,7 @@ USES ECX,EDX,EBX
     Mov     AL,[dsp+evolR]
     Call    InitReg
 
-    ;Call   ResetVol                                                            ;Don't call ResetVol to smooth fade-out
+    ;Call   ResetVol                                                            ;Do not call ResetVol to smooth fade-out
 
 ENDP
 
@@ -1761,14 +1804,14 @@ USES EDX
     Mov     [songLen],EAX
 
     Cmp     EAX,[t64Cnt]                                                        ;If t64Cnt > songLen
-    JB      short .SetFade
-        Call    SetDSPVol,10000h
+    JB      .SetFade
+        Call    SetDSPVolI,10000h
         RetN    EDX
 
     .SetFade:
-        Push    EDX
+        Push    PDX
         Call    SetFade                                                         ;If song is in fade mode, set fade volume
-        Pop     EAX
+        Pop     PAX
 ;       Mov     EAX,EDX
 
 ENDP
@@ -1780,6 +1823,7 @@ ENDP
 ;Calls SetDSPVol to fade the song out based on t64Cnt, songLen, and fadeLen.
 
 PROC SetFade
+LOCALS fadeTmp
 
     Mov     EAX,[t64Cnt]                                                        ;EAX = T64Cnt - songLen;
     Sub     EAX,[songLen]                                                       ;If T64Cnt <= songLen, do nothing
@@ -1789,23 +1833,23 @@ PROC SetFade
     Cmp     EAX,[fadeLen]
     JAE     .SetVol
 
-    Mov     [ESP-4],EAX                                                         ;EDX = 65536 - 65536 * sin(EAX / fadeLen * pi / 2)
-    FILd    dword [ESP-4]                                                       ;                                   |EAX
+    Mov     [fadeTmp],EAX                                                       ;EDX = 65536 - 65536 * sin(EAX / fadeLen * pi / 2)
+    FILd    dword [fadeTmp]                                                     ;                                   |EAX
     FIDiv   dword [fadeLen]                                                     ;                                   |EAX/fadeLen
     FLdPi                                                                       ;                                   |EAX/fadeLen pi
     FMulP   ST1,ST                                                              ;                                   |EAX/fadeLen*pi
     FMul    dword [fp0_5]                                                       ;                                   |EAX/fadeLen*pi/2=x
     FSin                                                                        ;                                   |sin(x)
     Mov     EDX,65536
-    Mov     [ESP-4],EDX
-    FILd    dword [ESP-4]                                                       ;                                   |sin(x) 65536
+    Mov     [fadeTmp],EDX
+    FILd    dword [fadeTmp]                                                     ;                                   |sin(x) 65536
     FMul                                                                        ;                                   |sin(x)*65536
-    FIStP   dword [ESP-4]                                                       ;                                   |(empty)
-    Mov     EAX,[ESP-4]                                                         ;EAX = 65536 * sin(x)
+    FIStP   dword [fadeTmp]                                                     ;                                   |(empty)
+    Mov     EAX,[fadeTmp]                                                       ;EAX = 65536 * sin(x)
     Sub     EDX,EAX                                                             ;EDX = 65536 - EAX
 
     .SetVol:
-    Call    SetDSPVol,EDX                                                       ;SetDSPVol(EDX);
+    Call    SetDSPVolI,EDX                                                      ;SetDSPVol(EDX);
 
     .Done:
 
@@ -1825,14 +1869,15 @@ ENDP
 PROC ChnSep
 RVolL:
 RVolR:
-USES ECX,EBX
+LOCALS panTmp1,panTmp2                                                          ;panTmp2 alone is used as an 8-byte scratch
+USES ECX,EBX                                                                    ; (see the .Center: block below)
 
-    ShR     EBX,3
-    Mov     AL,[EBX+dsp+volL]
-    Mov     DL,[EBX+dsp+volR]
+    ShR     PBX,3
+    IdxLd   Mov,AL,dsp,PBX+volL
+    IdxLd   Mov,DL,dsp,PBX+volR
 
     Test    dword [dspOpts],DSP_REVERSE                                         ;Swap left, right?
-    JZ      short .NoReverse                                                    ;   No
+    JZ      .NoReverse                                                          ;   No
         XChg    AL,DL
     .NoReverse:
 
@@ -1858,9 +1903,9 @@ USES ECX,EBX
     Sub     DL,DH
     MovSX   EDX,DL
 
-    LEA     EBX,[EBX*8+mix]
-    Mov     [EBX+mTgtL],EAX
-    Mov     [EBX+mTgtR],EDX
+    IdxLd   LEA,PBX,mix,PBX*8
+    Mov     [PBX+mTgtL],EAX
+    Mov     [PBX+mTgtR],EDX
 
     Cmp     EAX,EDX
     JE      .NoSep
@@ -1877,11 +1922,11 @@ USES ECX,EBX
     ShL     EDX,24
 
     ;Convert left/right into vol/pan ---------
-    FILd    dword [EBX+mTgtR]
+    FILd    dword [PBX+mTgtR]
     FMul    dword [fpShR7]
     FLd     ST
     FMul    ST,ST
-    FILd    dword [EBX+mTgtL]
+    FILd    dword [PBX+mTgtL]
     FMul    dword [fpShR7]
     FMul    ST,ST
     FAddP   ST1,ST
@@ -1894,12 +1939,12 @@ USES ECX,EBX
 
     ;Adjust panning --------------------------
     FLd     ST
-    Test    byte [3+volSepar],80h
-    JNZ     short .Center
-        FSt     qword [ESP-8]
+    Test    byte [volSepar+3],80h
+    JNZ     .Center
+        FSt     qword [panTmp2]
         FLd     dword [fp0_5]
-        Test    byte [ESP-1],80h
-        JZ      short .Right
+        Test    byte [panTmp2+7],80h
+        JZ      .Right
             FChS
         .Right:
         FSubRP  ST1,ST
@@ -1913,26 +1958,26 @@ USES ECX,EBX
     FAdd    dword [fp0_5]
     FSqrt
     FMul    ST,ST2
-    FStP    dword [EBX+mTgtR]
-    Or      [EBX+mTgtR],EDX
+    FStP    dword [PBX+mTgtR]
+    Or      [PBX+mTgtR],EDX
 
     FSubR   dword [fp0_5]
     FSqrt
     FMulP   ST1,ST
-    FStP    dword [EBX+mTgtL]
-    Or      [EBX+mTgtL],EAX
+    FStP    dword [PBX+mTgtL]
+    Or      [PBX+mTgtL],EAX
 
     XOr     EAX,EAX
     RetN
 
 .NoSep:
-    FILd    dword [EBX+mTgtL]
+    FILd    dword [PBX+mTgtL]
     FMul    dword [fpShR7]
-    FStP    dword [EBX+mTgtL]
+    FStP    dword [PBX+mTgtL]
 
-    FILd    dword [EBX+mTgtR]
+    FILd    dword [PBX+mTgtR]
     FMul    dword [fpShR7]
-    FStP    dword [EBX+mTgtR]
+    FStP    dword [PBX+mTgtR]
 
     XOr     EAX,EAX
 
@@ -1943,7 +1988,7 @@ ENDP
 ;===================================================================================================
 ;Set Stereo Separation
 
-PROC SetDSPStereo, sep
+EXPROC SetDSPStereo, sep
 USES EDX,EBX
 
 %if STEREO
@@ -1957,13 +2002,13 @@ USES EDX,EBX
 
     .Float:
         Call    ChnSep
-        Mov     EAX,[EBX+mix+mTgtL]
-        Mov     EDX,[EBX+mix+mTgtR]
-        Mov     [EBX+mix+mChnL],EAX
-        Mov     [EBX+mix+mChnR],EDX
+        IdxLd   Mov,EAX,mix,PBX+mTgtL
+        IdxLd   Mov,EDX,mix,PBX+mTgtR
+        IdxSt   Mov,mix,PBX+mChnL,EAX
+        IdxSt   Mov,mix,PBX+mChnR,EDX
 
     Add     EBX,-80h
-    JNS     short .Float
+    JNS     .Float
 %endif
 
 ENDP
@@ -1972,7 +2017,7 @@ ENDP
 ;===================================================================================================
 ;Set Echo Stereo Separation
 
-PROC SetDSPEFBCT, leak
+EXPROC SetDSPEFBCT, leak
 USES EDX,EBX
 
     Mov     EAX,[leak]
@@ -1991,11 +2036,11 @@ ENDP
 ;Start Sound Source Decompression
 ;
 ;Called when a voice is keyed on to set up the internal data for waveform mixing and decompress the
-;first block.
+; first block.
 ;
 ;In:
-;   EBX-> mix[voice]
-;   ESI-> dsp.voice[voice]
+;   PBX-> mix[voice]
+;   PSI-> dsp.voice[voice]
 ;
 ;Out:
 ;   nothing
@@ -2005,43 +2050,59 @@ ENDP
 
 PROC StartSrc
 
-    Push    ESI,EDI,EBP
-    MovZX   EAX,byte [EBX+mSrc]                                                 ;EAX = Source
-    Mov     AL,[scr700chg+EAX]                                                  ;AL = NoteChange[EAX]
+    ;NOTE (amd64 port): bCur/sIdx (DSP.inc VoiceMix struct) stay 'resd 1' on both architectures --
+    ; the struct's total size is relied on throughout DSP.asm as a fixed 128-byte voice stride, so it
+    ; cannot grow. On x86 a real pointer already fits in 4 bytes and this code is unchanged. On amd64
+    ; they instead hold a small OFFSET: bCur is pAPURAM-relative (SPC RAM is a 64KB space, so this
+    ; always fits in 32 bits), sIdx is relative to the voice's own struct base (PBX). Both are
+    ; reconstructed into a real pointer immediately after loading.
 
-    Mov     ESI,[pAPURAM]
+    Push    PSI,PDI,PBP
+    MovZX   EAX,byte [PBX+mSrc]                                                 ;EAX = Source
+    IdxLd   Mov,AL,scr700chg,PAX                                                ;AL = NoteChange[EAX]
+
+    Mov     PSI,[pAPURAM]
     ShL     EAX,2
-    Add     AH,[dsp+dir]                                                        ;EAX -> Source directory
-    Mov     SI,[EAX+ESI]                                                        ;ESI -> First block of waveform
-    LEA     EDI,[EBX+sBuf]                                                      ;EDI -> Uncompressed sample buffer
+    Add     AH,[dsp+dir]                                                        ;EAX = Source directory
+    Mov     SI,[PAX+PSI]                                                        ;PSI -> First block of waveform
+    LEA     PDI,[PBX+sBuf]                                                      ;PDI -> Uncompressed sample buffer
+%ifdef WIN64
+    Mov     EAX,ESI
+    Sub     PAX,[pAPURAM]
+    Mov     [PBX+bCur],EAX                                                      ;Save as a pAPURAM-relative offset
+    Mov     EAX,EDI
+    Sub     PAX,PBX
+    Mov     [PBX+sIdx],EAX                                                      ;Save as a voice-struct-relative offset
+%else
     Mov     [EBX+bCur],ESI                                                      ;Save physical pointers to wave data
     Mov     [EBX+sIdx],EDI
+%endif
 
     ;Decompress first block ------------------
-    Mov     AL,[ESI]
-    Push    EBX
-    Mov     [EBX+bHdr],AL                                                       ;Save block header
-    MovSX   EDX,word [EBX+sP1]
-    MovSX   EBX,word [EBX+sP2]
+    Mov     AL,[PSI]
+    Push    PBX
+    Mov     [PBX+bHdr],AL                                                       ;Save block header
+    MovSX   EDX,word [PBX+sP1]
+    MovSX   EBX,word [PBX+sP2]
     Call    [pDecomp]
     Mov     EAX,EBX
-    Pop     EBX
-    Mov     [EBX+sP1],DX
-    Mov     [EBX+sP2],AX
+    Pop     PBX
+    Mov     [PBX+sP1],DX
+    Mov     [PBX+sP2],AX
 
     ;Initialize interpolation ----------------
     XOr     EAX,EAX
-    Mov     [EBX+sBuf-4],EAX
-    Mov     [EBX+sBuf-8],EAX
-    Mov     [EBX+sBuf-12],EAX
-    Mov     [EBX+sBuf-16],EAX
+    Mov     [PBX+sBuf-4],EAX
+    Mov     [PBX+sBuf-8],EAX
+    Mov     [PBX+sBuf-12],EAX
+    Mov     [PBX+sBuf-16],EAX
 
     Cmp     byte [dspInter],2                                                   ;Is interpolation enabled?
-    JB      short .NoInter
-        Add     byte [EBX+sIdx],6                                               ;Update sample index
-
+    JB      .NoInter
+        Add     byte [PBX+sIdx],6                                               ;Update sample index (byte-sized delta --
+                                                                                ; representation-agnostic, see note in StartSrc)
     .NoInter:
-    Pop     EBP,EDI,ESI
+    Pop     PBP,PDI,PSI
 
 ENDP
 
@@ -2050,11 +2111,11 @@ ENDP
 ;Start Envelope
 ;
 ;Called when a voice is keyed on to set up the internal data to begin envelope modification based on
-;the values in ADSR/Gain.
+; the values in ADSR/Gain.
 ;
 ;In:
-;   EBX-> mix[voice]
-;   ESI-> dsp.voice[voice]
+;   PBX-> mix[voice]
+;   PSI-> dsp.voice[voice]
 ;
 ;Out:
 ;   mix.e???       = correct values for envelope routine in mixer
@@ -2067,65 +2128,65 @@ PROC StartEnv
 USES ESI
 
     XOr     EAX,EAX
-    Mov     [EBX+eVal],EAX                                                      ;Envelope starts at 0
-    Mov     [EBX+mOut],EAX
-    Mov     [EBX+eRIdx],AL                                                      ;Reset envelope counter
+    Mov     [PBX+eVal],EAX                                                      ;Envelope starts at 0
+    Mov     [PBX+mOut],EAX
+    Mov     [PBX+eRIdx],AL                                                      ;Reset envelope counter
     Mov     EDX,[rateTab]
-    Mov     [EBX+eRate],EDX                                                     ;Reset rate of adjustment
-    Mov     [EBX+eCnt],EDX
-    Mov     [ESI+envx],AL                                                       ;Reset envelope height
-    Mov     [ESI+outx],AL
-    Mov     byte [EBX+eMode],E_ATT << 4                                         ;If envelope gets switched out of gain mode, start ADSR
+    Mov     [PBX+eRate],EDX                                                     ;Reset rate of adjustment
+    Mov     [PBX+eCnt],EDX
+    Mov     [PSI+envx],AL                                                       ;Reset envelope height
+    Mov     [PSI+outx],AL
+    Mov     byte [PBX+eMode],E_ATT << 4                                         ;If envelope gets switched out of gain mode, start ADSR
 
-    Test    byte [ESI+adsr],80h                                                 ;Is the envelope in ADSR mode?
-    JZ      ChgGain                                                             ;   No, It's in gain mode
+    Test    byte [PSI+adsr],80h                                                 ;Is the envelope in ADSR mode?
+    JZ      ChgGain                                                             ;   No, It is in gain mode
 
 ChgAtt:
-        Cmp     dword [EBX+eVal],D_MAX                                          ;Did envelope reach destination value?
-        JGE     short .ChgDec                                                   ;   Yes, change decay mode
+        Cmp     dword [PBX+eVal],D_MAX                                          ;Did envelope reach destination value?
+        JGE     .ChgDec                                                         ;   Yes, change decay mode
 
-        Mov     byte [EBX+eMode],E_ATT                                          ;Set envelope mode to attack
-        Mov     dword [EBX+eDest],D_MAX                                         ;Set destination to 1.0
+        Mov     byte [PBX+eMode],E_ATT                                          ;Set envelope mode to attack
+        Mov     dword [PBX+eDest],D_MAX                                         ;Set destination to 1.0
 
-        Mov     AL,byte [ESI+adsr]
+        Mov     AL,byte [PSI+adsr]
         And     AL,0Fh
         Add     AL,AL                                                           ;Adjust AL to index rateTab
         Inc     AL
         Cmp     AL,1Fh                                                          ;Is there an attack?
-        JE      short .NoAtt                                                    ;   Yes
+        JE      .NoAtt                                                          ;   Yes
 
-        Mov     dword [EBX+eAdj],A_LIN                                          ;Set adjustment rate to linear
-        Cmp     [EBX+eRIdx],AL
-        JE      short .AttNext
+        Mov     dword [PBX+eAdj],A_LIN                                          ;Set adjustment rate to linear
+        Cmp     [PBX+eRIdx],AL
+        JE      .AttNext
 
-        Mov     [EBX+eRIdx],AL
-        Mov     EDX,[EAX*4+rateTab]                                             ;Set rate of adjustment
-        Mov     [EBX+eRate],EDX
-        Mov     [EBX+eCnt],EDX
+        Mov     [PBX+eRIdx],AL
+        IdxLd   Mov,EDX,rateTab,PAX*4                                           ;Set rate of adjustment
+        Mov     [PBX+eRate],EDX
+        Mov     [PBX+eCnt],EDX
 
     .AttNext:
         RetN                                                                    ;Exit
 
     .NoAtt:
-        Mov     dword [EBX+eAdj],A_NOATT                                        ;Set adjustment rate to 1.0
-        Cmp     [EBX+eRIdx],AL
-        JE      short .AttNext
+        Mov     dword [PBX+eAdj],A_NOATT                                        ;Set adjustment rate to 1.0
+        Cmp     [PBX+eRIdx],AL
+        JE      .AttNext
 
-        Mov     [EBX+eRIdx],AL
-        Mov     EDX,[EAX*4+rateTab]                                             ;Set rate of adjustment
-        Mov     [EBX+eRate],EDX
-        Mov     [EBX+eCnt],EDX
+        Mov     [PBX+eRIdx],AL
+        IdxLd   Mov,EDX,rateTab,PAX*4                                           ;Set rate of adjustment
+        Mov     [PBX+eRate],EDX
+        Mov     [PBX+eCnt],EDX
 
         RetN                                                                    ;Exit
 
     .ChgDec:
-        MovZX   EAX,byte [EBX+eRIdx]
-        Mov     EDX,[EAX*4+rateTab]                                             ;Set rate of adjustment
-        Mov     [EBX+eRate],EDX
-        Mov     [EBX+eCnt],EDX
+        MovZX   EAX,byte [PBX+eRIdx]
+        IdxLd   Mov,EDX,rateTab,PAX*4                                           ;Set rate of adjustment
+        Mov     [PBX+eRate],EDX
+        Mov     [PBX+eCnt],EDX
 
 ChgDec:
-        Mov     AL,[ESI+adsr+1]                                                 ;Set destination to AL/8
+        Mov     AL,[PSI+adsr+1]                                                 ;Set destination to AL/8
         ShR     AL,5
         Inc     AL
 ;       Test    AL,8                                                            ;Is destination of envelope D_MAX?
@@ -2137,147 +2198,151 @@ ChgDec:
         SetS    DL
         Add     EAX,EDX
 
-        Cmp     byte [EBX+eMode],E_DECAY                                        ;If DR changes in the middle of DECAY,
-        JNE     short .DecSkip                                                  ;   and DR is higher than current envelope value,
-        Cmp     [EBX+eVal],EAX                                                  ;   does not change to sustain mode
-        JGE     short .DecSkip
+        Cmp     byte [PBX+eMode],E_DECAY                                        ;If DR changes in the middle of DECAY,
+        JNE     .DecSkip                                                        ;   and DR is higher than current envelope value,
+        Cmp     [PBX+eVal],EAX                                                  ;   does not change to sustain mode
+        JGE     .DecSkip
 
-        Mov     dword [EBX+eDest],D_MIN                                         ;Destination to 0 instead of changing to sustain mode,
-        Jmp     short .DecReset                                                 ;   prevents changing to sustain mode by UpdateEnv
+        Mov     dword [PBX+eDest],D_MIN                                         ;Destination to 0 instead of changing to sustain mode,
+        Jmp     .DecReset                                                       ;   prevents changing to sustain mode by UpdateEnv
 
     .DecSkip:
-        Cmp     [EBX+eVal],EAX                                                  ;Did envelope reach destination value?
-        JLE     short .ChgSus                                                   ;   Yes, change sustain mode
+        Cmp     [PBX+eVal],EAX                                                  ;Did envelope reach destination value?
+        JLE     .ChgSus                                                         ;   Yes, change sustain mode
 
-        Mov     dword [EBX+eAdj],A_EXP                                          ;Set adjustment rate to exponential
-        Mov     byte [EBX+eMode],E_DECAY                                        ;Set envelope mode to decay
-        Mov     [EBX+eDest],EAX
+        Mov     dword [PBX+eAdj],A_EXP                                          ;Set adjustment rate to exponential
+        Mov     byte [PBX+eMode],E_DECAY                                        ;Set envelope mode to decay
+        Mov     [PBX+eDest],EAX
 
     .DecReset:
-        MovZX   EAX,byte [ESI+adsr]
+        MovZX   EAX,byte [PSI+adsr]
         And     AL,70h
         ShR     AL,3
         Add     AL,10h                                                          ;Adjust AL to index rateTab
-        Cmp     [EBX+eRIdx],AL
-        JE      short .DecNext
+        Cmp     [PBX+eRIdx],AL
+        JE      .DecNext
 
-        Mov     [EBX+eRIdx],AL
-        Mov     EDX,[EAX*4+rateTab]                                             ;Set rate of adjustment
-        Mov     [EBX+eRate],EDX
-        Mov     [EBX+eCnt],EDX
+        Mov     [PBX+eRIdx],AL
+        IdxLd   Mov,EDX,rateTab,PAX*4                                           ;Set rate of adjustment
+        Mov     [PBX+eRate],EDX
+        Mov     [PBX+eCnt],EDX
 
     .DecNext:
         RetN                                                                    ;Exit
 
     .ChgSus:
-        MovZX   EAX,byte [EBX+eRIdx]
-        Mov     EDX,[EAX*4+rateTab]                                             ;Set rate of adjustment
-        Mov     [EBX+eRate],EDX
-        Mov     [EBX+eCnt],EDX
+        MovZX   EAX,byte [PBX+eRIdx]
+        IdxLd   Mov,EDX,rateTab,PAX*4                                           ;Set rate of adjustment
+        Mov     [PBX+eRate],EDX
+        Mov     [PBX+eCnt],EDX
 
 ChgSus:
-        Mov     dword [EBX+eAdj],A_EXP                                          ;Set adjustment rate to exponential
-        Mov     dword [EBX+eDest],D_MIN                                         ;Set destination to 0
+        Mov     dword [PBX+eAdj],A_EXP                                          ;Set adjustment rate to exponential
+        Mov     dword [PBX+eDest],D_MIN                                         ;Set destination to 0
 
-        Mov     AL,[ESI+adsr+1]
+        Mov     AL,[PSI+adsr+1]
         Mov     AH,E_IDLE
         And     AL,1Fh                                                          ;Is index zero?
-        JZ      short .SusNext                                                  ;   Yes, change idle mode
+        JZ      .SusNext                                                        ;   Yes, change idle mode
 
-        Cmp     dword [EBX+eVal],D_MIN                                          ;Did envelope reach destination value?
-        JLE     short .SusNext                                                  ;   Yes, change idle mode
+        Cmp     dword [PBX+eVal],D_MIN                                          ;Did envelope reach destination value?
+        JLE     .SusNext                                                        ;   Yes, change idle mode
 
         XOr     AH,AH
-        Cmp     [EBX+eRIdx],AL
-        JE      short .SusNext
+        Cmp     [PBX+eRIdx],AL
+        JE      .SusNext
 
-        Mov     [EBX+eRIdx],AL
-        Mov     EDX,[EAX*4+rateTab]
-        Mov     [EBX+eRate],EDX                                                 ;Set rate of change
-        Mov     [EBX+eCnt],EDX
+        Mov     [PBX+eRIdx],AL
+        IdxLd   Mov,EDX,rateTab,PAX*4
+        Mov     [PBX+eRate],EDX                                                 ;Set rate of change
+        Mov     [PBX+eCnt],EDX
 
     .SusNext:
         Or      AH,E_SUST
-        Mov     [EBX+eMode],AH                                                  ;Set envelope mode to sustain
+        Mov     [PBX+eMode],AH                                                  ;Set envelope mode to sustain
         RetN                                                                    ;Exit
 
 ChgGain:
-    Mov     AL,[ESI+gain]
+    Mov     AL,[PSI+gain]
     Test    AL,80h                                                              ;Is gain direct?
-    JNZ     short .GainMode                                                     ;   No, program envelope
-        Mov     dword [EBX+eAdj],A_DIRECT                                       ;Set adjustment rate to 1.0
+    JNZ     .GainMode                                                           ;   No, program envelope
+        Mov     dword [PBX+eAdj],A_DIRECT                                       ;Set adjustment rate to 1.0
 
         And     AL,7Fh                                                          ;Isolate direct value
         Mov     EDX,EAX                                                         ;Adjust value for internal precision
         ShR     DL,7-E_SHIFT                                                    ;EAX = LEVEL * A_GAIN + LEVEL / 128 * A_GAIN
         ShL     EAX,E_SHIFT                                                     ; If LEVEL = 0x00, EAX = 0
         Add     EAX,EDX                                                         ; If LEVEL = 0x7F, EAX = D_MAX (128 * A_GAIN - 1)
-        Mov     [EBX+eDest],EAX                                                 ;  EAX = 127 * A_GAIN + 127 / 128 * A_GAIN
+        Mov     [PBX+eDest],EAX                                                 ;  EAX = 127 * A_GAIN + 127 / 128 * A_GAIN
 
-        Mov     byte [EBX+eRIdx],31                                             ;Envelope is set
-        Mov     ESI,[31*4+rateTab]
-        Mov     [EBX+eRate],ESI
-        Mov     [EBX+eCnt],ESI
+        Mov     byte [PBX+eRIdx],31                                             ;Envelope is set
+        IdxLd   Mov,ESI,rateTab,31*4                                            ;rateTab holds plain dwords, not pointers -- a
+        Mov     [PBX+eRate],ESI                                                 ; 64-bit PSI store here would overrun eRate/eCnt
+        Mov     [PBX+eCnt],ESI                                                  ; into eCnt/eVal
 
-        Mov     DL,[EBX+eMode]
+        Mov     DL,[PBX+eMode]
         And     DL,70h
         Or      DL,E_DIRECT                                                     ;Set mode to direct
-        Mov     [EBX+eMode],DL
+        Mov     [PBX+eMode],DL
         RetN
 
     .GainMode:
         Mov     DL,AL
         Mov     AH,E_IDLE
         And     AL,1Fh                                                          ;Is index zero?
-        JZ      short .GainNext
+        JZ      .GainNext
 
         XOr     AH,AH
-        Cmp     [EBX+eRIdx],AL
-        JE      short .GainNext
+        Cmp     [PBX+eRIdx],AL
+        JE      .GainNext
 
-        Mov     [EBX+eRIdx],AL
-        Mov     ESI,[EAX*4+rateTab]
-        Mov     [EBX+eRate],ESI                                                 ;Set rate of change
-        Mov     [EBX+eCnt],ESI
+        Mov     [PBX+eRIdx],AL
+
+        ;NOTE (amd64 port): ESI, not PSI/RSI -- eRate/eCnt are plain dwords (see the identical concern
+        ; at ChgGain's other rateTab load above); a pointer-width store here would overrun into eCnt/eVal.
+
+        IdxLd   Mov,ESI,rateTab,PAX*4
+        Mov     [PBX+eRate],ESI                                                 ;Set rate of change
+        Mov     [PBX+eCnt],ESI
 
     .GainNext:
-        Mov     AL,[EBX+eMode]                                                  ;Preserve ADSR mode
+        Mov     AL,[PBX+eMode]                                                  ;Preserve ADSR mode
         And     AL,70h
         Or      AL,AH
 
         Test    DL,60h                                                          ;Jump to the right mode
-        JZ      short .GainDec
+        JZ      .GainDec
         Test    DL,40h
-        JZ      short .GainExp
+        JZ      .GainExp
         Test    DL,20h
-        JZ      short .GainInc
+        JZ      .GainInc
 
     .GainBent:
-        Mov     dword [EBX+eAdj],A_LIN
-        Mov     dword [EBX+eDest],D_BENT
+        Mov     dword [PBX+eAdj],A_LIN
+        Mov     dword [PBX+eDest],D_BENT
         Or      AL,E_BENT                                                       ;Set mode to bent line increase
-        Mov     [EBX+eMode],AL
+        Mov     [PBX+eMode],AL
         RetN
 
     .GainInc:
-        Mov     dword [EBX+eAdj],A_LIN
-        Mov     dword [EBX+eDest],D_MAX
+        Mov     dword [PBX+eAdj],A_LIN
+        Mov     dword [PBX+eDest],D_MAX
         Or      AL,E_INC                                                        ;Set mode to linear increase
-        Mov     [EBX+eMode],AL
+        Mov     [PBX+eMode],AL
         RetN
 
     .GainExp:
-        Mov     dword [EBX+eAdj],A_EXP
-        Mov     dword [EBX+eDest],D_MIN
+        Mov     dword [PBX+eAdj],A_EXP
+        Mov     dword [PBX+eDest],D_MIN
         Or      AL,E_EXP                                                        ;Set mode to exponential decrease
-        Mov     [EBX+eMode],AL
+        Mov     [PBX+eMode],AL
         RetN
 
     .GainDec:
-        Mov     dword [EBX+eAdj],A_LIN
-        Mov     dword [EBX+eDest],D_MIN
+        Mov     dword [PBX+eAdj],A_LIN
+        Mov     dword [PBX+eDest],D_MIN
         Or      AL,E_DEC                                                        ;Set mode to linear decrease
-        Mov     [EBX+eMode],AL
+        Mov     [PBX+eMode],AL
         RetN
 ENDP
 
@@ -2286,32 +2351,38 @@ ENDP
 ;Change Envelope
 ;
 ;Called when the ADSR registers are written to while an envelope is in progress.  Control is
-;transfered to StartEnv where the envelope is updated.
+; transfered to StartEnv where the envelope is updated.
 ;
 ;In:
-;   EBX = Voice << 4
+;   PBX = Voice << 4
 ;
 ;Destroys:
-;   EAX,EDX,EBX
+;   EAX,EDX,PBX
 
 PROC ChgADSR
 
-    Push    ESI                                                                 ;ESI will get popped on return from StartEnv
-    LEA     ESI,[EBX+dsp]
-    LEA     EBX,[EBX*8+mix]
+    ;NOTE (amd64 port): PSI is pushed here (not through StartEnv's own PROC/USES ESI prologue, which
+    ; this jumps past) purely so StartEnv's shared exit points -- which still expect to pop it -- stay
+    ; balanced; the pushed value is whatever ChgADSR's own caller had in PSI, restored transparently
+    ; on return. PSI itself is then immediately given a real value below (the dsp pointer), same as
+    ; it would have on a normal call into StartEnv.
+
+    Push    PSI                                                                 ;PSI will get popped on return from StartEnv
+    IdxLd   LEA,PSI,dsp,PBX
+    IdxLd   LEA,PBX,mix,PBX*8
 
     XOr     EAX,EAX
-    Mov     DL,[EBX+eMode]
+    Mov     DL,[PBX+eMode]
     And     DL,0Fh
 
-    Cmp     DL,E_ATT                                                            ;If the envelope isn't in attack, decay, or sustain
+    Cmp     DL,E_ATT                                                            ;If the envelope is not in attack, decay, or sustain
     JE      ChgAtt                                                              ; mode, changes to the ADSR registers have no effect
     Cmp     DL,E_DECAY
     JE      ChgDec
     Cmp     DL,E_SUST
     JE      ChgSus
 
-    Pop     ESI                                                                 ;No changes were made, pop ESI and return
+    Pop     PSI                                                                 ;No changes were made, pop PSI and return
 
 ENDP
 
@@ -2325,13 +2396,13 @@ ENDP
 ;Out:
 ;   EAX = not 0: success, 0: failure
 
-PROC SetDSPReg, dReg, dVal
+EXPROC SetDSPReg, dReg, dVal
 USES ECX,EDX,EBX
 
     MovZX   EBX,byte [dReg]
     MovZX   EAX,byte [dVal]
 
-    XOr     CL,CL                                                               ;CL = Don't emulate DSP
+    XOr     CL,CL                                                               ;CL = Do not emulate DSP
     Call    DSPInB                                                              ;Process register write without calling debug function
 
 ENDP
@@ -2353,7 +2424,7 @@ ENDP
 PROC InitReg
 USES ECX
 
-    XOr     CL,CL                                                               ;CL = Don't emulate DSP
+    XOr     CL,CL                                                               ;CL = Do not emulate DSP
     Call    DSPInC                                                              ;Process register regardless of current register value
 
 ENDP
@@ -2375,43 +2446,42 @@ ENDP
 PROC DSPIn
 
 %if DEBUG
-    Mov     EDX,[pTrace]
-    Test    EDX,EDX
-    JZ      short .NoDbg
+    Mov     PDX,[pTrace]
+    Test    PDX,PDX
+    JZ      .NoDbg
         MovZX   EAX,AL
-        Add     EBX,dsp
+        LblOp   Add,PBX,dsp                                                     ;PBX itself becomes the pointer
 
-        Push    ECX,ESI,EDI                                                     ;Save these registers
-        Push    EAX                                                             ;Pass these as parameters
-        Push    EBX
+        Push    PCX,PSI,PDI                                                     ;Save these registers
+        Push    PAX                                                             ;Pass these as parameters
+        Push    PBX
+        Call    PDX
+        Pop     PBX
+        Pop     PAX
+        Pop     PDI,PSI,PCX
 
-        Call    EDX
-
-        Pop     EBX
-        Pop     EAX
-        Pop     EDI,ESI,ECX
-
-        MovZX   EBX,BL
+        MovZX   EBX,BL                                                          ;EBX = original dsp index
 
     .NoDbg:
 %endif
 
     Test    dword [apuCbMask],CBE_DSPREG
-    JZ      short .NoCallback
+    JZ      .NoCallback
 
-    Mov     EDX,[apuCbFunc]
-    Test    EDX,EDX
-    JZ      short .NoCallback
+    Mov     PDX,[apuCbFunc]
+    Test    PDX,PDX
+    JZ      .NoCallback
     Test    BL,80h                                                              ;Writes to 80-FFh have no effect (reads are mirrored
-    JNZ     short .NoCallback                                                   ; from lower mem)
-        Push    ECX,EBX,EAX                                                     ;STDCALL is destroy EAX,ECX,EDX
+    JNZ     .NoCallback                                                         ; from lower mem)
+        Push    PCX,PBX,PAX                                                     ;STDCALL is destroy PAX,PCX,PDX
         MovZX   EBX,BL
         MovZX   EAX,AL
-        Call    EDX,dword CBE_DSPREG,EBX,EAX,dword 0
+        ExtCall PDX,dword CBE_DSPREG,EBX,EAX,dword 0
+
         Mov     BL,AL                                                           ;Copy overwrote value
-        Pop     EAX
+        Pop     PAX
         Mov     AL,BL
-        Pop     EBX,ECX
+        Pop     PBX,PCX
 
     .NoCallback:
     Mov     CL,1                                                                ;CL = Emulate DSP to catch up to current state
@@ -2427,13 +2497,13 @@ DSPInB:
     Cmp     BL,endx
     JE      REndX
 
-    Cmp     AL,[EBX+dsp]                                                        ;Is the new data the same as the current data?
-    JZ      short DSPDone                                                       ;   Yes, don't bother updating
+    IdxLd   Cmp,AL,dsp,PBX                                                      ;Is the new data the same as the current data?
+    JZ      DSPDone                                                             ;   Yes, do not bother updating
 
-    Mov     [EBX+dsp],AL                                                        ;Update DSP RAM
+    IdxSt   Mov,dsp,PBX,AL                                                      ;Update DSP RAM
 
 DSPInC:
-    Mov     EDX,[EBX*4+dspRegs]                                                 ;Get the pointer to the register handler
+    IdxLd   Mov,PDX,dspRegs,PBX*PTRSIZE                                         ;Get the pointer to the register handler
 
     Mov     AH,BL
     And     EBX,70h
@@ -2441,21 +2511,21 @@ DSPInC:
     ShL     EBX,3                                                               ;EBX indexes mix (needed by some handlers)
     And     AH,MFLG_OFF                                                         ;AH = 08h if the register is in dsp.voice
 
-    Test    [EBX+mix+mFlg],AH                                                   ;Is the voice inactive?
-    JNZ     short DSPDone                                                       ;   Yes, don't bother updating
+    IdxSt   Test,mix,PBX+mFlg,AH                                                ;Is the voice inactive?
+    JNZ     DSPDone                                                             ;   Yes, do not bother updating
 
 %if DSPBK && DSPINTEG
     Test    CL,CL                                                               ;If write was from SPC700, emulate DSP before
-    JZ      short .NoOutput                                                     ; processing new register data
+    JZ      .NoOutput                                                           ; processing new register data
         Call    CatchUp
 
     .NoOutput:
 %endif
 
-    Jmp     EDX
+    Jmp     PDX
 
 DSPDone:
-    XOr     EAX,EAX                                                             ;DSP state didn't change
+    XOr     EAX,EAX                                                             ;DSP state did not change
 
 ENDP
 
@@ -2470,43 +2540,43 @@ ENDP
     ;KOff process ----------------------
     MovZX   ECX,byte [koffRsv]                                                  ;Set CH = 0 for use with CatchKOn
     Test    CL,CL
-    JZ      short %%Done
+    JZ      %%Done
 
-    Push    ESI
+    Push    PSI
 
     Mov     CH,1
-    Mov     EBX,mix
-    Mov     ESI,dsp
+    LoadPtr PBX,mix
+    LoadPtr PSI,dsp
     Mov     EDX,[31*4+rateTab]
     XOr     EAX,EAX
 
     %%Next:
         Test    CL,CH
-        JZ      short %%Skip
+        JZ      %%Skip
 
         Test    [voiceMix],CH                                                   ;Is voice currently playing?
-        JZ      short %%Skip                                                    ;   No, do nothing
+        JZ      %%Skip                                                          ;   No, do nothing
 
-        Test    byte [EBX+mFlg],MFLG_KOFF                                       ;Is already voice in key off mode?
-        JNZ     short %%Skip                                                    ;   Yes, do nothing
-            Mov     byte [EBX+eRIdx],31                                         ;Place envelope in release mode
-            Mov     [EBX+eRate],EDX
-            Mov     [EBX+eCnt],EDX
-            Mov     dword [EBX+eAdj],A_KOFF
-            Mov     dword [EBX+eDest],D_MIN
-            Mov     byte [EBX+eMode],E_REL
-            Or      byte [EBX+mFlg],MFLG_KOFF                                   ;Flag voice as keying off
-            Mov     [EBX+vRsv],AL                                               ;Reset ADSR/Gain changed flag
-            Mov     [EBX+mKOn],AL                                               ;Reset delay time
+        Test    byte [PBX+mFlg],MFLG_KOFF                                       ;Is already voice in key off mode?
+        JNZ     %%Skip                                                          ;   Yes, do nothing
+            Mov     byte [PBX+eRIdx],31                                         ;Place envelope in release mode
+            Mov     [PBX+eRate],EDX
+            Mov     [PBX+eCnt],EDX
+            Mov     dword [PBX+eAdj],A_KOFF
+            Mov     dword [PBX+eDest],D_MIN
+            Mov     byte [PBX+eMode],E_REL
+            Or      byte [PBX+mFlg],MFLG_KOFF                                   ;Flag voice as keying off
+            Mov     [PBX+vRsv],AL                                               ;Reset ADSR/Gain changed flag
+            Mov     [PBX+mKOn],AL                                               ;Reset delay time
 
         %%Skip:
-        Add     ESI,10h
-        Sub     EBX,-80h
+        Add     PSI,10h
+        Sub     PBX,-80h
 
     Add     CH,CH
     JNZ     %%Next
 
-    Pop     ESI
+    Pop     PSI
 
     %%Done:
     Mov     [koffRsv],CH                                                        ;CH = 0
@@ -2518,27 +2588,27 @@ ENDP
     Or      CL,[konRun]
     JZ      %%Done
 
-    Push    ESI
+    Push    PSI
 
     Mov     CL,[konRsv]
     Mov     CH,1
-    Mov     EBX,mix
-    Mov     ESI,dsp
+    LoadPtr PBX,mix
+    LoadPtr PSI,dsp
 
     %%Next:
 %if INTBK
-        Test    byte [EBX+mKOn],-1                                              ;Is already voice in key on mode?
-        JNZ     short %%CheckKOff                                               ;   Yes
+        Test    byte [PBX+mKOn],-1                                              ;Is already voice in key on mode?
+        JNZ     %%CheckKOff                                                     ;   Yes
             Test    CL,CH
             JZ      %%Skip
 
             XOr     EDX,EDX
-            And     byte [EBX+mFlg],MFLG_USER                                   ;Leave user voice flags (mute and noise)
-            Mov     byte [EBX+mKOn],KON_DELAY                                   ;Set delay time from writing KON to output
-            Mov     [EBX+eVal],EDX                                              ;Reset envelope and wave height, because noise may be
-            Mov     [EBX+mOut],EDX                                              ; mixed in when the channel volume is changed immediately
-            Mov     [ESI+envx],DL                                               ; after KON.
-            Mov     [ESI+outx],DL
+            And     byte [PBX+mFlg],MFLG_USER                                   ;Leave user voice flags (mute and noise)
+            Mov     byte [PBX+mKOn],KON_DELAY                                   ;Set delay time from writing KON to output
+            Mov     [PBX+eVal],EDX                                              ;Reset envelope and wave height, because noise may be
+            Mov     [PBX+mOut],EDX                                              ; mixed in when the channel volume is changed immediately
+            Mov     [PSI+envx],DL                                               ; after KON.
+            Mov     [PSI+outx],DL
 
             Or      [konRun],CH                                                 ;Start KON working
             Not     CH
@@ -2547,13 +2617,13 @@ ENDP
             Jmp     %%Skip
 
         %%CheckKOff:
-        Cmp     byte [EBX+mKOn],KON_CHKKOFF                                     ;Did time for checked KOFF after KON had been written?
-        JA      short %%CheckEnv                                                ;   No
+        Cmp     byte [PBX+mKOn],KON_CHKKOFF                                     ;Did time for checked KOFF after KON had been written?
+        JA      %%CheckEnv                                                      ;   No
 
         Test    [dsp+kof],CH                                                    ;Is KOFF still written?
-        JZ      short %%CheckEnv                                                ;   No
-            Or      byte [EBX+mFlg],MFLG_KOFF                                   ;Flag voice as keying off
-            Mov     byte [EBX+mKOn],0                                           ;Reset delay time
+        JZ      %%CheckEnv                                                      ;   No
+            Or      byte [PBX+mFlg],MFLG_KOFF                                   ;Flag voice as keying off
+            Mov     byte [PBX+mKOn],0                                           ;Reset delay time
 
             Not     CH
             And     [konRun],CH                                                 ;Cancel KON working
@@ -2561,93 +2631,96 @@ ENDP
             Jmp     %%Skip
 
         %%CheckEnv:
-        Cmp     byte [EBX+mKOn],KON_SAVEENV                                     ;Did time for saved envelope pass after KON had been
-        JNE     short %%StartKON                                                ; written?  No
-            Mov     DX,[ESI+adsr]                                               ;Save ADSR parameters
-            Mov     [EBX+vAdsr],DX
-            MovZX   DX,byte [ESI+gain]                                          ;Save Gain parameters
-            Mov     [EBX+vGain],DL
-            Mov     [EBX+vRsv],DH                                               ;Reset ADSR/Gain changed flag
+        Cmp     byte [PBX+mKOn],KON_SAVEENV                                     ;Did time for saved envelope pass after KON had been
+        JNE     %%StartKON                                                      ; written?  No
+            Mov     DX,[PSI+adsr]                                               ;Save ADSR parameters
+            Mov     [PBX+vAdsr],DX
+            MovZX   DX,byte [PSI+gain]                                          ;Save Gain parameters
+            Mov     [PBX+vGain],DL
+            Mov     [PBX+vRsv],DH                                               ;Reset ADSR/Gain changed flag
 
         %%StartKON:
-        Dec     byte [EBX+mKOn]                                                 ;Did time for enabled voice pass after KON had been
+        Dec     byte [PBX+mKOn]                                                 ;Did time for enabled voice pass after KON had been
         JNZ     %%Skip                                                          ; written?  No, do nothing
-            And     byte [EBX+mFlg],MFLG_USER                                   ;Leave user voice flags (mute and noise)
+            And     byte [PBX+mFlg],MFLG_USER                                   ;Leave user voice flags (mute and noise)
 %else
         Test    CL,CH
         JZ      %%Skip
             XOr     EDX,EDX
-            And     byte [EBX+mFlg],MFLG_USER                                   ;Leave user voice flags (mute and noise)
-            Or      byte [EBX+mFlg],MFLG_KOFF                                   ;Flag voice as keying off
-            Mov     [EBX+mKOn],DL                                               ;Start playing immediately
+            And     byte [PBX+mFlg],MFLG_USER                                   ;Leave user voice flags (mute and noise)
+            Or      byte [PBX+mFlg],MFLG_KOFF                                   ;Flag voice as keying off
+            Mov     [PBX+mKOn],DL                                               ;Start playing immediately
 
         Test    [dsp+kof],CH                                                    ;Is KOFF still written?
         JNZ     %%Skip                                                          ;   No
-            And     byte [EBX+mFlg],~MFLG_KOFF                                  ;Cancel keying off flag
+            And     byte [PBX+mFlg],~MFLG_KOFF                                  ;Cancel keying off flag
 
             Or      [konRun],CH                                                 ;Start KON working
             Not     CH
             And     [dsp+endx],CH                                               ;Clear ENDX register if started KON
             Not     CH
 
-            Mov     DX,[ESI+adsr]                                               ;Save ADSR parameters
-            Mov     [EBX+vAdsr],DX
-            MovZX   DX,byte [ESI+gain]                                          ;Save Gain parameters
-            Mov     [EBX+vGain],DL
-            Mov     [EBX+vRsv],DH                                               ;Reset ADSR/Gain changed flag
+            Mov     DX,[PSI+adsr]                                               ;Save ADSR parameters
+            Mov     [PBX+vAdsr],DX
+            MovZX   DX,byte [PSI+gain]                                          ;Save Gain parameters
+            Mov     [PBX+vGain],DL
+            Mov     [PBX+vRsv],DH                                               ;Reset ADSR/Gain changed flag
 %endif
 
             ;Set voice volume ------------------
+            ;NOTE: each LblOp below loads its own scratch copy of mix's address fresh -- deliberately
+            ; not shared across the Call RVolL in between, since RVolL (ChnSep) uses PDX as its own
+            ; scratch and does not restore it.
 %if STEREO
-            Sub     EBX,mix
+            LblOp   Sub,PBX,mix
             Call    RVolL
-            Add     EBX,mix
-            Mov     EAX,[EBX+mTgtL]
-            Mov     [EBX+mChnL],EAX
-            Mov     EAX,[EBX+mTgtR]
-            Mov     [EBX+mChnR],EAX
+            LblOp   Add,PBX,mix
+            Mov     EAX,[PBX+mTgtL]
+            Mov     [PBX+mChnL],EAX
+            Mov     EAX,[PBX+mTgtR]
+            Mov     [PBX+mChnR],EAX
 %else
-            Sub     EBX,mix
-            Mov     AL,[ESI+volL]
+            LblOp   Sub,PBX,mix
+            Mov     AL,[PSI+volL]
             Call    RVolL
-            Mov     AL,[ESI+volR]
+            Mov     AL,[PSI+volR]
             Call    RVolR
-            Add     EBX,mix
+            LblOp   Add,PBX,mix
 %endif
 
             ;Set pitch -------------------------
-            MovZX   EAX,word [ESI+pitch]
+            MovZX   EAX,word [PSI+pitch]
             Test    dword [dspOpts],DSP_NOPLMT                                  ;If do not remove the pitch limit, the highest
             SetZ    DL                                                          ; pitch value is 3FFF
             Dec     DL
             Or      DL,3Fh
             And     AH,DL
-            Mov     [EBX+mOrgP],EAX
-            MovZX   EDX,byte [ESI+srcn]                                         ;EDX = Source
-            Mov     [EBX+mSrc],DL                                               ;Save source number
-            Add     EAX,[scr700det+EDX*4]                                       ;EAX += Detune[EDX]
+            Mov     [PBX+mOrgP],EAX
+            MovZX   EDX,byte [PSI+srcn]                                         ;EDX = Source
+            Mov     [PBX+mSrc],DL                                               ;Save source number
+            IdxLd   Add,EAX,scr700det,PDX*4                                     ;EAX += Detune[EDX]
 
             Mul     dword [pitchAdj]
             ShRD    EAX,EDX,16
             AdC     EAX,0
-            Mov     [EBX+mRate],EAX
-            Mov     word [EBX+mDec],0
+            Mov     [PBX+mRate],EAX
+            Mov     word [PBX+mDec],0
 
             ;Key ON ----------------------------
-            Mov     AX,[ESI+adsr]                                               ;Save now ADSR/Gain parameters
-            Mov     DL,[ESI+gain]
-            Push    EAX,EDX
-            Mov     AX,[EBX+vAdsr]                                              ;Restore ADSR/Gain parameters
-            Mov     [ESI+adsr],AX
-            Mov     DL,[EBX+vGain]
-            Mov     [ESI+gain],DL
+            Mov     AX,[PSI+adsr]                                               ;Save now ADSR/Gain parameters
+            Mov     DL,[PSI+gain]
+            Push    PAX,PDX
+            Mov     AX,[PBX+vAdsr]                                              ;Restore ADSR/Gain parameters
+            Mov     [PSI+adsr],AX
+            Mov     DL,[PBX+vGain]
+            Mov     [PSI+gain],DL
 
             Call    StartSrc                                                    ;Start waveform decompression
             Call    StartEnv                                                    ;Start envelope
 
-            Pop     EDX,EAX                                                     ;Restore ADSR/Gain parameters
-            Mov     [ESI+adsr],AX
-            Mov     [ESI+gain],DL
+            Pop     PDX,PAX                                                     ;Restore ADSR/Gain parameters
+            Mov     [PSI+adsr],AX
+            Mov     [PSI+gain],DL
 
             Or      [voiceMix],CH                                               ;Mark voice as being on internally
             Not     CH
@@ -2655,13 +2728,13 @@ ENDP
             Not     CH
 
         %%Skip:
-        Add     ESI,10h
-        Sub     EBX,-80h
+        Add     PSI,10h
+        Sub     PBX,-80h
 
     Add     CH,CH
     JNZ     %%Next
 
-    Pop     ESI                                                                 ;Now, CH = 0
+    Pop     PSI                                                                 ;Now, CH = 0
 
     %%Done:
     Mov     [konRsv],CH
@@ -2672,17 +2745,17 @@ ENDP
 ;Set the Denormalized Numbers to 0
 ;
 ;Calculating denormalized numbers requires a many number of CPU clocks.  If the CPU does not support
-;denormalized numbers, will take more processing time more because using software emulation.
+; denormalized numbers, will take more processing time more because using software emulation.
 ;
 ;However, when it comes to audio data, denormalized numbers have very small outputs that are
-;inaudible, so they can be treated as 0.
+; inaudible, so they can be treated as 0.
 ;
 ;Destroys:
 ;   EAX
 %macro ZeroDN 1
     Mov     EAX,[%1]
     And     EAX,7F800000h                                                       ;Is the exponent part zero (denormalized)?
-    JNZ     short %%Normal                                                      ;   No
+    JNZ     %%Normal                                                            ;   No
         Mov     [%1],EAX                                                        ;EAX = 0
 
     %%Normal:
@@ -2691,8 +2764,8 @@ ENDP
 %macro ZeroDNEFB 1
     FLd     dword [%1]
     FMul    dword [fpShR19]
-    FStP    dword [ESP-4]
-    ZeroDN  ESP-4
+    FStP    dword [PSP-4]
+    ZeroDN  PSP-4
 %endmacro
 
 
@@ -2705,7 +2778,7 @@ ENDP
 REndX:
 %if DSPBK && DSPINTEG
     Test    CL,CL                                                               ;If write was from SPC700, emulate DSP before
-    JZ      short .NoOutput                                                     ; processing new register data
+    JZ      .NoOutput                                                           ; processing new register data
         Call    CatchUp
     .NoOutput:
 %endif
@@ -2722,7 +2795,7 @@ REndX:
 RKOff:
 %if DSPBK && DSPINTEG
     Test    CL,CL                                                               ;If write was from SPC700, emulate DSP before
-    JZ      short .NoOutput                                                     ; processing new register data
+    JZ      .NoOutput                                                           ; processing new register data
         Call    CatchUp
     .NoOutput:
 %endif
@@ -2745,7 +2818,7 @@ RKOff:
 RKOn:
 %if DSPBK && DSPINTEG
     Test    CL,CL                                                               ;If write was from SPC700, emulate DSP before
-    JZ      short .NoOutput                                                     ; processing new register data
+    JZ      .NoOutput                                                           ; processing new register data
         Call    CatchUp
     .NoOutput:
 %endif
@@ -2786,8 +2859,8 @@ RVolL:
     Sub     AL,AH
     MovSX   EAX,AL
 
-    Mov     [ESP-4],EAX
-    FILd    dword [ESP-4]
+    Mov     [PSP-4],EAX
+    FILd    dword [PSP-4]
     FMul    dword [fpShR7]                                                      ;Convert volume from fixed to floating-point
     FSt     dword [EBX+mix+mTgtL]
     FStP    dword [EBX+mix+mChnL]
@@ -2808,8 +2881,8 @@ RVolR:
     Sub     AL,AH
     MovSX   EAX,AL
 
-    Mov     [ESP-4],EAX
-    FILd    dword [ESP-4]
+    Mov     [PSP-4],EAX
+    FILd    dword [PSP-4]
     FMul    dword [fpShR7]
     FSt     dword [EBX+mix+mTgtR]
     FStP    dword [EBX+mix+mChnR]
@@ -2825,24 +2898,24 @@ RVolR:
 RPitch:
     XOr     EAX,EAX
     Test    dword [dspOpts],DSP_NOPREAD                                         ;Is pitch read enabled?
-    JNZ     short .NoRead                                                       ;   No
-        ShR     EBX,3
-        MovZX   EAX,word [EBX+dsp+pitch]
+    JNZ     .NoRead                                                             ;   No
+        ShR     PBX,3
+        IdxLdX  MovZX,PAX,word,dsp,PBX+pitch                                    ;EAX = Pitch
         Test    dword [dspOpts],DSP_NOPLMT                                      ;If do not remove the pitch limit, the highest
         SetZ    DL                                                              ; pitch value is 3FFF
         Dec     DL
         Or      DL,3Fh
         And     AH,DL
-        ShL     EBX,3
-        Mov     [EBX+mix+mOrgP],EAX
+        ShL     PBX,3
+        IdxSt   Mov,mix,PBX+mOrgP,EAX
 
-        MovZX   EDX,byte [EBX+mix+mSrc]                                         ;EDX = Source
-        Add     EAX,[scr700det+EDX*4]                                           ;EAX += Detune[EDX]
+        IdxLdX  MovZX,PDX,byte,mix,PBX+mSrc                                     ;EDX = Source
+        IdxLd   Add,EAX,scr700det,PDX*4                                         ;EAX += Detune[EDX]
 
         Mul     dword [pitchAdj]                                                ;Convert the pitch into a more meaningful value
         ShRD    EAX,EDX,16                                                      ;Remove 16-bit fraction from pitchAdj
         AdC     EAX,0
-        Mov     [EBX+mix+mRate],EAX
+        IdxSt   Mov,mix,PBX+mRate,EAX
 
         XOr     EAX,EAX
         Inc     EAX
@@ -2854,33 +2927,38 @@ RPitch:
 ;Envelope
 
 RADSR:
+    ;NOTE: RGain (below) pushes ESI/PSI verbatim for StartEnv to pop -- it must still hold whatever
+    ; DSPIn's own caller had, all the way through both RADSR's body and a possible fall-through into
+    ; RGain via .SetGain: below. So neither of these two handlers may use PSI as scratch for the
+    ; dsp/mix base pointers -- IdxSt/IdxLd (default scratch PDI) are used instead, each self-contained
+    ; so nothing needs to survive across the Call ChgADSR/Jmp ChgGain either.
     XOr     EAX,EAX
-    Test    byte [EBX+mix+mFlg],MFLG_KOFF                                       ;Is voice in key off mode?
-    JNZ     short .NoChg                                                        ;   Yes, envelope setting can't be changed now
+    IdxSt   Test byte,mix,PBX+mFlg,MFLG_KOFF                                    ;Is voice in key off mode?
+    JNZ     .NoChg                                                              ;   Yes, envelope setting cannot be changed now
 
-    Test    byte [EBX+mix+mKOn],-1
+    IdxSt   Test byte,mix,PBX+mKOn,-1
     SetNZ   AL
-    Or      [EBX+mix+vRsv],AL
+    IdxSt   Or,mix,PBX+vRsv,AL
     Test    AL,AL                                                               ;Has time passed since KON was written?
-    JNZ     short .NoChg                                                        ;   No, update ADSR parameters later
-        Mov     AL,[EBX+mix+eMode]                                              ;AL = ADSR or Gain mode
-        ShR     EBX,3
+    JNZ     .NoChg                                                              ;   No, update ADSR parameters later
+        IdxLd   Mov,AL,mix,PBX+eMode                                            ;AL = ADSR or Gain mode
+        ShR     PBX,3
         And     AL,E_ADSR
-        Mov     AH,[EBX+dsp+adsr]
+        IdxLd   Mov,AH,dsp,PBX+adsr
         And     AH,80h
         Or      AL,AH
 
         Test    AL,80h + E_ADSR
-        JZ      short .NoChg                                                    ;Envelope is already in gain mode, do nothing
+        JZ      .NoChg                                                          ;Envelope is already in gain mode, do nothing
         Test    AL,80h
-        JZ      short .SetGain                                                  ;Switched from ADSR to Gain
+        JZ      .SetGain                                                        ;Switched from ADSR to Gain
         Test    AL,E_ADSR
-        JNZ     short .Change                                                   ;Envelope is in ADSR mode, update settings
+        JNZ     .Change                                                         ;Envelope is in ADSR mode, update settings
 
-        Mov     AL,[EBX*8+mix+eMode]                                            ;Switched from Gain to ADSR, restore previous ADSR
+        IdxLd   Mov,AL,mix,PBX*8+eMode                                          ;Switched from Gain to ADSR, restore previous ADSR
         ShR     AL,4                                                            ; state then update settings
         Or      AL,E_ADSR
-        Mov     [EBX*8+mix+eMode],AL
+        IdxSt   Mov,mix,PBX*8+eMode,AL
 
         .Change:
         Call    ChgADSR
@@ -2891,29 +2969,29 @@ RADSR:
     Ret
 
     .SetGain:
-        ShL     EBX,3
-        ShL     byte [EBX+mix+eMode],4                                          ;Save ADSR state, ChgGain will set bits 7 and 3-0
+        ShL     PBX,3
+        IdxSt   ShL byte,mix,PBX+eMode,4                                        ;Save ADSR state, ChgGain will set bits 7 and 3-0
 
 RGain:
     XOr     EAX,EAX
-    Test    byte [EBX+mix+mFlg],MFLG_KOFF                                       ;Is voice in key off mode?
-    JNZ     short .NoChg                                                        ;   Yes, envelope setting can't be changed now
+    IdxSt   Test byte,mix,PBX+mFlg,MFLG_KOFF                                    ;Is voice in key off mode?
+    JNZ     .NoChg                                                              ;   Yes, envelope setting cannot be changed now
 
-    Test    byte [EBX+mix+mKOn],-1
+    IdxSt   Test byte,mix,PBX+mKOn,-1
     SetNZ   AL
     Add     AL,AL
-    Or      [EBX+mix+vRsv],AL
+    IdxSt   Or,mix,PBX+vRsv,AL
     Test    AL,AL                                                               ;Has time passed since KON was written?
-    JNZ     short .NoChg                                                        ;   No, update GAIN parameters later
+    JNZ     .NoChg                                                              ;   No, update GAIN parameters later
 
-    ShR     EBX,3
-    Test    byte [EBX+dsp+adsr],80h                                             ;Is envelope in gain mode?
-    JNZ     short .NoChg                                                        ;   No, setting gain register has no effect
-        Push    .Return
-        Push    ESI                                                             ;StartEnv will pop ESI on return
-        LEA     ESI,[EBX+dsp]
-        LEA     EBX,[EBX*8+mix]
-        Jmp     ChgGain                                                         ;Begin ADSR envelope
+    ShR     PBX,3
+    IdxSt   Test byte,dsp,PBX+adsr,80h                                          ;Is envelope in gain mode?
+    JNZ     .NoChg                                                              ;   No, setting gain register has no effect
+        LoadPtr PDX,.Return
+        Push    PDX,PSI                                                         ;PSI will get popped on return from StartEnv
+        IdxLd   LEA,PSI,dsp,PBX
+        IdxLd   LEA,PBX,mix,PBX*8
+        Jmp     ChgGain                                                         ;See StartEnv
 
         .Return:
         XOr     EAX,EAX
@@ -2937,8 +3015,8 @@ RMVolL:
     Sub     AL,AH
     MovSX   EAX,AL
 
-    Mov     [ESP-4],EAX
-    FILd    dword [ESP-4]
+    Mov     [PSP-4],EAX
+    FILd    dword [PSP-4]
     FIMul   dword [volAdj]
     FMul    dword [fpShR7]                                                      ;>> 7 to turn MVOL into a float
     FStP    dword [volMainL]                                                    ;Leave the 16-bits added by volAdj so the final
@@ -2966,8 +3044,8 @@ RMVolR:
     Sub     AL,AH
     MovSX   EAX,AL
 
-    Mov     [ESP-4],EAX
-    FILd    dword [ESP-4]
+    Mov     [PSP-4],EAX
+    FILd    dword [PSP-4]
     FIMul   dword [volAdj]
     FMul    dword [fpShR7]
     FStP    dword [volMainR]
@@ -2988,8 +3066,8 @@ REVolL:
     Sub     AL,AH
     MovSX   EAX,AL
 
-    Mov     [ESP-4],EAX
-    FILd    dword [ESP-4]
+    Mov     [PSP-4],EAX
+    FILd    dword [PSP-4]
     FIMul   dword [volAdj]
     FMul    dword [fpShR7]
     FStP    dword [volEchoL]
@@ -3017,8 +3095,8 @@ REVolR:
     Sub     AL,AH
     MovSX   EAX,AL
 
-    Mov     [ESP-4],EAX
-    FILd    dword [ESP-4]
+    Mov     [PSP-4],EAX
+    FILd    dword [PSP-4]
     FIMul   dword [volAdj]
     FMul    dword [fpShR7]
     FStP    dword [volEchoR]
@@ -3032,8 +3110,8 @@ REVolR:
 
 REFB:
     MovSX   EAX,AL
-    Mov     [ESP-4],EAX
-    FILd    dword [ESP-4]
+    Mov     [PSP-4],EAX
+    FILd    dword [PSP-4]
 
 %if STEREO
     FLd     ST
@@ -3056,11 +3134,11 @@ REFB:
     Ret
 
 REDl:
-    Push    ECX
+    Push    PCX
     Mov     AL,byte [dsp+edl]
     And     EAX,0Fh
     ShL     EAX,9                                                               ;EAX = Number of samples to delay
-    Push    EAX
+    Push    PAX
 
     Test    EAX,EAX                                                             ;If EAX = 0, EAX = 1
     SetZ    CL
@@ -3070,12 +3148,12 @@ REDl:
 
 %if ECHOMEM=0
     ;Normally, the current pointer is NOT initialized by changing the EDL, but when the playing speed
-    ;is set other than 100%, the current pointer is initialized to rewrite memory in unexpected places.
+    ; is set other than 100%, the current pointer is initialized to rewrite memory in unexpected places.
     Mov     [echoMaxM],EAX
     Mov     [echoCurM],EAX
 %endif
 
-    Pop     EAX
+    Pop     PAX
     Mul     dword [dspRate]                                                     ;EAX *= Rate / 32kHz
     Mov     ECX,32000
     Div     ECX
@@ -3085,20 +3163,20 @@ REDl:
     Or      AL,CL
     ShL     EAX,3                                                               ;Multiply by 8, since SNESAPU echo is stored in
     Mov     [echoLenD],EAX                                                      ; 32-bit stereo
-    Pop     ECX
+    Pop     PCX
 
     XOr     EAX,EAX
     Inc     EAX
     Ret
 
 RFCf:
-    ShR     EBX,5
+    ShR     PBX,5
     MovSX   EAX,AL
-    Mov     [ESP-4],EAX
+    Mov     [PSP-4],EAX
 
-    FILd    dword [ESP-4]
+    FILd    dword [PSP-4]
     FMul    dword [fpShR7]
-    FStP    dword [EBX+firTaps]
+    IdxUn   FStP dword,firTaps,PBX
 
     XOr     EAX,EAX                                                             ;DSP state changed if echo was enabled
     Inc     EAX
@@ -3109,25 +3187,25 @@ RFCf:
 
 RPMOn:
     ;Reset all pitch on all voices -----------
-    Push    ECX
-    Mov     EBX,mix
+    Push    PCX
+    LoadPtr PBX,mix
     Mov     CL,8
 
     .Next:
-        Mov     EAX,[EBX+mOrgP]
-        MovZX   EDX,byte [EBX+mSrc]                                             ;EDX = Source
-        Add     EAX,[scr700det+EDX*4]                                           ;EAX += Detune[EDX]
+        Mov     EAX,[PBX+mOrgP]
+        MovZX   EDX,byte [PBX+mSrc]                                             ;EDX = Source
+        IdxLd   Add,EAX,scr700det,PDX*4                                         ;EAX += Detune[EDX]
 
         Mul     dword [pitchAdj]
         ShRD    EAX,EDX,16
         AdC     EAX,0
-        Mov     [EBX+mRate],EAX
+        Mov     [PBX+mRate],EAX
 
-        Sub     EBX,-80h
+        Sub     PBX,-80h
 
     Dec     CL
-    JNZ     short .Next
-    Pop     ECX
+    JNZ     .Next
+    Pop     PCX
 
     XOr     EAX,EAX
     Inc     EAX
@@ -3135,24 +3213,24 @@ RPMOn:
 
 RFlg:
     Test    AL,80h                                                              ;Has a soft reset been initialized?
-    JZ      short .NoSRst                                                       ;   No
-        Mov     EBX,dsp
+    JZ      .NoSRst                                                             ;   No
+        LoadPtr PBX,dsp
         And     AL,~80h
         Or      AL,60h                                                          ;Turn on mute and disable echo
-        Mov     [EBX+flg],AL
-        Mov     [EBX+endx],BL                                                   ;Clear end block flags
-        Mov     [EBX+kon],BL
-        Mov     [EBX+kof],BL
+        Mov     [PBX+flg],AL
+        Mov     [PBX+endx],BL                                                   ;Clear end block flags
+        Mov     [PBX+kon],BL
+        Mov     [PBX+kof],BL
         Mov     [voiceMix],BL
 
         ;Reset internal voice settings --------
-        Mov     EBX,mix+mFlg
+        LoadPtr PBX,mix+mFlg
         Mov     AL,8
 
         .MFlg:
-            And     byte [EBX],MFLG_USER                                        ;Leave user voice flags (mute and noise)
-            Or      byte [EBX],MFLG_OFF                                         ;Set voice to inactive
-            Sub     EBX,-80h
+            And     byte [PBX],MFLG_USER                                        ;Leave user voice flags (mute and noise)
+            Or      byte [PBX],MFLG_OFF                                         ;Set voice to inactive
+            Sub     PBX,-80h
 
         Dec     AL
         JNZ     .MFlg
@@ -3161,11 +3239,11 @@ RFlg:
     ;Update noise clock ----------------------
     Mov     dword [nRate],0
     And     EAX,1Fh
-    JZ      short .NoNoise
+    JZ      .NoNoise
         Mov     EBX,EAX
         Mov     EAX,-1
         Mov     EDX,65535
-        Div     dword [EBX*4+rateTab]
+        IdxUn   Div dword,rateTab,PBX*4
         Mov     [nRate],EAX
 
     .NoNoise:
@@ -3186,7 +3264,7 @@ RNull:
 
 PROC NoneInt
 
-    FILd    word [ESI]
+    FILd    word [PSI]
 
 ENDP
 
@@ -3196,11 +3274,11 @@ ENDP
 
 PROC LinearInt
 
-    FILd    word [ESI-2]
-    FILd    word [ESI]
-    Mov     [ESP-4],EAX
+    FILd    word [PSI-2]
+    FILd    word [PSI]
+    Mov     [PSP-4],EAX
     FSub    ST,ST1                                                              ;Difference between samples
-    FIMul   dword [ESP-4]                                                       ;Multiply by delta x from last sample
+    FIMul   dword [PSP-4]                                                       ;Multiply by delta x from last sample
     FMul    dword [fpShR16]
     FAddP   ST1,ST
 
@@ -3213,15 +3291,15 @@ ENDP
 PROC Point4Int
 
     ShR     EAX,8                                                               ;EAX indexes interpolation table value
-    LEA     EAX,[EAX*8+interTab]
-    FILd    word [ESI-6]                                                        ;Get first sample
-    FIMul   word [EAX+0]
-    FILd    word [ESI-4]
-    FIMul   word [EAX+2]
-    FILd    word [ESI-2]
-    FIMul   word [EAX+4]
-    FILd    word [ESI]
-    FIMul   word [EAX+6]
+    IdxLd   LEA,PAX,interTab,PAX*8
+    FILd    word [PSI-6]                                                        ;Get first sample
+    FIMul   word [PAX+0]
+    FILd    word [PSI-4]
+    FIMul   word [PAX+2]
+    FILd    word [PSI-2]
+    FIMul   word [PAX+4]
+    FILd    word [PSI]
+    FIMul   word [PAX+6]
     FAddP   ST1,ST
     FAddP   ST1,ST
     FAddP   ST1,ST
@@ -3237,23 +3315,23 @@ PROC Point8Int
 
     ShR     EAX,4                                                               ;EAX indexes interpolation table value
     And     EAX,-16
-    Add     EAX,interTab
-    FILd    word [ESI-14]
-    FIMul   word [EAX+0]
-    FILd    word [ESI-12]
-    FIMul   word [EAX+2]
-    FILd    word [ESI-10]
-    FIMul   word [EAX+4]
-    FILd    word [ESI-8]
-    FIMul   word [EAX+6]
-    FILd    word [ESI-6]
-    FIMul   word [EAX+8]
-    FILd    word [ESI-4]
-    FIMul   word [EAX+10]
-    FILd    word [ESI-2]
-    FIMul   word [EAX+12]
-    FILd    word [ESI-0]
-    FIMul   word [EAX+14]
+    IdxLd   LEA,PAX,interTab,PAX
+    FILd    word [PSI-14]
+    FIMul   word [PAX+0]
+    FILd    word [PSI-12]
+    FIMul   word [PAX+2]
+    FILd    word [PSI-10]
+    FIMul   word [PAX+4]
+    FILd    word [PSI-8]
+    FIMul   word [PAX+6]
+    FILd    word [PSI-6]
+    FIMul   word [PAX+8]
+    FILd    word [PSI-4]
+    FIMul   word [PAX+10]
+    FILd    word [PSI-2]
+    FIMul   word [PAX+12]
+    FILd    word [PSI-0]
+    FIMul   word [PAX+14]
     FAddP   ST1,ST
     FAddP   ST1,ST
     FAddP   ST1,ST
@@ -3280,10 +3358,10 @@ ENDP
 %macro NoiseGen 0
     Mov     EAX,[nRate]
     Add     [nAcc],EAX
-    JNC     short %%NoNInc
+    JNC     %%NoNInc
         Mov     EAX,[nSeed]
         Add     EAX,EAX
-        JNS     short %%NoiseOK
+        JNS     %%NoiseOK
             XOr     EAX,40001h
 
         %%NoiseOK:
@@ -3294,10 +3372,10 @@ ENDP
 
     %%NoNInc:
     Test    dword [dspNoiseF],-1
-    JZ      short %%NoNIncF
+    JZ      %%NoNIncF
     Mov     EAX,[nfRate]
     Add     [nfAcc],EAX
-    JNC     short %%NoNIncF
+    JNC     %%NoNIncF
         IMul    EAX,[nfSmp],27865                                               ;X=(AX+C)%M  Where: X<M and 2<=A<M and 0<C<M
         Add     EAX,7263                                                        ;Add C
         CWDE                                                                    ;Modulus M (32768)
@@ -3315,23 +3393,23 @@ ENDP
 ; P' = (P * (OUTX + 32768)) >> 15
 ;
 ;Pitch modulation in the SNES uses the full 16-bit sample value, not the 8-bit value in OUTX as
-;previously believed.
+; previously believed.
 ;
 ;In:
 ;   CH  = Bitmask for current voice
-;   EBX-> Current voice in 'mix'
+;   PBX-> Current voice in 'mix'
 ;
 ;Destroys:
 ;   EAX,EDX
 
 %macro PitchMod 0
     ;Adjust pitch by sample value ---------
-    Mov     EAX,[EBX+mOut-80h]                                                  ;EAX = Wave height of last voice (-16.15)
+    Mov     EAX,[PBX+mOut-80h]                                                  ;EAX = Wave height of last voice (-16.15)
     Add     EAX,32768                                                           ;Unsign sample
-    IMul    EAX,dword [EBX+mOrgP]                                               ;Apply sample height to pitch
+    IMul    EAX,dword [PBX+mOrgP]                                               ;Apply sample height to pitch
     SAR     EAX,15
 
-    Push    ECX
+    Push    PCX
     Test    dword [dspOpts],DSP_NOPLMT
     SetNZ   CL
     Add     CL,CL
@@ -3340,7 +3418,7 @@ ENDP
     ;Clamp pitch to 14-bits ---------------
     Mov     EDX,EAX
     SAR     EDX,CL
-    JZ      short %%PitchOK
+    JZ      %%PitchOK
         SetS    AL
         MovZX   EAX,AL
         Dec     EAX
@@ -3352,16 +3430,16 @@ ENDP
         MovZX   EAX,AX
 
     %%PitchOK:
-    Pop     ECX
+    Pop     PCX
 
     ;Convert pitch to sample rate ---------
-    MovZX   EDX,byte [EBX+mSrc]                                                 ;EDX = Source
-    Add     EAX,[scr700det+EDX*4]                                               ;EAX += Detune[EDX]
+    MovZX   EDX,byte [PBX+mSrc]                                                 ;EDX = Source
+    IdxLd   Add,EAX,scr700det,PDX*4                                             ;EAX += Detune[EDX]
 
     Mul     dword [pitchAdj]
     ShRD    EAX,EDX,16
     AdC     EAX,0
-    Mov     [EBX+mRate],EAX
+    Mov     [PBX+mRate],EAX
 %endmacro
 
 
@@ -3372,40 +3450,40 @@ ENDP
 ;
 ;In:
 ;   CH  = Bitmask for current voice
-;   EBX-> Current voice in 'mix'
+;   PBX-> Current voice in 'mix'
 ;
 ;Destroys:
 ;   EAX,EDX,CL,ESI
 
 %macro UpdateSrc 0
     ;Update sample index ---------------------
-    Mov     CL,[EBX+mRate+2]                                                    ;CL = Number of whole samples to increase index by
-    Mov     EAX,[EBX+mRate]                                                     ;AX = Fraction of sample to increase index by
-    Add     [EBX+mDec],AX                                                       ;Add AX to the decimal counter
+    Mov     CL,[PBX+mRate+2]                                                    ;CL = Number of whole samples to increase index by
+    Mov     EAX,[PBX+mRate]                                                     ;AX = Fraction of sample to increase index by
+    Add     [PBX+mDec],AX                                                       ;Add AX to the decimal counter
     AdC     CL,0                                                                ;Add carry, if any, to increase amount
     JZ      %%NoSInc                                                            ;If the amount is zero, index didn't increase
 
     ;Check for end of block ------------------
     Add     CL,CL                                                               ;CL <<= 1  (for 16-bit samples)
-    Add     [EBX+sIdx],CL                                                       ;Increase sample index
-    Test    byte [EBX+sIdx],20h                                                 ;Have we reached the end of the block?
+    Add     [PBX+sIdx],CL                                                       ;Increase sample index
+    Test    byte [PBX+sIdx],20h                                                 ;Have we reached the end of the block?
     JZ      %%NoSInc                                                            ;   No
-        And     byte [EBX+sIdx],~20h                                            ;Adjust sample index for wrap around
-        Mov     EAX,[EBX+sBuf+16]                                               ;Copy last four samples of buffer
-        Mov     EDX,[EBX+sBuf+20]                                               ; (needed for interpolation)
-        Mov     [EBX+sBuf-16],EAX
-        Mov     [EBX+sBuf-12],EDX
-        Mov     EAX,[EBX+sBuf+24]
-        Mov     EDX,[EBX+sBuf+28]
-        Mov     [EBX+sBuf-8],EAX
-        Mov     [EBX+sBuf-4],EDX
-        Add     word [EBX+bCur],9                                               ;Move to next sample block
-
-        Test    byte [EBX+bHdr],1                                               ;Was this the end block?
-        JZ      short %%NotEndB                                                 ;   No, decompress next block
+        And     byte [PBX+sIdx],~20h                                            ;Adjust sample index for wrap around
+        Mov     EAX,[PBX+sBuf+16]                                               ;Copy last four samples of buffer
+        Mov     EDX,[PBX+sBuf+20]                                               ; (needed for interpolation)
+        Mov     [PBX+sBuf-16],EAX
+        Mov     [PBX+sBuf-12],EDX
+        Mov     EAX,[PBX+sBuf+24]
+        Mov     EDX,[PBX+sBuf+28]
+        Mov     [PBX+sBuf-8],EAX
+        Mov     [PBX+sBuf-4],EDX
+        Add     word [PBX+bCur],9                                               ;Move to next sample block (word-sized delta --
+                                                                                ; representation-agnostic, see note in StartSrc)
+        Test    byte [PBX+bHdr],1                                               ;Was this the end block?
+        JZ      %%NotEndB                                                       ;   No, decompress next block
         Or      [dsp+endx],CH                                                   ;Set flag in ENDX
-        Test    byte [EBX+bHdr],2                                               ;Is this source looped?
-        JNZ     short %%LoopB                                                   ;   Yes, start over at loop point
+        Test    byte [PBX+bHdr],2                                               ;Is this source looped?
+        JNZ     %%LoopB                                                         ;   Yes, start over at loop point
 
         ;End voice playback -------------------
         %%EndPlay:
@@ -3413,57 +3491,66 @@ ENDP
             And     [voiceMix],CH                                               ;Don't include voice in mixing process
             Not     CH
 
-            Mov     dword [EBX+eVal],0                                          ;Reset envelope and wave height
-            Mov     dword [EBX+mOut],0
-            Or      byte [EBX+mFlg],MFLG_OFF                                    ;Set voice to inactive
-            And     byte [EBX+mFlg],~MFLG_KOFF
+            Mov     dword [PBX+eVal],0                                          ;Reset envelope and wave height
+            Mov     dword [PBX+mOut],0
+            Or      byte [PBX+mFlg],MFLG_OFF                                    ;Set voice to inactive
+            And     byte [PBX+mFlg],~MFLG_KOFF
             Jmp     .VoiceDone
 
         ;Restart loop -------------------------
         %%LoopB:
-            MovZX   EDX,byte [EBX+mSrc]                                         ;EDX = Source
-            Test    byte [EBX+mFlg],MFLG_KOFF                                   ;Is voice in key off mode?
-            JNZ     short %%NoSrc                                               ;   Yes
-                Mov     EAX,EBX
-                Sub     EAX,mix
+            MovZX   EDX,byte [PBX+mSrc]                                         ;EDX = Source
+            Test    byte [PBX+mFlg],MFLG_KOFF                                   ;Is voice in key off mode?
+            JNZ     %%NoSrc                                                     ;   Yes
+                Mov     PAX,PBX
+                LblOp   Sub,PAX,mix
                 ShR     EAX,3
-                Add     EAX,dsp
-                Mov     DL,[EAX+srcn]                                           ;DL = Source
-                Mov     [EBX+mSrc],DL                                           ;Save source number
+                LblOp   Add,PAX,dsp
+                Mov     DL,[PAX+srcn]                                           ;DL = Source
+                Mov     [PBX+mSrc],DL                                           ;Save source number
 
             %%NoSrc:
-            Mov     DL,[scr700chg+EDX]                                          ;DL = NoteChange[EDX]
-            Mov     EAX,[pAPURAM]
-            Mov     AH,[dsp+dir]                                                ;EAX -> Source directory
-            Mov     AX,[EDX*4+EAX+2]
-            Mov     [EBX+bCur],EAX                                              ;Store loop point in current block pointer
+            IdxLd   Mov,DL,scr700chg,PDX                                        ;DL = NoteChange[EDX]
+            Mov     PAX,[pAPURAM]
+            Mov     AH,[dsp+dir]                                                ;EAX = Source directory
+            Mov     AX,[PDX*4+PAX+2]
+%ifdef WIN64
+            IdxLd   Sub,PAX,pAPURAM,0                                           ;Store as a pAPURAM-relative offset (see note in
+%endif                                                                          ; StartSrc)
+            Mov     [PBX+bCur],EAX                                              ;(x86: stores physical loop pointer directly)
 
         ;Decompress next block ----------------
         %%NotEndB:
-            Mov     ESI,[EBX+bCur]                                              ;ESI -> Current sample block
-            Push    EDI,EBX
-            Mov     AL,[ESI]                                                    ;Get block header
-            LEA     EDI,[EBX+sBuf]                                              ;EDI -> location to store samples
-            Mov     [EBX+bHdr],AL                                               ;Save header byte
-            MovSX   EDX,word [EBX+sP1]                                          ;Load previous two samples
-            MovSX   EBX,word [EBX+sP2]
+%ifdef WIN64
+            Mov     PSI,[pAPURAM]                                               ;Reconstruct the real pointer (see StartSrc --
+            Mov     EAX,[PBX+bCur]                                              ; bCur is pAPURAM-relative, not PBX-relative)
+            Add     PSI,PAX                                                     ;PSI -> Current sample block
+%else
+            Mov     ESI,[EBX+bCur]                                              ;PSI -> Current sample block
+%endif
+            Push    PDI,PBX
+            Mov     AL,[PSI]                                                    ;Get block header
+            LEA     PDI,[PBX+sBuf]                                              ;PDI -> location to store samples
+            Mov     [PBX+bHdr],AL                                               ;Save header byte
+            MovSX   EDX,word [PBX+sP1]                                          ;Load previous two samples
+            MovSX   EBX,word [PBX+sP2]
             Call    [pDecomp]                                                   ;Call user selected decompression routine
 
             Mov     EAX,EBX
-            Pop     EBX,EDI
-            Mov     [EBX+sP1],DX                                                ;Save last two samples in 16-bit form
-            Mov     [EBX+sP2],AX
+            Pop     PBX,PDI
+            Mov     [PBX+sP1],DX                                                ;Save last two samples in 16-bit form
+            Mov     [PBX+sP2],AX
 
-            Mov     AL,[EBX+bHdr]
+            Mov     AL,[PBX+bHdr]
             And     AL,3
             Cmp     AL,1
-            JNE     short %%NoSInc
+            JNE     %%NoSInc
 
             XOr     EAX,EAX
-            Mov     [EBX+sBuf+16],EAX
-            Mov     [EBX+sBuf+20],EAX
-            Mov     [EBX+sBuf+24],EAX
-            Mov     [EBX+sBuf+28],EAX
+            Mov     [PBX+sBuf+16],EAX
+            Mov     [PBX+sBuf+20],EAX
+            Mov     [PBX+sBuf+24],EAX
+            Mov     [PBX+sBuf+28],EAX
 
     %%NoSInc:
 %endmacro
@@ -3475,14 +3562,14 @@ ENDP
 ;Changes the current height of the volume envelope based on its programming.
 ;
 ;In:
-;   EBX-> Current voice in mix
+;   PBX-> Current voice in mix
 ;   CH  = Current voice bit mask
 ;
 ;Destroys:
 ;   EAX,CL,EDX,ESI
 
 %macro UpdateEnv 0
-    Test    byte [EBX+mKOn],-1                                                  ;Did time pass after KON had been written?
+    Test    byte [PBX+mKOn],-1                                                  ;Did time pass after KON had been written?
     JNZ     %%Done                                                              ;   No, quit
 
     Mov     AL,[adsrCnt]
@@ -3491,15 +3578,15 @@ ENDP
     Mov     [adsrUpd],AL
 
     %%Loop:
-    Mov     CL,[EBX+eMode]
+    Mov     CL,[PBX+eMode]
     Test    CL,E_IDLE                                                           ;Is the envelope constant?
     JNZ     %%EnvDone                                                           ;   Yes, go to ADSR/Gain check
 
-    Dec     word [2+EBX+eCnt]                                                   ;Decrease sample counter, is it zero?
+    Dec     word [PBX+eCnt+2]                                                   ;Decrease sample counter, is it zero?
     JNZ     %%LoopDone                                                          ;   No, go to next loop
 
-    Mov     EAX,[EBX+eRate]                                                     ;Restore sample counter
-    Add     [EBX+eCnt],EAX
+    Mov     EAX,[PBX+eRate]                                                     ;Restore sample counter
+    Add     [PBX+eCnt],EAX
 
     Mov     AL,CL
     And     AL,E_ADSR|E_DIRECT
@@ -3509,60 +3596,60 @@ ENDP
     ;Adjust Envelope -------------------------
     %%AdjExp:
     Test    CL,E_TYPE                                                           ;Is the adjustment an exponential decrease?
-    JZ      short %%AdjLin                                                      ;   No, go to linear
-        Mov     EAX,[EBX+eVal]                                                  ;Get now envelope height
+    JZ      %%AdjLin                                                            ;   No, go to linear
+        Mov     EAX,[PBX+eVal]                                                  ;Get now envelope height
         Neg     EAX
         SAR     EAX,8
-        Add     [EBX+eVal],EAX                                                  ;Subtract 1/256th of envelope height
-        Mov     EDX,[EBX+eDest]                                                 ;Get destination
-        Cmp     EDX,[EBX+eVal]                                                  ;Has height reached destination?
+        Add     [PBX+eVal],EAX                                                  ;Subtract 1/256th of envelope height
+        Mov     EDX,[PBX+eDest]                                                 ;Get destination
+        Cmp     EDX,[PBX+eVal]                                                  ;Has height reached destination?
         JL      %%EnvDone                                                       ;   No
-        Jmp     short %%AdjOff
+        Jmp     %%AdjOff
 
     %%AdjLin:
     Test    CL,E_DIR                                                            ;Is the adjustment up or down?
-    JZ      short %%AdjDec
-        Mov     EAX,[EBX+eVal]                                                  ;Get now envelope height
-        Add     EAX,[EBX+eAdj]
-        Mov     [EBX+eVal],EAX                                                  ;Add adjustment to height
-        Mov     EDX,[EBX+eDest]                                                 ;Get destination
+    JZ      %%AdjDec
+        Mov     EAX,[PBX+eVal]                                                  ;Get now envelope height
+        Add     EAX,[PBX+eAdj]
+        Mov     [PBX+eVal],EAX                                                  ;Add adjustment to height
+        Mov     EDX,[PBX+eDest]                                                 ;Get destination
         Cmp     EDX,EAX                                                         ;Has height reached destination?
         JG      %%EnvDone                                                       ;   No
 
-        Mov     [EBX+eVal],EDX                                                  ;Set destination
-        Jmp     short %%AdjDone                                                 ;Change to decay mode
+        Mov     [PBX+eVal],EDX                                                  ;Set destination
+        Jmp     %%AdjDone                                                       ;Change to decay mode
 
     %%AdjDec:
-        Mov     EAX,[EBX+eVal]                                                  ;Get now envelope height
-        Sub     EAX,[EBX+eAdj]
-        Mov     [EBX+eVal],EAX                                                  ;Subtract adjustment to height
-        Mov     EDX,[EBX+eDest]                                                 ;Get destination
+        Mov     EAX,[PBX+eVal]                                                  ;Get now envelope height
+        Sub     EAX,[PBX+eAdj]
+        Mov     [PBX+eVal],EAX                                                  ;Subtract adjustment to height
+        Mov     EDX,[PBX+eDest]                                                 ;Get destination
         Cmp     EDX,EAX                                                         ;Has height reached destination?
         JL      %%EnvDone                                                       ;   No
 
     %%AdjOff:
-        Mov     [EBX+eVal],EDX                                                  ;Set destination
-        Test    EDX,EDX                                                         ;If destination isn't 0, change to sustain mode
-        JNZ     short %%AdjDone
+        Mov     [PBX+eVal],EDX                                                  ;Set destination
+        Test    EDX,EDX                                                         ;If destination is not 0, change to sustain mode
+        JNZ     %%AdjDone
 
-        Mov     AL,[EBX+eMode]                                                  ;If the envelope started out in ADSR mode, but was
+        Mov     AL,[PBX+eMode]                                                  ;If the envelope started out in ADSR mode, but was
         And     AL,~70h                                                         ; switched to Gain w/ linear decrease, the ADSR state
         Or      AL,E_SUST << 4                                                  ; will become sustain if ADSR is re-enabled.
-        Mov     [EBX+eMode],AL
+        Mov     [PBX+eMode],AL
 
-        Mov     AL,[EBX+mFlg]                                                   ;If the voice was getting keyed off, set MFLG_OFF to
+        Mov     AL,[PBX+mFlg]                                                   ;If the voice was getting keyed off, set MFLG_OFF to
         And     AL,MFLG_KOFF                                                    ; mark the voice as now being inactive
         Add     AL,AL
         SetZ    AH
-        Or      [EBX+mFlg],AL
-        And     byte [EBX+mFlg],~MFLG_KOFF
+        Or      [PBX+mFlg],AL
+        And     byte [PBX+mFlg],~MFLG_KOFF
 
         Dec     AH
         And     AH,CH
         Not     AH
         And     [voiceMix],AH                                                   ;Disable voice mixing if keyed off
 
-        Or      byte [EBX+eMode],E_IDLE                                         ;Envelope is no longer changing
+        Or      byte [PBX+eMode],E_IDLE                                         ;Envelope is no longer changing
         Jmp     %%EnvDone
 
     %%AdjDone:
@@ -3572,88 +3659,88 @@ ENDP
     Test    CL,E_ADSR                                                           ;Is envelope in ADSR mode?
     JZ      %%EnvGain                                                           ;   No, jump to Gain
 
-    Mov     ESI,EBX
-    Sub     ESI,mix
+    Mov     PSI,PBX
+    LblOp   Sub,PSI,mix
     XOr     EAX,EAX
-    ShR     ESI,3                                                               ;ESI indexes current voice in dsp
-    Add     ESI,dsp
+    ShR     PSI,3                                                               ;PSI indexes current voice in dsp
+    LblOp   Add,PSI,dsp
 
-    Test    byte [ESI+adsr],80h                                                 ;Is envelope flag in ADSR?
+    Test    byte [PSI+adsr],80h                                                 ;Is envelope flag in ADSR?
     JZ      %%EnvDone                                                           ;   No
 
-    Mov     [EBX+vRsv],AL                                                       ;Reset ADSR/Gain changed flag
+    Mov     [PBX+vRsv],AL                                                       ;Reset ADSR/Gain changed flag
     Test    CL,E_DEST                                                           ;Switch to next mode
-    JNZ     short %%EnvSust
+    JNZ     %%EnvSust
 
     %%EnvDecay:
-        Push    %%EnvDone
-        Push    ESI                                                             ;ESI will get popped on return from StartEnv
-        Jmp     ChgDec                                                          ;see StartEnv
+        LoadPtr PDX,%%EnvDone
+        Push    PDX,PSI                                                         ;PSI will get popped on return from StartEnv
+        Jmp     ChgDec                                                          ;See StartEnv
 
     %%EnvSust:
-        Push    %%EnvDone
-        Push    ESI                                                             ;ESI will get popped on return from StartEnv
-        Jmp     ChgSus                                                          ;see StartEnv
+        LoadPtr PDX,%%EnvDone
+        Push    PDX,PSI                                                         ;PSI will get popped on return from StartEnv
+        Jmp     ChgSus                                                          ;See StartEnv
 
     %%EnvGain:
-        Or      byte [EBX+eMode],E_IDLE                                         ;Envelope is now constant
+        Or      byte [PBX+eMode],E_IDLE                                         ;Envelope is now constant
 
         Test    CL,E_DEST                                                       ;If gain is in "bent line" mode and line has reached
-        JZ      short %%EnvDone                                                 ; bend point, adjust envelope settings, otherwise
+        JZ      %%EnvDone                                                       ; bend point, adjust envelope settings, otherwise
                                                                                 ; envelope is done.
-        Cmp     dword [EBX+eDest],D_MAX
-        JE      short %%EnvDone
+        Cmp     dword [PBX+eDest],D_MAX
+        JE      %%EnvDone
 
-        And     byte [EBX+eMode],~E_IDLE                                        ;Undo idle flag
-        Mov     dword [EBX+eAdj],A_BENT                                         ;Slow down increase rate
-        Mov     dword [EBX+eDest],D_MAX                                         ;Set destination to max
-        Jmp     short %%EnvDone
+        And     byte [PBX+eMode],~E_IDLE                                        ;Undo idle flag
+        Mov     dword [PBX+eAdj],A_BENT                                         ;Slow down increase rate
+        Mov     dword [PBX+eDest],D_MAX                                         ;Set destination to max
+        Jmp     %%EnvDone
 
     %%EnvDirect:
-        Mov     EAX,[EBX+eVal]
-        Mov     EDX,[EBX+eDest]
+        Mov     EAX,[PBX+eVal]
+        Mov     EDX,[PBX+eDest]
         Cmp     EDX,EAX
-        JE      short %%EnvDirectE
-        JG      short %%EnvDirectH
+        JE      %%EnvDirectE
+        JG      %%EnvDirectH
 
-        Sub     EAX,[EBX+eAdj]                                                  ;Sub adjustment to height
-        Mov     [EBX+eVal],EAX
+        Sub     EAX,[PBX+eAdj]                                                  ;Sub adjustment to height
+        Mov     [PBX+eVal],EAX
         Cmp     EDX,EAX                                                         ;Has height reached destination?
-        JL      short %%EnvDone                                                 ;   No
+        JL      %%EnvDone                                                       ;   No
 
-        Mov     [EBX+eVal],EDX                                                  ;Set destination
-        Jmp     short %%EnvDirectE
+        Mov     [PBX+eVal],EDX                                                  ;Set destination
+        Jmp     %%EnvDirectE
 
     %%EnvDirectH:
-        Add     EAX,[EBX+eAdj]                                                  ;Add adjustment to height
-        Mov     [EBX+eVal],EAX
+        Add     EAX,[PBX+eAdj]                                                  ;Add adjustment to height
+        Mov     [PBX+eVal],EAX
         Cmp     EDX,EAX                                                         ;Has height reached destination?
-        JG      short %%EnvDone                                                 ;   No
+        JG      %%EnvDone                                                       ;   No
 
-        Mov     [EBX+eVal],EDX                                                  ;Set destination
+        Mov     [PBX+eVal],EDX                                                  ;Set destination
 
     %%EnvDirectE:
-        Or      byte [EBX+eMode],E_IDLE                                         ;Envelope is now constant
+        Or      byte [PBX+eMode],E_IDLE                                         ;Envelope is now constant
 
     %%EnvDone:
-    Mov     AL,[EBX+vRsv]
+    Mov     AL,[PBX+vRsv]
     Test    AL,1
-    JZ      short %%ChkGain
-        Mov     byte [EBX+vRsv],0
-        Push    EBX                                                             ;Update new ADSR parameters
-        Sub     EBX,mix
+    JZ      %%ChkGain
+        Mov     byte [PBX+vRsv],0
+        Push    PBX                                                             ;Update new ADSR parameters
+        LblOp   Sub,PBX,mix
         Call    RADSR
-        Pop     EBX
-        Jmp     short %%LoopDone
+        Pop     PBX
+        Jmp     %%LoopDone
 
     %%ChkGain:
     Test    AL,2
-    JZ      short %%LoopDone
-        Mov     byte [EBX+vRsv],0
-        Push    EBX                                                             ;Update new Gain parameters
-        Sub     EBX,mix
+    JZ      %%LoopDone
+        Mov     byte [PBX+vRsv],0
+        Push    PBX                                                             ;Update new Gain parameters
+        LblOp   Sub,PBX,mix
         Call    RGain
-        Pop     EBX
+        Pop     PBX
 
     %%LoopDone:
     Dec     byte [adsrUpd]
@@ -3681,14 +3768,14 @@ ENDP
 ;   n = 0 is the oldest sample and 7 is the most recent
 ;
 ;FIR filters are based on the sample rate.  This was fine in the SNES, because the sample rate was
-;always 32kHz, but in the case of an emulator the sample rate can change.  So measures have to be
-;taken to ensure the filter will have the same effect, regardless of the output sample rate.
+; always 32kHz, but in the case of an emulator the sample rate can change.  So measures have to be
+; taken to ensure the filter will have the same effect, regardless of the output sample rate.
 ;
 ;To overcome this problem, I figured each tap of the filter is applied every 31250ns.  So the
-;solution is to calculate when 31250ns have gone by, and use the sample at that point.  Of course
-;this method really only works if the output rate is a multiple of 32k.  In order to get accurate
-;results, some sort of interpolation method needs to be introduced.  I went the cheap route and used
-;linear interpolation.
+; solution is to calculate when 31250ns have gone by, and use the sample at that point.  Of course
+; this method really only works if the output rate is a multiple of 32k.  In order to get accurate
+; results, some sort of interpolation method needs to be introduced.  I went the cheap route and
+; used linear interpolation.
 ;
 ;In:
 ;   ST0,1 = Input samples
@@ -3700,57 +3787,57 @@ ENDP
 ;   EAX,EDX,EBX,CL
 
 %macro FIRCut16 1
-    FISt    dword [ESP-4]
-    Mov     EAX,[ESP-4]
+    FISt    dword [PSP-4]
+    Mov     EAX,[PSP-4]
     Add     EAX,32768
     SAR     EAX,16                                                              ;Did a sample overflow signed-16bit?
-    JZ      short %%OK                                                          ;   No, do nothing
-        Mov     EAX,[ESP-4]                                                     ;There is no overflow because FIR is handled with
+    JZ      %%OK                                                                ;   No, do nothing
+        Mov     EAX,[PSP-4]                                                     ;There is no overflow because FIR is handled with
         MovSX   EAX,AX                                                          ; 32bit-float, emulates signed-16bit overflow here.
         And     EAX,~1                                                          ;All numbers used by DSP are even
 
-        Mov     [ESP-4],EAX
+        Mov     [PSP-4],EAX
         FSubP   %1,ST
-        FILd    dword [ESP-4]
+        FILd    dword [PSP-4]
         FAdd    %1,ST
 
     %%OK:
 %endmacro
 
 %macro FIRClampL 1
-    FISt    dword [ESP-4]
-    Mov     EAX,[ESP-4]
+    FISt    dword [PSP-4]
+    Mov     EAX,[PSP-4]
     Add     EAX,32768
     SAR     EAX,16                                                              ;Did a sample overflow signed-16bit?
-    JZ      short %%OK                                                          ;   No, do nothing
-        Mov     EAX,[ESP-4]                                                     ;If s < -32768, s = -32768
+    JZ      %%OK                                                                ;   No, do nothing
+        Mov     EAX,[PSP-4]                                                     ;If s < -32768, s = -32768
         SAR     EAX,31                                                          ;If s > 32767, s = 32767
         Not     EAX
         XOr     EAX,-32768
         And     EAX,~1                                                          ;All numbers used by DSP are even
 
-        Mov     [ESP-4],EAX
+        Mov     [PSP-4],EAX
         FSubP   %1,ST
-        FILd    dword [ESP-4]
+        FILd    dword [PSP-4]
         FAdd    %1,ST
 
     %%OK:
 %endmacro
 
 %macro FIRClampH 1
-    FISt    dword [ESP-4]
-    Mov     EAX,[ESP-4]
+    FISt    dword [PSP-4]
+    Mov     EAX,[PSP-4]
     Add     EAX,65536
     SAR     EAX,17                                                              ;Did a sample overflow signed-16bit?
-    JZ      short %%OK                                                          ;   No, do nothing
-        Mov     EAX,[ESP-4]                                                     ;If s < -65536, s = -65536
+    JZ      %%OK                                                                ;   No, do nothing
+        Mov     EAX,[PSP-4]                                                     ;If s < -65536, s = -65536
         SAR     EAX,31                                                          ;If s > 65535, s = 65535
         Not     EAX
         XOr     EAX,-65536
 
-        Mov     [ESP-4],EAX
+        Mov     [PSP-4],EAX
         FSubP   %1,ST
-        FILd    dword [ESP-4]
+        FILd    dword [PSP-4]
         FAdd    %1,ST
 
     %%OK:
@@ -3758,33 +3845,33 @@ ENDP
 
 %macro FIRFilter 0
     Test    dword [dspOpts],DSP_ECHOFIR
-    JZ      short %%NoZero
+    JZ      %%NoZero
 
-    Mov     EBX,mix
+    LoadPtr PBX,mix
     XOr     DX,DX
     Inc     DH
     Mov     CL,8
 
     %%ChMute:
-        Test    byte [EBX+mFlg],MFLG_MUTE                                       ;Is voice muted by user?
+        Test    byte [PBX+mFlg],MFLG_MUTE                                       ;Is voice muted by user?
         SetZ    AL
         Dec     AL
         And     AL,DH
         Or      DL,AL
 
-        Sub     EBX,-80h
+        Sub     PBX,-80h
         Add     DH,DH
 
     Dec     CL
-    JNZ     short %%ChMute
+    JNZ     %%ChMute
 
     Test    DL,DL                                                               ;DL = Muted channels, are any channels muted?
-    JZ      short %%NoZero                                                      ;   No
+    JZ      %%NoZero                                                            ;   No
 
     Not     DL                                                                  ;DL = Not muted channels
     Mov     DH,[dsp+eon]                                                        ;DH = Using echo channels
     And     DH,DL                                                               ;Are all channels using echoes muted?
-    JNZ     short %%NoZero                                                      ;   No
+    JNZ     %%NoZero                                                            ;   No
         FLd     dword [fpShR1]                                                  ;Force feedback in half, without echo. (If there is
         FMul    ST1,ST                                                          ; a loud feedback that causes clipping, mute the
         FMul    ST2,ST                                                          ; channel toprevent the sound from playing forever.)
@@ -3793,10 +3880,10 @@ ENDP
     %%NoZero:
     Sub     byte [firCur],4                                                     ;Move index back one sample. (Index will wrap around
     Mov     EBX,[firCur]                                                        ; after 64 samples, enough for up to 256kHz output.)
-    LEA     EBX,[EBX*2+firBuf]                                                  ;EBX -> Current sample in filter buffer
+    IdxLd   LEA,PBX,firBuf,PBX*2                                                ;PBX -> Current sample in filter buffer
                                                                                 ;                                   |FBR FBL
     Test    dword [dspOpts],DSP_ECHOFIR
-    JZ      short %%Skip
+    JZ      %%Skip
         FLd     ST                                                              ;Clamp 16-bit sample                |FBR FBL FBL
         FIRClampL   ST1
         FStP    ST                                                              ;                                   |FBR FBL
@@ -3806,54 +3893,54 @@ ENDP
         FStP    ST                                                              ;                                   |FBR FBL
 
     %%Skip:
-    FSt     dword [EBX]                                                         ;Store new samples in buffer
-    FSt     dword [FIRBUF*2+EBX]
-    FStP    dword [FIRBUF*4+EBX]                                                ;                                   |FBR
-    FSt     dword [4+EBX]
-    FSt     dword [FIRBUF*2+4+EBX]
-    FStP    dword [FIRBUF*4+4+EBX]                                              ;                                   |(empty)
+    FSt     dword [PBX]                                                         ;Store new samples in buffer
+    FSt     dword [FIRBUF*2+PBX]
+    FStP    dword [FIRBUF*4+PBX]                                                ;                                   |FBR
+    FSt     dword [PBX+4]
+    FSt     dword [FIRBUF*2+4+PBX]
+    FStP    dword [FIRBUF*4+4+PBX]                                              ;                                   |(empty)
 
     FLdZ                                                                        ;                                   |0
     FLdZ                                                                        ;                                   |0 0
     Test    dword [dspOpts],DSP_ECHOFIR
     SetNZ   CH
 
-    MovZX   EDX,CH                                                              ;EBX -> Unfiltered sample
+    MovZX   EDX,CH                                                              ;PBX -> Unfiltered sample
     Dec     EDX
     Not     EDX
     And     EDX,FIRBUF*2+56
-    Add     EBX,EDX
+    Add     PBX,PDX
 
-    MovZX   EDX,CH                                                              ;EDX -> Filter taps
+    MovZX   EDX,CH                                                              ;PDX -> Filter taps
     Dec     EDX
     And     EDX,28
-    Add     EDX,firTaps
+    IdxLd   LEA,PDX,firTaps,PDX
 
-    Mov     dword [ESP-8],0                                                     ;Reset decimal overflow, so filtering is consistant
+    Mov     dword [PSP-8],0                                                     ;Reset decimal overflow, so filtering is consistant
     Mov     CL,8                                                                ;8-tap FIR filter
 
     %%Tap:
-        FILd    dword [ESP-8]                                                   ;                                   |0 0 firDec
+        FILd    dword [PSP-8]                                                   ;                                   |0 0 firDec
         FMul    dword [fpShR16]                                                 ;                                   |0 0 firDec>>16=FD
 
-        FLd     dword [8+EBX]                                                   ;Interpolate left sample            |0 0 FD S1
-        FSub    dword [EBX]                                                     ;                                   |0 0 FD S1-S2
+        FLd     dword [PBX+8]                                                   ;Interpolate left sample            |0 0 FD S1
+        FSub    dword [PBX]                                                     ;                                   |0 0 FD S1-S2
         FMul    ST1                                                             ;                                   |0 0 FD (S1-S2)*FD
-        FAdd    dword [EBX]                                                     ;                                   |0 0 FD (S1-S2)*FD+S2
-        FMul    dword [EDX]                                                     ;                                   |0 0 FD ((S1-S2)*FD+S2)*FT
+        FAdd    dword [PBX]                                                     ;                                   |0 0 FD (S1-S2)*FD+S2
+        FMul    dword [PDX]                                                     ;                                   |0 0 FD ((S1-S2)*FD+S2)*FT
         FAddP   ST2,ST                                                          ;                                   |0 ((S1-S2)*FD+S2)*FT FD
 
-        FLd     dword [12+EBX]                                                  ;Interpolate right sample           |0 FBL FD S1
-        FSub    dword [4+EBX]                                                   ;                                   |0 FBL FD S1-S2
+        FLd     dword [PBX+12]                                                  ;Interpolate right sample           |0 FBL FD S1
+        FSub    dword [PBX+4]                                                   ;                                   |0 FBL FD S1-S2
         FMulP   ST1,ST                                                          ;                                   |0 FBL (S1-S2)*FD
-        FAdd    dword [4+EBX]                                                   ;                                   |0 FBL (S1-S2)*FD+S2
-        FMul    dword [EDX]                                                     ;                                   |0 FBL ((S1-S2)*FD+S2)*FT
+        FAdd    dword [PBX+4]                                                   ;                                   |0 FBL (S1-S2)*FD+S2
+        FMul    dword [PDX]                                                     ;                                   |0 FBL ((S1-S2)*FD+S2)*FT
         FAddP   ST2,ST                                                          ;                                   |FBR FBL
 
         Test    dword [dspOpts],DSP_ECHOFIR
         JZ      %%ClampH
         Dec     CL                                                              ;Is calculate the oldest sample (n=0)?
-        JZ      short %%ClampL                                                  ;   Yes
+        JZ      %%ClampL                                                        ;   Yes
             FLd     ST                                                          ;Cut high-order bits                |FBR FBL FBL
             FIRCut16    ST1
             FStP    ST                                                          ;                                   |FBR FBL
@@ -3875,7 +3962,7 @@ ENDP
             FStP    ST                                                          ;                                   |FBR FBL
 
             Inc     CL                                                          ;Restore CL
-            Jmp     short %%Next
+            Jmp     %%Next
 
         %%ClampH:
             FLd     ST                                                          ;Clamp 17-bit sample                |FBR FBL FBL
@@ -3887,24 +3974,24 @@ ENDP
             FStP    ST                                                          ;                                   |FBR FBL
 
         %%Next:
-        Mov     EAX,[ESP-8]                                                     ;Determine next sample to use in filter
+        Mov     EAX,[PSP-8]                                                     ;Determine next sample to use in filter
         Add     EAX,[firRate]
-        Mov     [ESP-8],AX
+        Mov     [PSP-8],AX
         ShR     EAX,16
 
         Test    CH,CH
-        JNZ     short %%NewFIR
-            LEA     EBX,[EAX*8+EBX]                                             ;EBX -> Sample to use in filter
-            Sub     EDX,4                                                       ;EDX -> Next filter tap
+        JNZ     %%NewFIR
+            LEA     PBX,[PAX*8+PBX]                                             ;PBX -> Sample to use in filter
+            Sub     PDX,4                                                       ;PDX -> Next filter tap
 
         Dec     CL
         JNZ     %%Tap
-        Jmp     short %%Done
+        Jmp     %%Done
 
         %%NewFIR:
             ShL     EAX,3                                                       ;Multiply upper 16-bit by 8, not use 'ShR EAX,13'
-            Sub     EBX,EAX                                                     ;EBX -> Sample to use in filter
-            Add     EDX,4                                                       ;EDX -> Next filter tap
+            Sub     PBX,PAX                                                     ;PBX -> Sample to use in filter
+            Add     PDX,4                                                       ;PDX -> Next filter tap
 
         Dec     CL
         JNZ     %%Tap
@@ -3918,7 +4005,7 @@ ENDP
 
 PROC CatchUp
 
-    Push    EAX
+    Push    PAX
 
     Mov     EAX,[t64Cnt]
     ShR     EAX,1
@@ -3927,7 +4014,7 @@ PROC CatchUp
 
     Add     [outCnt],EAX
 
-    Push    EDX
+    Push    PDX
     Mul     dword [outRate]
     Add     EAX,[outDec]
     AdC     EDX,0
@@ -3935,31 +4022,32 @@ PROC CatchUp
     ShRD    EAX,EDX,16
 
     Sub     [outLeft],EAX
-    JNC     short .Okay
+    JNC     .Okay
         Add     EAX,[outLeft]
         Mov     dword [outLeft],0
 
     .Okay:
     Test    EAX,EAX
-    JZ      short .Skip
-        Call    EmuDSP,[pOutBuf],EAX
-        Mov     [pOutBuf],EAX
+    JZ      .Skip
+        Mov     PDX,[pOutBuf]                                                   ;Call cannot infer that a memory operand
+        Call    EmuDSP,PDX,EAX                                                  ; holds a pointer -- load it into a
+        Mov     [pOutBuf],PAX                                                   ; register first (PDX is free here)
 
     .Skip:
 %if INTBK
-    Push    ECX                                                                 ;Run KON/KOFF processing after emulate DSP
+    Push    PCX                                                                 ;Run KON/KOFF processing after emulate DSP
     CatchKOff
     CatchKOn
-    Pop     ECX,EDX
+    Pop     PCX,PDX
 %else
-    Push    EBX,ECX                                                             ;Run KON processing after emulate DSP
+    Push    PBX,PCX                                                             ;Run KON processing after emulate DSP
     XOr     CH,CH                                                               ;Set CH = 0 for use with CatchKOn
     CatchKOn
-    Pop     ECX,EBX,EDX
+    Pop     PCX,PBX,PDX
 %endif
 
     .Done:
-    Pop     EAX
+    Pop     PAX
 
 ENDP
 
@@ -3974,7 +4062,7 @@ PROC SetEmuDSP, pBufD, numD, rateD
 
     Mov     EAX,[rateD]
     Test    EAX,EAX
-    JZ      short .Final
+    JZ      .Final
         XOr     EDX,EDX
         Mov     [outDec],EDX
 
@@ -3986,16 +4074,17 @@ PROC SetEmuDSP, pBufD, numD, rateD
 
         Mov     EAX,[numD]
         Mov     [outLeft],EAX
-        Mov     EAX,[pBufD]
-        Mov     [pOutBuf],EAX
+        Mov     PAX,[pBufD]
+        Mov     [pOutBuf],PAX
         Mov     EAX,[t64Cnt]
         ShR     EAX,1
         Mov     [outCnt],EAX
         RetN
 
     .Final:
-        Call    EmuDSP,[pOutBuf],[outLeft]
-        Mov     [pOutBuf],EAX
+        Mov     PAX,[pOutBuf]                                                   ;See the CatchUp note on preloading a
+        Call    EmuDSP,PAX,[outLeft]                                            ; pointer-holding memory operand first
+        Mov     [pOutBuf],PAX
         Mov     dword [outLeft],0
 
 ENDP
@@ -4007,7 +4096,7 @@ ENDP
 PROC EmuDSP, pBuf, num
 USES ALL
 
-    Mov     EAX,[pBuf]
+    Mov     PAX,[pBuf]
     Mov     EDX,[num]
     Test    EDX,EDX
     JZ      .Done
@@ -4054,32 +4143,32 @@ USES ALL
     And     DH,BH
     Mov     [dspNoise],DH
 
-    Push    EBX
+    Push    PBX
     Mov     BH,8
     Mov     BL,1
     XOr     DH,DH
-    Mov     ESI,mix+mFlg
+    LoadPtr PSI,mix+mFlg
 
     .Noise:
-        Test    byte [ESI],MFLG_NOISE                                           ;Is noise enabled?
+        Test    byte [PSI],MFLG_NOISE                                           ;Is noise enabled?
         SetZ    DL
         Dec     DL
         And     DL,BL
         Or      DH,DL
 
         Add     BL,BL
-        Sub     ESI,-80h
+        Sub     PSI,-80h
 
     Dec     BH
-    JNZ     short .Noise
-    Pop     EBX
+    JNZ     .Noise
+    Pop     PBX
 
     And     DH,BH
     Mov     [dspNoiseF],DH
     Or      [dspNoise],DH
 
     Test    dword [dspOpts],DSP_FLOAT                                           ;Is volume output floating-point?
-    JNZ     short .Next                                                         ;   Yes
+    JNZ     .Next                                                               ;   Yes
         FILd    dword [vMMaxL]
         FMul    dword [fp64k]                                                   ;Convert to a 32-bit sample (<< 16)
         FStP    dword [vMMaxL]                                                  ;Save as a float
@@ -4094,7 +4183,7 @@ USES ALL
         JLE     .Quit                                                           ;   No
 
         Cmp     EDX,MIX_SIZE                                                    ;Is num <= size of internal buffer?
-        JBE     short .NSmpOK
+        JBE     .NSmpOK
             Mov     EDX,MIX_SIZE
 
         .NSmpOK:
@@ -4102,16 +4191,16 @@ USES ALL
 
 %ifdef SPC700_INC
         Test    byte [dbgOpt],DSP_HALT                                          ;Do nothing if APU is suspended
-        JNZ     short .Mute
+        JNZ     .Mute
 %endif
 
         ;Call emulation routine ---------------
         Call    RunDSP                                                          ;Run DSP emulation
-        JC      short .Next                                                     ;Quit, if emulation produced output
+        JC      .Next                                                           ;Quit, if emulation produced output
 
     .Mute:
         ;Output silence -----------------------
-        Mov     EDI,EAX                                                         ;EDI-> Buffer to store output
+        Mov     PDI,PAX                                                         ;PDI -> Buffer to store output
 
         Mov     ECX,EDX                                                         ;ECX = Size of output buffer in samples
         XOr     EAX,EAX
@@ -4135,13 +4224,13 @@ USES ALL
         Rep     StoSD
         Mov     ECX,EDX
         Rep     StoSB
-        Mov     EAX,EDI                                                         ;EAX-> End of buffer
+        Mov     PAX,PDI                                                         ;PAX -> End of buffer
 
         Jmp     .Next
 
     .Quit:
     Test    dword [dspOpts],DSP_FLOAT                                           ;Is volume output floating-point?
-    JNZ     short .OutFloat                                                     ;   Yes
+    JNZ     .OutFloat                                                           ;   Yes
         FLd     dword [vMMaxL]
         FMul    dword [fpShR16]
         FIStP   dword [vMMaxL]
@@ -4150,34 +4239,34 @@ USES ALL
         FIStP   dword [vMMaxR]
 
     .OutFloat:
-    Push    EAX
+    Push    PAX
     Call    SetFade
 
     ;Update ENVX and OUTX registers ----------
-    Mov     EBX,mix
-    Mov     ESI,dsp
+    LoadPtr PBX,mix
+    LoadPtr PSI,dsp
     Mov     DH,1
 
     .XRegs:
-        Mov     EAX,[EBX+eVal]
+        Mov     EAX,[PBX+eVal]
         ShR     EAX,E_SHIFT
-        Mov     [ESI+envx],AL
+        Mov     [PSI+envx],AL
 
-        Mov     AL,[EBX+mOut+1]
-        Mov     [ESI+outx],AL
+        Mov     AL,[PBX+mOut+1]
+        Mov     [PSI+outx],AL
 
-        Add     ESI,10h
-        Sub     EBX,-80h
+        Add     PSI,10h
+        Sub     PBX,-80h
 
     Add     DH,DH
-    JNZ     short .XRegs
+    JNZ     .XRegs
 
     ;Update DSP data register on SPC700 side -
-    Mov     EBX,[pAPURAM]
-    MovZX   EDX,byte [0F2h+EBX]
-    Mov     DL,[EDX+dsp]
-    Mov     [0F3h+EBX],DL
-    Pop     EAX
+    Mov     PBX,[pAPURAM]
+    MovZX   EDX,byte [0F2h+PBX]
+    IdxLd   Mov,DL,dsp,PDX
+    Mov     [0F3h+PBX],DL
+    Pop     PAX
 
     .Done:
 
@@ -4185,15 +4274,15 @@ ENDP
 
 
 %macro CalRamp1 0-1
-    Mov     EAX,[ECX]
-    Cmp     EAX,[ECX-8]
-    JE      short %%OK
+    Mov     EAX,[PCX]
+    Cmp     EAX,[PCX-8]
+    JE      %%OK
 
-    FLd     dword [ECX]                                                         ;Current                            |Current
-    FCom    dword [ECX-8]                                                       ;Target                             |Current
+    FLd     dword [PCX]                                                         ;Current                            |Current
+    FCom    dword [PCX-8]                                                       ;Target                             |Current
     FNSTSW  AX
     Test    AH,1                                                                ;Is C0 = 0 (Current > Target)?,
-    JZ      short %%Sub                                                         ;   Yes, subtraction
+    JZ      %%Sub                                                               ;   Yes, subtraction
 
     %if %0                                                                      ;Current += volRamp
         FAdd    dword [%1]
@@ -4201,12 +4290,12 @@ ENDP
         FAdd    dword [volRamp1]
     %endif
 
-        FCom    dword [ECX-8]                                                   ;Target                             |Current
+        FCom    dword [PCX-8]                                                   ;Target                             |Current
         FNSTSW  AX
-        FStP    dword [ECX]                                                     ;Update current                     |(empty)
+        FStP    dword [PCX]                                                     ;Update current                     |(empty)
         Test    AH,1                                                            ;Is C0 = 0 (Current > Target)?,
-        JNZ     short %%OK                                                      ;   No, re-change with next tick
-        Jmp     short %%Force
+        JNZ     %%OK                                                            ;   No, re-change with next tick
+        Jmp     %%Force
 
     %%Sub:
     %if %0                                                                      ;Current -= volRamp
@@ -4215,15 +4304,15 @@ ENDP
         FSub    dword [volRamp1]
     %endif
 
-        FCom    dword [ECX-8]                                                   ;Target                             |Current
+        FCom    dword [PCX-8]                                                   ;Target                             |Current
         FNSTSW  AX
-        FStP    dword [ECX]                                                     ;Update current                     |(empty)
+        FStP    dword [PCX]                                                     ;Update current                     |(empty)
         Test    AH,1                                                            ;Is C0 = 0 (Current > Target)?,
-        JZ      short %%OK                                                      ;   Yes, re-change with next tick
+        JZ      %%OK                                                            ;   Yes, re-change with next tick
 
     %%Force:
-        Mov     EAX,[ECX-8]
-        Mov     [ECX],EAX
+        Mov     EAX,[PCX-8]
+        Mov     [PCX],EAX
 
     %%OK:
 %endmacro
@@ -4231,203 +4320,212 @@ ENDP
 %macro CalRamp2 0-1
     Mov     AL,[voiceMix]
     Test    AL,AL
-    JZ      short %%Force
+    JZ      %%Force
 
     %if %0
-        Mov     EAX,[ECX]
+        Mov     EAX,[PCX]
         Test    EAX,EAX
-        JZ      short %%Force
+        JZ      %%Force
     %endif
 
         CalRamp1    volRamp2
-        Jmp     short %%OK
+        Jmp     %%OK
 
     %%Force:
-        Mov     EAX,[ECX-8]
-        Mov     [ECX],EAX
+        Mov     EAX,[PCX-8]
+        Mov     [PCX],EAX
 
     %%OK:
 %endmacro
 
 %macro MixSample 0
     ;Get sample ========================
-    Mov     ESI,[EBX+sIdx]
-    MovZX   EAX,word [EBX+mDec]
+%ifdef WIN64
+    Mov     PSI,PBX                                                             ;Reconstruct the real pointer (see note in
+    Mov     EAX,[PBX+sIdx]                                                      ; StartSrc on bCur/sIdx)
+    Add     PSI,PAX                                                             ;PSI -> Current sample index
+%else
+    Mov     ESI,[EBX+sIdx]                                                      ;PSI -> Current sample index
+%endif
+    MovZX   EAX,word [PBX+mDec]
     Call    [pInter]                                                            ;                                   |smp
 
     Test    [dspNoise],CH                                                       ;Is noise enabled?
-    JZ      short %%NoNoise                                                     ;   No
+    JZ      %%NoNoise                                                           ;   No
         FStP    ST                                                              ;                                   |(empty)
         XOr     EAX,EAX
         Test    [dspNoiseF],CH
         SetNZ   AL
-        FILd    dword [nSmp+EAX*4]                                              ;                                   |noise
+        IdxUn   FILd dword,nSmp,PAX*4                                           ;                                   |noise
 
     %%NoNoise:
 
     ;Mixing ============================
-    Mov     EAX,[EBX+eVal]
+    Mov     EAX,[PBX+eVal]
     Mov     [envCrt],EAX
     XOr     EAX,EAX
     Test    dword [dspOpts],DSP_NOENV                                           ;Is envelope disabled?
     SetNZ   AL
-    FIMul   dword [envCrt+EAX*4]
+    IdxUn   FIMul dword,envCrt,PAX*4
     FMul    dword [fpEShR]
-    FISt    dword [EBX+mOut]
+    FISt    dword [PBX+mOut]
 
-    Test    byte [EBX+mFlg],MFLG_MUTE                                           ;Is voice muted by user?
+    Test    byte [PBX+mFlg],MFLG_MUTE                                           ;Is voice muted by user?
     JNZ     .VoiceOff                                                           ;   Yes
 
-    MovZX   EAX,byte [EBX+mSrc]                                                 ;EAX = Source
-    Mov     AH,[scr700dsp+EAX]                                                  ;AH = DSPFlag[EAX]
+    MovZX   EAX,byte [PBX+mSrc]                                                 ;EAX = Source
+    IdxLd   Mov,AH,scr700dsp,PAX                                                ;AH = DSPFlag[EAX]
     Test    AH,S700_MUTE                                                        ;AH and S700_MUTE = S700_MUTE?
     JNZ     .VoiceOff                                                           ;   Yes
 %endmacro
 
 %macro MixVoice 0
 %if STEREO
-    Test    byte [EBX+mFlg],MFLG_KOFF
+    Test    byte [PBX+mFlg],MFLG_KOFF
     JNZ     %%NoChVol
-        Push    EAX,ECX,EDX
-        LEA     ECX,[EBX+mChnL]
+        Push    PAX,PCX,PDX
+        LEA     PCX,[PBX+mChnL]
         CalRamp1
-        LEA     ECX,[EBX+mChnR]
+        LEA     PCX,[PBX+mChnR]
         CalRamp1
-        Pop     EDX,ECX,EAX
+        Pop     PDX,PCX,PAX
 
     %%NoChVol:
 %endif
 
 %if VMETERV
-    Sub     ESP,16                                                              ;Create a temporary stack space for samples
+    Sub     PSP,16                                                              ;Create a temporary stack space for samples
 %endif
     FLd     ST
     Test    [dsp+eon],CH
-    JNZ     short %%VoiceEcho
-        FMul    dword [EBX+mChnL]
+    JNZ     %%VoiceEcho
+        FMul    dword [PBX+mChnL]
         Test    AH,S700_VOLUME                                                  ;AH and S700_VOLUME = S700_VOLUME?
-        JZ      short %%NoEchoL                                                 ;   No
+        JZ      %%NoEchoL                                                       ;   No
             MovZX   ESI,AL                                                      ;ESI = AL
-            FIMul   dword [scr700vol+ESI*4]
+            IdxUn   FIMul dword,scr700vol,PSI*4
             FMul    dword [fpShR16]
 
         %%NoEchoL:
 
 %if VMETERV
-        FISt    dword [ESP]                                                     ;Store sample as an integer
-        FSt     dword [4+ESP]                                                   ;Store sample as an floating-point
+        FISt    dword [PSP]                                                     ;Store sample as an integer
+        FSt     dword [PSP+4]                                                   ;Store sample as an floating-point
 %endif
-        FAdd    dword [EDI]
-        FStP    dword [EDI]
+        FAdd    dword [PDI]
+        FStP    dword [PDI]
 
-        FMul    dword [EBX+mChnR]
+        FMul    dword [PBX+mChnR]
         Test    AH,S700_VOLUME                                                  ;AH and S700_VOLUME = S700_VOLUME?
-        JZ      short %%NoEchoR                                                 ;   No
+        JZ      %%NoEchoR                                                       ;   No
             MovZX   ESI,AL                                                      ;ESI = AL
-            FIMul   dword [scr700vol+ESI*4]
+            IdxUn   FIMul dword,scr700vol,PSI*4
             FMul    dword [fpShR16]
 
         %%NoEchoR:
 
 %if VMETERV
-        FISt    dword [8+ESP]
-        FSt     dword [12+ESP]
+        FISt    dword [PSP+8]
+        FSt     dword [PSP+12]
 %endif
-        FAdd    dword [4+EDI]
-        FSt     dword [4+EDI]
-        Jmp     short %%NoVoiceEcho
+        FAdd    dword [PDI+4]
+        FSt     dword [PDI+4]
+        Jmp     %%NoVoiceEcho
 
     %%VoiceEcho:
-        FMul    dword [EBX+mChnL]
+        FMul    dword [PBX+mChnL]
         Test    AH,S700_VOLUME                                                  ;AH and S700_VOLUME = S700_VOLUME?
-        JZ      short %%EchoL                                                   ;   No
+        JZ      %%EchoL                                                         ;   No
             MovZX   ESI,AL                                                      ;ESI = AL
-            FIMul   dword [scr700vol+ESI*4]
+            IdxUn   FIMul dword,scr700vol,PSI*4
             FMul    dword [fpShR16]
 
         %%EchoL:
 
 %if VMETERV
-        FISt    dword [ESP]
-        FSt     dword [4+ESP]
+        FISt    dword [PSP]
+        FSt     dword [PSP+4]
 %endif
         FLd     ST
-        FAdd    dword [EDI]
-        FStP    dword [EDI]
-        FAdd    dword [8+EDI]
-        FStP    dword [8+EDI]
+        FAdd    dword [PDI]
+        FStP    dword [PDI]
+        FAdd    dword [PDI+8]
+        FStP    dword [PDI+8]
 
-        FMul    dword [EBX+mChnR]
+        FMul    dword [PBX+mChnR]
         Test    AH,S700_VOLUME                                                  ;AH and S700_VOLUME = S700_VOLUME?
-        JZ      short %%EchoR                                                   ;   No
+        JZ      %%EchoR                                                         ;   No
             MovZX   ESI,AL                                                      ;ESI = AL
-            FIMul   dword [scr700vol+ESI*4]
+            IdxUn   FIMul dword,scr700vol,PSI*4
             FMul    dword [fpShR16]
 
         %%EchoR:
 
 %if VMETERV
-        FISt    dword [8+ESP]
-        FSt     dword [12+ESP]
+        FISt    dword [PSP+8]
+        FSt     dword [PSP+12]
 %endif
         FLd     ST
-        FAdd    dword [4+EDI]
-        FStP    dword [4+EDI]
-        FAdd    dword [12+EDI]
-        FSt     dword [12+EDI]
+        FAdd    dword [PDI+4]
+        FStP    dword [PDI+4]
+        FAdd    dword [PDI+12]
+        FSt     dword [PDI+12]
 
     %%NoVoiceEcho:
 
 %if VMETERV
     ;Save greatest sample output ----
+    ;NOTE (amd64 port): was Push/Pop-based (each Pop consuming 4 bytes to match the Sub ESP,16
+    ; reservation above) -- POP only exists at 8-byte granularity on amd64, so this now reads the
+    ; reserved slots directly by address and deallocates them with one Add PSP,16 instead.
+
     Test    dword [dspOpts],DSP_FLOAT                                           ;Is volume output floating-point?
-    JNZ     short %%ChFloat                                                     ;   Yes
-        Pop     EAX                                                             ;Pop left sample off stack
-        Pop     EDX                                                             ;Unused
+    JNZ     %%ChFloat                                                           ;   Yes
+        Mov     EAX,[PSP]                                                       ;Left sample (integer)
         CDQ                                                                     ;EDX:EAX = EAX
         XOr     EAX,EDX
         Sub     EAX,EDX
 
-        Sub     EAX,[EBX+vMaxL]
+        Sub     EAX,[PBX+vMaxL]
         CDQ
         Not     EDX
         And     EAX,EDX
-        Add     [EBX+vMaxL],EAX
+        Add     [PBX+vMaxL],EAX
 
-        Pop     EAX                                                             ;Pop right sample off stack
-        Pop     EDX                                                             ;Unused
+        Mov     EAX,[PSP+8]                                                     ;Right sample (integer)
         CDQ
         XOr     EAX,EDX
         Sub     EAX,EDX
 
-        Sub     EAX,[EBX+vMaxR]
+        Sub     EAX,[PBX+vMaxR]
         CDQ
         Not     EDX
         And     EAX,EDX
-        Add     [EBX+vMaxR],EAX
+        Add     [PBX+vMaxR],EAX
 
-        Jmp     short %%Done
+        Add     PSP,16
+        Jmp     %%Done
 
     %%ChFloat:
-        Pop     EDX                                                             ;Unused
-        Pop     EAX
+        Mov     EAX,[PSP+4]                                                     ;Left sample (float)
         And     EAX,7FFFFFFFh
 
-        Sub     EAX,[EBX+vMaxL]
+        Sub     EAX,[PBX+vMaxL]
         CDQ
         Not     EDX
         And     EAX,EDX
-        Add     [EBX+vMaxL],EAX
+        Add     [PBX+vMaxL],EAX
 
-        Pop     EDX                                                             ;Unused
-        Pop     EAX
+        Mov     EAX,[PSP+12]                                                    ;Right sample (float)
         And     EAX,7FFFFFFFh
 
-        Sub     EAX,[EBX+vMaxR]
+        Sub     EAX,[PBX+vMaxR]
         CDQ
         Not     EDX
         And     EAX,EDX
-        Add     [EBX+vMaxR],EAX
+        Add     [PBX+vMaxR],EAX
+
+        Add     PSP,16
 
     %%Done:
 %endif
@@ -4435,44 +4533,47 @@ ENDP
 
 %macro MixMaster 0
     ;Multiply samples by main volume ------
-    Mov     ECX,nowMainL
+    LoadPtr PCX,nowMainL
     CalRamp2    1
-    Mov     ECX,nowMainR
+    LoadPtr PCX,nowMainR
     CalRamp2    1
 
-    FLd     dword [ESI]
+    FLd     dword [PSI]
     FMul    dword [nowMainL]
     Mov     AH,[scr700mds+S700_MVOL_L]
     Test    AH,S700_VOLUME                                                      ;AH and S700_VOLUME = S700_VOLUME?
-    JZ      short %%NoMainL                                                     ;   No
+    JZ      %%NoMainL                                                           ;   No
         FIMul   dword [scr700mvl+S700_MVOL_L*4]
         FMul    dword [fpShR16]
 
     %%NoMainL:
-    FStP    dword [ESI]
+    FStP    dword [PSI]
 
-    FLd     dword [4+ESI]
+    FLd     dword [PSI+4]
     FMul    dword [nowMainR]
     Mov     AH,[scr700mds+S700_MVOL_R]
     Test    AH,S700_VOLUME                                                      ;AH and S700_VOLUME = S700_VOLUME?
-    JZ      short %%NoMainR                                                     ;   No
+    JZ      %%NoMainR                                                           ;   No
         FIMul   dword [scr700mvl+S700_MVOL_R*4]
         FMul    dword [fpShR16]
 
     %%NoMainR:
-    FStP    dword [4+ESI]
+    FStP    dword [PSI+4]
 %endmacro
 
 %macro MixEchoDSP 0
+    ;NOTE (amd64 port): PSI already holds this macro's mixBuf-pointer parameter (used throughout the
+    ; rest of the macro below) -- PCX is used as scratch here instead so PSI stays untouched.
+
     Mov     EDI,[echoMaxD]
     Sub     EDI,[echoCurD]
-    Add     EDI,echoBuf
+    IdxLd   LEA,PDI,echoBuf,PDI,PCX
 
-    ZeroDN  4+EDI
-    ZeroDN  EDI
+    ZeroDN  PDI+4
+    ZeroDN  PDI
 
-    FLd     dword [4+EDI]                                                       ;                                   |FBR
-    FLd     dword [EDI]                                                         ;                                   |FBR FBL
+    FLd     dword [PDI+4]                                                       ;                                   |FBR
+    FLd     dword [PDI]                                                         ;                                   |FBR FBL
 
     ;Filter echo -----------------------
     Test    dword [dspOpts],DSP_NOFIR                                           ;Is FIR filter disabled?
@@ -4485,7 +4586,7 @@ ENDP
 
     ;Advance echo sample pointer -------
     Sub     dword [echoCurD],8
-    JNZ     short %%NoReset
+    JNZ     %%NoReset
         Mov     EAX,[echoLenD]
         Mov     [echoMaxD],EAX
         Mov     [echoCurD],EAX
@@ -4493,32 +4594,32 @@ ENDP
     %%NoReset:
 
     ;Add echo to main output -----------
-    Mov     ECX,nowEchoL
+    LoadPtr PCX,nowEchoL
     CalRamp2
-    Mov     ECX,nowEchoR
+    LoadPtr PCX,nowEchoR
     CalRamp2
 
     FMul    dword [nowEchoL]                                                    ;                                   |FBR FBL FBR FBL*EchoL
     Mov     AH,[scr700mds+S700_ECHO_L]
     Test    AH,S700_VOLUME                                                      ;AH and S700_VOLUME = S700_VOLUME?
-    JZ      short %%NoEchoL                                                     ;   No
+    JZ      %%NoEchoL                                                           ;   No
         FIMul   dword [scr700mvl+S700_ECHO_L*4]
         FMul    dword [fpShR16]
 
     %%NoEchoL:
-    FAdd    dword [ESI]                                                         ;                                   |FBR FBL FBR EchoL+ML
-    FStP    dword [ESI]                                                         ;                                   |FBR FBL FBR
+    FAdd    dword [PSI]                                                         ;                                   |FBR FBL FBR EchoL+ML
+    FStP    dword [PSI]                                                         ;                                   |FBR FBL FBR
 
     FMul    dword [nowEchoR]                                                    ;                                   |FBR FBL FBR*EchoR
     Mov     AH,[scr700mds+S700_ECHO_R]
     Test    AH,S700_VOLUME                                                      ;AH and S700_VOLUME = S700_VOLUME?
-    JZ      short %%NoEchoR                                                     ;   No
+    JZ      %%NoEchoR                                                           ;   No
         FIMul   dword [scr700mvl+S700_ECHO_R*4]
         FMul    dword [fpShR16]
 
     %%NoEchoR:
-    FAdd    dword [4+ESI]                                                       ;                                   |FBR FBL FBR+MR
-    FStP    dword [4+ESI]                                                       ;                                   |FBR FBL
+    FAdd    dword [PSI+4]                                                       ;                                   |FBR FBL FBR+MR
+    FStP    dword [PSI+4]                                                       ;                                   |FBR FBL
 
     ;Calculate echo feedback -----------
 %if STEREO
@@ -4527,82 +4628,82 @@ ENDP
     FLd     ST2                                                                 ;                                   |FBR FBL EFBL FBR
     FMul    dword [echoFBCT]                                                    ;                                   |FBR FBL EFBL FBR*EchoFBCT
     FAddP   ST1,ST                                                              ;                                   |FBR FBL EFBL+EFBCR
-    FAdd    dword [8+ESI]                                                       ;                                   |FBR FBL EFBL+EL
-    FStP    dword [EDI]                                                         ;                                   |FBR FBL
-    ZeroDNEFB   EDI
+    FAdd    dword [PSI+8]                                                       ;                                   |FBR FBL EFBL+EL
+    FStP    dword [PDI]                                                         ;                                   |FBR FBL
+    ZeroDNEFB   PDI
 
     FMul    dword [echoFBCT]                                                    ;                                   |FBR FBL*EchoFBCT
     FXCh    ST1                                                                 ;                                   |EFBCL FBR
     FMul    dword [echoFB]                                                      ;                                   |EFBCL FBR*EchoFB
     FAddP   ST1,ST                                                              ;                                   |EFBCL+EFBR
-    FAdd    dword [12+ESI]                                                      ;                                   |EFBR+ER
-    FStP    dword [4+EDI]                                                       ;                                   |(empty)
-    ZeroDNEFB   4+EDI
+    FAdd    dword [PSI+12]                                                      ;                                   |EFBR+ER
+    FStP    dword [PDI+4]                                                       ;                                   |(empty)
+    ZeroDNEFB   PDI+4
 %else
     FMul    dword [echoFB]                                                      ;                                   |FBR FBL*EchoFB
-    FAdd    dword [8+ESI]                                                       ;                                   |FBR EFBL+EL
-    FStP    dword [EDI]                                                         ;                                   |FBR
-    ZeroDNEFB   EDI
+    FAdd    dword [PSI+8]                                                       ;                                   |FBR EFBL+EL
+    FStP    dword [PDI]                                                         ;                                   |FBR
+    ZeroDNEFB   PDI
 
     FMul    dword [echoFB]                                                      ;                                   |FBR*EchoFB
-    FAdd    dword [12+ESI]                                                      ;                                   |EFBR+ER
-    FStP    dword [4+EDI]                                                       ;                                   |(empty)
-    ZeroDNEFB   4+EDI
+    FAdd    dword [PSI+12]                                                      ;                                   |EFBR+ER
+    FStP    dword [PDI+4]                                                       ;                                   |(empty)
+    ZeroDNEFB   PDI+4
 %endif
 %endmacro
 
 %macro MixEchoMem 0
-    Push    EBX,ECX
+    Push    PBX,PCX
     Mov     EDX,[echoDecM]
     Sub     EDX,32000
-    JNS     short %%Skip
+    JNS     %%Skip
 
-    Push    ECX                                                                 ;Dummy stack
-    FLd     dword [EDI]
-    FIStP   word [ESP]
-    FLd     dword [4+EDI]
-    FIStP   word [2+ESP]
-    Pop     ECX                                                                 ;ECX = [ESP] (dword)
+    Push    PCX                                                                 ;Dummy stack
+    FLd     dword [PDI]
+    FIStP   word [PSP]
+    FLd     dword [PDI+4]
+    FIStP   word [PSP+2]
+    Pop     PCX                                                                 ;PCX = [PSP] (dword)
     And     ECX,~1 & ~10000h                                                    ;All numbers used by DSP are even
 
     %%Loop:
-    Mov     EBX,[pAPURAM]
+    Mov     PBX,[pAPURAM]
     Mov     BH,[dsp+esa]
     Mov     EAX,[echoMaxM]
     Sub     EAX,[echoCurM]
     Add     BX,AX
-    Mov     [EBX],ECX
+    Mov     [PBX],ECX
 
     Sub     dword [echoCurM],4
-    JNZ     short %%NoReset
+    JNZ     %%NoReset
         Mov     EAX,[echoLenM]
         Mov     [echoMaxM],EAX
         Mov     [echoCurM],EAX
 
     %%NoReset:
     Add     EDX,[dspRate]
-    JS      short %%Loop
+    JS      %%Loop
 
     %%Skip:
     Mov     [echoDecM],EDX
-    Pop     ECX,EBX
+    Pop     PCX,PBX
 %endmacro
 
 %macro NopEchoMem 0
     Mov     EDX,[echoDecM]
     Sub     EDX,32000
-    JNS     short %%Skip
+    JNS     %%Skip
 
     %%Loop:
     Sub     dword [echoCurM],4
-    JNZ     short %%NoReset
+    JNZ     %%NoReset
         Mov     EAX,[echoLenM]
         Mov     [echoMaxM],EAX
         Mov     [echoCurM],EAX
 
     %%NoReset:
     Add     EDX,[dspRate]
-    JS      short %%Loop
+    JS      %%Loop
 
     %%Skip:
     Mov     [echoDecM],EDX
@@ -4613,18 +4714,18 @@ ENDP
     Mov     ECX,[lowCnt1]                                                       ;ECX = Cnt1
     Mov     EDX,[lowCnt2]                                                       ;EDX = Cnt2
 
-    Mov     EAX,[ESI]                                                           ;EAX = Current Sample (Left)
-    Mov     [lowBufL1+ECX],EAX                                                  ;BufL1[ECX] = EAX
-    Mov     [lowBufL2+EDX],EAX                                                  ;BufL2[EDX] = EAX
-    Push    EAX                                                                 ;Push EAX (Save Current Sample)
+    Mov     EAX,[PSI]                                                           ;EAX = Current Sample (Left)
+    IdxSt   Mov,lowBufL1,PCX,EAX                                                ;BufL1[ECX] = EAX
+    IdxSt   Mov,lowBufL2,PDX,EAX                                                ;BufL2[EDX] = EAX
+    Push    PAX                                                                 ;Push PAX (Save Current Sample)
 
-    Mov     EAX,[ESI+4]                                                         ;EAX = Current Sample (Right)
-    Mov     [lowBufR1+ECX],EAX                                                  ;BufR1[ECX] = EAX
-    Mov     [lowBufR2+EDX],EAX                                                  ;BufR2[EDX] = EAX
-    Push    EAX                                                                 ;Push EAX (Save Current Sample)
+    Mov     EAX,[PSI+4]                                                         ;EAX = Current Sample (Right)
+    IdxSt   Mov,lowBufR1,PCX,EAX                                                ;BufR1[ECX] = EAX
+    IdxSt   Mov,lowBufR2,PDX,EAX                                                ;BufR2[EDX] = EAX
+    Push    PAX                                                                 ;Push PAX (Save Current Sample)
 
     Test    ECX,ECX                                                             ;ECX = 0x00?
-    JNZ     short %%CountL                                                      ;   No
+    JNZ     %%CountL                                                            ;   No
         Mov     ECX,[lowSize1]                                                  ;ECX = Size1
 
     %%CountL:
@@ -4632,7 +4733,7 @@ ENDP
     Mov     [lowCnt1],ECX                                                       ;Cnt1 = ECX
 
     Test    EDX,EDX                                                             ;EDX = 0x00?
-    JNZ     short %%CountR                                                      ;   No
+    JNZ     %%CountR                                                            ;   No
         Mov     EDX,[lowSize2]                                                  ;EDX = Size2
 
     %%CountR:
@@ -4641,44 +4742,44 @@ ENDP
 
     ;Calculate BASS BOOST -------------
     FLd     dword [lowSumL1]                                                    ;Left                               |SumL1
-    FSub    dword [lowBufL1+ECX]                                                ;                                   |SumL1-BufL1[ECX]
-    FAdd    dword [ESI]                                                         ;                                   |SumL1-BufL1[ECX]+SampleL
+    IdxUn   FSub dword,lowBufL1,PCX                                             ;                                   |SumL1-BufL1[ECX]
+    FAdd    dword [PSI]                                                         ;                                   |SumL1-BufL1[ECX]+SampleL
     FSt     dword [lowSumL1]                                                    ;                                   |   "
     FMul    dword [lowLv1]                                                      ;                                   |BASS1=(SumL1-BufL1[EDX]+SampleL)*Lv1
     FLd     dword [lowSumL2]                                                    ;                                   |BASS1 SumL2
-    FSub    dword [lowBufL2+EDX]                                                ;                                   |BASS1 SumL2-BufL2[EDX]
-    FAdd    dword [ESI]                                                         ;                                   |BASS1 SumL2-BufL2[EDX]+SampleL
+    IdxUn   FSub dword,lowBufL2,PDX                                             ;                                   |BASS1 SumL2-BufL2[EDX]
+    FAdd    dword [PSI]                                                         ;                                   |BASS1 SumL2-BufL2[EDX]+SampleL
     FSt     dword [lowSumL2]                                                    ;                                   |   "
     FMul    dword [lowLv2]                                                      ;                                   |BASS1 BASS2=(SumL2-BufL2[EDX]+SampleL)*Lv2
     FSubP   ST1,ST                                                              ;                                   |BASS1-BASS2
-    FAdd    dword [ESI]                                                         ;                                   |BASS1-BASS2+SampleL
-    FStP    dword [ESI]                                                         ;                                   |(empty)
-    ZeroDN  ESI
+    FAdd    dword [PSI]                                                         ;                                   |BASS1-BASS2+SampleL
+    FStP    dword [PSI]                                                         ;                                   |(empty)
+    ZeroDN  PSI
 
     FLd     dword [lowSumR1]                                                    ;Right                              |SumR1
-    FSub    dword [lowBufR1+ECX]                                                ;                                   |SumR1-BufR1[ECX]
-    FAdd    dword [ESI+4]                                                       ;                                   |SumR1-BufR1[ECX]+SampleR
+    IdxUn   FSub dword,lowBufR1,PCX                                             ;                                   |SumR1-BufR1[ECX]
+    FAdd    dword [PSI+4]                                                       ;                                   |SumR1-BufR1[ECX]+SampleR
     FSt     dword [lowSumR1]                                                    ;                                   |   "
     FMul    dword [lowLv1]                                                      ;                                   |BASS1=(SumR1-BufR1[EDX]+SampleR)*Lv1
     FLd     dword [lowSumR2]                                                    ;                                   |BASS1 SumR2
-    FSub    dword [lowBufR2+EDX]                                                ;                                   |BASS1 SumR2-BufR2[EDX]
-    FAdd    dword [ESI+4]                                                       ;                                   |BASS1 SumR2-BufR2[EDX]+SampleR
+    IdxUn   FSub dword,lowBufR2,PDX                                             ;                                   |BASS1 SumR2-BufR2[EDX]
+    FAdd    dword [PSI+4]                                                       ;                                   |BASS1 SumR2-BufR2[EDX]+SampleR
     FSt     dword [lowSumR2]                                                    ;                                   |   "
     FMul    dword [lowLv2]                                                      ;                                   |BASS1 BASS2=(SumR2-BufR2[EDX]+SampleR)*Lv2
     FSubP   ST1,ST                                                              ;                                   |BASS1-BASS2
-    FAdd    dword [ESI+4]                                                       ;                                   |BASS1-BASS2+SampleR
-    FStP    dword [ESI+4]                                                       ;                                   |(empty)
-    ZeroDN  ESI+4
+    FAdd    dword [PSI+4]                                                       ;                                   |BASS1-BASS2+SampleR
+    FStP    dword [PSI+4]                                                       ;                                   |(empty)
+    ZeroDN  PSI+4
 
     ;Reset Buffer ---------------------
-    Pop     EDX,ECX                                                             ;ECX = Current Sample (Left), EDX = (Right)
+    Pop     PDX,PCX                                                             ;PCX = Current Sample (Left), PDX = (Right)
 
     Mov     EAX,[lowSize1]                                                      ;EAX = Size1
     Test    ECX,ECX                                                             ;ECX = 0x00?
-    JNZ     short %%RstL1                                                       ;   No
+    JNZ     %%RstL1                                                             ;   No
         Mov     EAX,[lowRstL1]                                                  ;EAX = RstL1
         Dec     EAX                                                             ;EAX--, EAX = 0x00?
-        JNZ     short %%RstL1                                                   ;   No
+        JNZ     %%RstL1                                                         ;   No
             Mov     [lowSumL1],EAX                                              ;SumL1 = EAX (0x00)
             Inc     EAX                                                         ;EAX++ (0x01)
 
@@ -4687,10 +4788,10 @@ ENDP
 
     Mov     EAX,[lowSize2]                                                      ;EAX = Size2
     Test    ECX,ECX                                                             ;ECX = 0x00?
-    JNZ     short %%RstL2                                                       ;   No
+    JNZ     %%RstL2                                                             ;   No
         Mov     EAX,[lowRstL2]                                                  ;EAX = RstL2
         Dec     EAX                                                             ;EAX--, EAX = 0x00?
-        JNZ     short %%RstL2                                                   ;   No
+        JNZ     %%RstL2                                                         ;   No
             Mov     [lowSumL2],EAX                                              ;SumL2 = EAX (0x00)
             Inc     EAX                                                         ;EAX++ (0x01)
 
@@ -4699,10 +4800,10 @@ ENDP
 
     Mov     EAX,[lowSize1]                                                      ;EAX = Size1
     Test    EDX,EDX                                                             ;EDX = 0x00?
-    JNZ     short %%RstR1                                                       ;   No
+    JNZ     %%RstR1                                                             ;   No
         Mov     EAX,[lowRstR1]                                                  ;EAX = RstR1
         Dec     EAX                                                             ;EAX--, EAX = 0x00?
-        JNZ     short %%RstR1                                                   ;   No
+        JNZ     %%RstR1                                                         ;   No
             Mov     [lowSumR1],EAX                                              ;SumR1 = EAX (0x00)
             Inc     EAX                                                         ;EAX++ (0x01)
 
@@ -4711,10 +4812,10 @@ ENDP
 
     Mov     EAX,[lowSize2]                                                      ;EAX = Size2
     Test    EDX,EDX                                                             ;EDX = 0x00?
-    JNZ     short %%RstR2                                                       ;   No
+    JNZ     %%RstR2                                                             ;   No
         Mov     EAX,[lowRstR2]                                                  ;EAX = RstR2
         Dec     EAX                                                             ;EAX--, EAX = 0x00?
-        JNZ     short %%RstR2                                                   ;   No
+        JNZ     %%RstR2                                                         ;   No
             Mov     [lowSumR2],EAX                                              ;SumR2 = EAX (0x00)
             Inc     EAX                                                         ;EAX++ (0x01)
 
@@ -4724,13 +4825,13 @@ ENDP
 
 %macro ApplyLevel 0
 %if VMETERM
-    Mov     EAX,[ESI]                                                           ;EAX = |Left|
+    Mov     EAX,[PSI]                                                           ;EAX = |Left|
     And     EAX,7FFFFFFFh
 
     Test    dword [dspOpts],DSP_NOSAFE                                          ;Is volume safe disabled?
-    JNZ     short %%NoMaxL                                                      ;   Yes
+    JNZ     %%NoMaxL                                                            ;   Yes
     Cmp     EAX,[fpMaxLv]
-    JBE     short %%NoMaxL
+    JBE     %%NoMaxL
         Mov     byte [dspMute],80h
         Or      byte [disFlag],80h
 
@@ -4741,13 +4842,13 @@ ENDP
     And     EAX,EDX
     Add     [vMMaxL],EAX
 
-    Mov     EAX,[4+ESI]                                                         ;EAX = |Right|
+    Mov     EAX,[PSI+4]                                                         ;EAX = |Right|
     And     EAX,7FFFFFFFh
 
     Test    dword [dspOpts],DSP_NOSAFE                                          ;Is volume safe disabled?
-    JNZ     short %%NoMaxR                                                      ;   Yes
+    JNZ     %%NoMaxR                                                            ;   Yes
     Cmp     EAX,[fpMaxLv]
-    JBE     short %%NoMaxR
+    JBE     %%NoMaxR
         Mov     byte [dspMute],80h
         Or      byte [disFlag],80h
 
@@ -4761,11 +4862,11 @@ ENDP
 %endmacro
 
 %macro MixAAF 0
-    Push    ESI,EBP
+    Push    PSI,PBP
 
     %%Next:
         FLd     dword [aafBufL]                                                 ;Left:Filter1                       |z1
-        FLd     dword [ESI]                                                     ;                                   |z1 in
+        FLd     dword [PSI]                                                     ;                                   |z1 in
         FLd     ST1                                                             ;                                   |z1 in z1
         FMul    dword [aaf1A1]                                                  ;                                   |z1 in z1*a1
         FSubP   ST1,ST                                                          ;                                   |z1 in-z1*a1
@@ -4774,12 +4875,12 @@ ENDP
         FLd     ST1                                                             ;                                   |z1 (in-z1*a1)*b0 z1
         FMul    dword [aaf1B1]                                                  ;                                   |z1 (in-z1*a1)*b0 z1*b1
         FAddP   ST1,ST                                                          ;                                   |z1 (in-z1*a1)*b0+z1*b1=out
-        FStP    dword [ESI]                                                     ;                                   |z1
+        FStP    dword [PSI]                                                     ;                                   |z1
         FStP    ST                                                              ;                                   |(empty)
-        ZeroDN  ESI
+        ZeroDN  PSI
 
         FLd     dword [aafBufL]                                                 ;Left:Filter2                       |z1
-        FLd     dword [ESI]                                                     ;                                   |z1 in
+        FLd     dword [PSI]                                                     ;                                   |z1 in
         FLd     ST1                                                             ;                                   |z1 in z1
         FMul    dword [aaf2A1]                                                  ;                                   |z1 in z1*a1
         FSubP   ST1,ST                                                          ;                                   |z1 in-z1*a1
@@ -4795,12 +4896,12 @@ ENDP
         FLd     ST1                                                             ;                                   |z1 (in-z1*a1)*b0 z1
         FMul    dword [aaf2B1]                                                  ;                                   |z1 (in-z1*a1)*b0 z1*b1
         FAddP   ST1,ST                                                          ;                                   |z1 (in-z1*a1)*b0+z1*b1=out
-        FStP    dword [ESI]                                                     ;                                   |z1
+        FStP    dword [PSI]                                                     ;                                   |z1
         FStP    ST                                                              ;                                   |(empty)
-        ZeroDN  ESI
+        ZeroDN  PSI
 
         FLd     dword [aafBufR]                                                 ;Right:Filter1                      |z1
-        FLd     dword [ESI+4]                                                   ;                                   |z1 in
+        FLd     dword [PSI+4]                                                   ;                                   |z1 in
         FLd     ST1                                                             ;                                   |z1 in z1
         FMul    dword [aaf1A1]                                                  ;                                   |z1 in z1*a1
         FSubP   ST1,ST                                                          ;                                   |z1 in-z1*a1
@@ -4809,12 +4910,12 @@ ENDP
         FLd     ST1                                                             ;                                   |z1 (in-z1*a1)*b0 z1
         FMul    dword [aaf1B1]                                                  ;                                   |z1 (in-z1*a1)*b0 z1*b1
         FAddP   ST1,ST                                                          ;                                   |z1 (in-z1*a1)*b0+z1*b1=out
-        FStP    dword [ESI+4]                                                   ;                                   |z1
+        FStP    dword [PSI+4]                                                   ;                                   |z1
         FStP    ST                                                              ;                                   |(empty)
-        ZeroDN  ESI+4
+        ZeroDN  PSI+4
 
         FLd     dword [aafBufR]                                                 ;Right:Filter2                      |z1
-        FLd     dword [ESI+4]                                                   ;                                   |z1 in
+        FLd     dword [PSI+4]                                                   ;                                   |z1 in
         FLd     ST1                                                             ;                                   |z1 in z1
         FMul    dword [aaf2A1]                                                  ;                                   |z1 in z1*a1
         FSubP   ST1,ST                                                          ;                                   |z1 in-z1*a1
@@ -4830,16 +4931,16 @@ ENDP
         FLd     ST1                                                             ;                                   |z1 (in-z1*a1)*b0 z1
         FMul    dword [aaf2B1]                                                  ;                                   |z1 (in-z1*a1)*b0 z1*b1
         FAddP   ST1,ST                                                          ;                                   |z1 (in-z1*a1)*b0+z1*b1=out
-        FStP    dword [ESI+4]                                                   ;                                   |z1
+        FStP    dword [PSI+4]                                                   ;                                   |z1
         FStP    ST                                                              ;                                   |(empty)
-        ZeroDN  ESI+4
+        ZeroDN  PSI+4
 
-        Add     ESI,16
+        Add     PSI,16
 
-    Dec     EBP
+    Dec     PBP
     JNZ     %%Next
 
-    Pop     EBP,ESI
+    Pop     PBP,PSI
 %endmacro
 
 %macro InitSampling 0
@@ -4864,7 +4965,7 @@ ENDP
     Sub     EAX,EBX
     Add     EBX,EDX
     Add     EAX,EBX                                                             ;Add at once including error
-    SetNC   DL                                                                  ;If don't have enough samples, DL = 1
+    SetNC   DL                                                                  ;If do not have enough samples, DL = 1
     Mov     [smpCur],EAX
 
     XOr     EBX,EBX                                                             ;If smpRst completes one cycle,
@@ -4887,93 +4988,93 @@ ENDP
 
     InitSampling
 
-    Mov     EBX,smpBuf
+    LoadPtr PBX,smpBuf
     Dec     DL                                                                  ;Has the sample reference point moved?
-    JZ      short %%Filter                                                      ;   No, don't move sample history
+    JZ      %%Filter                                                            ;   No, do not move sample history
         Mov     DL,3
 
         %%Tap:
-            Mov     EAX,[8+EBX]
-            Mov     [EBX],EAX
-            Mov     EAX,[12+EBX]
-            Mov     [4+EBX],EAX
+            Mov     EAX,[PBX+8]
+            Mov     [PBX],EAX
+            Mov     EAX,[PBX+12]
+            Mov     [PBX+4],EAX
 
-            Add     EBX,8
+            Add     PBX,8
 
         Dec     DL
-        JNZ     short %%Tap
+        JNZ     %%Tap
 
-        Mov     EAX,[ESI]                                                       ;Store the latest sample to history
-        Mov     [EBX],EAX
-        Mov     EAX,[4+ESI]
-        Mov     [4+EBX],EAX
+        Mov     EAX,[PSI]                                                       ;Store the latest sample to history
+        Mov     [PBX],EAX
+        Mov     EAX,[PSI+4]
+        Mov     [PBX+4],EAX
 
-        Add     EBX,-24
-        Add     ESI,16
+        Add     PBX,-24
+        Add     PSI,16
 
     %%Filter:
         Mov     EAX,[smpCur]
         ShR     EAX,2                                                           ;Shift right by 2 bits to prevent the sign from
-        Mov     [ESP-12],EAX                                                    ; entering (max = 40000000h)
-        FILd    dword [ESP-12]
-        Mov     dword [ESP-12],40000000h
-        FILd    dword [ESP-12]
+        Mov     [PSP-12],EAX                                                    ; entering (max = 40000000h)
+        FILd    dword [PSP-12]
+        Mov     dword [PSP-12],40000000h
+        FILd    dword [PSP-12]
         FDivP   ST1,ST
-        FStP    dword [ESP-12]
+        FStP    dword [PSP-12]
 
-        FLd     dword [24+EBX]                                                  ;A                                  |s3
-        FSub    dword [16+EBX]                                                  ;                                   |s3-s2
-        FSub    dword [EBX]                                                     ;                                   |s3-s2-s0
-        FAdd    dword [8+EBX]                                                   ;                                   |s3-s2-s0+s1=A'
-        FMul    dword [ESP-12]                                                  ;                                   |A'*Frac
-        FMul    dword [ESP-12]                                                  ;                                   |A'*Frac^2
-        FMul    dword [ESP-12]                                                  ;                                   |A'*Frac^3=A
-        FLd     dword [EBX]                                                     ;B                                  |A s0
-        FSub    dword [8+EBX]                                                   ;                                   |A s0-s1
+        FLd     dword [PBX+24]                                                  ;A                                  |s3
+        FSub    dword [PBX+16]                                                  ;                                   |s3-s2
+        FSub    dword [PBX]                                                     ;                                   |s3-s2-s0
+        FAdd    dword [PBX+8]                                                   ;                                   |s3-s2-s0+s1=A'
+        FMul    dword [PSP-12]                                                  ;                                   |A'*Frac
+        FMul    dword [PSP-12]                                                  ;                                   |A'*Frac^2
+        FMul    dword [PSP-12]                                                  ;                                   |A'*Frac^3=A
+        FLd     dword [PBX]                                                     ;B                                  |A s0
+        FSub    dword [PBX+8]                                                   ;                                   |A s0-s1
         FSub    ST,ST1                                                          ;                                   |A s0-s1-A=B'
-        FMul    dword [ESP-12]                                                  ;                                   |A B'*Frac
-        FMul    dword [ESP-12]                                                  ;                                   |A B'*Frac^2=B
-        FLd     dword [16+EBX]                                                  ;C                                  |A B s2
-        FSub    dword [EBX]                                                     ;                                   |A B s2-s0=C'
-        FMul    dword [ESP-12]                                                  ;                                   |A B C'*Frac=C
-        FLd     dword [8+EBX]                                                   ;D                                  |A B C s1=D
+        FMul    dword [PSP-12]                                                  ;                                   |A B'*Frac
+        FMul    dword [PSP-12]                                                  ;                                   |A B'*Frac^2=B
+        FLd     dword [PBX+16]                                                  ;C                                  |A B s2
+        FSub    dword [PBX]                                                     ;                                   |A B s2-s0=C'
+        FMul    dword [PSP-12]                                                  ;                                   |A B C'*Frac=C
+        FLd     dword [PBX+8]                                                   ;D                                  |A B C s1=D
         FAddP   ST1,ST                                                          ;                                   |A B C+D
         FAddP   ST1,ST                                                          ;                                   |A B+C+D
         FAddP   ST1,ST                                                          ;                                   |A+B+C+D
-        FStP    dword [ESP-8]                                                   ;                                   |(empty)
-        ZeroDN  ESP-8
+        FStP    dword [PSP-8]                                                   ;                                   |(empty)
+        ZeroDN  PSP-8
 
-        FLd     dword [28+EBX]                                                  ;A                                  |s3
-        FSub    dword [20+EBX]                                                  ;                                   |s3-s2
-        FSub    dword [4+EBX]                                                   ;                                   |s3-s2-s0
-        FAdd    dword [12+EBX]                                                  ;                                   |s3-s2-s0+s1=A'
-        FMul    dword [ESP-12]                                                  ;                                   |A'*Frac
-        FMul    dword [ESP-12]                                                  ;                                   |A'*Frac^2
-        FMul    dword [ESP-12]                                                  ;                                   |A'*Frac^3=A
-        FLd     dword [4+EBX]                                                   ;B                                  |A s0
-        FSub    dword [12+EBX]                                                  ;                                   |A s0-s1
+        FLd     dword [PBX+28]                                                  ;A                                  |s3
+        FSub    dword [PBX+20]                                                  ;                                   |s3-s2
+        FSub    dword [PBX+4]                                                   ;                                   |s3-s2-s0
+        FAdd    dword [PBX+12]                                                  ;                                   |s3-s2-s0+s1=A'
+        FMul    dword [PSP-12]                                                  ;                                   |A'*Frac
+        FMul    dword [PSP-12]                                                  ;                                   |A'*Frac^2
+        FMul    dword [PSP-12]                                                  ;                                   |A'*Frac^3=A
+        FLd     dword [PBX+4]                                                   ;B                                  |A s0
+        FSub    dword [PBX+12]                                                  ;                                   |A s0-s1
         FSub    ST,ST1                                                          ;                                   |A s0-s1-A=B'
-        FMul    dword [ESP-12]                                                  ;                                   |A B'*Frac
-        FMul    dword [ESP-12]                                                  ;                                   |A B'*Frac^2=B
-        FLd     dword [20+EBX]                                                  ;C                                  |A B s2
-        FSub    dword [4+EBX]                                                   ;                                   |A B s2-s0=C'
-        FMul    dword [ESP-12]                                                  ;                                   |A B C'*Frac=C
-        FLd     dword [12+EBX]                                                  ;D                                  |A B C s1=D
+        FMul    dword [PSP-12]                                                  ;                                   |A B'*Frac
+        FMul    dword [PSP-12]                                                  ;                                   |A B'*Frac^2=B
+        FLd     dword [PBX+20]                                                  ;C                                  |A B s2
+        FSub    dword [PBX+4]                                                   ;                                   |A B s2-s0=C'
+        FMul    dword [PSP-12]                                                  ;                                   |A B C'*Frac=C
+        FLd     dword [PBX+12]                                                  ;D                                  |A B C s1=D
         FAddP   ST1,ST                                                          ;                                   |A B C+D
         FAddP   ST1,ST                                                          ;                                   |A B+C+D
         FAddP   ST1,ST                                                          ;                                   |A+B+C+D
-        FStP    dword [ESP-4]                                                   ;                                   |(empty)
-        ZeroDN  ESP-4
+        FStP    dword [PSP-4]                                                   ;                                   |(empty)
+        ZeroDN  PSP-4
 
-        Jmp     short %%Exit
+        Jmp     %%Exit
 
     %%Direct:
-        Mov     EAX,[ESI]
-        Mov     [ESP-8],EAX
-        Mov     EAX,[4+ESI]
-        Mov     [ESP-4],EAX
+        Mov     EAX,[PSI]
+        Mov     [PSP-8],EAX
+        Mov     EAX,[PSI+4]
+        Mov     [PSP-4],EAX
 
-        Add     ESI,16
+        Add     PSI,16
 
     %%Exit:
 %endmacro
@@ -4984,32 +5085,33 @@ ENDP
 
     InitSampling
 
-    Mov     EBX,smpBuf
+    LoadPtr PBX,smpBuf
     Dec     DL                                                                  ;Has the sample reference point moved?
-    JZ      short %%Exit                                                        ;   No, don't move sample history
+    JZ      %%Exit                                                              ;   No, do not move sample history
         Mov     DL,3
 
         %%Tap:
-            Mov     EAX,[8+EBX]
-            Mov     [EBX],EAX
-            Mov     EAX,[12+EBX]
-            Mov     [4+EBX],EAX
+            Mov     EAX,[PBX+8]
+            Mov     [PBX],EAX
+            Mov     EAX,[PBX+12]
+            Mov     [PBX+4],EAX
 
-            Add     EBX,8
+            Add     PBX,8
 
         Dec     DL
-        JNZ     short %%Tap
+        JNZ     %%Tap
 
-        FSt     dword [EBX]                                                     ;Store the latest sample to history
-        FSt     dword [4+EBX]
+        FSt     dword [PBX]                                                     ;Store the latest sample to history
+        FSt     dword [PBX+4]
 
     %%Exit:
 %endmacro
 
 %macro DoneRunDSP 0
-    Pop     EDX,EAX,EBX,EBP
+    Pop     PDX,PAX,PBX,PBP
     StC                                                                         ;Set carry
-    RetN    EDI
+    Mov     PAX,PDI
+    RetN
 %endmacro
 
 ;===================================================================================================
@@ -5019,16 +5121,16 @@ ENDP
 ;If no mixing flag is set on, except for pitch modulation, noise generator, and mixing.
 ;
 ;In:
-;   EAX-> Buffer to store output
+;   PAX-> Buffer to store output
 ;   EDX = Number of samples to create (1 - MIX_SIZE)
 ;
 ;Out:
 ;   CF  = Set, samples were created
-;   EAX-> End of buffer
+;   PAX-> End of buffer
 ;   EDX = Number of samples to create
 ;
 ;   CF  = Clear, DSP is muted
-;   EDI-> Buffer to store output
+;   PDI-> Buffer to store output
 ;   EDX = Number of samples to create
 ;
 ;Destroys:
@@ -5036,7 +5138,7 @@ ENDP
 
 PROC RunDSP
 
-    Push    EBP,EBX,EAX,EDX                                                     ;Last register must be EAX,EDX
+    Push    PBP,PBX,PAX,PDX                                                     ;Last register must be PAX,PDX
     FInit
 
     Test    byte [disFlag],80h                                                  ;Is DSP reset or volume safe mode? (disFlag = [7])
@@ -5045,8 +5147,8 @@ PROC RunDSP
     ;=========================================
     ; Mix voices
 
-    Mov     EBP,[ESP]
-    Mov     EDI,mixBuf
+    Mov     EBP,[PSP]
+    LoadPtr PDI,mixBuf
 
     .NextEmu:
         ;Generate Noise -----------------------
@@ -5065,11 +5167,11 @@ PROC RunDSP
         ;Voice Loop ---------------------------
         XOr     ECX,ECX
         XOr     EAX,EAX
-        Mov     EBX,mix
-        Mov     [EDI],EAX
-        Mov     [4+EDI],EAX
-        Mov     [8+EDI],EAX
-        Mov     [12+EDI],EAX
+        LoadPtr PBX,mix
+        Mov     [PDI],EAX
+        Mov     [PDI+4],EAX
+        Mov     [PDI+8],EAX
+        Mov     [PDI+12],EAX
         Mov     CH,1
 
         .VoiceMix:
@@ -5077,7 +5179,7 @@ PROC RunDSP
             JZ      .VoiceDone
 
             Test    [dspPMod],CH                                                ;Is pitch modulation enabled?
-            JZ      short .NoPMod                                               ;   No, pitch doesn't need to be adjusted
+            JZ      .NoPMod                                                     ;   No, pitch doesn't need to be adjusted
                 PitchMod                                                        ;Apply pitch modulation
             .NoPMod:
 
@@ -5094,13 +5196,13 @@ PROC RunDSP
             UpdateSrc                                                           ;Update sample position
 
             .VoiceDone:
-            Sub     EBX,-80h
+            Sub     PBX,-80h
 
         Add     CH,CH
         JNZ     .VoiceMix
 
         Mov     [adsrCnt],CH                                                    ;Clear number of times to update envelope
-        Add     EDI,16
+        Add     PDI,16
 
     Dec     EBP
     JNZ     .NextEmu
@@ -5111,8 +5213,8 @@ PROC RunDSP
     ;=========================================
     ; Apply main volumes and mix in echo
 
-    Mov     EBP,[ESP]
-    Mov     ESI,mixBuf
+    Mov     EBP,[PSP]
+    LoadPtr PSI,mixBuf
 
     .NextSmp:
         Test    dword [dspOpts],DSP_NOMAIN                                      ;Is main output disabled?
@@ -5126,10 +5228,10 @@ PROC RunDSP
         .NoEchoDSP:
 
         Test    byte [disFlag],31h                                              ;Is echo delay disabled? (disFlag = [0][4][5])
-        JNZ     short .NoEchoMem                                                ;   Yes
+        JNZ     .NoEchoMem                                                      ;   Yes
             MixEchoMem
 %if ECHOMEM
-            Jmp     short .ExitEchoMem
+            Jmp     .ExitEchoMem
 %endif
         .NoEchoMem:
 %if ECHOMEM
@@ -5143,7 +5245,7 @@ PROC RunDSP
         .NoBASS:
 
         ApplyLevel
-        Add     ESI,16
+        Add     PSI,16
 
     Dec     EBP
     JNZ     .NextSmp
@@ -5154,9 +5256,9 @@ PROC RunDSP
     ;=========================================
     ; Store output
 
-    Mov     ESI,mixBuf
-    Mov     EDI,[ESP+4]
-    Mov     EBP,[ESP]
+    LoadPtr PSI,mixBuf
+    Mov     PDI,[PSP+PTRSIZE]
+    Mov     EBP,[PSP]
 
     Test    dword [dspOpts],DSP_ANALOG                                          ;Is Anti-Alies filter enabled?
     JZ      .NoAAF                                                              ;   No
@@ -5174,81 +5276,81 @@ PROC RunDSP
         Resampling
 
         ;Clamp samples ------------------------
-        Mov     EAX,[ESP-8]                                                     ;EAX = Sample
+        Mov     EAX,[PSP-8]                                                     ;EAX = Sample
         XOr     EDX,EDX
-        XOr     EBX,EBX
+        XOr     PBX,PBX
         BTR     EAX,31                                                          ;EAX = Absolute value
         RCR     EDX,1                                                           ;EDX = Sign of sample
         Sub     EAX,ECX
-        SetA    BL                                                              ;EBX = -1 if EAX < ECX
-        Dec     EBX
+        SetA    BL                                                              ;PBX = -1 if EAX < ECX
+        Dec     PBX
         And     EAX,EBX                                                         ;Clamp EAX
         Add     EAX,ECX
         Or      EAX,EDX                                                         ;Restore sign
-        Mov     [ESP-8],EAX
-        FLd     dword [ESP-8]
+        Mov     [PSP-8],EAX
+        FLd     dword [PSP-8]
 
-        Mov     EAX,[ESP-4]
+        Mov     EAX,[PSP-4]
         XOr     EDX,EDX
-        XOr     EBX,EBX
+        XOr     PBX,PBX
         BTR     EAX,31
         RCR     EDX,1
         Sub     EAX,ECX
         SetA    BL
-        Dec     EBX
+        Dec     PBX
         And     EAX,EBX
         Add     EAX,ECX
         Or      EAX,EDX
-        Mov     [ESP-4],EAX
-        FAdd    dword [ESP-4]
+        Mov     [PSP-4],EAX
+        FAdd    dword [PSP-4]
 
         FMul    dword [fp0_5]
 
         ;Reduce to integer form ---------------
         Mov     AL,[dspSize]
         Dec     AL
-        JZ      short .OutMono8
+        JZ      .OutMono8
         Dec     AL
-        JZ      short .OutMono16
+        JZ      .OutMono16
         Dec     AL
-        JZ      short .OutMono24
+        JZ      .OutMono24
 
         .OutMono32:
-            FIStP   dword [EDI]
-            Add     EDI,4
+            FIStP   dword [PDI]
+            Add     PDI,4
 
             Dec     EBP
             JNZ     .NextMonoInt
             DoneRunDSP
 
         .OutMono8:
-            FIStP   dword [ESP-4]
-            Mov     DL,[ESP-1]
+            FIStP   dword [PSP-4]
+            Mov     DL,[PSP-1]
             Add     DL,80h
-            Mov     [EDI],DL
-            Inc     EDI
+            Mov     [PDI],DL
+            Inc     PDI
 
             Dec     EBP
             JNZ     .NextMonoInt
             DoneRunDSP
 
         .OutMono16:
-            FIStP   dword [ESP-4]
-            Mov     DX,[ESP-2]
-            Mov     [EDI],DX
-            Add     EDI,2
+            FIStP   dword [PSP-4]
+            Mov     DX,[PSP-2]
+            Mov     [PDI],DX
+            Add     PDI,2
 
             Dec     EBP
             JNZ     .NextMonoInt
             DoneRunDSP
 
         .OutMono24:
-            FIStP   dword [ESP-4]
-            Mov     DX,[ESP-3]
-            Mov     AL,[ESP-1]
-            Mov     [0+EDI],DX
-            Mov     [2+EDI],AL
-            Add     EDI,3
+            FIStP   dword [PSP-4]
+            Mov     DX,[PSP-3]
+            Mov     AL,[PSP-1]
+            Mov     [PDI+0],DX
+            Mov     [PDI+2],AL
+            Add     PDI,3
 
             Dec     EBP
             JNZ     .NextMonoInt
@@ -5258,13 +5360,13 @@ PROC RunDSP
     .OutMonoFloat:
         Resampling
 
-        FLd     dword [ESP-8]
-        FAdd    dword [ESP-4]
+        FLd     dword [PSP-8]
+        FAdd    dword [PSP-4]
         FMul    dword [fp0_5]
         FMul    dword [fpShR31]
-        FStP    dword [EDI]
-        ZeroDN  EDI
-        Add     EDI,4
+        FStP    dword [PDI]
+        ZeroDN  PDI
+        Add     PDI,4
 
         Dec     EBP
         JNZ     .OutMonoFloat
@@ -5280,84 +5382,84 @@ PROC RunDSP
         Resampling
 
         ;Clamp samples ------------------------
-        Mov     EAX,[ESP-8]                                                     ;EAX = Sample
+        Mov     EAX,[PSP-8]                                                     ;EAX = Sample
         XOr     EDX,EDX
-        XOr     EBX,EBX
+        XOr     PBX,PBX
         BTR     EAX,31                                                          ;EAX = Absolute value
         RCR     EDX,1                                                           ;EDX = Sign of sample
         Sub     EAX,ECX
-        SetA    BL                                                              ;EBX = -1 if EAX < ECX
-        Dec     EBX
+        SetA    BL                                                              ;PBX = -1 if EAX < ECX
+        Dec     PBX
         And     EAX,EBX                                                         ;Clamp EAX
         Add     EAX,ECX
         Or      EAX,EDX                                                         ;Restore sign
-        Mov     [ESP-8],EAX
-        FLd     dword [ESP-8]
+        Mov     [PSP-8],EAX
+        FLd     dword [PSP-8]
 
-        Mov     EAX,[ESP-4]
+        Mov     EAX,[PSP-4]
         XOr     EDX,EDX
-        XOr     EBX,EBX
+        XOr     PBX,PBX
         BTR     EAX,31
         RCR     EDX,1
         Sub     EAX,ECX
         SetA    BL
-        Dec     EBX
+        Dec     PBX
         And     EAX,EBX
         Add     EAX,ECX
         Or      EAX,EDX
-        Mov     [ESP-4],EAX
-        FLd     dword [ESP-4]
+        Mov     [PSP-4],EAX
+        FLd     dword [PSP-4]
 
         ;Reduce to integer form ---------------
         Mov     AL,[dspSize]
         Dec     AL
-        JZ      short .OutStereo8
+        JZ      .OutStereo8
         Dec     AL
-        JZ      short .OutStereo16
+        JZ      .OutStereo16
         Dec     AL
-        JZ      short .OutStereo24
+        JZ      .OutStereo24
 
         .OutStereo32:
-            FIStP   dword [4+EDI]
-            FIStP   dword [EDI]
-            Add     EDI,8
+            FIStP   dword [PDI+4]
+            FIStP   dword [PDI]
+            Add     PDI,8
 
             Dec     EBP
             JNZ     .NextStereoInt
             DoneRunDSP
 
         .OutStereo8:
-            FIStP   dword [ESP-4]
-            FIStP   dword [ESP-5]
-            Mov     DX,[ESP-2]
+            FIStP   dword [PSP-4]
+            FIStP   dword [PSP-5]
+            Mov     DX,[PSP-2]
             Add     DH,80h
             Add     DL,80h
-            Mov     [EDI],DX
-            Add     EDI,2
+            Mov     [PDI],DX
+            Add     PDI,2
 
             Dec     EBP
             JNZ     .NextStereoInt
             DoneRunDSP
 
         .OutStereo16:
-            FIStP   dword [ESP-4]
-            FIStP   dword [ESP-6]
-            Mov     EDX,[ESP-4]
-            Mov     [EDI],EDX
-            Add     EDI,4
+            FIStP   dword [PSP-4]
+            FIStP   dword [PSP-6]
+            Mov     EDX,[PSP-4]
+            Mov     [PDI],EDX
+            Add     PDI,4
 
             Dec     EBP
             JNZ     .NextStereoInt
             DoneRunDSP
 
         .OutStereo24:
-            FIStP   dword [ESP-4]
-            FIStP   dword [ESP-7]
-            Mov     DX,[ESP-6]
-            Mov     EAX,[ESP-4]
-            Mov     [0+EDI],DX
-            Mov     [2+EDI],EAX
-            Add     EDI,6
+            FIStP   dword [PSP-4]
+            FIStP   dword [PSP-7]
+            Mov     DX,[PSP-6]
+            Mov     EAX,[PSP-4]
+            Mov     [PDI+0],DX
+            Mov     [PDI+2],EAX
+            Add     PDI,6
 
             Dec     EBP
             JNZ     .NextStereoInt
@@ -5367,23 +5469,23 @@ PROC RunDSP
     .OutStereoFloat:
         Resampling
 
-        FLd     dword [ESP-8]
+        FLd     dword [PSP-8]
         FMul    dword [fpShR31]
-        FStP    dword [EDI]
-        FLd     dword [ESP-4]
+        FStP    dword [PDI]
+        FLd     dword [PSP-4]
         FMul    dword [fpShR31]
-        FStP    dword [4+EDI]
-        ZeroDN  EDI
-        ZeroDN  4+EDI
-        Add     EDI,8
+        FStP    dword [PDI+4]
+        ZeroDN  PDI
+        ZeroDN  PDI+4
+        Add     PDI,8
 
         Dec     EBP
         JNZ     .OutStereoFloat
         DoneRunDSP
 
     .Mute:
-    Mov     EBP,[ESP]
-    XOr     EDI,EDI
+    Mov     EBP,[PSP]
+    XOr     PDI,PDI
 
     Test    byte [disFlag],8h                                                   ;Is pBuf NULL? (disFlag = [3])
     JZ      .MuteNext                                                           ;   No
@@ -5401,15 +5503,15 @@ PROC RunDSP
         FLdZ
         MuteSampling
         FStP    ST
-        Inc     EDI
+        Inc     PDI
 
     Dec     EBP
     JNZ     .MuteNext
 
     .MuteDone:
-    Pop     EDX,EAX,EBX,EBP
-    Mov     EDX,EDI
-    Mov     EDI,EAX
+    Pop     PDX,PAX,PBX,PBP
+    Mov     EDX,EDI                                                             ;EDI here is a plain sample count (from the Mute
+    Mov     PDI,PAX                                                             ; loop above), unlike PAX which is the real pointer
     Cmp     EAX,1                                                               ;Set carry if pBuf is null, so EmuDSP doesn't crash
 
 ENDP
@@ -5422,14 +5524,14 @@ ENDP
 ;
 ;In:
 ;   AL  = Block header
-;   ESI-> Sample Block
-;   EDI-> Output buffer
+;   PSI-> Sample Block
+;   PDI-> Output buffer
 ;   EDX = Last sample of previous block
 ;   EBX = Next to last sample
 ;
 ;Out:
-;   ESI-> Next Block
-;   EDI-> After last sample
+;   PSI-> Next Block
+;   PDI-> After last sample
 ;   EDX = Last sample
 ;   EBX = Next to last sample
 ;
@@ -5444,7 +5546,7 @@ ENDP
     LEA     EAX,[EDX*2+EBX]                                                     ;s = ((-p1 >> 4) & ~1) + p1
 
     ;Add delta ----------------------------
-    Add     EAX,[ECX]                                                           ;s += delta
+    Add     EAX,[PCX]                                                           ;s += delta
     MovSX   EDX,AX                                                              ;EDX = Last sample
 %endmacro
 
@@ -5464,7 +5566,7 @@ ENDP
     LEA     EAX,[EDX*2+EAX]                                                     ;s += ((-3 * p1) >> 5) & ~1
 
     ;Add delta ----------------------------
-    Add     EAX,[ECX]                                                           ;s += delta
+    Add     EAX,[PCX]                                                           ;s += delta
     MovSX   EDX,AX                                                              ;EDX = Last sample
 %endmacro
 
@@ -5486,14 +5588,14 @@ ENDP
     LEA     EAX,[EDX*2+EAX]                                                     ;s += ((-13 * p1) >> 6) & ~1
 
     ;Add delta ----------------------------
-    Add     EAX,[ECX]                                                           ;s += delta
+    Add     EAX,[PCX]                                                           ;s += delta
     MovSX   EDX,AX                                                              ;EDX = Last sample
 %endmacro
 
 %macro UnpckClamp 0
     Add     EAX,65536                                                           ;Clamp 16-bit sample to a 17-bit value,
     SAR     EAX,17                                                              ; because restored value by BRR is used in doubles.
-    JZ      short %%OK
+    JZ      %%OK
         SetS    DL                                                              ;If s < -65536 (FFFF0000h), s = 0000h = 0
         MovZX   EDX,DL                                                          ;If s >  65534 (0000FFFEh), s = FFFEh = -2
         Dec     EDX
@@ -5504,60 +5606,60 @@ ENDP
 
 UnpckSrc:
 
-    Push    ECX,EBP
+    Push    PCX,PBP
 
     Inc     SI                                                                  ;Inc SI so pointer will wrap around a 16-bit value
-    XOr     ECX,ECX
+    XOr     PCX,PCX
     Mov     CH,AL
     ShR     CH,4
-    Add     ECX,brrTab                                                          ;ECX -> Row in brrTab
-    Mov     EBP,8                                                               ;Decompress 8 bytes (16 nybbles)
+    IdxLd   LEA,PCX,brrTab,PCX                                                  ;PCX -> Row in brrTab
+    Mov     PBP,8                                                               ;Decompress 8 bytes (16 nybbles)
 
     Test    AL,0Ch                                                              ;Does block use ADPCM compression?
-    JZ      short .Filter0                                                      ;   No
+    JZ      .Filter0                                                            ;   No
     Test    AL,08h                                                              ;Does block use filter 1?
-    JZ      short .Filter1                                                      ;   Yes
+    JZ      .Filter1                                                            ;   Yes
     Test    AL,04h                                                              ;Does block use filter 2?
     JZ      .Filter2                                                            ;   Yes
     Jmp     .Filter3                                                            ;Then it must use filter 3
 
     ;[Delta] ----------------------------------
     .Filter0:
-        Mov     CL,[ESI]                                                        ;CL indexes delta value
-        And     CL,0F0h                                                         ;ECX -> value
+        Mov     CL,[PSI]                                                        ;CL indexes delta value
+        And     CL,0F0h                                                         ;PCX -> value
         ShR     CL,2
 
-        Mov     EAX,[ECX]                                                       ;EAX = delta
+        Mov     EAX,[PCX]                                                       ;EAX = delta
         MovSX   EBX,AX                                                          ;EBX = Next to last sample
-        Mov     [EDI],EBX
+        Mov     [PDI],EBX
 
-        Mov     CL,[ESI]
+        Mov     CL,[PSI]
         Inc     SI
         And     CL,0Fh
         ShL     CL,2
 
-        Mov     EAX,[ECX]
+        Mov     EAX,[PCX]
         MovSX   EDX,AX                                                          ;EDX = Last sample
-        Mov     [2+EDI],DX
-        Add     EDI,4
+        Mov     [PDI+2],DX
+        Add     PDI,4
 
-    Dec     EBP
-    JNZ     short .Filter0
-    Pop     EBP,ECX
+    Dec     PBP
+    JNZ     .Filter0
+    Pop     PBP,PCX
     Ret
 
     ;[Delta]+[Smp-1](15/16) ------------------
     .Filter1:
-        Mov     CL,[ESI]                                                        ;CL indexes delta value
-        And     CL,0F0h                                                         ;ECX -> value
+        Mov     CL,[PSI]                                                        ;CL indexes delta value
+        And     CL,0F0h                                                         ;PCX -> value
         ShR     CL,2
 
         UnpckFilter1
         UnpckClamp
 
-        Mov     [EDI],EDX
+        Mov     [PDI],EDX
 
-        Mov     CL,[ESI]
+        Mov     CL,[PSI]
         Inc     SI
         And     CL,0Fh
         ShL     CL,2
@@ -5565,26 +5667,26 @@ UnpckSrc:
         UnpckFilter1
         UnpckClamp
 
-        Mov     [2+EDI],DX
-        Add     EDI,4
+        Mov     [PDI+2],DX
+        Add     PDI,4
 
-    Dec     EBP
-    JNZ     short .Filter1
-    Pop     EBP,ECX
+    Dec     PBP
+    JNZ     .Filter1
+    Pop     PBP,PCX
     Ret
 
     ;[Delta]+[Smp-1](61/32)-[Smp-2](15/16) ---
     .Filter2:
-        Mov     CL,[ESI]
+        Mov     CL,[PSI]
         And     CL,0F0h
         ShR     CL,2
 
         UnpckFilter2
         UnpckClamp
 
-        Mov     [EDI],EDX
+        Mov     [PDI],EDX
 
-        Mov     CL,[ESI]
+        Mov     CL,[PSI]
         Inc     SI
         And     CL,0Fh
         ShL     CL,2
@@ -5592,26 +5694,26 @@ UnpckSrc:
         UnpckFilter2
         UnpckClamp
 
-        Mov     [2+EDI],DX
-        Add     EDI,4
+        Mov     [PDI+2],DX
+        Add     PDI,4
 
-    Dec     EBP
+    Dec     PBP
     JNZ     .Filter2
-    Pop     EBP,ECX
+    Pop     PBP,PCX
     Ret
 
     ;[Delta]+[Smp-1](115/64)-[Smp-2](13/16) --
     .Filter3:
-        Mov     CL,[ESI]
+        Mov     CL,[PSI]
         And     CL,0F0h
         ShR     CL,2
 
         UnpckFilter3
         UnpckClamp
 
-        Mov     [EDI],EDX
+        Mov     [PDI],EDX
 
-        Mov     CL,[ESI]
+        Mov     CL,[PSI]
         Inc     SI
         And     CL,0Fh
         ShL     CL,2
@@ -5619,12 +5721,12 @@ UnpckSrc:
         UnpckFilter3
         UnpckClamp
 
-        Mov     [2+EDI],DX
-        Add     EDI,4
+        Mov     [PDI+2],DX
+        Add     PDI,4
 
-    Dec     EBP
+    Dec     PBP
     JNZ     .Filter3
-    Pop     EBP,ECX
+    Pop     PBP,PCX
     Ret
 
 
@@ -5633,7 +5735,7 @@ UnpckSrc:
 
 UnpckSrcOld:
 
-    Push    ECX
+    Push    PCX
 
     ;Get range -------------------------------
     Mov     CL,0CFh
@@ -5647,11 +5749,11 @@ UnpckSrcOld:
 
     Mov     CH,8
     Test    AL,0Ch
-    JZ      short .Filter0
+    JZ      .Filter0
 
     Add     CL,10                                                               ;Values will be shifted right from 32-bit values
     Test    AL,08h
-    JZ      short .Filter1
+    JZ      .Filter1
 
     Test    AL,04h
     JZ      .Filter2
@@ -5662,29 +5764,29 @@ UnpckSrcOld:
     .Filter0:
         XOr     EAX,EAX
         XOr     EDX,EDX
-        Mov     AH,[ESI]
+        Mov     AH,[PSI]
         Mov     DH,AH
         And     AH,0F0h
         ShL     DH,4
 
         SAR     AX,CL
         SAR     DX,CL
-        Mov     [EDI],AX
-        Mov     [2+EDI],DX
-        Add     EDI,4
+        Mov     [PDI],AX
+        Mov     [PDI+2],DX
+        Add     PDI,4
 
         Inc     SI
 
     Dec     CH
-    JNZ     short .Filter0
+    JNZ     .Filter0
     MovSX   EDX,DX
     MovSX   EBX,AX
-    Pop     ECX
+    Pop     PCX
     Ret
 
     ;[Delta]+[Smp-1](15/16) ------------------
     .Filter1:
-        Mov     EBX,[ESI]
+        Mov     EBX,[PSI]
         And     BL,0F0h
         ShL     EBX,24
         SAR     EBX,CL
@@ -5694,9 +5796,9 @@ UnpckSrcOld:
         Add     EBX,EAX
         SAR     EBX,6
 
-        Mov     [EDI],EBX
+        Mov     [PDI],EBX
 
-        Mov     EDX,[ESI]
+        Mov     EDX,[PSI]
         ShL     EDX,28
         SAR     EDX,CL
 
@@ -5705,19 +5807,19 @@ UnpckSrcOld:
         Add     EDX,EAX
         SAR     EDX,6
 
-        Mov     [2+EDI],DX
-        Add     EDI,4
+        Mov     [PDI+2],DX
+        Add     PDI,4
 
         Inc     SI
 
     Dec     CH
-    JNZ     short .Filter1
-    Pop     ECX
+    JNZ     .Filter1
+    Pop     PCX
     Ret
 
     ;[Delta]+[Smp-1](61/32)-[Smp-2](30/32) ---
     .Filter2:
-        Mov     EAX,[ESI]
+        Mov     EAX,[PSI]
         And     AL,0F0h
         ShL     EAX,24
         SAR     EAX,CL
@@ -5732,9 +5834,9 @@ UnpckSrcOld:
         Add     EAX,EDX
         SAR     EAX,6
 
-        Mov     [EDI],EAX
+        Mov     [PDI],EAX
 
-        Mov     EDX,[ESI]
+        Mov     EDX,[PSI]
         ShL     EDX,28
         SAR     EDX,CL
 
@@ -5746,19 +5848,19 @@ UnpckSrcOld:
         Add     EDX,EAX
         SAR     EDX,6
 
-        Mov     [2+EDI],DX
-        Add     EDI,4
+        Mov     [PDI+2],DX
+        Add     PDI,4
 
         Inc     SI
 
     Dec     CH
     JNZ     .Filter2
-    Pop     ECX
+    Pop     PCX
     Ret
 
     ;[Delta]+[Smp-1](115/64)-[Smp-2](52/64) --
     .Filter3:
-        Mov     EAX,[ESI]
+        Mov     EAX,[PSI]
         And     AL,0F0h
         ShL     EAX,24
         SAR     EAX,CL
@@ -5773,9 +5875,9 @@ UnpckSrcOld:
         Add     EAX,EDX
         SAR     EAX,6
 
-        Mov     [EDI],EAX
+        Mov     [PDI],EAX
 
-        Mov     EDX,[ESI]
+        Mov     EDX,[PSI]
         ShL     EDX,28
         SAR     EDX,CL
 
@@ -5787,12 +5889,12 @@ UnpckSrcOld:
         Add     EDX,EAX
         SAR     EDX,6
 
-        Mov     [2+EDI],DX
-        Add     EDI,4
+        Mov     [PDI+2],DX
+        Add     PDI,4
 
         Inc     SI
 
     Dec     CH
     JNZ     .Filter3
-    Pop     ECX
+    Pop     PCX
     Ret
