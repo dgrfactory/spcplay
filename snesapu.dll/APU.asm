@@ -170,7 +170,7 @@ EXPROC InitAPU, reason
 
     Mov     [scr700inc],EAX
     Mov     [apuCbMask],EAX
-    Mov     [apuCbFunc],EAX
+    Mov     [apuCbFunc],PAX
     Mov     [dspOpts],EAX
 
     LoadPtr PAX,scrRAMBuf
@@ -2431,8 +2431,8 @@ ENDP
 
 EXPROC SetScript700Data, addr, pData, size
 
-    Mov     EAX,[pData]                                                         ;EAX = Data Pointer
-    Test    EAX,EAX                                                             ;EAX = NULL?
+    Mov     PAX,[pData]                                                         ;PAX = Data Pointer
+    Test    PAX,PAX                                                             ;PAX = NULL?
     JZ      .FINALIZE                                                           ;   Yes
 
     Mov     EAX,[scr700dat]                                                     ;EAX = Data Offset

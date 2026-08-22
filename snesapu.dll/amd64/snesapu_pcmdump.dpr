@@ -131,7 +131,7 @@ begin
   if CallbackCount <= 5 then
     WriteLn(Format('  callback #%d: effect=0x%x addr=0x%x value=0x%x lpData=%p',
       [CallbackCount, effect, addr, value, lpData]));
-  Result := value;     //Doc: "Usually, will return value of 'value' parameter."
+  Result := value;     // Doc: "Usually, will return value of 'value' parameter."
 end;
 
 begin
@@ -151,7 +151,7 @@ begin
   else
     Script700Path := '';
 
-  //Load the DLL and resolve the 3 exports this tool needs ------------------------------------------
+  // Load the DLL and resolve the 3 exports this tool needs ------------------------------------------
   hDLL := LoadLibrary(PChar(DllPath));
   if hDLL = 0 then
     Fail(Format('LoadLibrary failed for "%s" (GetLastError=%d)', [DllPath, GetLastError]));
@@ -168,7 +168,7 @@ begin
   if not Assigned(pSNESAPUCallback) then Fail('GetProcAddress failed for SNESAPUCallback');
   if not Assigned(pSetScript700) then    Fail('GetProcAddress failed for SetScript700');
 
-  //Load the .spc file --------------------------------------------------------------------------------
+  // Load the .spc file --------------------------------------------------------------------------------
   AssignFile(fSpc, SpcPath);
   {$I-}
   Reset(fSpc, 1);

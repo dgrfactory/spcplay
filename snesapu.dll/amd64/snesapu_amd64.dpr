@@ -91,11 +91,11 @@ library SNESAPU;
 {$L SPC700.obj}
 {$R 'version.res' 'version.rc'}
 
-//===================================================================================================
-//External declarations -- one per SNESAPU.def export. Signatures follow snesapu.dll\SNESAPU.h
-//(u8=Byte, u16=Word, u32=Cardinal, s32=LongInt, b8=Byte, and any struct pointer=Pointer, since none
-//of these 29 functions need the caller to know the pointed-to layout -- they hand back opaque
-//pointers/handles that calling code stores and passes back, exactly as GetAPUData's own callers do).
+// ===================================================================================================
+// External declarations -- one per SNESAPU.def export. Signatures follow snesapu.dll\SNESAPU.h
+// (u8=Byte, u16=Word, u32=Cardinal, s32=LongInt, b8=Byte, and any struct pointer=Pointer, since none
+// of these 29 functions need the caller to know the pointed-to layout -- they hand back opaque
+// pointers/handles that calling code stores and passes back, exactly as GetAPUData's own callers do).
 
 function  EmuAPU(pBuf: Pointer; len: Cardinal; ltype: Byte): Pointer; stdcall; external name 'EmuAPU';
 procedure FixAPU(pc: Word; a, y, x, psw, sp: Byte); stdcall; external name 'FixAPU';
@@ -128,9 +128,9 @@ procedure SetTimerTrick(port, wait: Cardinal); stdcall; external name 'SetTimerT
 function  SNESAPUCallback(pCbFunc: Pointer; cbMask: Cardinal): Pointer; stdcall; external name 'SNESAPUCallback';
 procedure SNESAPUInfo(pVer, pMin, pOpt: Pointer); stdcall; external name 'SNESAPUInfo';
 
-//===================================================================================================
-//Entry point -- see the file header comment. InitAPU only acts on DLL_PROCESS_ATTACH and always
-//returns TRUE, so there's no result worth checking or forwarding here (matching _DllMainCRTStartup).
+// ===================================================================================================
+// Entry point -- see the file header comment. InitAPU only acts on DLL_PROCESS_ATTACH and always
+// returns TRUE, so there's no result worth checking or forwarding here (matching _DllMainCRTStartup).
 
 procedure SNESAPUDllProc(Reason: LongInt);
 begin
