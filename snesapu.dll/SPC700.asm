@@ -1608,7 +1608,7 @@ SPCBreak:
     ; to the caller's return address—to read and overwrite six specific values, thereby allowing the
     ; debugger to directly modify the emulator's execution state.  Since standard Win64 register-based
     ; calling macros (where the first four arguments are not placed on the stack) cannot accommodate
-    ; this behavior, the implementation manually pushes values ​​to and pops them from the stack,
+    ; this behavior, the implementation manually pushes values to and pops them from the stack,
     ; invoking the function via a raw pointer.
 
     Mov     EBX,[t0Step]                                                        ;Pass down counters (zero-extended into a full pointer-
@@ -3606,81 +3606,6 @@ ENDP
 
 
 ;===================================================================================================
-;DAA/DAS emulation
-;   Since the DAA and DAS instructions cannot be encoded in 64-bit mode, standard arithmetic
-;   operations are used to precisely replicate the algorithms described in Intel's specifications
-;   (while faithfully reproducing the state changes of the CF, SF, ZF, and PF flags).
-;   Both instructions read the values ​​of the AL, CF, and AF registers as set by the caller via a
-;   preceding SAHF instruction.  They also overwrite the AH register as a scratch area (with the
-;   original value "Y" to be restored later by the caller) and overwrite the CL and CH registers
-;   (as the values ​​"X" in CL/CH need not be preserved across the DAA/DAS call).
-;   In accordance with the algorithm, the conditions for adjusting the upper nibble (i.e., "> 0x99"
-;   or the "previous CF") rely on the AL and CF values ​​as they exist *before* the lower nibble
-;   adjustment takes place; therefore, these values ​​are saved (snapshotted) into CL and CH at the
-;   start of the process.
-
-%macro EmuDAA 0
-    Mov     CL,AL                                                               ;CL = old AL
-    LAHF
-    Mov     CH,AH                                                               ;CH.0 = old CF, CH.4 = old AF
-
-    Mov     AH,AL
-    And     AH,0Fh
-    Cmp     AH,9
-    JA      %%Lo
-    Test    CH,10h
-    JZ      %%LoDone
-    %%Lo:
-        Add     AL,6
-    %%LoDone:
-
-    Cmp     CL,99h
-    JA      %%Hi
-    Test    CH,1
-    JZ      %%HiDone
-    %%Hi:
-        Add     AL,60h
-        StC
-        Jmp     %%CFDone
-    %%HiDone:
-        ClC
-    %%CFDone:
-
-    Test    AL,AL                                                               ;Set SF/ZF/PF from the final AL (CF is already set above)
-%endmacro
-
-%macro EmuDAS 0
-    Mov     CL,AL
-    LAHF
-    Mov     CH,AH
-
-    Mov     AH,AL
-    And     AH,0Fh
-    Cmp     AH,9
-    JA      %%Lo
-    Test    CH,10h
-    JZ      %%LoDone
-    %%Lo:
-        Sub     AL,6
-    %%LoDone:
-
-    Cmp     CL,99h
-    JA      %%Hi
-    Test    CH,1
-    JZ      %%HiDone
-    %%Hi:
-        Sub     AL,60h
-        StC
-        Jmp     %%CFDone
-    %%HiDone:
-        ClC
-    %%CFDone:
-
-    Test    AL,AL
-%endmacro
-
-
-;===================================================================================================
 ;DAA - Decimal Adjust After Addition
 ; N V P B H I Z C
 ; *           * *
@@ -3691,13 +3616,8 @@ ENDP
     ShL     AH,4
     Or      AH,[PSW+CF]
     SAHF                                                                        ;Store AH into flags register
-%ifdef WIN64
-    EmuDAA                                                                      ;DAA is not encodable in 64-bit mode (see EmuDAA)
+    EmuDAA                                                                      ;Execute DAA on AL (A) (see EmuDAA)
     Mov     AH,DH                                                               ;Restore AH
-%else
-    Mov     AH,DH                                                               ;Restore AH
-    DAA                                                                         ;Execute DAA on AL (A)
-%endif
     CleanUp 3,1,na,NZC
 %endmacro
 
@@ -3708,19 +3628,14 @@ ENDP
 ; *           * *
 ;DAS A
 %macro OpcBE 0
-    Mov     DH,AH
-    Mov     AH,[PSW+H]
+    Mov     DH,AH                                                               ;Save AH (Y)
+    Mov     AH,[PSW+H]                                                          ;Set AF and CF in AH
     ShL     AH,4
     Or      AH,[PSW+CF]
     XOr     AH,11h                                                              ;Reverse flags for x86
-    SAHF
-%ifdef WIN64
-    EmuDAS                                                                      ;DAS is not encodable in 64-bit mode (see EmuDAS)
-    Mov     AH,DH
-%else
-    Mov     AH,DH
-    DAS
-%endif
+    SAHF                                                                        ;Store AH into flags register
+    EmuDAS                                                                      ;Execute DAS on AL (A) (see EmuDAS)
+    Mov     AH,DH                                                               ;Restore AH
     CleanUp 3,1,na,NZCs
 %endmacro
 

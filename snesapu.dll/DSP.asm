@@ -474,10 +474,10 @@ SECTION .text ALIGN=16
 
 PROC Exp
 
-    ;NOTE (amd64 port): this used to write scratch FPU control words to [PSP-4]/[PSP-8], i.e. below the
-    ; stack pointer without reserving that space. x86's stdcall/cdecl ABI has no formal guarantee about
-    ; that memory either, and Win64 in particular defines no red zone at all (unlike SysV) -- so this
-    ; is reserved for real with Sub/Add PSP instead of assumed safe.
+    ;NOTE (amd64 port): this used to write scratch FPU control words to [PSP-4]/[PSP-8], i.e. below
+    ; the stack pointer without reserving that space.  x86's stdcall/cdecl ABI has no formal
+    ; guarantee about that memory either, and Win64 in particular defines no red zone at all
+    ; (unlike SysV) -- so this is reserved for real with Sub/Add PSP instead of assumed safe.
 
     Sub     PSP,8
     FStCW   [PSP+4]                                                             ;Save control state
@@ -1526,7 +1526,8 @@ USES ALL
 
     ;NOTE (amd64 port): EBX/ECX/AL here are DSP register numbers/values (per InitReg/DSPInC's own
     ; documented 'EBX = DSP register number' interface), not pointers -- no width change needed for
-    ; those. The dsp/mix accesses below use IdxLd/IdxSt (RIP-relative cannot include an index register).
+    ; those.  The dsp/mix accesses below use IdxLd/IdxSt (RIP-relative cannot include an index
+    ; register).
 
     ;Enable voices currently keyed on --------
     Mov     byte [voiceMix],0
@@ -2051,11 +2052,11 @@ ENDP
 PROC StartSrc
 
     ;NOTE (amd64 port): bCur/sIdx (DSP.inc VoiceMix struct) stay 'resd 1' on both architectures --
-    ; the struct's total size is relied on throughout DSP.asm as a fixed 128-byte voice stride, so it
-    ; cannot grow. On x86 a real pointer already fits in 4 bytes and this code is unchanged. On amd64
-    ; they instead hold a small OFFSET: bCur is pAPURAM-relative (SPC RAM is a 64KB space, so this
-    ; always fits in 32 bits), sIdx is relative to the voice's own struct base (PBX). Both are
-    ; reconstructed into a real pointer immediately after loading.
+    ; the struct's total size is relied on throughout DSP.asm as a fixed 128-byte voice stride, so
+    ; it cannot grow.  On x86 a real pointer already fits in 4 bytes and this code is unchanged.
+    ; On amd64 they instead hold a small OFFSET: bCur is pAPURAM-relative (SPC RAM is a 64KB space,
+    ; so this always fits in 32 bits), sIdx is relative to the voice's own struct base (PBX).
+    ; Both are reconstructed into a real pointer immediately after loading.
 
     Push    PSI,PDI,PBP
     MovZX   EAX,byte [PBX+mSrc]                                                 ;EAX = Source
@@ -2362,10 +2363,10 @@ ENDP
 PROC ChgADSR
 
     ;NOTE (amd64 port): PSI is pushed here (not through StartEnv's own PROC/USES ESI prologue, which
-    ; this jumps past) purely so StartEnv's shared exit points -- which still expect to pop it -- stay
-    ; balanced; the pushed value is whatever ChgADSR's own caller had in PSI, restored transparently
-    ; on return. PSI itself is then immediately given a real value below (the dsp pointer), same as
-    ; it would have on a normal call into StartEnv.
+    ; this jumps past) purely so StartEnv's shared exit points -- which still expect to pop it --
+    ; stay balanced; the pushed value is whatever ChgADSR's own caller had in PSI, restored
+    ; transparently on return.  PSI itself is then immediately given a real value below (the dsp
+    ; pointer), same as it would have on a normal call into StartEnv.
 
     Push    PSI                                                                 ;PSI will get popped on return from StartEnv
     IdxLd   LEA,PSI,dsp,PBX
@@ -2928,10 +2929,10 @@ RPitch:
 
 RADSR:
     ;NOTE: RGain (below) pushes ESI/PSI verbatim for StartEnv to pop -- it must still hold whatever
-    ; DSPIn's own caller had, all the way through both RADSR's body and a possible fall-through into
-    ; RGain via .SetGain: below. So neither of these two handlers may use PSI as scratch for the
-    ; dsp/mix base pointers -- IdxSt/IdxLd (default scratch PDI) are used instead, each self-contained
-    ; so nothing needs to survive across the Call ChgADSR/Jmp ChgGain either.
+    ; DSPIn's own caller had, all the way through both RADSR's body and a possible fall-through
+    ; into RGain via .SetGain: below.  So neither of these two handlers may use PSI as scratch for
+    ; the dsp/mix base pointers -- IdxSt/IdxLd (default scratch PDI) are used instead, each
+    ; self-contained so nothing needs to survive across the Call ChgADSR/Jmp ChgGain either.
     XOr     EAX,EAX
     IdxSt   Test byte,mix,PBX+mFlg,MFLG_KOFF                                    ;Is voice in key off mode?
     JNZ     .NoChg                                                              ;   Yes, envelope setting cannot be changed now

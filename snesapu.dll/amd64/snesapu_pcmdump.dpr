@@ -54,20 +54,24 @@ type
   TSNESAPUCallback  = function(pCbFunc: Pointer; cbMask: Cardinal): Pointer; stdcall;
   TSetScript700     = function(pSource: Pointer): Cardinal; stdcall;
 
-  //See APU.inc's SNESAPUCallback doc: 'function: u32 Callback(u32 effect, u32 addr, u32 value,
-  //void *lpData)'. This is invoked from the DLL via x64.inc's ExtCall (real Microsoft x64 ABI, all
-  //4 args), so a correctly-firing, correctly-valued callback here is a direct test of ExtCall/
-  //ExtCallArg's argument marshalling and its R11-staged indirect call target.
+  // See APU.inc's SNESAPUCallback doc: 'function: u32 Callback(u32 effect, u32 addr, u32 value,
+  // void *lpData)'. This is invoked from the DLL via x64.inc's ExtCall (real Microsoft x64 ABI, all
+  // 4 args), so a correctly-firing, correctly-valued callback here is a direct test of ExtCall/
+  // ExtCallArg's argument marshalling and its R11-staged indirect call target.
   TAPUCallback = function(effect, addr, value: Cardinal; lpData: Pointer): Cardinal; stdcall;
 
 const
-  SPC_FILE_SIZE   = 66048;            //Fixed .spc file size (see APU.h's LoadSPCFile doc)
-  CHUNK_SAMPLES   = 4096;             //Samples requested per EmuAPU call -- must match between the
-                                       // x86 and x64 runs being compared, see file header
-  BYTES_PER_FRAME = 4;                //16-bit, 2 channels = 4 bytes/sample-frame (matches SetAPUOpt
-                                       // below); only used to size the scratch buffer generously
-  CBE_DSPREG      = $01;              //Write DSP value event (see APU.inc) -- fires on every DSP
-                                       // register write, so a normal playback should trigger it often
+  SPC_FILE_SIZE   = 66048;              // Fixed .spc file size (see APU.h's LoadSPCFile doc)
+  CHUNK_SAMPLES   = 4096;               // Samples requested per EmuAPU call -- must match between the
+                                        // x86 and x64 runs being compared, see file header
+  SAMPLING_RATE   = 32000;
+  CHANNELS        = 2;
+  BITS            = 16;
+  BYTES_PER_FRAME = 4;                  // 16-bit, 2 channels = 4 bytes/sample-frame (matches SetAPUOpt
+                                        // below); only used to size the scratch buffer generously
+  INTERPOLATION   = 3;
+  CBE_DSPREG      = $01;                // Write DSP value event (see APU.inc) -- fires on every DSP
+                                        // register write, so a normal playback should trigger it often
 
 var
   hDLL: THandle;
@@ -95,8 +99,8 @@ begin
   Halt(1);
 end;
 
-//Reads a whole file into a null-terminated AnsiString, suitable for passing straight to
-//SetScript700's PAnsiChar(pSource) parameter (see the Script700 test below).
+// Reads a whole file into a null-terminated AnsiString, suitable for passing straight to
+// SetScript700's PAnsiChar(pSource) parameter (see the Script700 test below).
 function LoadTextFile(const Path: String): AnsiString;
 var
   f: File;
@@ -179,28 +183,28 @@ begin
 
   pLoadSPCFile(@SpcData[0]);
 
-  //Register a callback to exercise ExtCall's real Microsoft x64 ABI marshalling (see APUCallback
-  //above) -- registered after LoadSPCFile so a fresh LoadSPCFile call wouldn't need to re-arm it.
+  // Register a callback to exercise ExtCall's real Microsoft x64 ABI marshalling (see APUCallback
+  // above) -- registered after LoadSPCFile so a fresh LoadSPCFile call wouldn't need to re-arm it.
   CallbackCount := 0;
   pSNESAPUCallback(@APUCallback, CBE_DSPREG);
 
-  //Exercise SetScript700 -- one of the EXPROC-wrapper-plus-'I'-suffixed-internal-implementation
-  //split functions (see x64.inc's EXPROC doc), so this is a direct test of that split's pointer
-  //argument forwarding (EXPROC SetScript700 -> Call SetScript700I,PAX).
+  // Exercise SetScript700 -- one of the EXPROC-wrapper-plus-'I'-suffixed-internal-implementation
+  // split functions (see x64.inc's EXPROC doc), so this is a direct test of that split's pointer
+  // argument forwarding (EXPROC SetScript700 -> Call SetScript700I,PAX).
   //
-  //Test 1: pSource = NULL is documented (APU.inc) to disable Script700 and return 0 -- a safe,
-  //deterministic smoke test that doesn't depend on knowing Script700's actual command grammar.
+  // Test 1: pSource = NULL is documented (APU.inc) to disable Script700 and return 0 -- a safe,
+  // deterministic smoke test that doesn't depend on knowing Script700's actual command grammar.
   ScriptResult := pSetScript700(nil);
   WriteLn(Format('OK: SetScript700(NULL) returned %d (expected 0)', [ScriptResult]));
   if ScriptResult <> 0 then
     WriteLn('WARNING: expected 0 for a NULL pSource');
 
-  //Test 2: a real (non-NULL) buffer, just to exercise the pointer marshalling through a live
-  //compile pass without crashing. If a script700 file path was given on the command line, load and
-  //use its actual content (letting you test a real Script700 program); otherwise fall back to a
-  //trivial comment-only string. Either way, no specific return value is asserted here unless a real
-  //file was supplied -- a hand-fed string isn't necessarily valid Script700 syntax, and the point of
-  //the fallback case is only that EXPROC correctly forwards the pointer without crashing.
+  // Test 2: a real (non-NULL) buffer, just to exercise the pointer marshalling through a live
+  // compile pass without crashing. If a script700 file path was given on the command line, load and
+  // use its actual content (letting you test a real Script700 program); otherwise fall back to a
+  // trivial comment-only string. Either way, no specific return value is asserted here unless a real
+  // file was supplied -- a hand-fed string isn't necessarily valid Script700 syntax, and the point of
+  // the fallback case is only that EXPROC correctly forwards the pointer without crashing.
   if Script700Path <> '' then
     TestScript := LoadTextFile(Script700Path)
   else
@@ -214,16 +218,16 @@ begin
   if (Script700Path <> '') and (ScriptResult = Cardinal(-1)) then
     WriteLn('WARNING: SetScript700 reported a binary-conversion error for this file');
 
-  //If no real Script700 file was given, the built-in test string was only a smoke test of the
-  //pointer forwarding -- reset back to disabled so it doesn't affect the EmuAPU run below. If a real
-  //file WAS given, leave it active so that file's Script700 program actually drives the EmuAPU run.
+  // If no real Script700 file was given, the built-in test string was only a smoke test of the
+  // pointer forwarding -- reset back to disabled so it doesn't affect the EmuAPU run below. If a real
+  // file WAS given, leave it active so that file's Script700 program actually drives the EmuAPU run.
   if Script700Path = '' then
     pSetScript700(nil);
 
-  //Fixed, deterministic playback settings -- do not change between compared runs ---------------------
-  pSetAPUOpt(1, 2, -32, 96000, 4, 0);
+  // Fixed, deterministic playback settings -- do not change between compared runs ---------------------
+  pSetAPUOpt(1, CHANNELS, BITS, SAMPLING_RATE, INTERPOLATION, 0);
 
-  //Pull PCM in fixed-size chunks, dumping raw bytes as-is ---------------------------------------------
+  // Pull PCM in fixed-size chunks, dumping raw bytes as-is ---------------------------------------------
   AssignFile(fOut, OutPath);
   {$I-}
   Rewrite(fOut, 1);

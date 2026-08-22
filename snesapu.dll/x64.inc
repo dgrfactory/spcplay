@@ -4,8 +4,8 @@
 ;
 ;This file is the amd64 counterpart to x86.inc, selected by macro.inc when WIN64 is defined.  It
 ;implements the *same* macro interface (PROC/ENDP/USES/PUBLIC/Call/RetN/LOCALS, plus the pointer
-;aliases PAX/PBX/.../PTRSIZE/resPTR) so that shared code in APU.asm/DSP.asm/SPC700.asm does not need
-;to know which architecture it is being built for.
+;aliases PAX/PBX/.../PTRSIZE/resPTR) so that shared code in APU.asm/DSP.asm/SPC700.asm does not
+;need to know which architecture it is being built for.
 ;
 ;Calling convention notes:
 ;   - There are TWO conventions in this file, and which one to use depends on who's calling:
@@ -14,17 +14,18 @@
 ;         for the DEF-exported entry points something outside this DLL calls, and for calling a
 ;         genuinely external function pointer (a frontend-registered callback).
 ;       * PROC/Call/CallArg -- an internal-only convention that passes every argument on the stack,
-;         exactly like the x86 backend does (see x86.inc). Use this for everything else. See PROC's
-;         doc below for why a second convention exists at all: in short, marshalling arguments into
-;         RCX/RDX/R8/R9 necessarily clobbers them in the CALLER's context before the callee's own
-;         USES-protected prologue ever runs, which silently breaks code written assuming the x86
-;         stdcall property that PCX/PDX/etc. survive a call unless the callee's own body says so.
-;   - EXPROC 'homes' its incoming register arguments (RCX/RDX/R8/R9) into the caller-provided shadow
-;     space at [RBP+16]/[RBP+24]/[RBP+32]/[RBP+40]; PROC's arguments are already at those same offsets
-;     because Call pushed them there directly. Either way the 5th+ arguments are read directly from
-;     the stack slots the caller placed them in ([RBP+48], [RBP+56], ...). This means body code that
-;     reads a parameter as '[pc]', '[a]', etc. is UNCHANGED from the x86 version -- only the *offsets*
-;     differ, and those are hidden behind the %define generated here.
+;         exactly like the x86 backend does (see x86.inc). Use this for everything else.  See
+;         PROC's doc below for why a second convention exists at all: in short, marshalling
+;         arguments into RCX/RDX/R8/R9 necessarily clobbers them in the CALLER's context before the
+;         callee's own USES-protected prologue ever runs, which silently breaks code written
+;         assuming the x86 stdcall property that PCX/PDX/etc.  survive a call unless the callee's own
+;         body says so.
+;   - EXPROC 'homes' its incoming register arguments (RCX/RDX/R8/R9) into the caller-provided
+;     shadow space at [RBP+16]/[RBP+24]/[RBP+32]/[RBP+40]; PROC's arguments are already at those
+;     same offsets because Call pushed them there directly.  Either way the 5th+ arguments are read
+;     directly from the stack slots the caller placed them in ([RBP+48], [RBP+56], ...). This means
+;     body code that reads a parameter as '[pc]', '[a]', etc.  is UNCHANGED from the x86 version
+;     -- only the *offsets* differ, and those are hidden behind the %define generated here.
 ;   - Per the Windows x64 ABI, small (byte/word) typed arguments still occupy a full register/stack
 ;     slot with the upper bits UNSPECIFIED.  Body code must keep reading parameters at their true
 ;     width (byte/word/dword) exactly as it already does -- never widen a read of a byte/word
@@ -90,10 +91,11 @@ PTRSIZE EQU     8                                                               
 ;Push/Pop All General-Purpose Registers
 ;
 ;PUSHAD/POPAD (opcodes 60h/61h) aren't encodable in 64-bit mode at all, so this pushes/pops the
-; seven pointer-width aliases individually instead.  PUSHAD also saves the pre-push ESP, but nothing
-; in this codebase ever read that slot back out, so it's dropped here rather than emulated. R8-R15
-; are intentionally left out -- nothing in this port's calling convention needs them preserved across
-; a PushAD/PopAD span, and adding them would just be more state to save/restore for no benefit.
+; seven pointer-width aliases individually instead.  PUSHAD also saves the pre-push ESP, but
+; nothing in this codebase ever read that slot back out, so it's dropped here rather than emulated.
+; R8-R15 are intentionally left out -- nothing in this port's calling convention needs them
+; preserved across a PushAD/PopAD span, and adding them would just be more state to save/restore
+; for no benefit.
 
 %macro PushAD 0
     Push    PAX,PCX,PDX,PBX,PBP,PSI,PDI
@@ -105,14 +107,89 @@ PTRSIZE EQU     8                                                               
 
 
 ;===================================================================================================
+;Decimal Adjust After Addition/Subtraction (see x86.inc EmuDAA/EmuDAS for the real-instruction form)
+;
+;DAA/DAS aren't encodable in 64-bit mode, so replicate Intel's documented algorithm exactly
+; (including the CF/SF/ZF/PF this leaves behind) using ordinary arithmetic.  Both read AL/CF/AF
+; that the caller has just SAHF'd into place; both clobber AH as scratch (matching the real DAA/DAS
+; instruction, which touches only AL and the flags -- never AH -- so callers don't need to know or
+; care which form actually ran) and CL/DL as scratch for snapshotting old AL/CF/AF up front (needed
+; because the high-nibble adjustment's "> 0x99 or old CF" test uses AL/CF exactly as they were on
+; entry, before the low-nibble adjustment ran). Specifically NOT CH or DH: SPC700.asm's '%define X
+; CH' makes CH the emulated X register, live for the entire EmuSPC call, not just within one opcode
+; handler; DH is commonly used by this codebase's own callers (e.g. OpcDF/OpcBE stash Y/AH there
+; across this macro, to restore afterward). CL/DL carry no such alias and are free scratch here.
+
+%macro EmuDAA 0
+    Mov     CL,AL                                                               ;CL = old AL
+    LAHF
+    Mov     DL,AH                                                               ;DL.0 = old CF, DL.4 = old AF
+
+    Mov     AH,AL
+    And     AH,0Fh
+    Cmp     AH,9
+    JA      %%Lo
+    Test    DL,10h
+    JZ      %%LoDone
+    %%Lo:
+        Add     AL,6
+    %%LoDone:
+
+    Cmp     CL,99h
+    JA      %%Hi
+    Test    DL,1
+    JZ      %%HiDone
+    %%Hi:
+        Add     AL,60h
+        StC
+        Jmp     %%CFDone
+    %%HiDone:
+        ClC
+    %%CFDone:
+
+    Test    AL,AL                                                               ;Set SF/ZF/PF from the final AL (CF is already set above)
+%endmacro
+
+%macro EmuDAS 0
+    Mov     CL,AL                                                               ;CL = old AL
+    LAHF
+    Mov     DL,AH                                                               ;DL.0 = old CF, DL.4 = old AF
+
+    Mov     AH,AL
+    And     AH,0Fh
+    Cmp     AH,9
+    JA      %%Lo
+    Test    DL,10h
+    JZ      %%LoDone
+    %%Lo:
+        Sub     AL,6
+    %%LoDone:
+
+    Cmp     CL,99h
+    JA      %%Hi
+    Test    DL,1
+    JZ      %%HiDone
+    %%Hi:
+        Sub     AL,60h
+        StC
+        Jmp     %%CFDone
+    %%HiDone:
+        ClC
+    %%CFDone:
+
+    Test    AL,AL                                                               ;Set SF/ZF/PF from the final AL (CF is already set above)
+%endmacro
+
+
+;===================================================================================================
 ;Store/Load a Value at a Compile-Time-Constant Label, Indexed
 ;
 ;amd64's RIP-relative addressing cannot take an SIB index register, so combining a compile-time
 ; label's address with a runtime index needs a real base register -- unlike x86, which folds the
-; label straight into the instruction's displacement (see x86.inc). Earlier in this port, individual
-; call sites picked whichever register looked "free" for this and were wrong more than once: the
-; register turned out to already hold something a caller elsewhere in the call graph needed
-; (SPC700.asm's PC, its RAM pointer, its X register, ...). These macros push/pop the scratch
+; label straight into the instruction's displacement (see x86.inc). Earlier in this port,
+; individual call sites picked whichever register looked "free" for this and were wrong more than
+; once: the register turned out to already hold something a caller elsewhere in the call graph
+; needed (SPC700.asm's PC, its RAM pointer, its X register, ...). These macros push/pop the scratch
 ; register around the single instruction that needs it instead, so nothing at the call site has to
 ; reason about whether it is free -- it always survives, at the cost of a push/pop pair on every use.
 ;
@@ -158,7 +235,7 @@ PTRSIZE EQU     8                                                               
     %endif
 %endmacro
 
-;IdxLdX: op val,size [label+index]   (memory is the source -- a "load", for ops like MovZX/MovSX
+;IdxLdX: op val,size [label+index]   memory is the source -- a "load", for ops like MovZX/MovSX
 ; where val and the memory operand's size differ, e.g. a byte in memory zero-extended into a 32-bit
 ; register.  IdxLd's plain "%1 %2,[...]" template has nowhere to put the size keyword -- it needs to
 ; sit between the comma and the bracket, not before val -- so this is a separate macro for exactly
@@ -240,8 +317,8 @@ PTRSIZE EQU     8                                                               
 ;   op    - instruction mnemonic, optionally with a size specifier (e.g. "FILd dword")
 ;   label - compile-time-constant symbol being indexed
 ;   index - index expression (a register, "reg*scale", or 0 for no index)
-;   reg   - (optional) scratch register to use; default PDI (see IdxSt/IdxLd's note above on why not
-;           an R8-R15 register). Must not also be used as the index.
+;   reg   - (optional) scratch register to use; default PDI (see IdxSt/IdxLd's note above on why
+;           not an R8-R15 register). Must not also be used as the index.
 ;
 ;IdxUn: op [label+index]   (a single memory operand)
 %macro IdxUn 3-4 PDI
@@ -312,7 +389,7 @@ PTRSIZE EQU     8                                                               
 ;Move One (Internal) Call Argument Onto the Stack
 ;
 ;Unlike ExtCallArg (which loads into a fixed register), this pushes straight onto the stack -- see
-; the internal Call macro below for why. A pointer sitting in a PAX/PBX/... alias register is
+; the internal Call macro below for why.  A pointer sitting in a PAX/PBX/... alias register is
 ; pushed verbatim (already 8 bytes wide); anything else (immediate, 32-bit register, or memory) is
 ; first zero-extended into the scratch register pair so a 4-byte source (e.g. a plain dword variable)
 ; never gets over-read as 8 bytes by a bare 'Push qword'.
@@ -386,7 +463,7 @@ PTRSIZE EQU     8                                                               
     ; while also passing an arg 1 that's destined for RCX, so the target must be read out of RCX and
     ; into a register nothing below ever writes (R11; R10 is already the argument-staging scratch)
     ; before any argument setup begins, or the call would jump through its own clobbered first
-    ; argument instead of the real target. A label target (the common case) needs no such staging.
+    ; argument instead of the real target.  A label target (the common case) needs no such staging.
     %ifidni %1,PAX
         Mov     R11,%1
         %define %$target R11
@@ -486,7 +563,7 @@ PTRSIZE EQU     8                                                               
 ; body -- protected by its own USES -- touches them). On x64, just SETTING UP a register-passed
 ; argument list necessarily clobbers RCX/RDX/R8/R9 in the CALLER's own context, before the callee's
 ; prologue (and its USES) ever runs -- so a callee's USES can only protect what's *already been
-; overwritten* with argument values, not the caller's original contents. A real bug from exactly
+; overwritten* with argument values, not the caller's original contents.  A real bug from exactly
 ; this: SPCTimers keeps its EDX live across 'Call CatchUp' (a bare 0-arg call, so no marshalling
 ; issue by itself) expecting it to survive like it would on x86 -- but CatchUp's own body calls
 ; 'Call EmuDSP,PDX,EAX', and that marshalling silently clobbers RDX out from under the caller three
@@ -602,9 +679,9 @@ PTRSIZE EQU     8                                                               
 ;Define Externally-Callable Procedure (real Microsoft x64 calling convention)
 ;
 ;Use this ONLY for the small set of functions something outside this DLL actually calls directly:
-; the ~29 names in SNESAPU.def, and nothing else. Everything else -- including a DEF-exported
+; the ~29 names in SNESAPU.def, and nothing else.  Everything else -- including a DEF-exported
 ; function's OWN internal recursion/helpers (e.g. EmuAPU calling itself, or CatchUp calling EmuDSP)
-; -- should be a plain (internal) PROC instead; see PROC's doc below for why. A DEF-exported name
+; -- should be a plain (internal) PROC instead; see PROC's doc below for why.  A DEF-exported name
 ; that is ALSO called from elsewhere in this codebase should be split in two: a thin EXPROC of that
 ; exact name that only re-homes its arguments and forwards via the internal Call to a plain PROC of
 ; the same name plus an 'I' suffix (e.g. EXPROC EmuAPU forwards to PROC EmuAPUI), so every internal

@@ -59,7 +59,7 @@ PTRSIZE EQU     4                                                               
 ;Push/Pop All General-Purpose Registers
 ;
 ;PUSHAD/POPAD (opcodes 60h/61h) aren't encodable in 64-bit mode at all -- see x64.inc for the
-; replacement there. Written as a raw DB here rather than the mnemonic itself, since a %macro
+; replacement there.  Written as a raw DB here rather than the mnemonic itself, since a %macro
 ; sharing a name with a real instruction shadows it; writing the mnemonic in the macro body would
 ; just expand the macro again (recursively) instead of reaching the real PUSHAD/POPAD.
 
@@ -73,9 +73,25 @@ PTRSIZE EQU     4                                                               
 
 
 ;===================================================================================================
+;Decimal Adjust After Addition/Subtraction
+;
+;DAA/DAS aren't encodable in 64-bit mode at all -- see x64.inc for the algorithmic replacement
+; there.  On x86 they're real instructions, touching only AL and the flags (never AH), so callers
+; don't need to know or care which form actually ran.
+
+%macro EmuDAA 0
+    DAA
+%endmacro
+
+%macro EmuDAS 0
+    DAS
+%endmacro
+
+
+;===================================================================================================
 ;Store/Load a Value at a Compile-Time-Constant Label, Indexed
 ;
-;See x64.inc for the full rationale. On x86 a label's address folds directly into an instruction's
+;See x64.inc for the full rationale.  On x86 a label's address folds directly into an instruction's
 ; displacement, so both macros collapse to the single instruction the pre-port baseline always used
 ; -- no scratch register is touched, and %5 (the amd64-only scratch register) is accepted but
 ; ignored.
@@ -100,8 +116,8 @@ PTRSIZE EQU     4                                                               
 ;IdxLdX: op val,size [label+index]   (memory is the source -- a "load"; for ops like MovZX/MovSX
 ; where val and the memory operand's size differ -- IdxLd's "%1 %2,[...]" template has nowhere to
 ; put the size keyword, which needs to sit between the comma and the bracket, so this variant
-; exists for that shape. Collapses to the single instruction the pre-port baseline always used,
-; same as IdxLd -- see x64.inc for the full rationale. %6 (the amd64-only scratch register) is
+; exists for that shape.  Collapses to the single instruction the pre-port baseline always used,
+; same as IdxLd -- see x64.inc for the full rationale.  %6 (the amd64-only scratch register) is
 ; accepted but ignored.
 %macro IdxLdX 5-6
     %1      %2,%3 [%4+%5]
@@ -111,7 +127,7 @@ PTRSIZE EQU     4                                                               
 ;===================================================================================================
 ;Combine a Register With a Compile-Time-Constant Label's Address (no memory operand)
 ;
-;See x64.inc for the full rationale. On x86 a label's address is just a 32-bit immediate, so this
+;See x64.inc for the full rationale.  On x86 a label's address is just a 32-bit immediate, so this
 ; collapses to the single instruction the pre-port baseline always used -- no scratch register is
 ; touched, and %4 (the amd64-only scratch register) is accepted but ignored.
 ;
@@ -131,7 +147,7 @@ PTRSIZE EQU     4                                                               
 ;===================================================================================================
 ;Store a Compile-Time-Constant Label's Address Into a Plain Memory Location
 ;
-;See x64.inc for the full rationale. On x86 a label's address is a 32-bit immediate that can be
+;See x64.inc for the full rationale.  On x86 a label's address is a 32-bit immediate that can be
 ; stored directly, so this collapses to the single instruction the pre-port baseline always used
 ; -- no scratch register is touched, and %3 (the amd64-only scratch register) is accepted but
 ; ignored.
@@ -151,7 +167,7 @@ PTRSIZE EQU     4                                                               
 ;===================================================================================================
 ;A Unary Instruction on a Compile-Time-Constant Label, Indexed
 ;
-;See x64.inc for the full rationale. On x86 a label's address folds directly into an instruction's
+;See x64.inc for the full rationale.  On x86 a label's address folds directly into an instruction's
 ; displacement, so this collapses to the single instruction the pre-port baseline always used
 ; -- no scratch register is touched, and %4 (the amd64-only scratch register) is accepted but
 ; ignored.
@@ -367,12 +383,12 @@ PTRSIZE EQU     4                                                               
 ;See x64.inc's EXPROC for the full rationale (amd64 needs a distinct, real-ABI entry macro for
 ; anything crossing the DLL boundary; x86 doesn't, since stdcall/cdecl already applies uniformly).
 ; EXPROC is simply PROC under another name here, so shared code can write EXPROC without an
-; amd64-only %ifdef. A DEF-exported name that's also called from elsewhere in this codebase still
+; amd64-only %ifdef.  A DEF-exported name that's also called from elsewhere in this codebase still
 ; doesn't need the EXPROC-plus-'I'-suffix split x64.inc describes -- on x86 there's nothing to
 ; bridge, so calling the DEF-exported name directly is already the fast path.
 ;
 ;EXPROC duplicates PROC's body rather than forwarding to it (e.g. 'PROC %{1:-1}') -- see ExtCall's
-; note above on why nasm 2.10.09's %{n:m} forwarding isn't used here either. EXPROC's own arguments
+; note above on why nasm 2.10.09's %{n:m} forwarding isn't used here either.  EXPROC's own arguments
 ; are plain identifiers (no multi-token values), so the bug that note describes cannot actually
 ; trigger here today, but staying consistent with ExtCall avoids relying on that forwarding at all.
 
