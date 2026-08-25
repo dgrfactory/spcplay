@@ -633,10 +633,19 @@ ENDP
 
 ;===================================================================================================
 ;Set Audio Processor Song Length
+;
+;NOTE (amd64 port): was 'Jmp SetDSPLength', a tail-jump alias that only works when the caller's
+; and callee's calling conventions are identical.  That was true on x86, where EXPROC and PROC are
+; both plain stdcall, but not on amd64: EXPROC received song/fade in RCX/RDX with no stack homing,
+; since 0 declared params meant EXPROC's own homing code never ran, while SetDSPLength is a PROC
+; that reads its arguments from the stack the internal Call macro would have pushed them to.
+; Jumping straight into it left song/fade reading whatever garbage happened to be on the stack.
+; Declaring the parameters here and forwarding via Call, not Jmp, marshals them correctly on both
+; architectures, matching every other EXPROC-to-PROC forward in this codebase.
 
-EXPROC SetAPULength
+EXPROC SetAPULength, song, fade
 
-    Jmp     SetDSPLength
+    Call    SetDSPLength,[song],[fade]
 
 ENDP
 
@@ -905,10 +914,9 @@ USES ECX,EDX
         Or      EAX,DSP_ENVSPD+DSP_NOSAFE
         Call    SetAPUOptI,-1,-1,-1,-1,-1,EAX
         Mov     EAX,[smpRAdj]
-        Push    PAX                                                             ;Save APU speed (width fix only, not a pointer)
+        Push    PAX,PDI                                                         ;Save APU speed (width fix only, not a pointer)
 
-        Push    PDI                                                             ;(width fix only, not a pointer)
-        Mov     EAX,EDI
+        Mov     EDI,EAX
         ShR     EAX,16
         JNZ     .MinSpeed                                                       ;When APU speed is less than 100%, temporarily increase
             Mov     EDI,10000h                                                  ; it to 100% to speed up processing
@@ -1969,7 +1977,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Test    dword [apuCbMask],EDX                                               ;Is supported callback?
     JZ      .ShpERROR                                                           ;   No
 
-    Push    PDI,PBX,PCX                                                         ;STDCALL is destroy EAX,PCX,EDX
+    Push    PDI,PBX,PCX                                                         ;STDCALL is destroy PAX,PCX,PDX
     Mov     PDI,[apuCbFunc]
     Mov     ECX,[scr700dat]
     Sub     PBX,PCX

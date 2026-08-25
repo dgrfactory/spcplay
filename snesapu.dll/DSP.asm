@@ -1813,7 +1813,6 @@ USES EDX
         Push    PDX
         Call    SetFade                                                         ;If song is in fade mode, set fade volume
         Pop     PAX
-;       Mov     EAX,EDX
 
 ENDP
 

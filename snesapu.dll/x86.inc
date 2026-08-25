@@ -3,11 +3,11 @@
 ;Platform:   Intel 80386
 ;
 ;This file implements the architecture-specific half of the macro layer used by APU.asm, DSP.asm,
-;and SPC700.asm.  It is selected automatically by macro.inc when WIN64 is NOT defined.
+;and SPC700.asm.  It is selected automatically by macro.inc when WIN64 is not defined.
 ;
-;Everything in this file defines the *mechanism* (stack layout, calling convention, register width)
+;Everything in this file defines the mechanism (stack layout, calling convention, register width)
 ;for a 32-bit x86 (stdcall/cdecl) target.  Shared, architecture-neutral code must never %ifdef on
-;WIN64 directly; it should only use the names defined here (PROC/ENDP/USES/PUBLIC/Call/RetN, and
+;WIN64 directly.  It should only use the names defined here (PROC/ENDP/USES/PUBLIC/Call/RetN, and
 ;the pointer-width aliases PAX/PBX/PCX/PDX/PSI/PDI/PBP/PSP/PTRSIZE/resPTR).
 ;
 ;                                                   Copyright (C) 2026 degrade-factory
@@ -21,9 +21,9 @@
 ;===================================================================================================
 ;Pointer-width register aliases
 ;
-;Use these ONLY where a register genuinely holds a memory address (a pointer).  Registers used for
-; plain 32-bit arithmetic (sample counts, offsets, loop counters, etc.) should keep using EAX/EBX/...
-; directly -- they do not need to grow on amd64, and rewriting them would only add risk.
+;Use these only where a register genuinely holds a memory address (a pointer).  Registers used for
+; plain 32-bit arithmetic (sample counts, offsets, loop counters, etc.) should keep using
+; EAX/EBX/... directly.  They do not need to grow on amd64, and rewriting them would only add risk.
 
 %define PAX     EAX
 %define PBX     EBX
@@ -58,10 +58,10 @@ PTRSIZE EQU     4                                                               
 ;===================================================================================================
 ;Push/Pop All General-Purpose Registers
 ;
-;PUSHAD/POPAD (opcodes 60h/61h) aren't encodable in 64-bit mode at all -- see x64.inc for the
-; replacement there.  Written as a raw DB here rather than the mnemonic itself, since a %macro
-; sharing a name with a real instruction shadows it; writing the mnemonic in the macro body would
-; just expand the macro again (recursively) instead of reaching the real PUSHAD/POPAD.
+;PUSHAD/POPAD (opcodes 60h/61h) are not encodable in 64-bit mode.  See x64.inc for the replacement
+; there.  Written as a raw DB here rather than the mnemonic itself, since a %macro sharing a name
+; with a real instruction shadows it.  Writing the mnemonic in the macro body would just expand the
+; macro again (recursively) instead of reaching the real PUSHAD/POPAD.
 
 %macro PushAD 0
     DB      60h
@@ -75,9 +75,9 @@ PTRSIZE EQU     4                                                               
 ;===================================================================================================
 ;Decimal Adjust After Addition/Subtraction
 ;
-;DAA/DAS aren't encodable in 64-bit mode at all -- see x64.inc for the algorithmic replacement
-; there.  On x86 they're real instructions, touching only AL and the flags (never AH), so callers
-; don't need to know or care which form actually ran.
+;DAA/DAS are not encodable in 64-bit mode.  See x64.inc for the algorithmic replacement there.  On
+; x86 they are real instructions, touching only AL and the flags (never AH), so callers do not need
+; to know or care which form actually ran.
 
 %macro EmuDAA 0
     DAA
@@ -92,32 +92,31 @@ PTRSIZE EQU     4                                                               
 ;Store/Load a Value at a Compile-Time-Constant Label, Indexed
 ;
 ;See x64.inc for the full rationale.  On x86 a label's address folds directly into an instruction's
-; displacement, so both macros collapse to the single instruction the pre-port baseline always used
-; -- no scratch register is touched, and %5 (the amd64-only scratch register) is accepted but
-; ignored.
+; displacement, so both macros collapse to the single instruction the pre-port baseline always used.
+; No scratch register is touched, and %5 (the amd64-only scratch register) is accepted but ignored.
 ;
 ;Params:
 ;   op    - instruction mnemonic, optionally with a size specifier (e.g. "Mov" or "Mov byte")
 ;   label - compile-time-constant symbol being indexed
 ;   index - index expression (a register, "reg*scale", or 0 for no index)
 ;   val   - the other operand
-;   reg   - (amd64 only; ignored here) scratch register to use, default PDI
+;   reg   - (amd64 only, ignored here) scratch register to use, default PDI
 
-;IdxSt: op [label+index],val   (memory is the destination -- a "store")
+;IdxSt: op [label+index],val   (memory is the destination: a "store")
 %macro IdxSt 4-5
     %1      [%2+%3],%4
 %endmacro
 
-;IdxLd: op val,[label+index]   (memory is the source -- a "load"; val is usually a register)
+;IdxLd: op val,[label+index]   (memory is the source, a "load", val is usually a register)
 %macro IdxLd 4-5
     %1      %2,[%3+%4]
 %endmacro
 
-;IdxLdX: op val,size [label+index]   (memory is the source -- a "load"; for ops like MovZX/MovSX
-; where val and the memory operand's size differ -- IdxLd's "%1 %2,[...]" template has nowhere to
+;IdxLdX: op val,size [label+index]   (memory is the source, a "load", for ops like MovZX/MovSX
+; where val and the memory operand's size differ).  IdxLd's "%1 %2,[...]" template has nowhere to
 ; put the size keyword, which needs to sit between the comma and the bracket, so this variant
 ; exists for that shape.  Collapses to the single instruction the pre-port baseline always used,
-; same as IdxLd -- see x64.inc for the full rationale.  %6 (the amd64-only scratch register) is
+; the same as IdxLd.  See x64.inc for the full rationale.  %6 (the amd64-only scratch register) is
 ; accepted but ignored.
 %macro IdxLdX 5-6
     %1      %2,%3 [%4+%5]
@@ -128,14 +127,14 @@ PTRSIZE EQU     4                                                               
 ;Combine a Register With a Compile-Time-Constant Label's Address (no memory operand)
 ;
 ;See x64.inc for the full rationale.  On x86 a label's address is just a 32-bit immediate, so this
-; collapses to the single instruction the pre-port baseline always used -- no scratch register is
+; collapses to the single instruction the pre-port baseline always used.  No scratch register is
 ; touched, and %4 (the amd64-only scratch register) is accepted but ignored.
 ;
 ;Params:
 ;   op    - instruction mnemonic (Add/Sub/And/Or/Cmp/...)
 ;   reg   - the register being combined with label's address
 ;   label - compile-time-constant symbol
-;   reg2  - (amd64 only; ignored here) scratch register to use, default PDI
+;   reg2  - (amd64 only, ignored here) scratch register to use, default PDI
 ;
 ;LblOp: op reg,label
 
@@ -148,14 +147,13 @@ PTRSIZE EQU     4                                                               
 ;Store a Compile-Time-Constant Label's Address Into a Plain Memory Location
 ;
 ;See x64.inc for the full rationale.  On x86 a label's address is a 32-bit immediate that can be
-; stored directly, so this collapses to the single instruction the pre-port baseline always used
-; -- no scratch register is touched, and %3 (the amd64-only scratch register) is accepted but
-; ignored.
+; stored directly, so this collapses to the single instruction the pre-port baseline always used.
+; No scratch register is touched, and %3 (the amd64-only scratch register) is accepted but ignored.
 ;
 ;Params:
-;   dest  - the (non-indexed) memory location to store into -- a resPTR-sized variable
+;   dest  - the (non-indexed) memory location to store into, a resPTR-sized variable
 ;   label - compile-time-constant symbol whose address is stored
-;   reg   - (amd64 only; ignored here) scratch register to use, default PDI
+;   reg   - (amd64 only, ignored here) scratch register to use, default PDI
 ;
 ;LblSt: Mov dword [dest],label
 
@@ -168,17 +166,16 @@ PTRSIZE EQU     4                                                               
 ;A Unary Instruction on a Compile-Time-Constant Label, Indexed
 ;
 ;See x64.inc for the full rationale.  On x86 a label's address folds directly into an instruction's
-; displacement, so this collapses to the single instruction the pre-port baseline always used
-; -- no scratch register is touched, and %4 (the amd64-only scratch register) is accepted but
-; ignored.
+; displacement, so this collapses to the single instruction the pre-port baseline always used.  No
+; scratch register is touched, and %4 (the amd64-only scratch register) is accepted but ignored.
 ;
 ;Params:
 ;   op    - instruction mnemonic, optionally with a size specifier (e.g. "FILd dword")
 ;   label - compile-time-constant symbol being indexed
 ;   index - index expression (a register, "reg*scale", or 0 for no index)
-;   reg   - (amd64 only; ignored here) scratch register to use, default PDI
+;   reg   - (amd64 only, ignored here) scratch register to use, default PDI
 ;
-;IdxUn: op [label+index]   (a single memory operand -- FStP/FILd/FIMul/Div/Inc/...)
+;IdxUn: op [label+index]   (a single memory operand: FStP/FILd/FIMul/Div/Inc/...)
 
 %macro IdxUn 3-4
     %1      [%2+%3]
@@ -188,9 +185,9 @@ PTRSIZE EQU     4                                                               
 ;===================================================================================================
 ;Declare a Table of Pointers/Code Addresses
 ;
-;A plain 'DD label1,label2,...' jump/pointer table stores each address as a 32-bit value -- fine on
-; x86, but on amd64 a real address needs the full 8 bytes (see x64.inc). Use PTRTAB so the same table
-; source works on both, and PTRSIZE (not a literal 4) to scale any index into it.
+;A plain 'DD label1,label2,...' jump/pointer table stores each address as a 32-bit value.  That is
+; fine on x86, but on amd64 a real address needs the full 8 bytes (see x64.inc).  Use PTRTAB so the
+; same table source works on both, and PTRSIZE (not a literal 4) to scale any index into it.
 ;
 ;Params:
 ;   List of labels (or 0, for a null table entry)
@@ -211,13 +208,13 @@ PTRSIZE EQU     4                                                               
 ;Params:
 ;   Function name followed by stack parameters.  All arguments are assumed to be dwords.
 ;
-;amd64 needs two distinct calling conventions -- a real Microsoft x64 ABI one (ExtCall) for
-; anything crossing the DLL boundary, and a stack-based internal one (Call) for everything else,
-; since just marshalling arguments into RCX/RDX/R8/R9 there clobbers them in the caller's own
-; context (see x64.inc's Call for the full story). x86's stdcall/cdecl convention already passes
-; every argument on the stack, so that split doesn't exist here -- ExtCall is simply Call under
-; another name, so shared code can write EXPROC/ExtCall (for the ~29 DEF-exported entry points and
-; genuinely external callback pointers) without an amd64-only %ifdef.
+;amd64 needs two distinct calling conventions: a real Microsoft x64 ABI one (ExtCall) for anything
+; crossing the DLL boundary, and a stack-based internal one (Call) for everything else, since just
+; marshalling arguments into RCX/RDX/R8/R9 there clobbers them in the caller's own context (see
+; x64.inc's Call for the full story).  x86's stdcall/cdecl convention already passes every argument
+; on the stack, so that split does not exist here.  ExtCall is simply Call under another name, so
+; shared code can write EXPROC/ExtCall (for the ~29 DEF-exported entry points and genuinely
+; external callback pointers) without an amd64-only %ifdef.
 
 %macro Call 2-*
     %rep %0-1
@@ -233,7 +230,7 @@ PTRSIZE EQU     4                                                               
     %endif
 %endmacro
 
-;ExtCall duplicates Call's body rather than forwarding to it (e.g. 'Call %{1:-1}') -- nasm 2.10.09's
+;ExtCall duplicates Call's body rather than forwarding to it (e.g. 'Call %{1:-1}').  nasm 2.10.09's
 ; %{n:m} parameter-range forwarding re-splits a multi-token argument like 'dword CBE_DSPREG' on its
 ; internal space, so the forwarded Call sees "dword" and "CBE_DSPREG" as two separate arguments
 ; instead of one, corrupting the argument count.
@@ -256,7 +253,7 @@ PTRSIZE EQU     4                                                               
 ;===================================================================================================
 ;Return from Procedure
 ;
-;Ensures the stack frame will be cleaned up and any used registers restored
+;Ensures the stack frame will be cleaned up and any used registers restored.
 ;
 ;Params (optional):
 ;   Value to return in EAX
@@ -381,16 +378,18 @@ PTRSIZE EQU     4                                                               
 ;Define Externally-Callable Procedure
 ;
 ;See x64.inc's EXPROC for the full rationale (amd64 needs a distinct, real-ABI entry macro for
-; anything crossing the DLL boundary; x86 doesn't, since stdcall/cdecl already applies uniformly).
+; anything crossing the DLL boundary, while x86 does not, since stdcall/cdecl already applies
+; uniformly).
 ; EXPROC is simply PROC under another name here, so shared code can write EXPROC without an
-; amd64-only %ifdef.  A DEF-exported name that's also called from elsewhere in this codebase still
-; doesn't need the EXPROC-plus-'I'-suffix split x64.inc describes -- on x86 there's nothing to
+; amd64-only %ifdef.  A DEF-exported name that is also called from elsewhere in this codebase still
+; does not need the EXPROC-plus-'I'-suffix split x64.inc describes.  On x86 there is nothing to
 ; bridge, so calling the DEF-exported name directly is already the fast path.
 ;
-;EXPROC duplicates PROC's body rather than forwarding to it (e.g. 'PROC %{1:-1}') -- see ExtCall's
-; note above on why nasm 2.10.09's %{n:m} forwarding isn't used here either.  EXPROC's own arguments
-; are plain identifiers (no multi-token values), so the bug that note describes cannot actually
-; trigger here today, but staying consistent with ExtCall avoids relying on that forwarding at all.
+;EXPROC duplicates PROC's body rather than forwarding to it (e.g. 'PROC %{1:-1}').  See ExtCall's
+; note above on why nasm 2.10.09's %{n:m} forwarding is not used here either.  EXPROC's own
+; arguments are plain identifiers (no multi-token values), so the bug that note describes cannot
+; actually trigger here today, but staying consistent with ExtCall avoids relying on that
+; forwarding at all.
 
 %macro EXPROC 1-*
     ALIGN   16                                                                  ;Align entry point on a cache line boundary
@@ -509,7 +508,7 @@ PTRSIZE EQU     4                                                               
 ;===================================================================================================
 ;Define Local Variables
 ;
-;Defines a list of local variables to be temporarily allocated on the stack
+;Defines a list of local variables to be temporarily allocated on the stack.
 ;
 ;Params:
 ;   Variable names (each var is allocated 32-bits)

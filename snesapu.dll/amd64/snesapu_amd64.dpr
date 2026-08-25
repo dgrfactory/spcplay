@@ -1,101 +1,98 @@
 {===================================================================================================
- Program:    SNESAPU_amd64.DLL (amd64/x64) -- Free Pascal driver
+ Program:    SNESAPU_amd64.DLL (amd64/x64 Free Pascal driver)
  Platform:   x86-64
 
- This is NOT a reimplementation of SNESAPU.DLL. All of the actual emulation code lives in the NASM
- object files produced from ../snesapu.dll/APU.asm, DSP.asm and SPC700.asm (assembled with
- 'nasm -f win64 -D WIN64'). This project is only the "glue" needed because the original
- x86 build links those objects with Visual C++ 6's linker, which cannot target x64; Free Pascal's
- linker can consume the same Microsoft COFF .obj files directly, so it stands in for link.exe here.
+ Not a reimplementation of SNESAPU.DLL.  All emulation code lives in the NASM object files built
+ from ../snesapu.dll/APU.asm, DSP.asm, SPC700.asm ('nasm -f win64 -D WIN64').  The x86 build links
+ those objects with Visual C++ 6's linker, which cannot target x64.  Free Pascal's linker consumes
+ the same Microsoft COFF .obj files directly, so it stands in for link.exe here.
 
  What this file does:
-   - The dollar-L directive (see below, just above the external declarations) pulls
-     APU.obj/DSP.obj/SPC700.obj into the library. The three object files reference each other's
-     PUBLIC symbols directly (e.g. SPC700.asm calls DSP.asm's DSPIn/CatchUp, APU.asm calls DSP.asm's
-     SetEmuDSP, all three share pAPURAM/pSCRRAM/mix/dsp/scr700*/etc.) -- linking all three together
-     resolves those cross-references exactly as the original x86 link step did.
-   - "external name '...'" declarations expose the object files' exported procedures to Pascal code
+   - The $L directive pulls APU.obj/DSP.obj/SPC700.obj into the library.  The three object files
+     reference each other's PUBLIC symbols directly (SPC700.asm calls DSP.asm's DSPIn/CatchUp,
+     APU.asm calls DSP.asm's SetEmuDSP, all three share pAPURAM/pSCRRAM/mix/dsp/scr700*/etc), so
+     linking them together resolves those cross-references the same way the x86 link step did.
+   - 'external name' declarations expose the object files' exported procedures to Pascal code
      without duplicating their implementation.
-   - 'exports' re-exports the same 29 functions SNESAPU.def exports for the x86 build (see that file
-     under snesapu.dll/), under the same undecorated names -- x64.inc's PUBLIC macro emits no name
-     decoration, so no 'name' aliasing games are needed to match the x86 DLL's ABI.
-   - InitAPU replaces the x86 build's hand-written _DllMainCRTStartup (see SNESAPU.cpp): that function
-     does nothing but forward the raw DllMain reason code to InitAPU, which only acts on
-     DLL_PROCESS_ATTACH (1) and always returns TRUE. Since InitAPU itself already no-ops for every
-     other reason code (see APU.asm), the single direct call in the 'begin...end.' block below, for
-     the attach that already happened by the time Pascal's initialization code runs, is all that's
-     needed -- no DllProc hook for later notifications, unlike a from-scratch DllMain would need.
+   - 'exports' re-exports the same 29 functions SNESAPU.def exports for the x86 build (see that
+     file under snesapu.dll/), under the same undecorated names.  x64.inc's PUBLIC macro emits no
+     name decoration, so no 'name' aliasing is needed to match the x86 DLL's ABI.
+   - InitAPU replaces the x86 build's hand-written _DllMainCRTStartup (see SNESAPU.cpp), which just
+     forwards the DllMain reason code to InitAPU.  InitAPU only acts on DLL_PROCESS_ATTACH (1) and
+     always returns TRUE, and already no-ops for every other reason code (see APU.asm).  So the
+     single direct call below, for the attach that already happened by the time Pascal's
+     initialization runs, covers everything.  No DllProc hook is needed for later notifications.
 
- Build (this file only needs a Free Pascal toolchain -- no Visual C++ involved for x64). Run from this
- directory; -i points nasm at snesapu.dll\ for macro.inc/x64.inc/APU.inc/DSP.inc/SPC700.inc. Note:
- pass ONLY -D WIN64 to nasm here, not -D WIN32 too -- WINDOWS (defined in macro.inc whenever either
- WIN32 or WIN64 is set) is what selects the Windows-safe SECTION alignment values; passing both was
- an earlier mistake in this same build recipe and is no longer needed now that WINDOWS covers it:
+ Build (Free Pascal only, no Visual C++ for x64).  Run from this directory. -i points nasm at
+ snesapu.dll\ for macro.inc/x64.inc/APU.inc/DSP.inc/SPC700.inc.  Pass only -D WIN64, not -D WIN32:
+ WINDOWS (defined in macro.inc whenever WIN32 or WIN64 is set) already selects the Windows-safe
+ SECTION alignment values.  Passing both was an earlier mistake, no longer needed.
    nasm -f win64 -D WIN64 -o APU.obj    ..\APU.asm
    nasm -f win64 -D WIN64 -o DSP.obj    ..\DSP.asm
    nasm -f win64 -D WIN64 -o SPC700.obj ..\SPC700.asm
    fpc -Px86_64 -Twin64 -osnesapu_amd64.dll SNESAPU.dpr
- (The three .obj files need to sit next to this source file, or adjust the dollar-L paths below, so
- fpc finds them. Verified as of this writing: all three assemble at 0 errors with the commands above,
- and their PUBLIC symbol names match the 'external name' declarations below exactly.)
+ The three .obj files must sit next to this source file, or adjust the $L paths below, for fpc to
+ find them.  Verified as of this writing: all three assemble at 0 errors with the commands above,
+ and their PUBLIC symbol names match the 'external name' declarations below exactly.
 
-
- Copyright (C) 2026 degrade-factory. All rights reserved.
+ Copyright (C) 2026 degrade-factory.  All rights reserved.
 ===================================================================================================}
 
 library SNESAPU;
 
-{$ASSERTIONS OFF}                                           // ƒ\[ƒXƒR[ƒh‚ÌƒAƒT[ƒg       : –³Œø
-{$BOOLEVAL OFF}                                             // Š®‘S˜_—®•]‰¿               : –³Œø
-{$DEBUGINFO OFF}                                            // ƒfƒoƒbƒOî•ñ                 : –³Œø
-{$DENYPACKAGEUNIT ON}                                       // UNIT •sg—p                  : —LŒø
-{$EXTENDEDSYNTAX ON}                                        // ŠÖ”‚Ì–ß‚è’l‚ğ–³‹‰Â”\       : —LŒø
-{$IMPORTEDDATA OFF}                                         // •ÊƒpƒbƒP[ƒW‚Ìƒƒ‚ƒŠQÆ     : –³Œø
-{$IOCHECKS OFF}                                             // I/O ƒ`ƒFƒbƒN                 : –³Œø
-{$MINENUMSIZE 1}                                            // —ñ‹“Œ^‚ÌÅ‘åƒTƒCƒY (x256)    : 1 (256)
-{$OPENSTRINGS OFF}                                          // ƒI[ƒvƒ“•¶š—ñƒpƒ‰ƒ[ƒ^     : –³Œø
-{$OVERFLOWCHECKS OFF}                                       // ƒI[ƒo[ƒtƒ[ƒ`ƒFƒbƒN       : –³Œø
-{$RANGECHECKS OFF}                                          // ”ÍˆÍƒ`ƒFƒbƒN                 : –³Œø
-{$TYPEDADDRESS OFF}                                         // ƒ|ƒCƒ“ƒ^‚ÌŒ^ƒ`ƒFƒbƒN         : –³Œø
-{$TYPEINFO OFF}                                             // ÀsŒ^î•ñ                 : –³Œø
-{$VARSTRINGCHECKS OFF}                                      // •¶š—ñƒ`ƒFƒbƒN               : –³Œø
-{$WARNINGS ON}                                              // Œx¶¬                     : —LŒø
-{$WRITEABLECONST OFF}                                       // ’è”‘‚«Š·‚¦                 : –³Œø
+{$ASSERTIONS OFF}                                           // ã‚½ãƒ¼ã‚¹ã‚³ãƒ¼ãƒ‰ã®ã‚¢ã‚µãƒ¼ãƒˆ       : ç„¡åŠ¹
+{$BOOLEVAL OFF}                                             // å®Œå…¨è«–ç†å¼è©•ä¾¡               : ç„¡åŠ¹
+{$DEBUGINFO OFF}                                            // ãƒ‡ãƒãƒƒã‚°æƒ…å ±                 : ç„¡åŠ¹
+{$DENYPACKAGEUNIT ON}                                       // UNIT ä¸ä½¿ç”¨                  : æœ‰åŠ¹
+{$EXTENDEDSYNTAX ON}                                        // é–¢æ•°ã®æˆ»ã‚Šå€¤ã‚’ç„¡è¦–å¯èƒ½       : æœ‰åŠ¹
+{$EXTENSION 'dll'}                                          // æ‹¡å¼µå­è¨­å®š                   : DLL
+{$IMPORTEDDATA OFF}                                         // åˆ¥ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ã®ãƒ¡ãƒ¢ãƒªå‚ç…§     : ç„¡åŠ¹
+{$IOCHECKS OFF}                                             // I/O ãƒã‚§ãƒƒã‚¯                 : ç„¡åŠ¹
+{$MINENUMSIZE 1}                                            // åˆ—æŒ™å‹ã®æœ€å¤§ã‚µã‚¤ã‚º (x256)    : 1 (256)
+{$OPENSTRINGS OFF}                                          // ã‚ªãƒ¼ãƒ—ãƒ³æ–‡å­—åˆ—ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿     : ç„¡åŠ¹
+{$OVERFLOWCHECKS OFF}                                       // ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ãƒã‚§ãƒƒã‚¯       : ç„¡åŠ¹
+{$RANGECHECKS OFF}                                          // ç¯„å›²ãƒã‚§ãƒƒã‚¯                 : ç„¡åŠ¹
+{$TYPEDADDRESS OFF}                                         // ãƒã‚¤ãƒ³ã‚¿ã®å‹ãƒã‚§ãƒƒã‚¯         : ç„¡åŠ¹
+{$TYPEINFO OFF}                                             // å®Ÿè¡Œæ™‚å‹æƒ…å ±                 : ç„¡åŠ¹
+{$VARSTRINGCHECKS OFF}                                      // æ–‡å­—åˆ—ãƒã‚§ãƒƒã‚¯               : ç„¡åŠ¹
+{$WARNINGS ON}                                              // è­¦å‘Šç”Ÿæˆ                     : æœ‰åŠ¹
+{$WRITEABLECONST OFF}                                       // å®šæ•°æ›¸ãæ›ãˆ                 : ç„¡åŠ¹
 
-{$CALLING STDCALL}                                          // CALL ƒXƒ^ƒbƒN•û®            : STDCALL
-{$CHECKPOINTER OFF}                                         // ƒ|ƒCƒ“ƒ^ƒ`ƒFƒbƒN             : –³Œø
-{$CODEPAGE UTF-8}                                           // •¶šƒR[ƒh                   : UTF-8
-{$HINTS OFF}                                                // ƒqƒ“ƒg¶¬                   : –³Œø
-{$IEEEERRORS OFF}                                           // •‚“®¬”ƒGƒ‰[ƒ`ƒFƒbƒN       : –³Œø
-{$MODE DELPHI}                                              // Œ¾Œêƒ‚[ƒh                   : DELPHI
-{$LONGSTRINGS ON}                                           // AnsiString g—p              : —LŒø ($MODE ‚ÌŒã‚É’è‹`)
-{$OPTIMIZATION AUTOINLINE}                                  // Å“K‰»ƒIƒvƒVƒ‡ƒ“             : ’Z‚¢ŠÖ”‚ğ©“®“I‚ÉƒCƒ“ƒ‰ƒCƒ““WŠJ
-{$OPTIMIZATION CONSTPROP}                                   // Å“K‰»ƒIƒvƒVƒ‡ƒ“             : Šm’è‚µ‚½ŒvZ‚â•Ï”‚ğƒRƒ“ƒpƒCƒ‹‚É’è”‚É’u‚«Š·‚¦
-{$OPTIMIZATION CSE}                                         // Å“K‰»ƒIƒvƒVƒ‡ƒ“             : d•¡‚·‚é‹¤’Ê‚ÌŒvZ®‚ğ‚Ü‚Æ‚ß‚ÄŒ‹‰Ê‚ğg‚¢‰ñ‚·
-{$OPTIMIZATION DFA}                                         // Å“K‰»ƒIƒvƒVƒ‡ƒ“             : •Ï”‚Ì–³‘Ê‚È‘ã“ü‚â—˜_ã’Ê‚ç‚È‚¢•ªŠò‚ğíœ
-{$OPTIMIZATION LOOPUNROLL}                                  // Å“K‰»ƒIƒvƒVƒ‡ƒ“             : ƒ‹[ƒv‚ğ˜A‘±‚µ‚½ƒR[ƒh‚É’u‚«Š·‚¦‚Ä‰ñ””»’èEƒWƒƒƒ“ƒv–½—ß‚ğíœ
-{$OPTIMIZATION PEEPHOLE}                                    // Å“K‰»ƒIƒvƒVƒ‡ƒ“             : ‹ÇŠ“I‚Éç’·‚ÈƒAƒZƒ“ƒuƒŠ–½—ß‚Ì•À‚Ñ‚ğ’Pƒ‚È–½—ß‚É’u‚«Š·‚¦
-{$OPTIMIZATION REMOVEEMPTYPROCS}                            // Å“K‰»ƒIƒvƒVƒ‡ƒ“             : ’†g‚ª‹ó‚ÌŠÖ”‚âŒÄ‚Ño‚³‚ê‚Ä‚à‰½‚àÀs‚µ‚È‚¢ˆ—‚ğíœ
-{$OPTIMIZATION REGVAR}                                      // Å“K‰»ƒIƒvƒVƒ‡ƒ“             : ƒ[ƒJƒ‹•Ï”‚ğƒƒ‚ƒŠ‚Å‚Í‚È‚­ CPU ƒŒƒWƒXƒ^‚É”z’u
-{$OPTIMIZATION SIZE}                                        // Å“K‰»ƒIƒvƒVƒ‡ƒ“             : Àsƒtƒ@ƒCƒ‹ƒTƒCƒY‚ÌíŒ¸‚ğ—Dæ
-{$OPTIMIZATION STACKFRAME}                                  // Å“K‰»ƒIƒvƒVƒ‡ƒ“             : •s—v‚ÈŠÖ”ŒÄ‚Ño‚µ‚ÌƒXƒ^ƒbƒN\’zˆ—i‘Oˆ—EŒãˆ—j‚ğÈ—ª
-{$OPTIMIZATION TAILREC}                                     // Å“K‰»ƒIƒvƒVƒ‡ƒ“             : ŠÖ”‚ÌÅŒã‚ÌÄ‹AŒÄ‚Ño‚µ‚ğƒ‹[ƒviƒWƒƒƒ“ƒv–½—ßj‚É•ÏŠ·‚µ‚Ä‚‘¬‰»
-{$OPTIMIZATION USEEBP}                                      // Å“K‰»ƒIƒvƒVƒ‡ƒ“             : EBP ƒŒƒWƒXƒ^‚ğŒvZ—p‚Ì”Ä—pƒŒƒWƒXƒ^‚Æ‚µ‚Ä—¬—p
-{$OPTIMIZATION USELOADMODIFYSTORE}                          // Å“K‰»ƒIƒvƒVƒ‡ƒ“             : “¯ˆê•Ï”‚Ö‚ÌÄ‘ã“üˆ—‚Å’¼Ú•Ï”‚ğ‘€ì
-{$POINTERMATH ON}                                           // ƒ|ƒCƒ“ƒ^‰‰Z                 : —LŒø
-{$SAFEFPUEXCEPTIONS OFF}                                    // FPU ƒGƒ‰[‘¦•ñ           : –³Œø
-{$SMARTLINK ON}                                             // ƒXƒ}[ƒgƒŠƒ“ƒN               : —LŒø
+{$CALLING STDCALL}                                          // CALL ã‚¹ã‚¿ãƒƒã‚¯æ–¹å¼ (x86)      : STDCALL
+{$CHECKPOINTER OFF}                                         // ãƒã‚¤ãƒ³ã‚¿ãƒã‚§ãƒƒã‚¯             : ç„¡åŠ¹
+{$CODEPAGE UTF-8}                                           // æ–‡å­—ã‚³ãƒ¼ãƒ‰                   : UTF-8
+{$HINTS OFF}                                                // ãƒ’ãƒ³ãƒˆç”Ÿæˆ                   : ç„¡åŠ¹
+{$IEEEERRORS OFF}                                           // æµ®å‹•å°æ•°ã‚¨ãƒ©ãƒ¼ãƒã‚§ãƒƒã‚¯       : ç„¡åŠ¹
+{$MODE DELPHI}                                              // è¨€èªãƒ¢ãƒ¼ãƒ‰                   : DELPHI
+{$LONGSTRINGS ON}                                           // AnsiString ä½¿ç”¨              : æœ‰åŠ¹ ($MODE ã®å¾Œã«å®šç¾©)
+{$OPTIMIZATION AUTOINLINE}                                  // æœ€é©åŒ–ã‚ªãƒ—ã‚·ãƒ§ãƒ³             : çŸ­ã„é–¢æ•°ã‚’è‡ªå‹•çš„ã«ã‚¤ãƒ³ãƒ©ã‚¤ãƒ³å±•é–‹
+{$OPTIMIZATION CONSTPROP}                                   // æœ€é©åŒ–ã‚ªãƒ—ã‚·ãƒ§ãƒ³             : ç¢ºå®šã—ãŸè¨ˆç®—ã‚„å¤‰æ•°ã‚’ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«æ™‚ã«å®šæ•°ã«ç½®ãæ›ãˆ
+{$OPTIMIZATION CSE}                                         // æœ€é©åŒ–ã‚ªãƒ—ã‚·ãƒ§ãƒ³             : é‡è¤‡ã™ã‚‹å…±é€šã®è¨ˆç®—å¼ã‚’ã¾ã¨ã‚ã¦çµæœã‚’ä½¿ã„å›ã™
+{$OPTIMIZATION DFA}                                         // æœ€é©åŒ–ã‚ªãƒ—ã‚·ãƒ§ãƒ³             : å¤‰æ•°ã®ç„¡é§„ãªä»£å…¥ã‚„ç†è«–ä¸Šé€šã‚‰ãªã„åˆ†å²ã‚’å‰Šé™¤
+{$OPTIMIZATION LOOPUNROLL}                                  // æœ€é©åŒ–ã‚ªãƒ—ã‚·ãƒ§ãƒ³             : ãƒ«ãƒ¼ãƒ—ã‚’é€£ç¶šã—ãŸã‚³ãƒ¼ãƒ‰ã«ç½®ãæ›ãˆã¦å›æ•°åˆ¤å®šãƒ»ã‚¸ãƒ£ãƒ³ãƒ—å‘½ä»¤ã‚’å‰Šé™¤
+{$OPTIMIZATION PEEPHOLE}                                    // æœ€é©åŒ–ã‚ªãƒ—ã‚·ãƒ§ãƒ³             : å±€æ‰€çš„ã«å†—é•·ãªã‚¢ã‚»ãƒ³ãƒ–ãƒªå‘½ä»¤ã®ä¸¦ã³ã‚’å˜ç´”ãªå‘½ä»¤ã«ç½®ãæ›ãˆ
+{$OPTIMIZATION REMOVEEMPTYPROCS}                            // æœ€é©åŒ–ã‚ªãƒ—ã‚·ãƒ§ãƒ³             : ä¸­èº«ãŒç©ºã®é–¢æ•°ã‚„å‘¼ã³å‡ºã•ã‚Œã¦ã‚‚ä½•ã‚‚å®Ÿè¡Œã—ãªã„å‡¦ç†ã‚’å‰Šé™¤
+{$OPTIMIZATION REGVAR}                                      // æœ€é©åŒ–ã‚ªãƒ—ã‚·ãƒ§ãƒ³             : ãƒ­ãƒ¼ã‚«ãƒ«å¤‰æ•°ã‚’ãƒ¡ãƒ¢ãƒªã§ã¯ãªã CPU ãƒ¬ã‚¸ã‚¹ã‚¿ã«é…ç½®
+{$OPTIMIZATION SIZE}                                        // æœ€é©åŒ–ã‚ªãƒ—ã‚·ãƒ§ãƒ³             : å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºã®å‰Šæ¸›ã‚’å„ªå…ˆ
+{$OPTIMIZATION STACKFRAME}                                  // æœ€é©åŒ–ã‚ªãƒ—ã‚·ãƒ§ãƒ³             : ä¸è¦ãªé–¢æ•°å‘¼ã³å‡ºã—æ™‚ã®ã‚¹ã‚¿ãƒƒã‚¯æ§‹ç¯‰å‡¦ç†ï¼ˆå‰å‡¦ç†ãƒ»å¾Œå‡¦ç†ï¼‰ã‚’çœç•¥
+{$OPTIMIZATION TAILREC}                                     // æœ€é©åŒ–ã‚ªãƒ—ã‚·ãƒ§ãƒ³             : é–¢æ•°ã®æœ€å¾Œã®å†å¸°å‘¼ã³å‡ºã—ã‚’ãƒ«ãƒ¼ãƒ—ï¼ˆã‚¸ãƒ£ãƒ³ãƒ—å‘½ä»¤ï¼‰ã«å¤‰æ›ã—ã¦é«˜é€ŸåŒ–
+{$OPTIMIZATION USEEBP}                                      // æœ€é©åŒ–ã‚ªãƒ—ã‚·ãƒ§ãƒ³             : EBP ãƒ¬ã‚¸ã‚¹ã‚¿ã‚’è¨ˆç®—ç”¨ã®æ±ç”¨ãƒ¬ã‚¸ã‚¹ã‚¿ã¨ã—ã¦æµç”¨
+{$OPTIMIZATION USELOADMODIFYSTORE}                          // æœ€é©åŒ–ã‚ªãƒ—ã‚·ãƒ§ãƒ³             : åŒä¸€å¤‰æ•°ã¸ã®å†ä»£å…¥å‡¦ç†ã§ç›´æ¥å¤‰æ•°ã‚’æ“ä½œ
+{$POINTERMATH ON}                                           // ãƒã‚¤ãƒ³ã‚¿æ¼”ç®—                 : æœ‰åŠ¹
+{$SAFEFPUEXCEPTIONS OFF}                                    // FPU ã‚¨ãƒ©ãƒ¼å³æ™‚å ±å‘Š           : ç„¡åŠ¹
+{$SMARTLINK ON}                                             // ã‚¹ãƒãƒ¼ãƒˆãƒªãƒ³ã‚¯               : æœ‰åŠ¹
 
 {$L APU.obj}
 {$L DSP.obj}
 {$L SPC700.obj}
 {$R 'version.res' 'version.rc'}
 
+
 // ===================================================================================================
-// External declarations -- one per SNESAPU.def export. Signatures follow snesapu.dll\SNESAPU.h
-// (u8=Byte, u16=Word, u32=Cardinal, s32=LongInt, b8=Byte, and any struct pointer=Pointer, since none
-// of these 29 functions need the caller to know the pointed-to layout -- they hand back opaque
-// pointers/handles that calling code stores and passes back, exactly as GetAPUData's own callers do).
+// External declarations, one per SNESAPU.def export.  Signatures follow snesapu.dll\SNESAPU.h:
+// u8=Byte, u16=Word, u32=Cardinal, s32=LongInt, b8=Byte, any struct pointer=Pointer.  None of these
+// 29 functions need the caller to know the pointed-to layout.  They hand back opaque pointers that
+// calling code stores and passes back, exactly as GetAPUData's own callers do.
 
 function  EmuAPU(pBuf: Pointer; len: Cardinal; ltype: Byte): Pointer; stdcall; external name 'EmuAPU';
 procedure FixAPU(pc: Word; a, y, x, psw, sp: Byte); stdcall; external name 'FixAPU';
@@ -129,8 +126,8 @@ function  SNESAPUCallback(pCbFunc: Pointer; cbMask: Cardinal): Pointer; stdcall;
 procedure SNESAPUInfo(pVer, pMin, pOpt: Pointer); stdcall; external name 'SNESAPUInfo';
 
 // ===================================================================================================
-// Entry point -- see the file header comment. InitAPU only acts on DLL_PROCESS_ATTACH and always
-// returns TRUE, so there's no result worth checking or forwarding here (matching _DllMainCRTStartup).
+// Entry point, see the file header comment.  InitAPU only acts on DLL_PROCESS_ATTACH and always
+// returns TRUE, so there is nothing worth checking here, matching _DllMainCRTStartup.
 
 procedure SNESAPUDllProc(Reason: LongInt);
 begin
@@ -169,9 +166,9 @@ exports
   SNESAPUInfo;
 
 begin
-  SNESAPUDllProc(1);   // 1 = DLL_PROCESS_ATTACH (not pulling in the Windows unit just for this constant).
-                       // No DllProc hook needed for later attach/detach notifications: InitAPU (see
-                       // APU.asm) checks reason=DLL_PROCESS_ATTACH itself and no-ops for every other
-                       // reason code, so this one direct call for the initial attach covers everything
-                       // InitAPU ever actually does.
+  SNESAPUDllProc(1);   // 1 = DLL_PROCESS_ATTACH.  Avoids the Windows unit for one constant.
+                       // No DllProc hook is needed for later notifications: InitAPU checks
+                       // reason=DLL_PROCESS_ATTACH itself and no-ops for every other reason code
+                       // (see APU.asm), so this one direct call for the initial attach covers
+                       // everything InitAPU does.
 end.
