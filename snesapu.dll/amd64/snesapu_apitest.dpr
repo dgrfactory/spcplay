@@ -42,7 +42,9 @@
      the run.  SeekAPU is exercised with both fast=0 and fast=1.  GetSPCRegs' output values are
      logged directly.  The context round-trip snapshots, plays an unrelated further stretch, then
      restores, so it proves a genuine rewind rather than an immediate undo of the step right before
-     the restore.
+     the restore.  A dedicated SetScript700 call with '#i'/'#ib'/'bp' checks that CBE_INCS700,
+     CBE_INCDATA, and CBE_REQBP all fire through SNESAPUCallback with the right values, see
+     APUCallback's comment.
 
  Build (once per architecture):
    fpc -Pi386   -Twin32 snesapu_apitest.dpr
@@ -114,6 +116,10 @@ const
   BYTES_PER_FRAME = 8;
   CBE_DSPREG      = $01;
   CBE_S700FCH     = $02;
+  CBE_INCDATA     = $20000000;
+  CBE_INCS700     = $40000000;
+  CBE_REQBP       = $10000000;
+  FCH_PAUSE       = 3;
   SPC_TRACE       = $10;
   // Interpolation types and a DSP option flag, for the SetAPUOpt variation sweep (see DSP.inc).
   INT_NONE        = 0;
@@ -164,6 +170,8 @@ var
   TotalWritten: Int64;
   SamplesDone: Int64;
   DspCallbackCount, SpcFetchCallbackCount: Int64;
+  IncS700CallbackCount, IncDataCallbackCount: Int64;
+  ReqBPCallbackCount: Int64;
   DspTraceCount, SpcTraceCount: Cardinal;
   FailCount: Integer;
 
@@ -307,14 +315,55 @@ end;
 // Callbacks
 
 // SNESAPUCallback: standard ExtCall path, same protocol snesapu_pcmdump.dpr already exercises.
-// Registered here for both CBE_DSPREG and CBE_S700FCH so this run also covers the fetch-event mask
-// that pcmdump never set.
+// Registered for CBE_DSPREG, CBE_S700FCH, CBE_INCS700, CBE_INCDATA, and CBE_REQBP, covering every
+// mask bit this tool exercises.  For CBE_INCS700/CBE_INCDATA, lpData points at exactly Value bytes
+// of the filename text from a Script700 '#i'/'#ib' directive, not null-terminated.  The DLL never
+// touches the filesystem itself for these, it only hands over the filename (see
+// thirdparty/SNESAPU.cpp's IncludeScript700File for the reference frontend that would actually load
+// the file), so this callback only verifies the bytes it receives.  CBE_REQBP fires from a
+// Script700 'bp' command while RunScript700 executes the already-compiled bytecode during playback,
+// not synchronously when SetScript700 compiles the script the way CBE_INCS700/CBE_INCDATA do, so
+// the phase that exercises it plays some samples between setting the script and checking the count.
 function APUCallback(effect, addr, value: Cardinal; lpData: Pointer): Cardinal; stdcall;
+var
+  Name: AnsiString;
 begin
-  if effect = CBE_S700FCH then
-    Inc(SpcFetchCallbackCount)
+  case effect of
+    CBE_S700FCH: Inc(SpcFetchCallbackCount);
+    CBE_REQBP:
+      begin
+        Inc(ReqBPCallbackCount);
+        LogKV('ReqBPCallback_Effect', Format('0x%x', [effect]));
+        LogKV('ReqBPCallback_Addr', Format('0x%x', [addr]));
+        LogKV('ReqBPCallback_Value', Format('0x%x', [value]));
+      end;
+    CBE_INCS700, CBE_INCDATA:
+      begin
+        SetString(Name, PAnsiChar(lpData), Integer(value));
+        LogKV('IncludeCallback_Effect', Format('0x%x', [effect]));
+        LogKV('IncludeCallback_Addr', Format('0x%x', [addr]));
+        LogKV('IncludeCallback_Value', IntToStr(value));
+        LogKV('IncludeCallback_Filename', Name);
+        if effect = CBE_INCS700 then
+        begin
+          Inc(IncS700CallbackCount);
+          if Name = 'text.700' then
+            Ok('CBE_INCS700 filename matches "text.700"')
+          else
+            Fail(Format('CBE_INCS700 filename mismatch: got "%s"', [Name]));
+        end
+        else
+        begin
+          Inc(IncDataCallbackCount);
+          if Name = 'bin.700' then
+            Ok('CBE_INCDATA filename matches "bin.700"')
+          else
+            Fail(Format('CBE_INCDATA filename mismatch: got "%s"', [Name]));
+        end;
+      end;
   else
     Inc(DspCallbackCount);
+  end;
   Result := value;
 end;
 
@@ -469,6 +518,9 @@ begin
   FailCount := 0;
   DspCallbackCount := 0;
   SpcFetchCallbackCount := 0;
+  IncS700CallbackCount := 0;
+  IncDataCallbackCount := 0;
+  ReqBPCallbackCount := 0;
   DspTraceCount := 0;
   SpcTraceCount := 0;
   SamplesDone := 0;
@@ -575,7 +627,7 @@ begin
 
   // Register callbacks.  SNESAPUCallback is standard ExtCall.  SetDSPDbg/SetSPCDbg are the raw-
   // stack passthrough stubs, see their comments above.
-  pSNESAPUCallback(@APUCallback, CBE_DSPREG or CBE_S700FCH);
+  pSNESAPUCallback(@APUCallback, CBE_DSPREG or CBE_S700FCH or CBE_INCS700 or CBE_INCDATA or CBE_REQBP);
   pSetDSPDbg(@DspTraceStub);
   pSetSPCDbg(@SpcTraceStub, SPC_TRACE);
   Ok('SNESAPUCallback / SetDSPDbg / SetSPCDbg registered');
@@ -695,19 +747,36 @@ begin
   WriteChunkToFile(CHUNK_SAMPLES * 4);
   pSetScript700(nil);          // disable again so it doesn't affect the rest of the run
 
-  // === Phase 6: SetScript700Data ===
+  // === Phase 6: SetScript700 include/breakpoint callbacks (CBE_INCS700/CBE_INCDATA/CBE_REQBP) ===
+  // 'm 0 0' just gets the interpreter past the header.  '#i "text.700"' and '#ib "bin.700"' fire
+  // CBE_INCS700/CBE_INCDATA synchronously while SetScript700 compiles the script, with lpData/value
+  // spanning exactly the filename text.  Both are verified inside APUCallback itself (see its
+  // comment).  'bp $1234' is different: it compiles to a bytecode instruction that only fires
+  // CBE_REQBP once RunScript700 actually executes it during playback, so a chunk of playback runs
+  // below before checking it fired, unlike the include directives, which are already done by the
+  // time pSetScript700 returns.  All three callbacks log effect/addr/value, so a diff between the
+  // x86 and x64 logs would catch a mismatch the per-build checks here cannot.
+  ScriptResult := pSetScript700(PAnsiChar(AnsiString('m 0 0 #i "text.700" bp $1234 e e FFFFFF #ib "bin.700"' + #0)));
+  LogKV('IncludeTest_SetScript700_Result', IntToStr(ScriptResult));
+  if IncS700CallbackCount = 0 then Fail('CBE_INCS700 callback never fired');
+  if IncDataCallbackCount = 0 then Fail('CBE_INCDATA callback never fired');
+  WriteChunkToFile(CHUNK_SAMPLES * 4);           // let RunScript700 reach and execute 'bp $1234'
+  if ReqBPCallbackCount = 0 then Fail('CBE_REQBP callback never fired');
+  pSetScript700(nil);          // disable again so it doesn't affect the rest of the run
+
+  // === Phase 7: SetScript700Data ===
   // Pointer/return-code sanity only, see header note.
   for BlobIdx := 0 to High(Blob) do Blob[BlobIdx] := BlobIdx;
   DataRes := pSetScript700Data(0, @Blob[0], SizeOf(Blob));
   LogKV('SetScript700Data_Result', IntToStr(DataRes));
 
-  // === Phase 7: SetTimerTrick, enable briefly, then disable ===
+  // === Phase 8: SetTimerTrick, enable briefly, then disable ===
   pSetTimerTrick(0, 1000);
   WriteChunkToFile(CHUNK_SAMPLES * 2);
   pSetTimerTrick(0, 0);          // wait=0 disables
   Ok('SetTimerTrick enabled/disabled');
 
-  // === Phase 8: SeekAPU, both seek methods ===
+  // === Phase 9: SeekAPU, both seek methods ===
   pSeekAPU(10 * 64000, 0);       // seek 10s forward, non-fast method
   Ok('SeekAPU (fast=0)');
   WriteChunkToFile(CHUNK_SAMPLES * 2);
@@ -715,7 +784,7 @@ begin
   Ok('SeekAPU (fast=1)');
   WriteChunkToFile(CHUNK_SAMPLES * 2);
 
-  // === Phase 9: GetSNESAPUContext / SetSNESAPUContext round-trip, distant snapshot ===
+  // === Phase 10: GetSNESAPUContext / SetSNESAPUContext round-trip, distant snapshot ===
   // Snapshots at point P, plays segment X right after P, then plays a further, unrelated stretch,
   // simulating time passing after a save, before restoring to P and replaying the same length into
   // Y.  This shows the restore genuinely rewinds past the intervening stretch, not just undoing the
@@ -755,7 +824,7 @@ begin
   // diverges from the main stream from here on regardless, itself informative.  Continue the
   // main stream.
 
-  // === Phase 10: FixAPU round-trip ===
+  // === Phase 11: FixAPU round-trip ===
   // ppRAM direct copy + GetSPCRegs, same X/Y-hash reasoning as Phase 9 above.  The register values
   // are also logged directly: genuine emulated-CPU state, so they must match between x86 and x64
   // at this exact point in a byte-identical run.
@@ -785,7 +854,7 @@ begin
   else
     Fail('FixAPU round-trip (raw RAM restore): X != Y -- FixAPU did not resync state to reproduce the original continuation');
 
-  // === Phase 11: finish out the requested total sample count with plain playback ===
+  // === Phase 12: finish out the requested total sample count with plain playback ===
   RemainingSamples := Int64(TotalSamples) - SamplesDone;
   if RemainingSamples > 0 then
     WriteChunkToFile(Cardinal(RemainingSamples));
@@ -807,9 +876,16 @@ begin
   // be identical between the x86 and x64 runs, not just greater than zero.
   LogKV('DspRegCallbackCount', IntToStr(DspCallbackCount));
   LogKV('SpcFetchCallbackCount', IntToStr(SpcFetchCallbackCount));
+  LogKV('IncS700CallbackCount', IntToStr(IncS700CallbackCount));
+  LogKV('IncDataCallbackCount', IntToStr(IncDataCallbackCount));
+  LogKV('ReqBPCallbackCount', IntToStr(ReqBPCallbackCount));
   LogKV('DspTraceStubCount', IntToStr(DspTraceCount));
   LogKV('SpcTraceStubCount', IntToStr(SpcTraceCount));
   if DspCallbackCount = 0 then Warn('SNESAPUCallback (CBE_DSPREG) never fired');
+  if SpcFetchCallbackCount = 0 then Warn('SNESAPUCallback (CBE_S700FCH) never fired');
+  if IncS700CallbackCount = 0 then Warn('SNESAPUCallback (CBE_INCS700) never fired');
+  if IncDataCallbackCount = 0 then Warn('SNESAPUCallback (CBE_INCDATA) never fired');
+  if ReqBPCallbackCount = 0 then Warn('SNESAPUCallback (CBE_REQBP) never fired');
   if DspTraceCount = 0 then Warn('SetDSPDbg (pTrace) never fired');
   if SpcTraceCount = 0 then Warn('SetSPCDbg (pDebug) never fired');
 

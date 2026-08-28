@@ -19,10 +19,10 @@
 * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                                        *
 *                                                                                                  *
 *                                                 Copyright (C) 1999-2006 Alpha-II Productions     *
-*                                                 Copyright (C) 2003-2024 degrade-factory          *
+*                                                 Copyright (C) 2003-2026 degrade-factory          *
 *                                                                                                  *
 * List of users and dates who/when modified this file:                                             *
-*    - degrade-factory in 2024-01-18                                                               *
+*    - degrade-factory in 2026-08-21                                                               *
 *    - Zenith in 2024-06-19                                                                        *
 ***************************************************************************************************/
 
@@ -208,13 +208,13 @@ typedef struct Voice
     u16     vAdsr;                              //ADSR parameters when KON was written
     u8      vGain;                              //Gain parameters when KON was written
     u8      vRsv;                               //Changed ADSR/Gain parameters flag
-#ifdef WIN64
+#ifdef _WIN64
     u32     sIdx;                               //current sample in sBuf
 #else
     s16     *sIdx;                              //-> current sample in sBuf
 #endif
     //Waveform --------06
-#ifdef WIN64
+#ifdef _WIN64
     u32     bCur;                               //current block
 #else
     void    *bCur;                              //-> current block

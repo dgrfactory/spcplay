@@ -19,10 +19,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 2003-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2024 degrade-factory
+;                                                   Copyright (C) 2003-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2024-01-18
+;   - degrade-factory in 2026-08-21
 ;===================================================================================================
 
 %define APU_INC
@@ -149,7 +149,7 @@ PUBLIC SNESAPUCallback, pCbFunc:ptr, cbMask:dword
 ;
 ;In:
 ;   ppRAM     -> 64KB Sound RAM
-;   ppXRAM    -> 128byte extra RAM
+;   ppXRAM    -> 64byte extra RAM
 ;   ppOutPort -> APU 4 ports of output
 ;   ppT64Cnt  -> 64kHz timer counter
 ;   ppDSP     -> 128byte DSPRAM structure (see DSP.inc)

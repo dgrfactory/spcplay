@@ -39,16 +39,8 @@
     %include "x86.inc"
 %endif
 
-;WINDOWS is defined whenever either Windows backend (WIN32 or WIN64) is targeted -- used by the
-; handful of SECTION ALIGN= declarations in APU.asm/DSP.asm/SPC700.asm that must pick between the
-; small, nasm-win32/win64-format-compatible alignment values (<=64) and a larger one for some other,
-; non-Windows-COFF target.  This is a narrow exception to the "never %ifdef on WIN64 itself" rule
-; above -- SECTION directives aren't code the PAX/PBX-style aliases can cover.
-%ifdef WIN32
-    %define WINDOWS
-%elifdef WIN64
-    %define WINDOWS
-%endif
+;NASM requires the x87 stack-top register to be written as 'ST0'.  TASM allows the shorthand 'ST',
+; so this restores it here.
 
 %define ST      ST0
 

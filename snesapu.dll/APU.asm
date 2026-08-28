@@ -46,7 +46,7 @@
 ;===================================================================================================
 ;Data
 
-%ifndef WINDOWS
+%ifndef WIN32
 SECTION .data ALIGN=256
 %else
 SECTION .data ALIGN=32
@@ -63,7 +63,7 @@ SECTION .data ALIGN=32
 ;===================================================================================================
 ;Variables
 
-%ifndef WINDOWS
+%ifndef WIN32
 SECTION .bss ALIGN=256
 %else
 SECTION .bss ALIGN=64
@@ -134,7 +134,7 @@ SECTION .bss ALIGN=64
 ;===================================================================================================
 ;Code
 
-%ifndef WINDOWS
+%ifndef WIN32
 SECTION .text ALIGN=256
 %else
 SECTION .text ALIGN=16

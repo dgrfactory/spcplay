@@ -99,7 +99,7 @@
 ;===================================================================================================
 ;Data
 
-%ifndef WINDOWS
+%ifndef WIN32
 SECTION .data ALIGN=256
 %else
 SECTION .data ALIGN=32
@@ -248,7 +248,7 @@ SECTION .data ALIGN=32
 ;===================================================================================================
 ;Variables
 
-%ifndef WINDOWS
+%ifndef WIN32
 SECTION .bss ALIGN=256
 %else
 SECTION .bss ALIGN=64
@@ -447,7 +447,7 @@ SECTION .bss ALIGN=64
 ;===================================================================================================
 ;Code
 
-%ifndef WINDOWS
+%ifndef WIN32
 SECTION .text ALIGN=256
 %else
 SECTION .text ALIGN=16
@@ -2862,8 +2862,8 @@ RVolL:
     Mov     [PSP-4],EAX
     FILd    dword [PSP-4]
     FMul    dword [fpShR7]                                                      ;Convert volume from fixed to floating-point
-    FSt     dword [EBX+mix+mTgtL]
-    FStP    dword [EBX+mix+mChnL]
+    IdxUn   FSt dword,mix,PBX+mTgtL
+    IdxUn   FStP dword,mix,PBX+mChnL
 
     XOr     EAX,EAX
     Inc     EAX
@@ -2884,8 +2884,8 @@ RVolR:
     Mov     [PSP-4],EAX
     FILd    dword [PSP-4]
     FMul    dword [fpShR7]
-    FSt     dword [EBX+mix+mTgtR]
-    FStP    dword [EBX+mix+mChnR]
+    IdxUn   FSt dword,mix,PBX+mTgtR
+    IdxUn   FStP dword,mix,PBX+mChnR
 
     XOr     EAX,EAX
     Inc     EAX

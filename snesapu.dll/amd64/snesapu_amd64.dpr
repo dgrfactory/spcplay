@@ -3,9 +3,9 @@
  Platform:   x86-64
 
  Not a reimplementation of SNESAPU.DLL.  All emulation code lives in the NASM object files built
- from ../snesapu.dll/APU.asm, DSP.asm, SPC700.asm ('nasm -f win64 -D WIN64').  The x86 build links
- those objects with Visual C++ 6's linker, which cannot target x64.  Free Pascal's linker consumes
- the same Microsoft COFF .obj files directly, so it stands in for link.exe here.
+ from ../snesapu.dll/APU.asm, DSP.asm, SPC700.asm ('nasm -f win64 -D WIN64 -D WIN32').  The x86
+ build links those objects with Visual C++ 6's linker, which cannot target x64.  Free Pascal's
+ linker consumes the same Microsoft COFF .obj files directly, so it stands in for link.exe here.
 
  What this file does:
    - The $L directive pulls APU.obj/DSP.obj/SPC700.obj into the library.  The three object files
@@ -23,13 +23,11 @@
      single direct call below, for the attach that already happened by the time Pascal's
      initialization runs, covers everything.  No DllProc hook is needed for later notifications.
 
- Build (Free Pascal only, no Visual C++ for x64).  Run from this directory. -i points nasm at
- snesapu.dll\ for macro.inc/x64.inc/APU.inc/DSP.inc/SPC700.inc.  Pass only -D WIN64, not -D WIN32:
- WINDOWS (defined in macro.inc whenever WIN32 or WIN64 is set) already selects the Windows-safe
- SECTION alignment values.  Passing both was an earlier mistake, no longer needed.
-   nasm -f win64 -D WIN64 -o APU.obj    ..\APU.asm
-   nasm -f win64 -D WIN64 -o DSP.obj    ..\DSP.asm
-   nasm -f win64 -D WIN64 -o SPC700.obj ..\SPC700.asm
+ Build (Free Pascal only, no Visual C++ for x64).  Run from this directory. Pass -D WIN32 with
+ -D WIN64: WIN32 already selects the Windows-safe SECTION alignment values.
+   nasm -f win64 -D WIN64 -D WIN32 -o APU.obj    ..\APU.asm
+   nasm -f win64 -D WIN64 -D WIN32 -o DSP.obj    ..\DSP.asm
+   nasm -f win64 -D WIN64 -D WIN32 -o SPC700.obj ..\SPC700.asm
    fpc -Px86_64 -Twin64 -osnesapu_amd64.dll SNESAPU.dpr
  The three .obj files must sit next to this source file, or adjust the $L paths below, for fpc to
  find them.  Verified as of this writing: all three assemble at 0 errors with the commands above,
