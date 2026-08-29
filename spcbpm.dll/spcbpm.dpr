@@ -24,24 +24,24 @@
 //  * GNU GPL v2.0 document is in LICENSE file.
 //
 //
-//  +++ ���̃\�[�X�R�[�h�� GPL �ł� +++
+//  +++ このソースコードは GPL です +++
 //
-//  ���̃v���O�����̓t���[�\�t�g�E�F�A�ł��B ���Ȃ��̓t���[�\�t�g�E�F�A�c�̂ɂ���Ĕ��s
-//  ����Ă��� GNU ��ʌ��O���p�����_�񏑂̃o�[�W���� 2�A�������͊�]�ł���΂���ȏ��
-//  �o�[�W�����̂����A�����ꂩ�Œ�߂�ꂽ�����̉��ł��̃v���O�������Ĕz�z�A�������͉���
-//  ���邱�Ƃ��ł��܂��B
+//  このプログラムはフリーソフトウェアです。 あなたはフリーソフトウェア団体によって発行
+//  されている GNU 一般公衆利用許諾契約書のバージョン 2、もしくは希望であればそれ以上の
+//  バージョンのうち、いずれかで定められた条件の下でこのプログラムを再配布、もしくは改変
+//  することができます。
 //
-//  ���̃v���O�����͖��ɗ����Ƃ����҂��Ĕz�z����Ă��܂����A�w ���̕ۏ؂�����܂��� �x�B
-//  �܂�A�w ���i�� (�@�\���A���S���A�ϋv���ɗD��Ă��邩) �x��w �K���� (�������̖ړI��
-//  ���܂��g�p�ł��邩) �x�َ̖��I�ȕۏ؂�������܂���B
-//  �ڂ����� GNU ��ʌ��O���p�����_�� (GNU General Public License) ���������������B
+//  このプログラムは役に立つことを期待して配布されていますが、『 何の保証もありません 』。
+//  つまり、『 商品性 (機能性、安全性、耐久性に優れているか) 』や『 適合性 (ある特定の目的に
+//  うまく使用できるか) 』の黙示的な保証さえありません。
+//  詳しくは GNU 一般公衆利用許諾契約書 (GNU General Public License) をご覧ください。
 //
-//  ���Ȃ��͂��̃v���O�����ƈꏏ�� GNU ��ʌ��O���p�����_�񏑂̃R�s�[���󂯎�����͂��ł��B
-//  �󂯎���Ă��Ȃ��ꍇ�́A�t���[�\�t�g�E�F�A�c�̂�����񂹂Ă��������B
-//  ���� : Free Software Foundation, Inc.
+//  あなたはこのプログラムと一緒に GNU 一般公衆利用許諾契約書のコピーを受け取ったはずです。
+//  受け取っていない場合は、フリーソフトウェア団体から取り寄せてください。
+//  宛先 : Free Software Foundation, Inc.
 //         59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
-//  �� GNU ��ʌ��O���p�����_�񏑃o�[�W���� 2 �̃h�L�������g�́A�t���� LICENSE �ɂ���܂��B
+//  ※ GNU 一般公衆利用許諾契約書バージョン 2 のドキュメントは、付属の LICENSE にあります。
 //
 //
 //  Copyright (C) 2024 degrade-factory. All rights reserved.
@@ -49,139 +49,154 @@
 // =================================================================================================
 library spcbpm;
 
-//{$DEFINE FORCEDSPDBG}                                     // DSPDbg API �������g�p
+// *************************************************************************************************************************************************************
+// デバッグ用オプション
+// *************************************************************************************************************************************************************
 
-{$APPTYPE GUI}                                              // �A�v���P�[�V�����^�C�v       : GUI ���[�h
-{$ASSERTIONS OFF}                                           // �\�[�X�R�[�h�̃A�T�[�g       : ����
-{$BOOLEVAL OFF}                                             // ���S�_�����]��               : ����
-{$DEBUGINFO OFF}                                            // �f�o�b�O���                 : ����
-{$DENYPACKAGEUNIT ON}                                       // UNIT �s�g�p                  : �L��
-{$EXTENDEDSYNTAX ON}                                        // �֐��̖߂�l�𖳎��\       : �L��
-{$EXTENSION 'dll'}                                          // �g���q�ݒ�                   : DLL
-{$IMAGEBASE $00400000}                                      // �C���[�W�x�[�X�A�h���X       : 0x00400000
-{$IMPORTEDDATA OFF}                                         // �ʃp�b�P�[�W�̃������Q��     : ����
-{$IOCHECKS OFF}                                             // I/O �`�F�b�N                 : ����
-{$LONGSTRINGS ON}                                           // AnsiString �g�p              : �L��
-{$MAXSTACKSIZE $00100000}                                   // �ő�X�^�b�N�ݒ�             : 0x00100000
-{$MINENUMSIZE 1}                                            // �񋓌^�̍ő�T�C�Y (x256)    : 1 (256)
-{$MINSTACKSIZE $00004000}                                   // �ŏ��X�^�b�N�ݒ�             : 0x00004000
-{$OPENSTRINGS OFF}                                          // �I�[�v��������p�����[�^     : ����
-{$OVERFLOWCHECKS OFF}                                       // �I�[�o�[�t���[�`�F�b�N       : ����
-{$RANGECHECKS OFF}                                          // �͈̓`�F�b�N                 : ����
-{$R 'spcbpm.res' 'spcbpm.rc'}                               // ���\�[�X                     : spcbpm.res <- spcbpm.rc
-{$STACKFRAMES OFF}                                          // ���S�X�^�b�N�t���[������     : ����
-{$TYPEDADDRESS OFF}                                         // �|�C���^�̌^�`�F�b�N         : ����
-{$TYPEINFO OFF}                                             // ���s���^���                 : ����
-{$VARSTRINGCHECKS OFF}                                      // ������`�F�b�N               : ����
-{$WARNINGS ON}                                              // �x������                     : �L��
-{$WEAKPACKAGEUNIT OFF}                                      // �ア�p�b�P�[�W��             : ����
-{$WRITEABLECONST OFF}                                       // �萔��������                 : ����
-
-{$IFDEF FREEPASCAL}     // for Free Pascal 3.2+
-{$CALLING STDCALL}                                          // CALL �X�^�b�N����            : STDCALL
-{$CHECKPOINTER OFF}                                         // �|�C���^�`�F�b�N             : ����
-{$FPUTYPE x87}                                              // �����������Z����             : x87
-{$HINTS OFF}                                                // �q���g����                   : ����
-{$IEEEERRORS OFF}                                           // ���������G���[�`�F�b�N       : ����
-{$MODE DELPHI}                                              // ���ꃂ�[�h                   : DELPHI
-{$OPTIMIZATION LEVEL3,USEEBP}                               // �œK���R���p�C��             : Lv3, EBP ���W�X�^�g�p
-{$POINTERMATH ON}                                           // �|�C���^���Z                 : �L��
-{$SAFEFPUEXCEPTIONS OFF}                                    // FPU �G���[������           : ����
-{$SMARTLINK ON}                                             // �X�}�[�g�����N               : �L��
-{$ELSE}                 // for Boland Delphi 6+
-{$DEFINITIONINFO OFF}                                       // �V���{���錾�ƎQ�Ə��       : ����
-{$DESIGNONLY OFF}                                           // IDE �g�p                     : ����
-{$HINTS ON}                                                 // �q���g����                   : �L��
-{$IMPLICITBUILD ON}                                         // �r���h�̂��тɍăR���p�C��   : �L��
-{$LOCALSYMBOLS OFF}                                         // ���[�J���V���{�����         : ����
-{$OBJEXPORTALL OFF}                                         // �V���{���̃G�N�X�|�[�g       : ����
-{$OPTIMIZATION ON}                                          // �œK���R���p�C��             : �L��
-{$REALCOMPATIBILITY OFF}                                    // Real48 �݊�                  : ����
-{$REFERENCEINFO OFF}                                        // ���S�ȎQ�Ə��̐���         : ����
-{$RUNONLY OFF}                                              // ���s���̂݃R���p�C��         : ����
-{$SAFEDIVIDE OFF}                                           // ���� Pentium FDIV �o�O���   : ����
-{$ENDIF}
+//{$DEFINE FORCEDSPDBG}                                     // DSPDbg API を強制使用
 
 
 // *************************************************************************************************************************************************************
-// �O���N���X�̐錾
+// コンパイルオプション
+// *************************************************************************************************************************************************************
+
+{$ASSERTIONS OFF}                                           // ソースコードのアサート       : 無効
+{$BOOLEVAL OFF}                                             // 完全論理式評価               : 無効
+{$DEBUGINFO OFF}                                            // デバッグ情報                 : 無効
+{$DENYPACKAGEUNIT ON}                                       // UNIT 不使用                  : 有効
+{$EXTENDEDSYNTAX ON}                                        // 関数の戻り値を無視可能       : 有効
+{$EXTENSION 'dll'}                                          // 拡張子設定                   : DLL
+{$IMPORTEDDATA OFF}                                         // 別パッケージのメモリ参照     : 無効
+{$IOCHECKS OFF}                                             // I/O チェック                 : 無効
+{$MINENUMSIZE 1}                                            // 列挙型の最大サイズ (x256)    : 1 (256)
+{$OPENSTRINGS OFF}                                          // オープン文字列パラメータ     : 無効
+{$OVERFLOWCHECKS OFF}                                       // オーバーフローチェック       : 無効
+{$RANGECHECKS OFF}                                          // 範囲チェック                 : 無効
+{$TYPEDADDRESS OFF}                                         // ポインタの型チェック         : 無効
+{$TYPEINFO OFF}                                             // 実行時型情報                 : 無効
+{$VARSTRINGCHECKS OFF}                                      // 文字列チェック               : 無効
+{$WARNINGS ON}                                              // 警告生成                     : 有効
+{$WRITEABLECONST OFF}                                       // 定数書き換え                 : 無効
+
+{$IFDEF FREEPASCAL}     // for Free Pascal 3.2+
+{$CALLING STDCALL}                                          // CALL スタック方式 (x86)      : STDCALL
+{$CHECKPOINTER OFF}                                         // ポインタチェック             : 無効
+{$FPUTYPE x87}                                              // 浮動小数演算命令             : x87
+{$HINTS OFF}                                                // ヒント生成                   : 無効
+{$IEEEERRORS OFF}                                           // 浮動小数エラーチェック       : 無効
+{$MODE DELPHI}                                              // 言語モード                   : DELPHI
+{$OPTIMIZATION AUTOINLINE}                                  // 最適化オプション             : 短い関数を自動的にインライン展開
+{$OPTIMIZATION CONSTPROP}                                   // 最適化オプション             : 確定した計算や変数をコンパイル時に定数に置き換え
+{$OPTIMIZATION CSE}                                         // 最適化オプション             : 重複する共通の計算式をまとめて結果を使い回す
+{$OPTIMIZATION DFA}                                         // 最適化オプション             : 変数の無駄な代入や理論上通らない分岐を削除
+{$OPTIMIZATION LOOPUNROLL}                                  // 最適化オプション             : ループを連続したコードに置き換えて回数判定・ジャンプ命令を削除
+{$OPTIMIZATION PEEPHOLE}                                    // 最適化オプション             : 局所的に冗長なアセンブリ命令の並びを単純な命令に置き換え
+{$OPTIMIZATION REMOVEEMPTYPROCS}                            // 最適化オプション             : 中身が空の関数や呼び出されても何も実行しない処理を削除
+{$OPTIMIZATION REGVAR}                                      // 最適化オプション             : ローカル変数をメモリではなく CPU レジスタに配置
+{$OPTIMIZATION SIZE}                                        // 最適化オプション             : 実行ファイルサイズの削減を優先
+{$OPTIMIZATION STACKFRAME}                                  // 最適化オプション             : 不要な関数呼び出し時のスタック構築処理（前処理・後処理）を省略
+{$OPTIMIZATION TAILREC}                                     // 最適化オプション             : 関数の最後の再帰呼び出しをループ（ジャンプ命令）に変換して高速化
+{$OPTIMIZATION USEEBP}                                      // 最適化オプション             : EBP レジスタを計算用の汎用レジスタとして流用
+{$OPTIMIZATION USELOADMODIFYSTORE}                          // 最適化オプション             : 同一変数への再代入処理で直接変数を操作
+{$POINTERMATH ON}                                           // ポインタ演算                 : 有効
+{$SAFEFPUEXCEPTIONS OFF}                                    // FPU エラー即時報告           : 無効
+{$SMARTLINK ON}                                             // スマートリンク               : 有効
+{$ELSE}                 // for Boland Delphi 6+
+{$DEFINITIONINFO OFF}                                       // シンボル宣言と参照情報       : 無効
+{$DESIGNONLY OFF}                                           // IDE 使用                     : 無効
+{$HINTS ON}                                                 // ヒント生成                   : 有効
+{$IMPLICITBUILD ON}                                         // ビルドのたびに再コンパイル   : 有効
+{$LOCALSYMBOLS OFF}                                         // ローカルシンボル情報         : 無効
+{$OBJEXPORTALL OFF}                                         // シンボルのエクスポート       : 無効
+{$OPTIMIZATION ON}                                          // 最適化コンパイル             : 有効
+{$REALCOMPATIBILITY OFF}                                    // Real48 互換                  : 無効
+{$REFERENCEINFO OFF}                                        // 完全な参照情報の生成         : 無効
+{$RUNONLY OFF}                                              // 実行時のみコンパイル         : 無効
+{$SAFEDIVIDE OFF}                                           // 初期 Pentium FDIV バグ回避   : 無効
+{$ENDIF}
+
+{$R 'spcbpm.res' 'spcbpm.rc'}
+
+
+// *************************************************************************************************************************************************************
+// 外部クラスの宣言
 // *************************************************************************************************************************************************************
 
 //uses MemCheck in '..\..\memcheck\MemCheck.pas';
 
 
 // *************************************************************************************************************************************************************
-// �\���́A����уN���X�̐錾
+// 構造体、およびクラスの宣言
 // *************************************************************************************************************************************************************
 
 type
-{$ALIGN OFF} // �\���̂̎����T�C�Y�����Ȃ� --- ��������
-    // DSPVOICE �\����
+{$ALIGN OFF} // 構造体の自動サイズ調整なし --- ここから
+    // DSPVOICE 構造体
     TDSPVOICE = record
-        VolumeLeft: byte;                                   // �o�̓��x�� (��)
-        VolumeRight: byte;                                  // �o�̓��x�� (�E)
-        Pitch: word;                                        // �s�b�` (���� 14 �r�b�g)
-        SoundSourcePlayBack: byte;                          // �g�`�ԍ�
-        EnvelopeADSR1: byte;                                // �G���x���[�v�̎�� (��� 1 �r�b�g) �� ADSR �G���x���[�v�̐ݒ� (DR : 3 �r�b�g�AAR : 4 �r�b�g)
-        EnvelopeADSR2: byte;                                // �G���x���[�v�̐ݒ� (SL : 3 �r�b�g�ASR : 5 �r�b�g)
-        EnvelopeGain: byte;                                 // Gain �G���x���[�v�̐ݒ� (��� 3 �r�b�g)
-        CurrentEnvelope: byte;                              // ���݂̃G���x���[�v�l
-        CurrentOutput: byte;                                // ���݂̔g�`�o�͒l
-        __r: array[0..4] of byte;                           // (�\��) = DSPREG �\����
-        Fir: byte;                                          // FIR �t�B���^�W��
+        VolumeLeft: byte;                                   // 出力レベル (左)
+        VolumeRight: byte;                                  // 出力レベル (右)
+        Pitch: word;                                        // ピッチ (下位 14 ビット)
+        SoundSourcePlayBack: byte;                          // 波形番号
+        EnvelopeADSR1: byte;                                // エンベロープの種類 (上位 1 ビット) と ADSR エンベロープの設定 (DR : 3 ビット、AR : 4 ビット)
+        EnvelopeADSR2: byte;                                // エンベロープの設定 (SL : 3 ビット、SR : 5 ビット)
+        EnvelopeGain: byte;                                 // Gain エンベロープの設定 (上位 3 ビット)
+        CurrentEnvelope: byte;                              // 現在のエンベロープ値
+        CurrentOutput: byte;                                // 現在の波形出力値
+        __r: array[0..4] of byte;                           // (予約) = DSPREG 構造体
+        Fir: byte;                                          // FIR フィルタ係数
     end;
 
-    // DSPREG �\����
+    // DSPREG 構造体
     TDSPREG = record case byte of
-        1: (Voice: array[0..7] of TDSPVOICE);               // �{�C�X���W�X�^ (DSPVOICE x8)
-        2: (__r00: array[0..11] of byte;                    // (�\��) = DSPVOICE
-            MainVolumeLeft: byte;                           // �}�X�^�[���� (��)
-            EchoFeedback: byte;                             // �G�R�[�t�B�[�h�o�b�N�̋���
-            __r0E: byte;                                    // (���g�p)
-            __r0F: byte;                                    // (�\��) = DSPVOICE
-            __r10: array[0..11] of byte;                    // (�\��) = DSPVOICE
-            MainVolumeRight: byte;                          // �}�X�^�[���� (�E)
-            __r1D: byte;                                    // (���g�p)
-            __r1E: byte;                                    // (���g�p)
-            __r1F: byte;                                    // (�\��) = DSPVOICE
-            __r20: array[0..11] of byte;                    // (�\��) = DSPVOICE
-            EchoVolumeLeft: byte;                           // �G�R�[���� (��)
-            PitchModOn: byte;                               // �e�`�����l���̃s�b�`���W�����[�V�����̃I���t���O (8 �r�b�g)
-            __r2E: byte;                                    // (���g�p)
-            __r2F: byte;                                    // (�\��) = DSPVOICE
-            __r30: array[0..11] of byte;                    // (�\��) = DSPVOICE
-            EchoVolumeRight: byte;                          // �G�R�[���� (�E)
-            NoiseOn: byte;                                  // �e�`�����l���̃m�C�Y�̃I���t���O (8 �r�b�g)
-            __r3E: byte;                                    // (���g�p)
-            __r3F: byte;                                    // (�\��) = DSPVOICE
-            __r40: array[0..11] of byte;                    // (�\��) = DSPVOICE
-            KeyOn: byte;                                    // �e�`�����l���̃L�[�̃I���t���O (8 �r�b�g)
-            EchoOn: byte;                                   // �e�`�����l���̃G�R�[�̃I���t���O (8 �r�b�g)
-            __r4E: byte;                                    // (���g�p)
-            __r4F: byte;                                    // (�\��) = DSPVOICE
-            __r50: array[0..11] of byte;                    // (�\��) = DSPVOICE
-            KeyOff: byte;                                   // �e�`�����l���̃L�[�̃I�t�t���O (8 �r�b�g)
-            SourceDirectory: byte;                          // �\�[�X�f�B���N�g�� (�g�`��񂪊i�[����Ă��郁�����̃I�t�Z�b�g�A�h���X x0x100)
-            __r5E: byte;                                    // (���g�p)
-            __r5F: byte;                                    // (�\��) = DSPVOICE
-            __r60: array[0..11] of byte;                    // (�\��) = DSPVOICE
-            Flags: byte;                                    // DSP ���Z�b�g�A�o�͖����A�G�R�[�����t���O (��� 3 �r�b�g) �ƃm�C�Y���g�� (���� 5 �r�b�g)
-            EchoWaveform: byte;                             // �G�R�[�L���̈� (�G�R�[�����Ɏg�p���郁�����̃I�t�Z�b�g�A�h���X x0x100)
-            __r6E: byte;                                    // (���g�p)
-            __r6F: byte;                                    // (�\��) = DSPVOICE
-            __r70: array[0..11] of byte;                    // (�\��) = DSPVOICE
-            EndWaveform: byte;                              // �e�`�����l���̔g�`�t�H�[���̏I���_�ʉ߃t���O (8 �r�b�g)
-            EchoDelay: byte;                                // �G�R�[�f�B���C���� (x16 [ms])
-            __r7E: byte;                                    // (���g�p)
-            __r7F: byte);                                   // (�\��) = DSPVOICE
-        3: (Reg: array[0..127] of byte);                    // DSP ���W�X�^
+        1: (Voice: array[0..7] of TDSPVOICE);               // ボイスレジスタ (DSPVOICE x8)
+        2: (__r00: array[0..11] of byte;                    // (予約) = DSPVOICE
+            MainVolumeLeft: byte;                           // マスター音量 (左)
+            EchoFeedback: byte;                             // エコーフィードバックの強さ
+            __r0E: byte;                                    // (未使用)
+            __r0F: byte;                                    // (予約) = DSPVOICE
+            __r10: array[0..11] of byte;                    // (予約) = DSPVOICE
+            MainVolumeRight: byte;                          // マスター音量 (右)
+            __r1D: byte;                                    // (未使用)
+            __r1E: byte;                                    // (未使用)
+            __r1F: byte;                                    // (予約) = DSPVOICE
+            __r20: array[0..11] of byte;                    // (予約) = DSPVOICE
+            EchoVolumeLeft: byte;                           // エコー音量 (左)
+            PitchModOn: byte;                               // 各チャンネルのピッチモジュレーションのオンフラグ (8 ビット)
+            __r2E: byte;                                    // (未使用)
+            __r2F: byte;                                    // (予約) = DSPVOICE
+            __r30: array[0..11] of byte;                    // (予約) = DSPVOICE
+            EchoVolumeRight: byte;                          // エコー音量 (右)
+            NoiseOn: byte;                                  // 各チャンネルのノイズのオンフラグ (8 ビット)
+            __r3E: byte;                                    // (未使用)
+            __r3F: byte;                                    // (予約) = DSPVOICE
+            __r40: array[0..11] of byte;                    // (予約) = DSPVOICE
+            KeyOn: byte;                                    // 各チャンネルのキーのオンフラグ (8 ビット)
+            EchoOn: byte;                                   // 各チャンネルのエコーのオンフラグ (8 ビット)
+            __r4E: byte;                                    // (未使用)
+            __r4F: byte;                                    // (予約) = DSPVOICE
+            __r50: array[0..11] of byte;                    // (予約) = DSPVOICE
+            KeyOff: byte;                                   // 各チャンネルのキーのオフフラグ (8 ビット)
+            SourceDirectory: byte;                          // ソースディレクトリ (波形情報が格納されているメモリのオフセットアドレス x0x100)
+            __r5E: byte;                                    // (未使用)
+            __r5F: byte;                                    // (予約) = DSPVOICE
+            __r60: array[0..11] of byte;                    // (予約) = DSPVOICE
+            Flags: byte;                                    // DSP リセット、出力無効、エコー無効フラグ (上位 3 ビット) とノイズ周波数 (下位 5 ビット)
+            EchoWaveform: byte;                             // エコー記憶領域 (エコー処理に使用するメモリのオフセットアドレス x0x100)
+            __r6E: byte;                                    // (未使用)
+            __r6F: byte;                                    // (予約) = DSPVOICE
+            __r70: array[0..11] of byte;                    // (予約) = DSPVOICE
+            EndWaveform: byte;                              // 各チャンネルの波形フォームの終了点通過フラグ (8 ビット)
+            EchoDelay: byte;                                // エコーディレイ時間 (x16 [ms])
+            __r7E: byte;                                    // (未使用)
+            __r7F: byte);                                   // (予約) = DSPVOICE
+        3: (Reg: array[0..127] of byte);                    // DSP レジスタ
     end;
-{$ALIGN ON}  // �\���̂̎����T�C�Y�����Ȃ� --- �����܂�
+{$ALIGN ON}  // 構造体の自動サイズ調整なし --- ここまで
 
-    // APU �\����
+    // APU 構造体
     TAPU = record
-        T64Count: ^longword;                                // 64kHz �^�C�}�J�E���^�̃|�C���^ (64000 count/sec)
-        DspReg: ^TDSPREG;                                   // DSP ���W�X�^�̃|�C���^ (128 �o�C�g)
+        T64Count: ^longword;                                // 64kHz タイマカウンタのポインタ (64000 count/sec)
+        DspReg: ^TDSPREG;                                   // DSP レジスタのポインタ (128 バイト)
         GetAPUData: procedure(ppRam: pointer; ppXRam: pointer; ppSPCOutput: pointer; ppT64Count: pointer; ppDsp: pointer; ppVoices: pointer;
             ppVolumeMaxLeft: pointer; ppVolumeMaxRight: pointer); stdcall;
         SNESAPUCallback: function(pCbFunc: pointer; cbMask: longword): pointer; stdcall;
@@ -190,71 +205,71 @@ type
         DSPDebug: procedure(); stdcall;
     end;
 
-    // TEMPOHISTORY �\����
+    // TEMPOHISTORY 構造体
     TTEMPOHISTORY = record case byte of
-        1: (cChannel: byte;                                 // �`�����l���ԍ�
-            cSource: byte;                                  // ���F�ԍ�
-            cVolume: byte;                                  // ����
-            __r1: byte;                                     // (���g�p)
-            wPitch: word;                                   // �s�b�`
-            __r2: byte;                                     // (���g�p)
-            __r3: byte);                                    // (���g�p)
-        2: (qwHash: int64);                                 // �^���n�b�V���l
+        1: (cChannel: byte;                                 // チャンネル番号
+            cSource: byte;                                  // 音色番号
+            cVolume: byte;                                  // 音量
+            __r1: byte;                                     // (未使用)
+            wPitch: word;                                   // ピッチ
+            __r2: byte;                                     // (未使用)
+            __r3: byte);                                    // (未使用)
+        2: (qwHash: int64);                                 // 疑似ハッシュ値
     end;
 
-    // TEMPO �\����
+    // TEMPO 構造体
     TTEMPO = record
-        bDisable: bytebool;                                 // �����t���O
-        cBPM: byte;                                         // �m��e���|
-        cMinBPM: byte;                                      // �e���|��͔͈� (�ŏ�)
-        cMaxBPM: byte;                                      // �e���|��͔͈� (�ő�)
-        cMode: byte;                                        // �e���|�������[�h (�M���x)
-        cKOn: byte;                                         // KON �t���O
-        cKOnCount: byte;                                    // KON �J�E���^
-        cKOnCountOld: byte;                                 // KON �J�E���^ (�O��̒l)
-        dwStartTime: longword;                              // ��͊J�n���� (64kHz)
-        dwKOnTime: longword;                                // KON �Ԋu��͗p���� (64kHz)
-        dwMinTime: longword;                                // �ŏ��e���|��͗p���� (64kHz)
-        dwMaxTime: longword;                                // �ő�e���|��͗p���� (64kHz)
-        dwTripleTime: longword;                             // �O���q�E�O�A���l������ (64kHz)
-        Count: array[60..200] of longword;                  // �e���|���Ƃ̃J�E���^
-        T64Count: array[0..7] of longword;                  // �`�����l�����Ƃ̑O�񔭉����� (64kHz)
-        Volume: array[0..7] of byte;                        // �`�����l�����Ƃ̉���
-        dwHistory: longword;                                // ����ԍ�
-        History: array[0..15] of TTEMPOHISTORY              // ����
+        bDisable: bytebool;                                 // 無効フラグ
+        cBPM: byte;                                         // 確定テンポ
+        cMinBPM: byte;                                      // テンポ解析範囲 (最小)
+        cMaxBPM: byte;                                      // テンポ解析範囲 (最大)
+        cMode: byte;                                        // テンポ解決モード (信頼度)
+        cKOn: byte;                                         // KON フラグ
+        cKOnCount: byte;                                    // KON カウンタ
+        cKOnCountOld: byte;                                 // KON カウンタ (前回の値)
+        dwStartTime: longword;                              // 解析開始時間 (64kHz)
+        dwKOnTime: longword;                                // KON 間隔解析用時間 (64kHz)
+        dwMinTime: longword;                                // 最小テンポ解析用時間 (64kHz)
+        dwMaxTime: longword;                                // 最大テンポ解析用時間 (64kHz)
+        dwTripleTime: longword;                             // 三拍子・三連符考慮時間 (64kHz)
+        Count: array[60..200] of longword;                  // テンポごとのカウンタ
+        T64Count: array[0..7] of longword;                  // チャンネルごとの前回発音時間 (64kHz)
+        Volume: array[0..7] of byte;                        // チャンネルごとの音量
+        dwHistory: longword;                                // 履歴番号
+        History: array[0..15] of TTEMPOHISTORY              // 履歴
     end;
 
 
 // *************************************************************************************************************************************************************
-// �萔�̐錾
+// 定数の宣言
 // *************************************************************************************************************************************************************
 
 const
-    // Delphi �W���萔
-    NULL = 0;                                               // �k��
-    NULLCHAR = #0;                                          // �k������
-    NULLPOINTER = nil;                                      // �k���|�C���^
+    // Delphi 標準定数
+    NULL = 0;                                               // ヌル
+    NULLCHAR = #0;                                          // ヌル文字
+    NULLPOINTER = nil;                                      // ヌルポインタ
 
     CBE_DSPREG = $1;
 
 
 // *************************************************************************************************************************************************************
-// �O���[�o���ϐ��̐錾
+// グローバル変数の宣言
 // *************************************************************************************************************************************************************
 
 var
     Apu: TAPU;                                              // APU
-    Status: record                                          // �X�e�[�^�X
-        bInitialized: longbool;                                 // �������ς�
-        Tempo: TTEMPO;                                          // �e���|
+    Status: record                                          // ステータス
+        bInitialized: longbool;                                 // 初期化済み
+        Tempo: TTEMPO;                                          // テンポ
     end;
-    Option: record                                          // �I�v�V����
-        bBPM: longbool;                                         // �e���|���
+    Option: record                                          // オプション
+        bBPM: longbool;                                         // テンポ解析
     end;
 
 
 // *************************************************************************************************************************************************************
-// Win32 API �̐錾
+// Win32 API の宣言
 // *************************************************************************************************************************************************************
 
 function  API_GetProcAddress(hModule: longword; lpProcName: pointer): pointer; stdcall; external 'kernel32.dll' name 'GetProcAddress';
@@ -263,11 +278,11 @@ procedure API_ZeroMemory(Destination: pointer; Length: longword); stdcall; exter
 
 
 // *************************************************************************************************************************************************************
-// ���C���v���V�[�W��
+// メインプロシージャ
 // *************************************************************************************************************************************************************
 
 // ================================================================================
-// AnalyzeTempo - �e���|�̐���
+// AnalyzeTempo - テンポの推測
 // ================================================================================
 procedure AnalyzeTempo(dwValue: longword);
 var
@@ -288,26 +303,26 @@ var
     DspVoice: ^TDSPVOICE;
     History: TTEMPOHISTORY;
 begin
-    // �e���|��͂������ȏꍇ�͏I��
+    // テンポ解析が無効な場合は終了
     Tempo := @Status.Tempo;
     if Tempo.bDisable then exit;
-    // �V���� KON ���ꂽ�`�����l�����擾
+    // 新しく KON されたチャンネルを取得
     cKOn := dwValue;
     cEnable := (cKOn xor Tempo.cKOn) and cKOn;
     Tempo.cKOn := cKOn;
-    // �V���� KON ���ꂽ�`�����l�����Ȃ��ꍇ�͏I��
+    // 新しく KON されたチャンネルがない場合は終了
     if not bytebool(cEnable) then exit;
-    // �e�`�����l���̍ő剹�ʂ��擾
+    // 各チャンネルの最大音量を取得
     T64Count := Apu.T64Count^;
     cKOn := 1;
     for I := 0 to 7 do begin
         if bytebool(cEnable and cKOn) then begin
-            // ���ω��ʂ��擾
+            // 平均音量を取得
             DspVoice := @Apu.DspReg.Voice[I];
             dwScan2 := Abs(shortint(DspVoice.VolumeLeft)) + Abs(shortint(DspVoice.VolumeRight));
             cValue := (dwScan2 shr 1) + (dwScan2 and 1);
             Tempo.Volume[I] := cValue;
-            // �����������L�^
+            // 発音履歴を記録
             if bytebool(cValue) then begin
                 History.cChannel := I;
                 History.cSource := DspVoice.SoundSourcePlayBack;
@@ -315,23 +330,23 @@ begin
                 History.wPitch := DspVoice.Pitch;
                 Tempo.History[Tempo.dwHistory].qwHash := History.qwHash;
                 Tempo.dwHistory := (Tempo.dwHistory + 1) and 15;
-            // ���������O
+            // 無音を除外
             end else cEnable := cEnable xor cKOn;
         end;
         Inc(cKOn, cKOn);
     end;
-    // ��͑Ώۂ̃`�����l�����Ȃ��ꍇ�͏I��
+    // 解析対象のチャンネルがない場合は終了
     if not bytebool(cEnable) then exit;
-    // �e�`�����l���̎��Ԑ������擾
+    // 各チャンネルの時間成分を取得
     cKOn := 1;
     for I := 0 to 7 do begin
         if bytebool(cEnable and cKOn) then begin
-            // �O�� KON �̎��ԍ�������e���|���v�Z
+            // 前回 KON の時間差分からテンポを計算
             dwCount1 := Tempo.T64Count[I];
             if longbool(dwCount1) then begin
                 dwBPM := T64Count - dwCount1;
                 if longbool(dwBPM) then dwBPM := 7680000 div dwBPM; // 60(bpm) * 64000(1sec) * 2
-                // �d�݂Â�
+                // 重みづけ
                 if (dwBPM >= 521) and (dwBPM <= 800) then Inc(Tempo.Count[(dwBPM shr 2) + ((dwBPM shr 1) and 1)]);
                 if (dwBPM >= 240) and (dwBPM <= 520) then Inc(Tempo.Count[(dwBPM shr 2) + ((dwBPM shr 1) and 1)], 2);
                 if (dwBPM >= 261) and (dwBPM <= 400) then Inc(Tempo.Count[(dwBPM shr 1) + (dwBPM and 1)], 2);
@@ -342,7 +357,7 @@ begin
                 if (dwBPM >=  30) and (dwBPM <=  65) then Inc(Tempo.Count[dwBPM + dwBPM], 5);
             end;
             Tempo.T64Count[I] := T64Count;
-            // �^���G�R�[�����O
+            // 疑似エコーを除外
             DspVoice := @Apu.DspReg.Voice[I];
             for dwCount1 := 0 to 15 do begin
                 History.qwHash := Tempo.History[dwCount1].qwHash;
@@ -356,29 +371,29 @@ begin
         end;
         Inc(cKOn, cKOn);
     end;
-    // ��͑Ώۂ̃`�����l�����Ȃ��ꍇ�͏I��
+    // 解析対象のチャンネルがない場合は終了
     if not bytebool(cEnable) then exit;
-    // ��͊�ƂȂ�e���|�͈̔͂��v�Z
+    // 解析基準となるテンポの範囲を計算
     dwCount3 := T64Count - Tempo.dwKOnTime;
     if dwCount3 >= 4800 then begin // 75ms (max 800bpm)
-        // KON �����J�E���g
+        // KON 数をカウント
         Tempo.dwKOnTime := T64Count;
         Inc(Tempo.cKOnCount);
-        // �ȑS�̂̃e���|���v�Z
+        // 曲全体のテンポを計算
         dwBPM := 7680000 div dwCount3; // 60(bpm) * 64000(1sec) * 2
         dwBPM := (dwBPM shr 1) + (dwBPM and 1);
         while longbool(dwBPM) and (dwBPM <= 56) do Inc(dwBPM, dwBPM);
         while longbool(dwBPM) and (dwBPM >= 204) do dwBPM := dwBPM shr 1;
         if dwBPM < 60 then dwBPM := 60;
         if dwBPM > 200 then dwBPM := 200;
-        // �ŏ��e���|���v�Z
+        // 最小テンポを計算
         if dwBPM <= 70 then dwCount1 := 64 else dwCount1 := dwBPM - 6;
         if bytebool(Tempo.cMinBPM) then begin
             dwScan2 := Tempo.cMinBPM;
             if (dwCount1 <= dwScan2) or ((T64Count - Tempo.dwMinTime) >= 480000) then Tempo.dwMinTime := T64Count // 7.5sec
             else dwCount1 := dwScan2 + 1;
         end;
-        // �ő�e���|���v�Z
+        // 最大テンポを計算
         if dwCount1 >= 184 then if dwBPM >= 194 then dwCount2 := 200 else dwCount2 := dwBPM + 6
         else if dwBPM >= 190 then dwCount2 := 196 else dwCount2 := dwBPM + 6;
         if bytebool(Tempo.cMaxBPM) then begin
@@ -387,37 +402,37 @@ begin
             else dwCount2 := dwScan2 - (Tempo.cKOnCount and 1);
         end;
         if dwCount2 <= 76 then dwCount1 := 60;
-        // ��͊�͈͂��m��
+        // 解析基準範囲を確定
         Tempo.cMinBPM := dwCount1;
         Tempo.cMaxBPM := dwCount2;
     end else begin
-        // ��͊�͈͂�������̏ꍇ�́A���ݒ�
+        // 解析基準範囲が未決定の場合は、仮設定
         if not bytebool(Tempo.cMinBPM) then Tempo.cMinBPM := 120;
         if not bytebool(Tempo.cMaxBPM) then Tempo.cMaxBPM := 140;
         dwCount1 := Tempo.cMinBPM;
         dwCount2 := Tempo.cMaxBPM;
     end;
-    // ��͊J�n����K�莞�Ԃ��o�߂��Ă��Ȃ��ꍇ�͏I��
+    // 解析開始から規定時間が経過していない場合は終了
     dwScan2 := T64Count - Tempo.dwStartTime;
     if dwScan2 < 64000 then exit; // 1sec
-    // ��͊�͈͂�␳
+    // 解析基準範囲を補正
     cEnable := $31; // 1-4
     if dwCount2 >= 140 then begin
         cValue := ((dwCount2 * 6553) shr 16) - (longword(dwCount2 >= 170) and 1) - 4; // max * 0.1 - (4 or 5)
         if not bytebool(Tempo.cKOnCountOld) and (Tempo.cKOnCount <= cValue) then begin
-            // �����͎��ɔ����񐔂����Ȃ��ꍇ�A�ŏ��e���|�̊�͈͂� 1/2 �ɐݒ�
+            // 初回解析時に発音回数が少ない場合、最小テンポの基準範囲を 1/2 に設定
             dwCount1 := dwCount1 shr 1;
             if dwCount1 < 64 then dwCount1 := 64;
             cEnable := $41; // A-D
         end else if bytebool(Tempo.cKOnCountOld) and (Tempo.cKOnCountOld <= cValue) then begin
-            // �O���͎��ɔ����񐔂����Ȃ��ꍇ�A�ŏ��E�ő�e���|�̊�͈͂� 1/2 �ɐݒ�
+            // 前回解析時に発音回数が少ない場合、最小・最大テンポの基準範囲を 1/2 に設定
             dwCount1 := dwCount1 shr 1;
             dwCount2 := (dwCount2 shr 1) + 3; // min 73
             if dwCount1 < 64 then dwCount1 := 64;
             if dwCount2 < 127 then dwCount2 := 127;
             cEnable := $41; // A-D
         end else if dwCount1 <= (Tempo.cBPM + 12) then begin
-            // �ŏ��e���|�̊�͈͂̍ő�l���A���ݒl�̏�����O�ɐݒ�
+            // 最小テンポの基準範囲の最大値を、現在値の少し手前に設定
             dwBPM := Tempo.cBPM - 2;
             if dwCount1 > dwBPM then begin
                 dwCount1 := dwBPM;
@@ -426,7 +441,7 @@ begin
             end;
         end;
     end;
-    // ��͊�͈͓��ŏo���񐔂��ł������e���|���擾
+    // 解析基準範囲内で出現回数が最も多いテンポを取得
     dwScan1 := 0;
     dwScan2 := 0;
     cBPM1 := dwCount1;
@@ -439,7 +454,7 @@ begin
             Tempo.cMode := cEnable;
         end;
     end;
-    // �e���|�̕��ϒl���v�Z���Ē����l��␳
+    // テンポの平均値を計算して中央値を補正
     dwScan2 := dwScan1;
     Dec(dwScan1, 5);
     Inc(dwScan2, 5);
@@ -456,17 +471,17 @@ begin
         dwBPM := dwBPM div dwCount1;
         dwBPM := (dwBPM shr 1) + (dwBPM and 1);
     end;
-    // �O���q�E�O�A�����l�����Ē����l��␳
+    // 三拍子・三連符を考慮して中央値を補正
     if (dwBPM >= 96) and ((dwBPM <= 128) or (dwBPM >= 176)) and (dwCount1 >= 16) then begin
         dwScan1 := ((dwBPM shl (1 + (longword(dwBPM <= 150) and 1))) * 21845) shr 16; // x2/3 or x4/3
         if longbool(Tempo.dwTripleTime) or ((dwScan1 >= Tempo.cMinBPM) and (dwScan1 <= Tempo.cMaxBPM)) then begin
-            // �V���������l���v�Z
+            // 新しい中央値を計算
             dwScan2 := dwScan1;
             Dec(dwScan1, 5);
             Inc(dwScan2, 5);
             if dwScan1 < 60 then dwScan1 := 60;
             if dwScan2 > 200 then dwScan2 := 200;
-            cValue := dwBPM; // �o�b�N�A�b�v
+            cValue := dwBPM; // バックアップ
             dwBPM := 0;
             dwCount2 := 0;
             for I := dwScan1 to dwScan2 do begin
@@ -474,7 +489,7 @@ begin
                 Inc(dwBPM, longword(I + I) * dwCount3);
                 Inc(dwCount2, dwCount3);
             end;
-            // �O�A�����o�̏d�݊�l
+            // 三連符検出の重み基準値
             dwCount3 := 30;
             if longbool(Tempo.dwTripleTime) then dwCount3 := 10;
             if (dwCount2 >= dwCount3) and (dwCount2 >= (dwCount1 shr 3)) then begin
@@ -484,18 +499,18 @@ begin
                 Tempo.cMode := cEnable + 1;
                 Tempo.dwTripleTime := 640000; // 10sec
             end else begin
-                dwBPM := cValue; // ����
+                dwBPM := cValue; // 復元
             end;
         end;
     end;
-    // �e���|�������ł��Ȃ������ꍇ (����̂�)
+    // テンポが推測できなかった場合 (初回のみ)
     if not bytebool(Tempo.cBPM) and not longbool(dwBPM) then begin
         if (cBPM2 - cBPM1) <= 20 then begin
-            // �e���|��͔͈͂̌덷���琄��
+            // テンポ解析範囲の誤差から推測
             dwBPM := (cBPM1 + cBPM2) shr 1;
             Tempo.cMode := cEnable + 2;
         end else begin
-            // �e���|��͔͈͂̌덷���傫���ꍇ�A�S�͈͂��琄��
+            // テンポ解析範囲の誤差が大きい場合、全範囲から推測
             dwScan2 := 0;
             for I := 60 to 200 do begin
                 dwCount3 := Tempo.Count[I];
@@ -513,26 +528,26 @@ begin
             end;
         end;
     end;
-    // �e���|�𐄑��ς݂ŁA��͊J�n����K�莞�Ԃ��o�߂����ꍇ�A��͌��ʂ��N���A
+    // テンポを推測済みで、解析開始から規定時間が経過した場合、解析結果をクリア
     dwCount2 := T64Count - Tempo.dwStartTime;
     if bytebool(Tempo.cBPM) and ((dwCount1 >= 600) or (dwCount2 >= 240000) // 3.75sec
             or (Tempo.cBPM < cBPM1) or (Tempo.cBPM > cBPM2)) then begin
-        // KON �J�E���g���w�K
+        // KON カウントを学習
         if (Tempo.cBPM < cBPM1) or (Tempo.cBPM > cBPM2) then begin
             if longbool(dwBPM) and ((dwCount1 >= 30) or (dwCount2 >= 120000)) then Tempo.cBPM := dwBPM // 1.875sec
             else if not bytebool(Tempo.cKOnCountOld) then Tempo.cBPM := dwBPM;
-            Tempo.cKOnCountOld := 0; // �w�K���Z�b�g
+            Tempo.cKOnCountOld := 0; // 学習リセット
         end else begin
             if longbool(dwBPM) and (dwCount1 >= 30) then Tempo.cBPM := dwBPM;
             Tempo.cKOnCountOld := Tempo.cKOnCount;
             if cEnable = $41 then Dec(Tempo.cKOnCountOld) else Inc(Tempo.cKOnCountOld);
         end;
-        // ������
+        // 初期化
         Tempo.cKOnCount := 0;
         Tempo.dwStartTime := T64Count;
         if Tempo.dwTripleTime > dwCount2 then Dec(Tempo.dwTripleTime, dwCount2) else Tempo.dwTripleTime := 0;
         API_ZeroMemory(@Tempo.Count, SizeOf(Tempo.Count));
-        // �e���|�̗h���h�~
+        // テンポの揺れを防止
         if (dwBPM >= Tempo.cMinBPM) and (dwBPM <= Tempo.cMaxBPM) then begin
             dwCount3 := Tempo.Count[dwBPM] shr 2;
             if T64Count < 720000 then dwCount3 := dwCount3 shr 1; // 11.25sec
@@ -541,17 +556,17 @@ begin
         end;
         exit;
     end;
-    // ��������l�ȏ�A�܂��́A�K�莞�Ԍo�ߌ�̃e���|�𐄑��l�Ƃ��ċL�^
+    // 件数が基準値以上、または、規定時間経過後のテンポを推測値として記録
     if longbool(dwBPM) and ((dwCount1 >= 60) or (dwCount2 >= 240000)) then begin // 3.75sec
         Tempo.cBPM := dwBPM;
-        // �e���|�̗h���h�~
+        // テンポの揺れを防止
         if (dwBPM >= Tempo.cMinBPM) and (dwBPM <= Tempo.cMaxBPM) then Inc(Tempo.Count[dwBPM], 2);
         exit;
     end;
 end;
 
 // ================================================================================
-// SNESAPUCallback - SNESAPU �R�[���o�b�N
+// SNESAPUCallback - SNESAPU コールバック
 // ================================================================================
 function _SNESAPUCallback(dwEffect: longword; dwAddr: longword; dwValue: longword; lpData: pointer): longword; stdcall;
 begin
@@ -570,7 +585,7 @@ begin
 end;
 
 // ================================================================================
-// DSPDebug - DSP �f�o�b�O
+// DSPDebug - DSP デバッグ
 // ================================================================================
 procedure _DSPDebug(); stdcall;
 var
@@ -594,113 +609,113 @@ begin
 end;
 
 // ================================================================================
-// Initialize - ������
+// Initialize - 初期化
 // ================================================================================
 function Initialize(hSNESAPU: longword): longint; stdcall;
 begin
-    // �������ς݂̏ꍇ�́A�I��
+    // 初期化済みの場合は、終了
     if Status.bInitialized then begin
         result := 1;
         exit;
     end;
-    // �t���O������
+    // フラグ初期化
     Option.bBPM := false;
-    // SNESAPU.DLL �� API ���擾
+    // SNESAPU.DLL の API を取得
     result := -1;
     @Apu.GetAPUData := API_GetProcAddress(hSNESAPU, pchar('GetAPUData'));
     if not longbool(@Apu.GetAPUData) then exit;
     @Apu.SNESAPUCallback := API_GetProcAddress(hSNESAPU, pchar('SNESAPUCallback'));
     @Apu.SetDSPDbg := API_GetProcAddress(hSNESAPU, pchar('SetDSPDbg'));
     if not longbool(@Apu.SNESAPUCallback) and not longbool(@Apu.SetDSPDbg) then exit;
-    // SNESAPU.DLL �̏����擾
+    // SNESAPU.DLL の情報を取得
     Apu.GetAPUData(NULLPOINTER, NULLPOINTER, NULLPOINTER, @Apu.T64Count, @Apu.DspReg, NULLPOINTER, NULLPOINTER, NULLPOINTER);
-    // �R�[���o�b�N��ǉ��ݒ�
+    // コールバックを追加設定
 {$IFNDEF FORCEDSPDBG}
     if longbool(@Apu.SNESAPUCallback) then @Apu.SNESAPUCallbackProc := Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_DSPREG)
     else
 {$ENDIF}
     @Apu.DSPDebug := Apu.SetDSPDbg(@_DSPDebug);
-    // ����
+    // 成功
     Status.bInitialized := true;
     result := 0;
 end;
 
 // ================================================================================
-// Start - BPM ��͊J�n
+// Start - BPM 解析開始
 // ================================================================================
 function Start(lpReserved: pointer): longint; stdcall;
 var
     dwAddress: pointer;
     T64Count: longword;
 begin
-    // ����������Ă��Ȃ��ꍇ�́A�I��
+    // 初期化されていない場合は、終了
     if not Status.bInitialized then begin
         result := -1;
         exit;
     end;
-    // �o�b�t�@���N���A
+    // バッファをクリア
     API_ZeroMemory(@Status.Tempo, SizeOf(TTEMPO));
-    // �t���O��ݒ�
+    // フラグを設定
     Option.bBPM := true;
-    // ���݈ʒu���擾
+    // 現在位置を取得
     T64Count := Apu.T64Count^;
-    // ���Ԃ�������
+    // 時間を初期化
     Status.Tempo.dwStartTime := T64Count;
     Status.Tempo.dwKOnTime := T64Count;
     Status.Tempo.dwMinTime := T64Count;
     Status.Tempo.dwMaxTime := T64Count;
-    // �Ǘ���������ԋp
+    // 管理メモリを返却
     if longbool(lpReserved) then begin
         dwAddress := @Status.Tempo;
         API_MoveMemory(lpReserved, @dwAddress, 4);
     end;
-    // ����
+    // 成功
     result := 0;
 end;
 
 // ================================================================================
-// Stop - BPM ��͒�~
+// Stop - BPM 解析停止
 // ================================================================================
 function Stop(): longint; stdcall;
 begin
-    // ����������Ă��Ȃ��ꍇ�́A�I��
+    // 初期化されていない場合は、終了
     if not Status.bInitialized then begin
         result := -1;
         exit;
     end;
-    // BPM ��͂��J�n����Ă��Ȃ��ꍇ�́A�I��
+    // BPM 解析が開始されていない場合は、終了
     if not Option.bBPM then begin
         result := -2;
         exit;
     end;
-    // �t���O��ݒ�
+    // フラグを設定
     Option.bBPM := false;
-    // ����
+    // 成功
     result := 0;
 end;
 
 // ================================================================================
-// GetBPM - BPM �擾
+// GetBPM - BPM 取得
 // ================================================================================
 function GetBPM(lpReserved: pointer): longint; stdcall;
 begin
-    // ����������Ă��Ȃ��ꍇ�́A�I��
+    // 初期化されていない場合は、終了
     if not Status.bInitialized then begin
         result := -1;
         exit;
     end;
-    // BPM ��͂��J�n����Ă��Ȃ��ꍇ�́A�I��
+    // BPM 解析が開始されていない場合は、終了
     if not Option.bBPM then begin
         result := -2;
         exit;
     end;
-    // BPM ��ԋp
+    // BPM を返却
     result := Status.Tempo.cBPM;
 end;
 
 
 // *************************************************************************************************************************************************************
-// �G�N�X�|�[�g�֐�
+// エクスポート関数
 // *************************************************************************************************************************************************************
 
 exports
