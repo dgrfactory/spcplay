@@ -45,19 +45,19 @@ VMETERM     EQU 1                                               ;Monitor main ou
 VMETERV     EQU 1                                               ;Monitor levels of each voice (for visualization)
 
 ;Speed Hack ----------------------------
-;   Note: If speed hacks enabled, will stop Script700 when sleeping SPC700.
+;   NOTE: If speed hacks enabled, will stop Script700 when sleeping SPC700.
 ;    If unused Script700, set the flag to '1' in order to run faster emulation.
 SPEED       EQU 0                                               ;Enable speed hacks for counter reads and SLEEP
 
 ;Interrupt Timing to DSP ---------------
-;   Note: If all of CNTBK, DSPBK and INTBK are set to '0', sound will be not output.
+;   NOTE: If all of CNTBK, DSPBK and INTBK are set to '0', sound will be not output.
 ;    If you want the behavior closest to the actual device, set only INTBK to '1'.
 CNTBK       EQU 0                                               ;Break SPC700/Update DSP if a counter increases
 DSPBK       EQU 0                                               ;Break SPC700/Update DSP if register F3 is read
 INTBK       EQU 1                                               ;Break SPC700/Update DSP if emulated 1Ts with SPC700
 
 ;Echo Memory Writer --------------------
-;   Note: If set to '1' and the playing speed is set to anything other than 100%,
+;   NOTE: If set to '1' and the playing speed is set to anything other than 100%,
 ;    playing may stop.  See REDl in DSP.asm
 ECHOMEM     EQU 0                                               ;Processing echo memory is made closer to the actual device
 

@@ -42,6 +42,15 @@
 #      into the instruction as an immediate displacement, which plain RIP-relative addressing
 #      already handles fine. The danger is specifically a register riding along as an index, the
 #      one thing RIP-relative addressing cannot do at all.
+#   4. An IdxSt/IdxLd/IdxLdX/IdxUn/LblOp call that omits its optional trailing scratch-register
+#      argument (all default to PDI) while also passing PDI, or one of its aliases (RAM/S from
+#      SPC700.asm, or the bare EDI/RDI spelling of the same physical register), as one of that
+#      call's other arguments. Those macros push the scratch register, overwrite it with the
+#      label's address, then use it, so if that same register is also the index (or, for LblOp, the
+#      combined register), its real value is already gone by the time the instruction runs. IdxLd/
+#      IdxLdX exempt their 'val' argument from this: loading straight into PDI is the macro's
+#      documented, intentionally-handled case (see their %ifnidni branch in x64.inc), not a
+#      collision.
 #
 # False positives this script cannot distinguish from real bugs, rare in practice but possible:
 #   - A line that legitimately needs the low 32 bits of a pointer for an unrelated reason. None of
@@ -188,7 +197,28 @@ foreach ($ex in $ExcludeLabels) {
 
 $LabelAlt = ($PtrLabels | ForEach-Object { [regex]::Escape($_) }) -join '|'
 
-# --- Pass 2: scan every line of every file for the three violation patterns -----------------------
+# Every spelling of the PDI physical register: the P-alias itself, its bare 32/64-bit x86 names, and
+# SPC700.asm's own aliases for it (RAM, S). Used by Check 4 to catch an omitted scratch argument
+# (which defaults to PDI) colliding with PDI used elsewhere in the same IdxSt/IdxLd/IdxLdX/IdxUn/
+# LblOp call.
+$PdiAliasSet = New-Object System.Collections.Generic.HashSet[string] ([StringComparer]::OrdinalIgnoreCase)
+foreach ($r in @('PDI', 'RDI', 'EDI', 'RAM', 'S')) { [void]$PdiAliasSet.Add($r) }
+
+# Argument counts and 1-indexed danger-argument positions (counting the op mnemonic as argument 1)
+# for each macro whose optional trailing scratch-register argument defaults to PDI. Min is the
+# argument count when that scratch argument is omitted -- Check 4 only looks at calls of exactly
+# this length, since an explicit scratch argument (Min+1) already sidesteps the whole problem.
+# IdxLd/IdxLdX omit their 'val' argument from DangerPositions: loading straight into PDI is the
+# macro's documented, intentionally-handled case, not a collision.
+$PdiScratchMacros = @{
+    'IdxSt'  = @{ Min = 4; DangerPositions = @(3, 4) }  # op,label,index,val
+    'IdxLd'  = @{ Min = 4; DangerPositions = @(4) }     # op,val,label,index
+    'IdxLdX' = @{ Min = 5; DangerPositions = @(5) }     # op,val,size,label,index
+    'IdxUn'  = @{ Min = 3; DangerPositions = @(3) }     # op,label,index
+    'LblOp'  = @{ Min = 3; DangerPositions = @(2) }     # op,reg,label
+}
+
+# --- Pass 2: scan every line of every file for the four violation patterns -----------------------
 $Violations = New-Object System.Collections.Generic.List[string]
 
 foreach ($path in $ResolvedFiles) {
@@ -268,6 +298,31 @@ foreach ($path in $ResolvedFiles) {
                     'IdxUn (a single memory operand, e.g. FStP/FILd/Inc)'
                 }
                 $Violations.Add("${fileName}:${lineNum}: raw '[$($bm.Groups[1].Value)]' combines memory label '$foundLabel' with register '$foundReg' directly, use $recommended -- $($code.Trim())")
+            }
+        }
+
+        # Check 4: an IdxSt/IdxLd/IdxLdX/IdxUn/LblOp call whose omitted scratch-register argument
+        # defaults to PDI, on a line where one of that same call's other arguments is also PDI (or
+        # an alias of it: RAM/S from SPC700.asm's register-alias block, or the bare EDI/RDI spelling
+        # of the same physical register). The macro's Push/LoadPtr sequence overwrites the scratch
+        # register with the label's address before the rest of the instruction runs, so if that
+        # register is also the index (or, for LblOp, the combined register), its real value is gone
+        # by the time it is used. IdxLd/IdxLdX exempt their 'val' argument from this: loading straight
+        # into PDI is the macro's documented, intentionally-handled case (see their %ifnidni branch),
+        # so only 'index' is checked there. LblOp has no such exception: 'reg' as PDI is always wrong
+        # with a PDI scratch, since the combine happens after the scratch overwrite either way.
+        foreach ($spec in $PdiScratchMacros.GetEnumerator()) {
+            if ($code -notmatch "(?i)\b$($spec.Key)\s+(.*)$") { continue }
+            $argsText = $Matches[1]
+            $args = $argsText -split ',' | ForEach-Object { $_.Trim() }
+            if ($args.Count -ne $spec.Value.Min) { continue } # scratch arg was passed explicitly, or this isn't a real call
+            foreach ($pos in $spec.Value.DangerPositions) {
+                if ($pos -gt $args.Count) { continue }
+                $argTokens = $args[$pos - 1] -split '[+\-*]' | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne '' }
+                if ($argTokens | Where-Object { $PdiAliasSet.Contains($_) }) {
+                    $Violations.Add("${fileName}:${lineNum}: $($spec.Key) omits its scratch-register argument (defaults to PDI) while also using PDI in argument $pos -- pass an explicit different scratch register -- $($code.Trim())")
+                    break
+                }
             }
         }
     }

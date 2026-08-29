@@ -715,7 +715,7 @@ PROC RunScript700, interrupt
     PushAD                                                                      ;Push all registers
     Mov     EBX,[scr700ptr]                                                     ;EBX = Program pointer
 
-    ;Note: Since the argument cannot be obtained when EBP is changed, the argument is judged before
+    ;NOTE: Since the argument cannot be obtained when EBP is changed, the argument is judged before
     ; assignment of EBP.
 
     Test    byte [interrupt],-1                                                 ;Is called in interrupt mode?

@@ -597,7 +597,7 @@ PTRSIZE EQU     8                                                               
 ;===================================================================================================
 ;Return from Procedure (see x86.inc RetN for full doc)
 ;
-;Note: this sets EAX (zero-extending RAX), matching the vast majority of call sites that return a
+;NOTE: this sets EAX (zero-extending RAX), matching the vast majority of call sites that return a
 ; plain integer.  A proc that must return a pointer should set PAX (RAX) explicitly in the body
 ; and fall through to ENDP/RetN with no argument, rather than passing a 64-bit value through here.
 

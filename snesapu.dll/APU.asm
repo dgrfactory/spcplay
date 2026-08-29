@@ -144,14 +144,15 @@ SECTION .text ALIGN=16
 ;===================================================================================================
 ;Initialize Audio Processing Unit
 
-;NOTE (amd64 port): not in SNESAPU.def, but still called directly from Pascal via 'external name
-; "InitAPU"' linkage (see snesapu_amd64.dpr) -- that is a real Windows x64 ABI call crossing the DLL
-; boundary just as much as a DEF-exported function is, so this needs EXPROC too (a plain internal
-; PROC never homes its incoming RCX, so [reason] would read stack garbage instead of the real
-; argument -- this was found via reason ending up non-1, silently skipping InitAPU's whole body,
-; which left pAPURAM at its zeroed .bss default and crashed ResetSPC's 'Rep StoSD' on a NULL PDI).
-
 EXPROC InitAPU, reason
+
+    ;NOTE (amd64 port): not in SNESAPU.def, but still called directly from Pascal via 'external
+    ; name "InitAPU"' linkage (see snesapu_amd64.dpr) -- that is a real Windows x64 ABI call
+    ; crossing the DLL boundary just as much as a DEF-exported function is, so this needs EXPROC
+    ; too (a plain internal PROC never homes its incoming RCX, so [reason] would read stack garbage
+    ; instead of the real argument -- this was found via reason ending up non-1, silently skipping
+    ; InitAPU's whole body, which left pAPURAM at its zeroed .bss default and crashed ResetSPC's
+    ; 'Rep StoSD' on a NULL PDI).
 
     Mov     EAX,[reason]
     Dec     EAX                                                                 ;reason = DLL_PROCESS_ATTACH (1)?
@@ -608,7 +609,7 @@ USES EDX
 
     Mov     EAX,[speedI]
     Cmp     EAX,1024                                                            ;If speed < 1024, speed = 1024 (~1.5%)
-    JAE     .OKL                                                                ;Note: If lower any more, will crash or noisy.
+    JAE     .OKL                                                                ;NOTE: If lower any more, will crash or noisy.
         Mov     EAX,1024
 
     .OKL:
@@ -633,17 +634,17 @@ ENDP
 
 ;===================================================================================================
 ;Set Audio Processor Song Length
-;
-;NOTE (amd64 port): was 'Jmp SetDSPLength', a tail-jump alias that only works when the caller's
-; and callee's calling conventions are identical.  That was true on x86, where EXPROC and PROC are
-; both plain stdcall, but not on amd64: EXPROC received song/fade in RCX/RDX with no stack homing,
-; since 0 declared params meant EXPROC's own homing code never ran, while SetDSPLength is a PROC
-; that reads its arguments from the stack the internal Call macro would have pushed them to.
-; Jumping straight into it left song/fade reading whatever garbage happened to be on the stack.
-; Declaring the parameters here and forwarding via Call, not Jmp, marshals them correctly on both
-; architectures, matching every other EXPROC-to-PROC forward in this codebase.
 
 EXPROC SetAPULength, song, fade
+
+    ;NOTE (amd64 port): was 'Jmp SetDSPLength', a tail-jump alias that only works when the caller's
+    ; and callee's calling conventions are identical.  That was true on x86, where EXPROC and PROC
+    ; are both plain stdcall, but not on amd64: EXPROC received song/fade in RCX/RDX with no stack
+    ; homing, since 0 declared params meant EXPROC's own homing code never ran, while SetDSPLength
+    ; is a PROC that reads its arguments from the stack the internal Call macro would have pushed
+    ; them to.  Jumping straight into it left song/fade reading whatever garbage happened to be on
+    ; the stack.  Declaring the parameters here and forwarding via Call, not Jmp, marshals them
+    ; correctly on both architectures, matching every other EXPROC-to-PROC forward in this codebase.
 
     Call    SetDSPLength,[song],[fade]
 
@@ -715,7 +716,7 @@ USES ECX,EDX,EBX,EDI
     Pop     PAX
 
     ;Emulate APU -----------------------------
-    ;Note: For more accurate emulation, instead of waiting for cycles after doing 1 opcode processing,
+    ;NOTE: For more accurate emulation, instead of waiting for cycles after doing 1 opcode processing,
     ; running opcode should be processed internally every cycle.
     ; However, this requires complex logic and sophisticated analysis.
 
@@ -841,7 +842,7 @@ USES ESI
 
     LoadPtr PSI,outBuf
     Mov     ECX,EAX                                                             ;ECX = clock cycles (min. 24576 = 192 samples at 192000Hz)
-    Cmp     ECX,24576                                                           ;Note: If clock cycles is less than 24576 and playback
+    Cmp     ECX,24576                                                           ;NOTE: If clock cycles is less than 24576 and playback
     JAE     .EmuLoop                                                            ; speed is below 25%, will crash or noisy.
         Mov     ECX,24576
 
@@ -2024,9 +2025,10 @@ USES ECX,EDX,EBX,ESI,EDI
     .EXTRETURN:
 
     ;NOTE (amd64 port): every '[array+reg]' access in the Extension Command Zone below (on the
-    ; scr700dsp/scr700chg/scr700det/scr700vol arrays) uses IdxSt/IdxLd, which load their own scratch
-    ; base pointer per access -- PSI/PDI keep their usual meaning (PSI = script RAM pointer) throughout,
-    ; unlike the array accesses elsewhere in this proc that still address off PSI/PBX/PDI directly.
+    ; scr700dsp/scr700chg/scr700det/scr700vol arrays) uses IdxSt/IdxLd, which load their own
+    ; scratch base pointer per access -- PSI/PDI keep their usual meaning (PSI = script RAM
+    ; pointer) throughout, unlike the array accesses elsewhere in this proc that still address
+    ; off PSI/PBX/PDI directly.
 
     Call    GetScript700First                                                   ;Seek First
     JZ      .EXTERROR                                                           ;   Failure

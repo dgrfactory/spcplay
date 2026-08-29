@@ -23,7 +23,7 @@
      single direct call below, for the attach that already happened by the time Pascal's
      initialization runs, covers everything.  No DllProc hook is needed for later notifications.
 
- Build (Free Pascal only, no Visual C++ for x64).  Run from this directory. Pass -D WIN32 with
+ Build (Free Pascal only, no Visual C++ for x64).  Run from this directory.  Pass -D WIN32 with
  -D WIN64: WIN32 already selects the Windows-safe SECTION alignment values.
    nasm -f win64 -D WIN64 -D WIN32 -o APU.obj    ..\APU.asm
    nasm -f win64 -D WIN64 -D WIN32 -o DSP.obj    ..\DSP.asm
