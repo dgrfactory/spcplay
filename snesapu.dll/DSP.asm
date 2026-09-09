@@ -22,7 +22,7 @@
 ;                                                   Copyright (C) 2003-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-08-21
+;   - degrade-factory in 2026-09-01
 ;   - Zenith in 2024-06-19
 ;===================================================================================================
 
@@ -474,11 +474,9 @@ SECTION .text ALIGN=16
 
 PROC Exp
 
-    ;NOTE (amd64 port): this used to write scratch FPU control words to [PSP-4]/[PSP-8], i.e. below
-    ; the stack pointer without reserving that space.  x86's stdcall/cdecl ABI has no formal
-    ; guarantee about that memory either, and Win64 in particular defines no red zone at all
-    ; (unlike SysV) -- so this is reserved for real with Sub/Add PSP instead of assumed safe.
-
+    ;NOTE (x64 port): This used to write FPU control words below the stack pointer without
+    ; reserving that space.  Win64 defines no red zone, unlike SysV, so this space is now reserved
+    ; for real with 'Sub PSP,8' and 'Add PSP,8'.
     Sub     PSP,8
     FStCW   [PSP+4]                                                             ;Save control state
     FStCW   [PSP+0]                                                             ;Set FPU to truncate when rounding
@@ -1524,10 +1522,9 @@ ENDP
 PROC FixDSP
 USES ALL
 
-    ;NOTE (amd64 port): EBX/ECX/AL here are DSP register numbers/values (per InitReg/DSPInC's own
-    ; documented 'EBX = DSP register number' interface), not pointers -- no width change needed for
-    ; those.  The dsp/mix accesses below use IdxLd/IdxSt (RIP-relative cannot include an index
-    ; register).
+    ;NOTE (x64 port): EBX, ECX, and AL here are DSP register numbers and values, not pointers, so
+    ; no width change is needed.  The dsp and mix accesses below use IdxLd and IdxSt instead, since
+    ; RIP-relative addressing cannot include an index register.
 
     ;Enable voices currently keyed on --------
     Mov     byte [voiceMix],0
@@ -2050,13 +2047,6 @@ ENDP
 
 PROC StartSrc
 
-    ;NOTE (amd64 port): bCur/sIdx (DSP.inc VoiceMix struct) stay 'resd 1' on both architectures --
-    ; the struct's total size is relied on throughout DSP.asm as a fixed 128-byte voice stride, so
-    ; it cannot grow.  On x86 a real pointer already fits in 4 bytes and this code is unchanged.
-    ; On amd64 they instead hold a small OFFSET: bCur is pAPURAM-relative (SPC RAM is a 64KB space,
-    ; so this always fits in 32 bits), sIdx is relative to the voice's own struct base (PBX).
-    ; Both are reconstructed into a real pointer immediately after loading.
-
     Push    PSI,PDI,PBP
     MovZX   EAX,byte [PBX+mSrc]                                                 ;EAX = Source
     IdxLd   Mov,AL,scr700chg,PAX                                                ;AL = NoteChange[EAX]
@@ -2066,6 +2056,10 @@ PROC StartSrc
     Add     AH,[dsp+dir]                                                        ;EAX = Source directory
     Mov     SI,[PAX+PSI]                                                        ;PSI -> First block of waveform
     LEA     PDI,[PBX+sBuf]                                                      ;PDI -> Uncompressed sample buffer
+
+    ;NOTE (x64 port): bCur and sIdx stay declared as resd 1 on both architectures, since the
+    ; struct's fixed 128-byte voice stride cannot grow.  On x64 they instead hold small offsets,
+    ; off pAPURAM and PBX, rebuilt into a real pointer right after loading.
 %ifdef WIN64
     Mov     EAX,ESI
     Sub     PAX,[pAPURAM]
@@ -2188,33 +2182,34 @@ ChgAtt:
 ChgDec:
         Mov     AL,[PSI+adsr+1]                                                 ;Set destination to AL/8
         ShR     AL,5
-        Inc     AL
-;       Test    AL,8                                                            ;Is destination of envelope D_MAX?
-;       JNZ     .ChgSus                                                         ;   Yes, change sustain mode
-
         IMul    EAX,D_EXP
+
+        Push    PAX
+        Add     EAX,D_EXP
         XOr     EDX,EDX                                                         ;Adjust value for internal precision
         Dec     EAX
         SetS    DL
         Add     EAX,EDX
+        Pop     PDX
 
-        Cmp     byte [PBX+eMode],E_DECAY                                        ;If DR changes in the middle of DECAY,
-        JNE     .DecSkip                                                        ;   and DR is higher than current envelope value,
-        Cmp     [PBX+eVal],EAX                                                  ;   does not change to sustain mode
-        JGE     .DecSkip
-
-        Mov     dword [PBX+eDest],D_MIN                                         ;Destination to 0 instead of changing to sustain mode,
-        Jmp     .DecReset                                                       ;   prevents changing to sustain mode by UpdateEnv
-
-    .DecSkip:
         Cmp     [PBX+eVal],EAX                                                  ;Did envelope reach destination value?
-        JLE     .ChgSus                                                         ;   Yes, change sustain mode
+        JG      .DecStart                                                       ;   No, start decay mode
 
+        MovZX   EAX,byte [PSI+adsr]                                             ;NOTE: Adjustment to prevent unintentional sustain mode
+        And     AL,70h                                                          ; entry.  While the actual device calculates envelope
+        ShR     AL,E_SHIFT-3                                                    ; decay via an 8-bit shift, SNESAPU avoids abrupt decay,
+        Add     EDX,EAX                                                         ; resulting in less attenuation than the actual device.
+
+        Cmp     [PBX+eVal],EDX                                                  ;Is the envelope within the sustine reference range?
+        JGE     .ChgSus                                                         ;   Yes, change sustain mode
+
+        Mov     EAX,D_MIN                                                       ;Destination to 0 instead of changing to sustain mode,
+                                                                                ; prevents changing to sustain mode by UpdateEnv
+    .DecStart:
         Mov     dword [PBX+eAdj],A_EXP                                          ;Set adjustment rate to exponential
         Mov     byte [PBX+eMode],E_DECAY                                        ;Set envelope mode to decay
         Mov     [PBX+eDest],EAX
 
-    .DecReset:
         MovZX   EAX,byte [PSI+adsr]
         And     AL,70h
         ShR     AL,3
@@ -2276,9 +2271,9 @@ ChgGain:
         Mov     [PBX+eDest],EAX                                                 ;  EAX = 127 * A_GAIN + 127 / 128 * A_GAIN
 
         Mov     byte [PBX+eRIdx],31                                             ;Envelope is set
-        IdxLd   Mov,ESI,rateTab,31*4                                            ;rateTab holds plain dwords, not pointers -- a
-        Mov     [PBX+eRate],ESI                                                 ; 64-bit PSI store here would overrun eRate/eCnt
-        Mov     [PBX+eCnt],ESI                                                  ; into eCnt/eVal
+        IdxLd   Mov,ESI,rateTab,31*4                                            ;NOTE: rateTab holds plain dwords, not pointers.
+        Mov     [PBX+eRate],ESI                                                 ; Therefore, if a 64-bit PSI store here, eRate/eCnt area
+        Mov     [PBX+eCnt],ESI                                                  ; will overflow into eCnt/eVal area.
 
         Mov     DL,[PBX+eMode]
         And     DL,70h
@@ -2298,9 +2293,8 @@ ChgGain:
 
         Mov     [PBX+eRIdx],AL
 
-        ;NOTE (amd64 port): ESI, not PSI/RSI -- eRate/eCnt are plain dwords (see the identical concern
-        ; at ChgGain's other rateTab load above); a pointer-width store here would overrun into eCnt/eVal.
-
+        ;NOTE (x64 port): This uses ESI, not PSI or RSI, since eRate and eCnt are plain dwords,
+        ; and a pointer-width store here would overrun into eCnt and eVal.
         IdxLd   Mov,ESI,rateTab,PAX*4
         Mov     [PBX+eRate],ESI                                                 ;Set rate of change
         Mov     [PBX+eCnt],ESI
@@ -2361,12 +2355,9 @@ ENDP
 
 PROC ChgADSR
 
-    ;NOTE (amd64 port): PSI is pushed here (not through StartEnv's own PROC/USES ESI prologue, which
-    ; this jumps past) purely so StartEnv's shared exit points -- which still expect to pop it --
-    ; stay balanced; the pushed value is whatever ChgADSR's own caller had in PSI, restored
-    ; transparently on return.  PSI itself is then immediately given a real value below (the dsp
-    ; pointer), same as it would have on a normal call into StartEnv.
-
+    ;NOTE (x64 port): PSI is pushed here instead of through StartEnv's own prologue, which this
+    ; code jumps past, to keep StartEnv's shared exit points balanced.  PSI is then given a real
+    ; value below, the dsp pointer, matching what a normal call into StartEnv would set.
     Push    PSI                                                                 ;PSI will get popped on return from StartEnv
     IdxLd   LEA,PSI,dsp,PBX
     IdxLd   LEA,PBX,mix,PBX*8
@@ -2668,9 +2659,6 @@ ENDP
 %endif
 
             ;Set voice volume ------------------
-            ;NOTE: each LblOp below loads its own scratch copy of mix's address fresh -- deliberately
-            ; not shared across the Call RVolL in between, since RVolL (ChnSep) uses PDX as its own
-            ; scratch and does not restore it.
 %if STEREO
             LblOp   Sub,PBX,mix
             Call    RVolL
@@ -2927,11 +2915,10 @@ RPitch:
 ;Envelope
 
 RADSR:
-    ;NOTE: RGain (below) pushes ESI/PSI verbatim for StartEnv to pop -- it must still hold whatever
-    ; DSPIn's own caller had, all the way through both RADSR's body and a possible fall-through
-    ; into RGain via .SetGain: below.  So neither of these two handlers may use PSI as scratch for
-    ; the dsp/mix base pointers -- IdxSt/IdxLd (default scratch PDI) are used instead, each
-    ; self-contained so nothing needs to survive across the Call ChgADSR/Jmp ChgGain either.
+    ;NOTE (x64 port): RGain, below, pushes PSI verbatim for StartEnv to pop, so PSI must survive
+    ; unchanged through RADSR's body and any fall-through into RGain.  So neither handler may use
+    ; PSI as scratch for the dsp/mix base pointers, using IdxSt/IdxLd instead, whose default PDI
+    ; scratch is self-contained across 'Call ChgADSR' or 'Jmp ChgGain'.
     XOr     EAX,EAX
     IdxSt   Test byte,mix,PBX+mFlg,MFLG_KOFF                                    ;Is voice in key off mode?
     JNZ     .NoChg                                                              ;   Yes, envelope setting cannot be changed now
@@ -4029,9 +4016,9 @@ PROC CatchUp
     .Okay:
     Test    EAX,EAX
     JZ      .Skip
-        Mov     PDX,[pOutBuf]                                                   ;Call cannot infer that a memory operand
-        Call    EmuDSP,PDX,EAX                                                  ; holds a pointer -- load it into a
-        Mov     [pOutBuf],PAX                                                   ; register first (PDX is free here)
+        Mov     PDX,[pOutBuf]                                                   ;NOTE: Call cannot infer that a memory operand holds a
+        Call    EmuDSP,PDX,EAX                                                  ; pointer.  Load it into a register first (PDX is free
+        Mov     [pOutBuf],PAX                                                   ; here).
 
     .Skip:
 %if INTBK
@@ -4475,10 +4462,8 @@ ENDP
 
 %if VMETERV
     ;Save greatest sample output ----
-    ;NOTE (amd64 port): was Push/Pop-based (each Pop consuming 4 bytes to match the Sub ESP,16
-    ; reservation above) -- POP only exists at 8-byte granularity on amd64, so this now reads the
-    ; reserved slots directly by address and deallocates them with one Add PSP,16 instead.
-
+    ;NOTE (x64 port): This used to be Push/Pop based, but Pop only exists at 8-byte granularity on
+    ; x64.  So this now reads the reserved slots by address and frees them with 'Add PSP,16'.
     Test    dword [dspOpts],DSP_FLOAT                                           ;Is volume output floating-point?
     JNZ     %%ChFloat                                                           ;   Yes
         Mov     EAX,[PSP]                                                       ;Left sample (integer)
@@ -4562,9 +4547,8 @@ ENDP
 %endmacro
 
 %macro MixEchoDSP 0
-    ;NOTE (amd64 port): PSI already holds this macro's mixBuf-pointer parameter (used throughout the
-    ; rest of the macro below) -- PCX is used as scratch here instead so PSI stays untouched.
-
+    ;NOTE (x64 port): PSI already holds this macro's mixBuf pointer, used throughout the macro.
+    ; PCX is used as scratch here instead, so PSI stays untouched.
     Mov     EDI,[echoMaxD]
     Sub     EDI,[echoCurD]
     IdxLd   LEA,PDI,echoBuf,PDI,PCX

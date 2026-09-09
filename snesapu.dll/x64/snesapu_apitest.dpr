@@ -30,7 +30,7 @@
      source-level calling-convention keyword, with no mode to read the first args from the stack.
      So the callbacks below are written as raw assembler/nostackframe stubs that touch nothing but
      a call counter and ret, a minimal no-op passthrough.  This is a real test even doing nothing:
-     if the amd64 port's hand-rolled push sequence violates the Windows x64 ABI's mandatory 16-byte
+     if the x64 port's hand-rolled push sequence violates the Windows x64 ABI's mandatory 16-byte
      stack alignment at each CALL, or miscounts the pushed slot width or count, the callback round-
      trip is exactly where that would surface as a crash or corrupted emulation state.  See
      DspTraceStub/SpcTraceStub below for the exact stack-slot layout this was reverse-engineered
@@ -54,8 +54,8 @@
    snesapu_apitest.exe <dll path> <spc file path> <out pcm path> <sample count> [script700 file]
 
  Compare two runs (one per architecture, same .spc, same sample count):
-   snesapu_apitest_x86.exe snesapu.dll       song.spc out_x86.pcm 2000000
-   snesapu_apitest_x64.exe snesapu_amd64.dll song.spc out_x64.pcm 2000000
+   snesapu_apitest_x86.exe snesapu.dll     song.spc out_x86.pcm 2000000
+   snesapu_apitest_x64.exe snesapu_x64.dll song.spc out_x64.pcm 2000000
    fc /b out_x86.pcm out_x64.pcm
    fc /b out_x86.log out_x64.log
 

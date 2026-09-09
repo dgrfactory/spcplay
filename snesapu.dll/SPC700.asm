@@ -25,7 +25,7 @@
 ;                                                   Copyright (C) 2003-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-08-21
+;   - degrade-factory in 2026-09-01
 ;===================================================================================================
 
 %ifdef WIN64
@@ -69,12 +69,12 @@
     %define YA      AX
     %define X       CH
     %define PS      DL
-    %define S       PDI                                                         ;Alias of RAM below -- same physical register, used by
-                                                                                ; stack opcodes where "S" reads more naturally
+    %define S       PDI                                                         ;NOTE: Alias of RAM below.  Same physical register, used
+                                                                                ; by stack opcodes where "S" reads more naturally.
 
     ;Pointers -----------------------------------
     ;These always hold a genuine memory address, so they're built on the PAX/PBX/... aliases (see
-    ; x86.inc/x64.inc): plain EBX/ESI/EDI here would silently truncate to 32 bits on amd64.
+    ; x86.inc/x64.inc): plain EBX/ESI/EDI here would silently truncate to 32 bits on x64.
     %define OP1     PSI                                                         ;First instruction operand
     %define OP2     PSI+1                                                       ;Second instruction operand
     %define DPI     PBX                                                         ;Direct Page Index
@@ -94,7 +94,7 @@
 ; occupies just its one byte within that window (bit 8-15 of the dword), so flipping it alone already
 ; shifts the reconstructed pointer by 0x100, no extra bookkeeping required anywhere P changes.
 ;
-;On amd64 a real pointer doesn't fit in this byte-aligned window, so P stays a plain 0/1 flag there, and
+;On x64 a real pointer doesn't fit in this byte-aligned window, so P stays a plain 0/1 flag there, and
 ; the Direct Page pointer is instead resolved fresh from RAM/[PSW+P] every time it is needed (see DPBase,
 ; used by Ldp/Ldp2/LX/LY) -- no separate variable to keep in sync at every site P can change.
 
@@ -481,7 +481,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Mov     RAM,[pAPURAM]                                                       ;Load location of SPC RAM
 %ifndef WIN64
     Or      [PSW+P-1],RAM                                                       ;Into PSW.P (see the SPCFlags STRUC note --
-%endif                                                                          ; amd64 instead resolves this fresh from RAM/P
+%endif                                                                          ; x64 instead resolves this fresh from RAM/P
                                                                                 ; every time via DPBase, no caching needed)
     Mov     AL,[RAM+t0]                                                         ;Initialize timer counters
     Dec     AL
@@ -717,7 +717,6 @@ PROC RunScript700, interrupt
 
     ;NOTE: Since the argument cannot be obtained when EBP is changed, the argument is judged before
     ; assignment of EBP.
-
     Test    byte [interrupt],-1                                                 ;Is called in interrupt mode?
     Mov     PBP,[pSCRRAM]                                                       ;PBP = Script RAM Pointer
     JZ      .700RETURN                                                          ;   No
@@ -1612,7 +1611,7 @@ SPCBreak:
     ; invoking the function via a raw pointer.
 
     Mov     EBX,[t0Step]                                                        ;Pass down counters (zero-extended into a full pointer-
-    Push    PBX                                                                 ; sized slot; only the low 4 bytes carry real data)
+    Push    PBX                                                                 ; sized slot, only the low 4 bytes carry real data)
     CmpPSW                                                                      ;DL = PSW
     ShR     ECX,8                                                               ;CL = X
     Push    PTRKW [regSP]                                                       ;Pass SP
@@ -1625,7 +1624,7 @@ SPCBreak:
     Mov     CL,CPU_CYC
     Div     CL
     Mov     [PSP+5*PTRSIZE+3],AL                                                ;5 pointer-sized slots down + byte 3 of the counters slot
-                                                                                ; (x86: [ESP+23], x64: [PSP+43] -- same formula, either width)
+                                                                                ; (x86:[ESP+23], x64:[PSP+43] - same formula, either width)
 
     Call    [pDebug]                                                            ;Call tracing routine
 
@@ -2165,7 +2164,7 @@ Ret
 ;   Load DPI or ABSL (aliases for EBX) with the value needed by the instruction.
 
 ;The Direct Page base address (RAM, or RAM + 0x100 if PSW.P=1) is loaded into PBX.
-; On amd64, the value is resolved from the current [PSW+P] each time, so there is no cached state that
+; On x64, the value is resolved from the current [PSW+P] each time, so there is no cached state that
 ; could retain stale data (see the notes for SPCFlags STRUC).  This differs from the previous revision,
 ; which cached the value in the pDPage variable and required re-synchronization whenever P could change
 ; (Opc20/Opc40/ExpPSW).

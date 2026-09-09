@@ -1,8 +1,8 @@
 ;===================================================================================================
-;Program:    amd64 (Win64) Backend Macros for NASM
-;Platform:   x86-64 / Microsoft x64 calling convention
+;Program:    x64 (Win64) Backend Macros for NASM
+;Platform:   x86_64 / Microsoft x64 calling convention
 ;
-;amd64 counterpart to x86.inc, selected by macro.inc when WIN64 is defined.  Implements the same
+;x64 counterpart to x86.inc, selected by macro.inc when WIN64 is defined.  Implements the same
 ; macro interface (PROC/ENDP/USES/PUBLIC/Call/RetN/LOCALS, plus the pointer aliases PAX/PBX/.../
 ; PTRSIZE/resPTR) so shared code in APU.asm/DSP.asm/SPC700.asm does not need to know which
 ; architecture it is built for.
@@ -14,17 +14,17 @@
 ;         DEF-exported entry points something outside this DLL calls, and for calling a genuinely
 ;         external function pointer (a frontend-registered callback).
 ;       * PROC/Call/CallArg: an internal-only convention that passes every argument on the stack,
-;         the same way the x86 backend does.  Use it for everything else.  Reason a second
+;         the same way the x86 backend does.  Use it for everything else.  The reason a second
 ;         convention exists: marshalling arguments into RCX/RDX/R8/R9 clobbers them in the
 ;         CALLER's context before the callee's USES-protected prologue runs, silently breaking
 ;         code that assumes the x86 stdcall property that PCX/PDX/etc. survive a call unless the
 ;         callee's own body touches them.
 ;   - EXPROC homes its incoming register arguments (RCX/RDX/R8/R9) into the caller-provided shadow
-;     space at [RBP+16]/[RBP+24]/[RBP+32]/[RBP+40].  PROC's arguments are already at those offsets
-;     because Call pushed them there directly.  Either way, arguments 5 and up are read straight
-;     from the stack slots the caller placed them in ([RBP+48], [RBP+56], ...).  So body code that
-;     reads a parameter as '[pc]', '[a]', etc. is unchanged from the x86 version.  Only the offsets
-;     differ, and that is hidden behind the %define generated here.
+;     space at [RBP+16]/[RBP+24]/[RBP+32]/[RBP+40], while PROC's arguments are already at those same
+;     offsets since Call pushed them there directly.  Either way, arguments 5 and up are read
+;     straight from the stack slots the caller placed them in ([RBP+48], [RBP+56], ...).  So body
+;     code that reads a parameter as '[pc]', '[a]', etc. is unchanged from the x86 version, since
+;     only the offsets differ, and that difference is hidden behind the %define generated here.
 ;   - Per the Windows x64 ABI, small (byte/word) typed arguments still occupy a full register or
 ;     stack slot with the upper bits unspecified.  Body code must keep reading parameters at their
 ;     true width (byte/word/dword), and never widen a byte/word parameter read to a qword.
@@ -35,7 +35,7 @@
 ;                                                   Copyright (C) 2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-08-21
+;   - degrade-factory in 2026-09-01
 ;===================================================================================================
 
 %define ARCH_BITS   64
@@ -90,7 +90,8 @@ PTRSIZE EQU     8                                                               
 ;PUSHAD/POPAD (opcodes 60h/61h) are not encodable in 64-bit mode, so this pushes/pops the seven
 ; pointer-width aliases individually instead.  PUSHAD also saves the pre-push ESP, but nothing in
 ; this codebase reads that slot back, so it is dropped here rather than emulated.  R8-R15 are left
-; out.  Nothing in this port's calling convention needs them preserved across a PushAD/PopAD span.
+; out, since nothing in this port's calling convention needs them preserved across a PushAD/PopAD
+; span.
 
 %macro PushAD 0
     Push    PAX,PCX,PDX,PBX,PBP,PSI,PDI
@@ -105,15 +106,14 @@ PTRSIZE EQU     8                                                               
 ;Decimal Adjust After Addition/Subtraction (see x86.inc EmuDAA/EmuDAS for the real-instruction form)
 ;
 ;DAA/DAS are not encodable in 64-bit mode, so this replicates Intel's documented algorithm exactly
-; (including the resulting CF/SF/ZF/PF) using ordinary arithmetic.  Both read AL/CF/AF that the
-; caller has just SAHF'd into place.  Both clobber AH as scratch (matching the real DAA/DAS
-; instruction, which touches only AL and the flags, never AH) and CL/DL as scratch for snapshotting
-; old AL/CF/AF up front.  This is needed because the high-nibble adjustment's "> 0x99 or old CF"
-; test uses AL/CF exactly as they were on entry, before the low-nibble adjustment ran.  Not CH or
-; DH: SPC700.asm's '%define X CH' makes CH the emulated X register for the whole EmuSPC call, not
-; just one opcode handler.  DH is commonly used by this codebase's own callers (e.g. OpcDF/OpcBE
-; stash Y/AH there across this macro, to restore afterward).  CL/DL carry no such alias, so they
-; are free scratch here.
+; (including the resulting CF/SF/ZF/PF) using ordinary arithmetic, reading the AL/CF/AF the caller
+; has just SAHF'd into place.  AH is clobbered as scratch, matching the real DAA/DAS instruction,
+; which touches only AL and the flags, never AH, and CL/DL are clobbered as scratch for snapshotting
+; the original AL/CF/AF, needed because the high-nibble adjustment's "> 0x99 or old CF" test must
+; use AL/CF exactly as they were on entry, before the low-nibble adjustment ran.  CL/DL, not CH/DH,
+; are used because SPC700.asm's '%define X CH' makes CH the emulated X register for the whole EmuSPC
+; call, and DH is commonly used by this codebase's own callers (e.g. OpcDF/OpcBE stash Y/AH there
+; across this macro, to restore afterward), leaving CL/DL as the only free scratch.
 
 %macro EmuDAA 0
     Mov     CL,AL                                                               ;CL = old AL
@@ -179,14 +179,14 @@ PTRSIZE EQU     8                                                               
 ;===================================================================================================
 ;Store/Load a Value at a Compile-Time-Constant Label, Indexed
 ;
-;amd64's RIP-relative addressing cannot take an SIB index register, so combining a compile-time
+;x64's RIP-relative addressing cannot take an SIB index register, so combining a compile-time
 ; label's address with a runtime index needs a real base register, unlike x86, which folds the
 ; label straight into the instruction's displacement (see x86.inc).  Earlier in this port, call
 ; sites picked whichever register looked "free" for this and were wrong more than once: the
 ; register turned out to already hold something a caller elsewhere in the call graph needed
 ; (SPC700.asm's PC, its RAM pointer, its X register, ...).  These macros push/pop the scratch
 ; register around the single instruction that needs it, so nothing at the call site has to reason
-; about whether it is free, so it always survives, at the cost of a push/pop pair per use.
+; about whether it is free, and it always survives, at the cost of a push/pop pair per use.
 ;
 ;Params:
 ;   op    - instruction mnemonic, optionally with a size specifier (e.g. "Mov" or "Mov byte")
@@ -197,13 +197,13 @@ PTRSIZE EQU     8                                                               
 ;           val operand in the same call (its value going into that instruction would be the
 ;           label's address, not whatever the caller still needed it to hold).
 ;
-;           R8-R15 (no x86 counterpart, so never a P-alias/index/val operand, see PAX/PBX/.../PSP
-;           above) look like a tempting default that could never collide, but do not use one: any
-;           of R8-R15 forces a REX prefix onto the final op instruction, and a REX prefix makes
-;           AH/BH/CH/DH impossible to encode, and val is routinely one of those here (e.g.
-;           DSPInC's mix-flag test).  PDI/PSI/PBX/PCX/PDX never force a REX prefix by themselves,
-;           so they stay compatible with AH/BH/CH/DH.  An R8-R15 register is still fine to pass
-;           explicitly at a call site where val/index are known not to be a high-byte register.
+;           R8-R15 look like a tempting default since they have no x86 counterpart and so never
+;           collide with a P-alias/index/val operand (see PAX/PBX/.../PSP above), but avoid them:
+;           any of R8-R15 forces a REX prefix onto the final op instruction, and a REX prefix makes
+;           AH/BH/CH/DH impossible to encode, and val is routinely one of those here (e.g. DSPInC's
+;           mix-flag test).  PDI/PSI/PBX/PCX/PDX never force a REX prefix, so they stay compatible
+;           with AH/BH/CH/DH, while an R8-R15 register is still fine to pass explicitly when
+;           val/index are known not to be a high-byte register.
 
 ;IdxSt: op [label+index],val   (memory is the destination: a "store")
 %macro IdxSt 4-5 PDI
@@ -228,17 +228,17 @@ PTRSIZE EQU     8                                                               
     %endif
 %endmacro
 
-;IdxLdX: op val,size [label+index]   memory is the source, a "load", for ops like MovZX/MovSX
-; where val and the memory operand's size differ, e.g. a byte in memory zero-extended into a
-; 32-bit register.  IdxLd's plain "%1 %2,[...]" template has nowhere to put the size keyword.  It
-; needs to sit between the comma and the bracket, so this is a separate macro for that shape,
-; otherwise identical to IdxLd (same val-is-the-scratch-register handling as above).  Pass val as
-; a P-alias (e.g. PDI, not EDI) if it might collide with the scratch register.  A bare 32-bit name
-; would go undetected by %ifnidni below, since it is spelled differently from the pointer-width
-; alias even though it is the same physical register.  Writing PDI zero-extends the same way EDI
-; would, since a 32-bit write always zero-extends the full 64-bit register in x64, and MovZX's own
-; byte to 32-bit extension already leaves the result non-negative, so targeting the 64-bit name
-; changes nothing observable.
+;IdxLdX: op val,size [label+index]  memory is the source, a "load", for ops like MovZX/MovSX where
+; val and the memory operand's size differ, e.g. a byte in memory zero-extended into a 32-bit
+; register.  IdxLd's plain "%1 %2,[...]" template has nowhere to put the size keyword, which needs
+; to sit between the comma and the bracket, so this is a separate macro for that shape, otherwise
+; identical to IdxLd (same val-is-the-scratch-register handling as above).  Pass val as a P-alias
+; (e.g. PDI, not EDI) if it might collide with the scratch register.  A bare 32-bit name would go
+; undetected by %ifnidni below, since it is spelled differently from the pointer-width alias even
+; though it is the same physical register, but writing PDI zero-extends the same way EDI would,
+; since a 32-bit write always zero-extends the full 64-bit register in x64, and MovZX's own byte to
+; 32-bit extension already leaves the result non-negative, so targeting the 64-bit name changes
+; nothing observable.
 %macro IdxLdX 5-6 PDI
     Push    %6
     LoadPtr %6,%4
@@ -254,12 +254,12 @@ PTRSIZE EQU     8                                                               
 ;===================================================================================================
 ;Combine a Register With a Compile-Time-Constant Label's Address (no memory operand)
 ;
-;Not everywhere this port needed a label's address is a memory operand IdxSt/IdxLd's
-; '[reg+index]' shape covers.  Some just add/subtract/compare it against a register's own value
-; (e.g. turning a pointer into an index and back).  x86 can embed a label's address as a plain
-; 32-bit immediate operand for this, but amd64 cannot (ADD/SUB/etc. to a 64-bit register only take a
-; sign-extended imm32), so a register has to carry it, the same reasoning and the same
-; push/pop-scratch-register solution as IdxSt/IdxLd above.
+;This port does not always need a label's address as a memory operand in IdxSt/IdxLd's
+; '[reg+index]' shape.  Some places just add, subtract, or compare it against a register's own
+; value instead (e.g. turning a pointer into an index and back).  x86 can embed a label's address
+; as a plain 32-bit immediate operand for this, but x64 cannot, since ADD/SUB/etc. to a 64-bit
+; register only take a sign-extended imm32, so a register has to carry it, using the same reasoning
+; and the same push/pop-scratch-register solution as IdxSt/IdxLd above.
 ;
 ;Params:
 ;   op    - instruction mnemonic (Add/Sub/And/Or/Cmp/...)
@@ -280,10 +280,10 @@ PTRSIZE EQU     8                                                               
 ;===================================================================================================
 ;Store a Compile-Time-Constant Label's Address Into a Plain Memory Location
 ;
-;x86 can 'Mov dword [mem],label' directly (a label's address is a 32-bit immediate).  amd64 has no
-; MOV m64,imm64 form (only reg64,imm64), so storing a full 64-bit address to memory needs a
-; register in between regardless of indexing, the same reasoning as IdxSt/IdxLd/LblOp, for the
-; simplest case (no index, dest and source are each just one plain location).
+;x86 can 'Mov dword [mem],label' directly (a label's address is a 32-bit immediate).  x64 has no
+; MOV m64,imm64 form, only reg64,imm64, so storing a full 64-bit address to memory always needs a
+; register in between.  This is the same reasoning as IdxSt/IdxLd/LblOp above, applied here to the
+; simplest case: no index, with dest and source each just one plain location.
 ;
 ;Params:
 ;   dest  - the (non-indexed) memory location to store into, a resPTR-sized variable
@@ -303,8 +303,8 @@ PTRSIZE EQU     8                                                               
 ;===================================================================================================
 ;A Unary Instruction on a Compile-Time-Constant Label, Indexed
 ;
-;Same reasoning as IdxSt/IdxLd, for instructions with only one explicit operand (FStP/FILd/FIMul/
-; Div/Inc/...) that do not fit either macro's two-operand shape.
+;This follows the same reasoning as IdxSt/IdxLd, for instructions with only one explicit operand
+; (FStP/FILd/FIMul/Div/Inc/...) that do not fit either macro's two-operand shape.
 ;
 ;Params:
 ;   op    - instruction mnemonic, optionally with a size specifier (e.g. "FILd dword")
@@ -343,13 +343,13 @@ PTRSIZE EQU     8                                                               
 ;===================================================================================================
 ;Move One ExtCall Argument Into Its Destination Register
 ;
-;A plain value (immediate, 32-bit register, or memory) is moved 32-bit-wide, which zero-extends
-; the full 64-bit register.  This matches what most call sites pass, and the x86 backend's
-; behaviour.  A pointer already sitting in a PAX/PBX/... alias register must instead be moved
-; 64-bit wide: 'Mov ECX,RDI' (destination narrower than a 64-bit source register) is not
-; encodable, and would silently truncate the pointer's upper half anyway.  So: to pass a pointer
-; to ExtCall, load it into a PAX/PBX/... register at the call site first (a bare '[label]' is not
-; enough.  ExtCall has no way to know whether that memory holds a 4-byte or 8-byte value).
+;A plain value (immediate, 32-bit register, or memory) is moved 32-bit-wide, which zero-extends the
+; full 64-bit register, matching what most call sites pass and the x86 backend's behavior.  A
+; pointer already sitting in a PAX/PBX/... alias register must instead be moved 64-bit wide:
+; 'Mov ECX,RDI' (destination narrower than a 64-bit source register) is not encodable, and would
+; silently truncate the pointer's upper half anyway.  So, to pass a pointer to ExtCall, load it into
+; a PAX/PBX/... register at the call site first, since a bare '[label]' is not enough: ExtCall has
+; no way to know whether that memory holds a 4-byte or 8-byte value.
 ;
 ;Params:
 ;   64-bit destination register, 32-bit destination register, source token
@@ -380,10 +380,10 @@ PTRSIZE EQU     8                                                               
 ;===================================================================================================
 ;Move One (Internal) Call Argument Onto the Stack
 ;
-;Unlike ExtCallArg (which loads into a fixed register), this pushes straight onto the stack.  See
-; the internal Call macro below for why.  A pointer sitting in a PAX/PBX/... alias register is
-; pushed verbatim (already 8 bytes wide).  Anything else (immediate, 32-bit register, or memory) is
-; first zero-extended into the scratch register pair, so a 4-byte source (e.g. a plain dword
+;Unlike ExtCallArg, which loads into a fixed register, this pushes straight onto the stack, for
+; reasons the internal Call macro below explains.  A pointer sitting in a PAX/PBX/... alias register
+; is pushed verbatim, already 8 bytes wide.  Anything else (immediate, 32-bit register, or memory)
+; is first zero-extended into the scratch register pair, so a 4-byte source (e.g. a plain dword
 ; variable) is never over-read as 8 bytes by a bare 'Push qword'.
 ;
 ;Params:
@@ -491,8 +491,8 @@ PTRSIZE EQU     8                                                               
     ; order would let one argument's write clobber another's source before it is read, and using
     ; RAX itself as staging scratch has the same problem if some argument's source is literally
     ; EAX/PAX.  R10 has no x86 counterpart, so it is never a P-alias/index/val operand anywhere in
-    ; the shared codebase (see IdxSt/IdxLd's note on R8-R15), making it scratch no source token
-    ; can ever alias.
+    ; the shared codebase (see IdxSt/IdxLd's note on R8-R15), making it a scratch register no
+    ; source token can ever alias.
     %if %$n>=8
         ExtCallArg R10,R10D,%9
         Mov     [RSP+32+24],R10
@@ -549,23 +549,21 @@ PTRSIZE EQU     8                                                               
 ;===================================================================================================
 ;Call Procedure (internal convention)
 ;
-;THE ROOT PROBLEM THIS SOLVES: Microsoft x64's calling convention passes the first 4 arguments in
-; RCX/RDX/R8/R9, registers this codebase's P-aliases treat as callee-saved-unless-documented
-; (PCX/PDX survive a call on x86, where stdcall arguments go on the stack, unless the callee's own
-; body, protected by its own USES, touches them).  On x64, just setting up a register-passed
-; argument list clobbers RCX/RDX/R8/R9 in the CALLER's own context, before the callee's prologue
-; (and its USES) ever runs, so a callee's USES can only protect what has already been overwritten
-; with argument values, not the caller's original contents.  A real bug from exactly this:
-; SPCTimers keeps its EDX live across 'Call CatchUp' (a bare 0-arg call, so no marshalling issue
-; by itself) expecting it to survive as it would on x86, but CatchUp's own body calls 'Call
-; EmuDSP,PDX,EAX', and that marshalling silently clobbers RDX out from under the caller three
-; frames up.
+;Microsoft x64's calling convention passes the first 4 arguments in RCX/RDX/R8/R9, registers this
+; codebase's P-aliases treat as callee-saved-unless-documented, since PCX/PDX survive a call on x86,
+; where stdcall arguments go on the stack, unless the callee's own USES-protected body touches them.
+; On x64, just setting up a register-passed argument list clobbers RCX/RDX/R8/R9 in the caller's own
+; context before the callee's prologue and its USES ever run, so USES can only protect what has
+; already been overwritten with argument values, not the caller's original contents.  A real bug
+; from exactly this: SPCTimers keeps its EDX live across 'Call CatchUp', a bare 0-arg call with no
+; marshalling issue by itself, expecting it to survive as it would on x86, but CatchUp's own body
+; calls 'Call EmuDSP,PDX,EAX', silently clobbering RDX out from under the caller three frames up.
 ;
-;So: every PROC-to-PROC call within this codebase (i.e. everything except a genuinely external
-; function pointer, see ExtCall above) goes through this Call instead, which passes arguments on
+;So, every PROC-to-PROC call within this codebase, i.e. everything except a genuinely external
+; function pointer (see ExtCall above), goes through this Call instead, which passes arguments on
 ; the stack the same way the x86 backend does (see x86.inc's Call), not through RCX/RDX/R8/R9.
 ; PCX/PDX/PBX/PSI/PDI/PBP then behave exactly as on x86: untouched by a call's argument setup,
-; destroyed only if the callee's own body (and its USES, if any) says so.
+; destroyed only if the callee's own body, and its USES if any, says so.
 ;
 ;Params:
 ;   Function name followed by up to 8 arguments, pushed right-to-left onto the stack (caller
@@ -673,13 +671,13 @@ PTRSIZE EQU     8                                                               
 ;
 ;Use this only for the small set of functions something outside this DLL actually calls directly:
 ; the ~29 names in SNESAPU.def, and nothing else.  Everything else, including a DEF-exported
-; function's own internal recursion/helpers (e.g. EmuAPU calling itself, or CatchUp calling
-; EmuDSP), should be a plain (internal) PROC instead.  See PROC's doc below for why.  A
-; DEF-exported name that is also called from elsewhere in this codebase should be split in two: a
-; thin EXPROC of that exact name that only re-homes its arguments and forwards via the internal
-; Call to a plain PROC of the same name plus an 'I' suffix (e.g. EXPROC EmuAPU forwards to PROC
-; EmuAPUI), so every internal caller can Call the fast/internal-convention 'EmuAPUI' directly,
-; instead of paying for (and risking) the ABI bridge on every recursive call.
+; function's own internal recursion/helpers (e.g. EmuAPU calling itself, or CatchUp calling EmuDSP),
+; should be a plain (internal) PROC instead, per PROC's own doc below.  A DEF-exported name that is
+; also called from elsewhere in this codebase should be split in two: a thin EXPROC of that exact
+; name that only re-homes its arguments and forwards via the internal Call to a plain PROC of the
+; same name plus an 'I' suffix (e.g. EXPROC EmuAPU forwards to PROC EmuAPUI), so every internal
+; caller can Call the fast/internal-convention 'EmuAPUI' directly, instead of paying for (and
+; risking) the ABI bridge on every recursive call.
 ;
 ;Params:
 ;   Procedure name followed by a list of arguments (up to 8).  Arguments 1-4 arrive in

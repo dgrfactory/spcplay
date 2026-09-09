@@ -19,14 +19,14 @@
 ;                                                   Copyright (C) 2012-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-08-21
+;   - degrade-factory in 2026-09-01
 ;===================================================================================================
 
 ;The following defines affect the way some macros work:
 ;   INTERNAL effects the way PUBLIC works (see macro header for comments)
 ;   STDCALL mangles labels and cleans up the stack on returns (x86 only)
 ;   CDECL mangles labels (x86 only)
-;   WIN64 selects the amd64/Win64 backend (x64.inc) instead of the x86 backend (x86.inc)
+;   WIN64 selects the amd64/x86_64 backend (x64.inc) instead of the i386/x86 backend (x86.inc)
 ;
 ;PROC/ENDP/USES/PUBLIC/Call/RetN/LOCALS, and the pointer-width aliases PAX/PBX/PCX/PDX/PSI/PDI/PBP/
 ; PSP/PTRSIZE/resPTR, come from whichever backend is selected below.  Architecture-neutral code

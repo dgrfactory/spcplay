@@ -3,13 +3,13 @@
 # Purpose:    static lint for leftover x86-only pointer-width notation
 # Platform:   any (PowerShell 5.1+, no external dependencies)
 #
-# Catches the bug class this amd64 port has already hit more than once (apuCbFunc's EAX-width
+# Catches the bug class this x64 port has already hit more than once (apuCbFunc's EAX-width
 # clear, InitAPU's original pointer-size mismatches, etc). Code that accesses a pointer variable
 # (one declared 'resPTR' in APU.asm/DSP.asm/SPC700.asm) through a bare 32-bit E-register or an
 # explicit dword/word/byte-sized memory operand, instead of the P-alias registers (PAX/PBX/PCX/PDX/
 # PSI/PDI/PBP/PSP) or the PTRKW size keyword this port's macro layer defines. On x86 these two forms
 # compile to the same bytes and behave identically, so a stray 'Mov EAX,[pDebug]' or 'Push dword
-# [pDebug]' looks harmless there. On amd64 it silently truncates a 64-bit address to 32 bits, which
+# [pDebug]' looks harmless there. On x64 it silently truncates a 64-bit address to 32 bits, which
 # shows up only as a crash or corrupted state far from the actual mistake.
 #
 # This script does not understand assembly semantics. It does not track which register currently
@@ -18,7 +18,7 @@
 # real bug of this shape found during the port so far:
 #
 #   1. 'LoadPtr <reg>,<label>' where <reg> is not a P-alias. LoadPtr's job is to produce a genuine
-#      address in a register (LEA on amd64, MOV on x86), so its destination must always be
+#      address in a register (LEA on x64, MOV on x86), so its destination must always be
 #      pointer-width, regardless of which label the address is for.
 #   2. Any reference to '[<label>]' (with or without a +offset) where <label> is one of the
 #      'resPTR'-declared pointer variables collected from the three .asm files, if the line also
@@ -26,7 +26,7 @@
 #      size override immediately before the bracket. The correct forms are a plain P-alias register,
 #      or the PTRKW macro constant for an explicit size (see x86.inc/x64.inc).
 #   3. A raw '[label+register]'-style bracket expression written directly instead of going through
-#      IdxSt/IdxLd/IdxLdX/IdxUn/LblOp/LblSt. Those macros exist because amd64's RIP-relative
+#      IdxSt/IdxLd/IdxLdX/IdxUn/LblOp/LblSt. Those macros exist because x64's RIP-relative
 #      addressing mode has no SIB byte, so it cannot combine a compile-time label with an index
 #      register in one instruction the way x86's 32-bit-displacement-plus-SIB addressing can.
 #      Confirmed empirically, not just from the NASM manual, that NASM does not reject this at build
@@ -77,7 +77,7 @@
 # Exit code: 0 if no violations found, 1 if any were found, also 1 on a usage error such as a
 # missing input file. Intended to run as a build-pipeline gate: call this before invoking nasm and
 # abort the build if it returns non-zero, e.g. from a .bat file:
-#   powershell -ExecutionPolicy Bypass -File snesapu_amd64.dll\snesapu_validator.ps1
+#   powershell -ExecutionPolicy Bypass -File snesapu_validator.ps1
 #   if errorlevel 1 goto :BUILD_FAILED
 #
 #                                                   Copyright (C) 2026 degrade-factory
@@ -86,7 +86,7 @@
 param(
     # Files to check, in any number, either positionally or via -Files. $null (the default) means
     # "use APU.asm/DSP.asm/SPC700.asm in the sibling snesapu.dll directory", this script's usual
-    # target even though it now lives under snesapu_amd64.dll itself -- resolved below, once
+    # target even though it now lives under snesapu_x64.dll itself -- resolved below, once
     # $ScriptDir is known, since a parameter default cannot rely on $PSScriptRoot with
     # ValueFromRemainingArguments in Windows PowerShell 5.1.
     [Parameter(Position = 0, ValueFromRemainingArguments = $true)]
@@ -127,7 +127,7 @@ $BareRegs = 'EAX|EBX|ECX|EDX|ESI|EDI|EBP|ESP'
 
 # Every register-shaped token Check 3 should treat as "an index register rode along", spelled
 # exactly as it appears in source: the P-aliases, the bare 32-bit/16-bit/8-bit x86 register names,
-# the raw 64-bit names (in case amd64-only code ever names one directly instead of via a P-alias),
+# the raw 64-bit names (in case x64-only code ever names one directly instead of via a P-alias),
 # and SPC700.asm's own '%define'-based CPU-register aliases (see its "Registers"/"Pointers" equates
 # block). Those resolve to a real register, not a memory label, even though they read like ordinary
 # identifiers.

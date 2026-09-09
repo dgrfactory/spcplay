@@ -22,7 +22,7 @@
 ;                                                   Copyright (C) 2003-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-08-21
+;   - degrade-factory in 2026-09-01
 ;===================================================================================================
 
 %ifdef WIN64
@@ -146,14 +146,10 @@ SECTION .text ALIGN=16
 
 EXPROC InitAPU, reason
 
-    ;NOTE (amd64 port): not in SNESAPU.def, but still called directly from Pascal via 'external
-    ; name "InitAPU"' linkage (see snesapu_amd64.dpr) -- that is a real Windows x64 ABI call
-    ; crossing the DLL boundary just as much as a DEF-exported function is, so this needs EXPROC
-    ; too (a plain internal PROC never homes its incoming RCX, so [reason] would read stack garbage
-    ; instead of the real argument -- this was found via reason ending up non-1, silently skipping
-    ; InitAPU's whole body, which left pAPURAM at its zeroed .bss default and crashed ResetSPC's
-    ; 'Rep StoSD' on a NULL PDI).
-
+    ;NOTE (x64 port): InitAPU is not listed in SNESAPU.def, but Pascal calls it directly, crossing
+    ; the DLL boundary like an export, so it needs EXPROC.  Without EXPROC, RCX is not homed and
+    ; [reason] reads stack garbage.  This was found when reason came out non-1, skipping InitAPU's
+    ; body, leaving pAPURAM zeroed, and crashing ResetSPC's 'Rep StoSD' on a NULL PDI.
     Mov     EAX,[reason]
     Dec     EAX                                                                 ;reason = DLL_PROCESS_ATTACH (1)?
     JNZ     .Quit                                                               ;   No
@@ -446,11 +442,11 @@ USES ECX,ESI,EDI
     Mov     ECX,16
     Rep     MovSD
 
-    ;Extract each SPC register from the file and zero-extend it to a dword-sized local before handing
-    ; them to Call FixAPU.  Call's argument marshaling always reads/writes a full 32 bits per slot, so
-    ; passing a raw byte/word memory reference here directly (e.g. '[27h+PSI]') would read 3-2 extra,
-    ; meaningful bytes of file data past the field -- these locals are dedicated 4-byte scratch, so a
-    ; full-width read back out of them is safe.
+    ;NOTE: Extract each SPC register from the file and zero-extend it to a dword-sized local before
+    ; handing them to 'Call FixAPU'.  Call's argument marshaling always reads and writes a full 32
+    ; bits per slot, so passing a raw byte or word memory reference directly, e.g. '[27h+PSI]',
+    ; would read 2 to 3 extra bytes of meaningful file data past the field.  These locals are
+    ; dedicated 4-byte scratch, so a full-width read back out of them is safe.
 
     Mov     PSI,[pFile]
     XOr     EAX,EAX
@@ -637,15 +633,11 @@ ENDP
 
 EXPROC SetAPULength, song, fade
 
-    ;NOTE (amd64 port): was 'Jmp SetDSPLength', a tail-jump alias that only works when the caller's
-    ; and callee's calling conventions are identical.  That was true on x86, where EXPROC and PROC
-    ; are both plain stdcall, but not on amd64: EXPROC received song/fade in RCX/RDX with no stack
-    ; homing, since 0 declared params meant EXPROC's own homing code never ran, while SetDSPLength
-    ; is a PROC that reads its arguments from the stack the internal Call macro would have pushed
-    ; them to.  Jumping straight into it left song/fade reading whatever garbage happened to be on
-    ; the stack.  Declaring the parameters here and forwarding via Call, not Jmp, marshals them
-    ; correctly on both architectures, matching every other EXPROC-to-PROC forward in this codebase.
-
+    ;NOTE (x64 port): This used to be 'Jmp SetDSPLength', a tail-jump that only works when caller
+    ; and callee share a calling convention, which holds on x86 but not on x64.  EXPROC left song
+    ; and fade unhomed in RCX and RDX, while SetDSPLength expected them pushed to the stack by Call,
+    ; so jumping straight in read stack garbage.  Declaring the parameters and forwarding via Call,
+    ; not Jmp, fixes this on both architectures.
     Call    SetDSPLength,[song],[fade]
 
 ENDP
@@ -716,10 +708,9 @@ USES ECX,EDX,EBX,EDI
     Pop     PAX
 
     ;Emulate APU -----------------------------
-    ;NOTE: For more accurate emulation, instead of waiting for cycles after doing 1 opcode processing,
-    ; running opcode should be processed internally every cycle.
-    ; However, this requires complex logic and sophisticated analysis.
-
+    ;NOTE: For more accurate emulation, instead of waiting for cycles after doing 1 opcode
+    ; processing, running opcode should be processed internally every cycle.  However, this
+    ; requires complex logic and sophisticated analysis.
     Call    EmuSPC,EAX
     Mov     ECX,EAX                                                             ;ECX = len - emulated clock cycles
 
@@ -769,7 +760,7 @@ USES ESI
 
     ;Copy before buffer ----------------------
     LoadPtr PSI,outBuf
-    Mov     EDX,[outCur]                                                        ;outCur is a plain dword -- 'Add r64,r/m32' is not
+    Mov     EDX,[outCur]                                                        ;outCur is a plain dword.  'Add r64,r/m32' is not
     Add     PSI,PDX                                                             ; encodable, so load 32-bit then add at full width
     MovZX   EDX,byte [rawByte]
 
@@ -2024,12 +2015,9 @@ USES ECX,EDX,EBX,ESI,EDI
 
     .EXTRETURN:
 
-    ;NOTE (amd64 port): every '[array+reg]' access in the Extension Command Zone below (on the
-    ; scr700dsp/scr700chg/scr700det/scr700vol arrays) uses IdxSt/IdxLd, which load their own
-    ; scratch base pointer per access -- PSI/PDI keep their usual meaning (PSI = script RAM
-    ; pointer) throughout, unlike the array accesses elsewhere in this proc that still address
-    ; off PSI/PBX/PDI directly.
-
+    ;NOTE (x64 port): Array accesses below use IdxSt and IdxLd, which load their own scratch base
+    ; pointer per access.  So PSI and PDI keep their usual meaning here, unlike elsewhere in this
+    ; proc.
     Call    GetScript700First                                                   ;Seek First
     JZ      .EXTERROR                                                           ;   Failure
     Mov     AL,[PCX]                                                            ;AL = [PCX]

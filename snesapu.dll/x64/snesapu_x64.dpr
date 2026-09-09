@@ -1,6 +1,6 @@
 {===================================================================================================
- Program:    SNESAPU_amd64.DLL (amd64/x64 Free Pascal driver)
- Platform:   x86-64
+ Program:    SNESAPU_x64.DLL (amd64/x86_64 Free Pascal driver)
+ Platform:   x86_64
 
  Not a reimplementation of SNESAPU.DLL.  All emulation code lives in the NASM object files built
  from ../snesapu.dll/APU.asm, DSP.asm, SPC700.asm ('nasm -f win64 -D WIN64 -D WIN32').  The x86
@@ -28,7 +28,7 @@
    nasm -f win64 -D WIN64 -D WIN32 -o APU.obj    ..\APU.asm
    nasm -f win64 -D WIN64 -D WIN32 -o DSP.obj    ..\DSP.asm
    nasm -f win64 -D WIN64 -D WIN32 -o SPC700.obj ..\SPC700.asm
-   fpc -Px86_64 -Twin64 -osnesapu_amd64.dll SNESAPU.dpr
+   fpc -Px86_64 -Twin64 -osnesapu_x64.dll SNESAPU.dpr
  The three .obj files must sit next to this source file, or adjust the $L paths below, for fpc to
  find them.  Verified as of this writing: all three assemble at 0 errors with the commands above,
  and their PUBLIC symbol names match the 'external name' declarations below exactly.
