@@ -410,6 +410,7 @@ PROC SetSPCDbgI, pTraceI, optsI
 USES EDX
 
     Mov     PDX,[pDebug]
+
     Mov     PAX,[pTraceI]
     Cmp     PAX,-1
     JE      .NoFunc

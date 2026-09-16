@@ -343,13 +343,19 @@ PTRSIZE EQU     8                                                               
 ;===================================================================================================
 ;Move One ExtCall Argument Into Its Destination Register
 ;
-;A plain value (immediate, 32-bit register, or memory) is moved 32-bit-wide, which zero-extends the
-; full 64-bit register, matching what most call sites pass and the x86 backend's behavior.  A
-; pointer already sitting in a PAX/PBX/... alias register must instead be moved 64-bit wide:
-; 'Mov ECX,RDI' (destination narrower than a 64-bit source register) is not encodable, and would
-; silently truncate the pointer's upper half anyway.  So, to pass a pointer to ExtCall, load it into
-; a PAX/PBX/... register at the call site first, since a bare '[label]' is not enough: ExtCall has
-; no way to know whether that memory holds a 4-byte or 8-byte value.
+;A plain value (32-bit register or memory) is moved 32-bit-wide, which zero-extends the full 64-bit
+; register, matching what most call sites pass and the x86 backend's behavior.  A pointer already
+; sitting in a PAX/PBX/... alias register must instead be moved 64-bit wide: 'Mov ECX,RDI'
+; (destination narrower than a 64-bit source register) is not encodable, and would silently truncate
+; the pointer's upper half anyway.  So, to pass a pointer to ExtCall, load it into a PAX/PBX/...
+; register at the call site first, since a bare '[label]' is not enough: ExtCall has no way to know
+; whether that memory holds a 4-byte or 8-byte value.
+;
+;A negative immediate (e.g. '-1', this codebase's usual pointer-typed 'leave unchanged' sentinel)
+; moves 64-bit wide instead, sign-extending it, so a callee reading it back through a P-alias and
+; comparing against the same '-1' sees a match, exactly as it would on x86, where PAX is EAX.  A
+; non-negative immediate still moves 32-bit wide: zero-extension and sign-extension agree for every
+; value up to 07FFFFFFFh, so this changes nothing for the common case of a plain unsigned constant.
 ;
 ;Params:
 ;   64-bit destination register, 32-bit destination register, source token
@@ -372,7 +378,15 @@ PTRSIZE EQU     8                                                               
     %elifidni %3,PSP
         Mov     %1,%3
     %else
-        Mov     %2,%3
+        %ifnum %3
+            %if %3 < 0
+                Mov     %1,%3
+            %else
+                Mov     %2,%3
+            %endif
+        %else
+            Mov     %2,%3
+        %endif
     %endif
 %endmacro
 
@@ -380,11 +394,19 @@ PTRSIZE EQU     8                                                               
 ;===================================================================================================
 ;Move One (Internal) Call Argument Onto the Stack
 ;
-;Unlike ExtCallArg, which loads into a fixed register, this pushes straight onto the stack, for
-; reasons the internal Call macro below explains.  A pointer sitting in a PAX/PBX/... alias register
-; is pushed verbatim, already 8 bytes wide.  Anything else (immediate, 32-bit register, or memory)
-; is first zero-extended into the scratch register pair, so a 4-byte source (e.g. a plain dword
-; variable) is never over-read as 8 bytes by a bare 'Push qword'.
+;Unlike ExtCallArg, which loads into a fixed register, this pushes straight onto the
+; stack, for reasons the internal Call macro below explains.  A pointer sitting in a
+; PAX/PBX/... alias register is pushed verbatim, already 8 bytes wide.  A plain register
+; or memory source is first zero-extended into the scratch register pair, so a 4-byte
+; source (e.g. a plain dword variable) is never over-read as 8 bytes by a bare 'Push
+; qword'.
+;
+;A negative immediate (e.g. '-1', this codebase's usual pointer-typed 'leave unchanged'
+; sentinel) is sign-extended into the scratch register instead, for the same reason
+; ExtCallArg above sign-extends one: a callee reading the parameter back through a P-alias
+; and comparing against the same '-1' must see a match, as it would on x86.  A
+; non-negative immediate still zero-extends, unchanged from before, since zero-extension
+; and sign-extension agree for every value up to 07FFFFFFFh.
 ;
 ;Params:
 ;   64-bit scratch register, 32-bit scratch register, source token
@@ -407,7 +429,15 @@ PTRSIZE EQU     8                                                               
     %elifidni %3,PSP
         Push    %3
     %else
-        Mov     %2,%3
+        %ifnum %3
+            %if %3 < 0
+                Mov     %1,%3
+            %else
+                Mov     %2,%3
+            %endif
+        %else
+            Mov     %2,%3
+        %endif
         Push    %1
     %endif
 %endmacro

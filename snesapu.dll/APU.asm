@@ -1400,7 +1400,7 @@ USES ECX,EDX,EBX,ESI,EDI
     JZ      .NORMALERROR                                                        ;   Failure
 
     And     EAX,1023                                                            ;EAX &= 1023
-    IdxSt   Mov,scr700lbl,PAX*4,PBX                                             ;Label[EAX] = PBX
+    IdxSt   Mov,scr700lbl,PAX*4,EBX                                             ;Label[EAX] = EBX
     Jmp     .NORMALRETURN
 
     .LABEL2:                                                                                                        ; ::

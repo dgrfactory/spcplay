@@ -25,7 +25,7 @@
 ;                                                   Copyright (C) 2003-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-09-01
+;   - degrade-factory in 2026-09-11
 ;===================================================================================================
 
 %define SPC700_INC
@@ -37,8 +37,8 @@ APU_CLK     EQU 24576000
 
 ;SPC700 debugging options -------------------
 SPC_RETURN  EQU 01h                                             ;Return from EmuSPC
-SPC_HALT    EQU 02h                                             ;Halt emulation
-DSP_HALT    EQU 04h                                             ;Internal flag used for syncing SPC_HALT with EmuDSP
+SPC_HALT    EQU 02h                                             ;Halt APU emulation
+DSP_HALT    EQU 04h                                             ;Halt DSP emulation
 SPC_NODSP   EQU 08h                                             ;Disable calls to the DSP emu from the SPC700
 SPC_TRACE   EQU 10h                                             ;Trace next instruction
 DSP_PAUSE   EQU 20h                                             ;Disable update envelope

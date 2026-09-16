@@ -22,7 +22,7 @@
 ;                                                   Copyright (C) 2003-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-09-01
+;   - degrade-factory in 2026-09-11
 ;   - Zenith in 2024-06-19
 ;===================================================================================================
 
@@ -1989,6 +1989,13 @@ EXPROC SetDSPStereo, sep
 USES EDX,EBX
 
 %if STEREO
+    ;Verify parameter ------------------------
+    Mov     EAX,[sep]                                                           ;Valid range is [0, 65536] (unsigned [1.16])
+    Cmp     EAX,65536
+    JBE     .DefSep
+        Mov     dword [sep],32768                                               ;0.5, normal separation
+
+    .DefSep:
     Sub     dword [sep],32768                                                   ;Convert fixed point unsigned value to signed float
     FILd    dword [sep]
     FMul    dword [fpShR15]
@@ -2017,7 +2024,18 @@ ENDP
 EXPROC SetDSPEFBCT, leak
 USES EDX,EBX
 
-    Mov     EAX,[leak]
+    ;Verify parameter ------------------------
+    Mov     EAX,[leak]                                                          ;Valid range is [-32768, 32768] (signed [-1.15])
+    XOr     EDX,EDX
+    Cmp     EAX,-32768
+    SetL    DL
+    Cmp     EAX,32768
+    SetG    DH
+    Test    DX,DX
+    JZ      .DefLeak
+        Mov     EAX,32768                                                       ;1.0, no crosstalk
+
+    .DefLeak:
     Add     EAX,32768                                                           ;Unsign crosstalk
     Mov     [efbct],EAX
 
@@ -4088,7 +4106,7 @@ USES ALL
     Test    EDX,EDX
     JZ      .Done
 
-    Test    EAX,EAX
+    Test    PAX,PAX
     SetZ    BL                                                                  ;BL = 0 if output pointer is null, otherwise it indexes
     Dec     BL                                                                  ; the emulation routine
     And     BL,[dspMix]                                                         ;BL = 0 (mute) or 1 (output)
@@ -5470,33 +5488,20 @@ PROC RunDSP
     .Mute:
     Mov     EBP,[PSP]
     XOr     PDI,PDI
-
-    Test    byte [disFlag],8h                                                   ;Is pBuf NULL? (disFlag = [3])
-    JZ      .MuteNext                                                           ;   No
-    Test    dword [smpAdj],-1                                                   ;Convert sample rate?
-    JZ      .MuteDone                                                           ;   No, done
-
-    .SampleNext:
-        InitSampling
-
-    Dec     EBP
-    JNZ     .SampleNext
-    Jmp     .MuteDone
+    FLdZ
 
     .MuteNext:
-        FLdZ
         MuteSampling
-        FStP    ST
         Inc     PDI
 
-    Dec     EBP
-    JNZ     .MuteNext
+        Dec     EBP
+        JNZ     .MuteNext
 
-    .MuteDone:
+    FStP    ST
     Pop     PDX,PAX,PBX,PBP
     Mov     EDX,EDI                                                             ;EDI here is a plain sample count (from the Mute
     Mov     PDI,PAX                                                             ; loop above), unlike PAX which is the real pointer
-    Cmp     EAX,1                                                               ;Set carry if pBuf is null, so EmuDSP doesn't crash
+    Cmp     PAX,1                                                               ;Set carry if pBuf is null, so EmuDSP doesn't crash
 
 ENDP
 

@@ -22,10 +22,10 @@
 * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                                        *
 *                                                                                                  *
 *                                                 Copyright (C) 1999-2008 Alpha-II Productions     *
-*                                                 Copyright (C) 2003-2024 degrade-factory          *
+*                                                 Copyright (C) 2003-2026 degrade-factory          *
 *                                                                                                  *
 * List of users and dates who/when modified this file:                                             *
-*    - degrade-factory in 2024-01-18                                                               *
+*    - degrade-factory in 2026-09-11                                                               *
 ***************************************************************************************************/
 
 #ifndef __INC_SPC700
@@ -72,6 +72,15 @@
 // middle of EmuAPU without affecting the size of the output buffer.
 
 #define SPC_HALT    0x2
+
+//Halt DSP:
+//
+//Subsequent calls to EmuDSP will generate silence, without running the DSP emulator at all.
+//
+//SPC_HALT's own effect above is limited to EmuSPC.  Specify this flag as well to also halt DSP
+// emulation, matching what a caller pausing both SPC700 and DSP for debugging needs.
+
+#define DSP_HALT    0x4
 
 //Pause DSP Emulation:
 //
