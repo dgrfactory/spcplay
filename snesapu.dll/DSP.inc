@@ -159,9 +159,9 @@ STRUC VoiceMix
     vAdsr   resw    1                                           ;ADSR parameters when KON was written
     vGain   resb    1                                           ;Gain parameters when KON was written
     vRsv    resb    1                                           ;Changed ADSR/Gain parameters flag
-    sIdx    resd    1                                           ;-> current sample in sBuf
+    sIdx    resd    1                                           ;-> current sample in sBuf (x64: offset from this voice's own address)
     ;Waveform ---------06
-    bCur    resd    1                                           ;-> current block
+    bCur    resd    1                                           ;-> current block (x64: offset from pAPURAM)
     bHdr    resb    1                                           ;Block Header for current block
     mFlg    resb    1                                           ;Mixing flags
     ;Envelope ---------22

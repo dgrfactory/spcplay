@@ -209,15 +209,15 @@ typedef struct Voice
     u8      vGain;                              //Gain parameters when KON was written
     u8      vRsv;                               //Changed ADSR/Gain parameters flag
 #ifdef _WIN64
-    u32     sIdx;                               //current sample in sBuf
+    u32     sIdx;                               //x64: current sample in sBuf, as an offset from this Voice's own address
 #else
-    s16     *sIdx;                              //-> current sample in sBuf
+    s16     *sIdx;                              //x86: -> current sample in sBuf
 #endif
     //Waveform --------06
 #ifdef _WIN64
-    u32     bCur;                               //current block
+    u32     bCur;                               //x64: current block, as an offset from pAPURAM
 #else
-    void    *bCur;                              //-> current block
+    void    *bCur;                              //x86: -> current block
 #endif
     u8      bHdr;                               //Block Header for current block
     u8      mFlg;                               //Mixing flags (see MixF)
