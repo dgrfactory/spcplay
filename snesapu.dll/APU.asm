@@ -22,7 +22,7 @@
 ;                                                   Copyright (C) 2003-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-09-01
+;   - degrade-factory in 2026-09-30
 ;===================================================================================================
 
 %ifdef WIN64
@@ -145,6 +145,7 @@ SECTION .text ALIGN=16
 ;Initialize Audio Processing Unit
 
 EXPROC InitAPU, reason
+USES ECX,EDX,EDI
 
     ;NOTE (x64 port): InitAPU is not listed in SNESAPU.def, but Pascal calls it directly, crossing
     ; the DLL boundary like an export, so it needs EXPROC.  Without EXPROC, RCX is not homed and
@@ -443,7 +444,7 @@ USES ECX,ESI,EDI
     Rep     MovSD
 
     ;NOTE: Extract each SPC register from the file and zero-extend it to a dword-sized local before
-    ; handing them to 'Call FixAPU'.  Call's argument marshaling always reads and writes a full 32
+    ; handing them to 'Call FixAPUI'.  Call's argument marshaling always reads and writes a full 32
     ; bits per slot, so passing a raw byte or word memory reference directly, e.g. '[27h+PSI]',
     ; would read 2 to 3 extra bytes of meaningful file data past the field.  These locals are
     ; dedicated 4-byte scratch, so a full-width read back out of them is safe.
@@ -486,10 +487,19 @@ USES ECX,EDX
 
     ;numChn ----------------------------------
     Mov     AL,[rawChn]
-    Mov     AH,[numChnI]
-    Cmp     AH,-1
+    Mov     ECX,[numChnI]
+    Cmp     ECX,-1
     JE      .DefChn
-        Mov     AL,AH
+        Mov     AL,CL
+
+        Cmp     ECX,1
+        JE      .OKChn
+        Cmp     ECX,2
+        JE      .OKChn
+
+        Mov     AL,2
+
+        .OKChn:
         Mov     [outCur],EDX
         Mov     [outLen],EDX
 
@@ -498,10 +508,25 @@ USES ECX,EDX
 
     ;bits ------------------------------------
     Mov     CL,[rawBits]
-    Mov     CH,[bitsI]
-    Cmp     CH,-1
+    Mov     EAX,[bitsI]
+    Cmp     EAX,-1
     JE      .DefBits
-        Mov     CL,CH
+        Mov     CL,AL
+
+        Cmp     EAX,8
+        JE      .OKBits
+        Cmp     EAX,16
+        JE      .OKBits
+        Cmp     EAX,24
+        JE      .OKBits
+        Cmp     EAX,32
+        JE      .OKBits
+        Cmp     EAX,-32
+        JE      .OKBits
+
+        Mov     CL,16
+
+        .OKBits:
         Mov     [outCur],EDX
         Mov     [outLen],EDX
 
@@ -515,7 +540,7 @@ USES ECX,EDX
     XOr     CL,CH
     Sub     CL,CH
 
-    MovZX   EAX,AL
+    MovZX   EAX,byte [rawChn]                                                   ;Not AL, the bits block above reused it
     MovZX   ECX,CL
     Mul     ECX
     ShR     AL,3
@@ -525,20 +550,14 @@ USES ECX,EDX
     Mov     EAX,[rawRate]
     Mov     EDX,[rateI]
     Cmp     EDX,-1
-    JE      .DefRate
-        Mov     EAX,EDX
-
-    .DefRate:
+    CMovX   NE,EAX,EDX                                                          ;If EDX = -1, use the current rate
     Mov     [rateI],EAX
 
     ;opts ------------------------------------
     Mov     EAX,[dspOpts]
     Mov     EDX,[optsI]
     Cmp     EDX,-1
-    JE      .DefOpts
-        Mov     EAX,EDX
-
-    .DefOpts:
+    CMovX   NE,EAX,EDX                                                          ;If EDX = -1, use the current opts
     Mov     [optsI],EAX
 
     ;DSP option adjustment -------------------
@@ -546,7 +565,7 @@ USES ECX,EDX
     XOr     EDX,EAX
     Mov     [dspOpts],EAX
 
-    Test    EDX,DSP_ECHOFIR                                                     ;If the DSP_ECHOFIR flag changes,
+    Test    DX,DSP_ECHOFIR                                                      ;If the DSP_ECHOFIR flag changes,
     SetZ    AL                                                                  ; force sampling rate processing (rawRate = -1)
     MovZX   EAX,AL
     Dec     EAX
@@ -555,27 +574,26 @@ USES ECX,EDX
     Mov     EAX,[rateI]
     Cmp     EAX,[rawRate]                                                       ;Has sample rate changed?
     JE      .KeepRate                                                           ;   No
-        Cmp     EAX,8000                                                        ;If rate < 8000, rate = 8000
-        JAE     .OKL
-            Mov     EAX,8000
+        XOr     ECX,ECX
 
-        .OKL:
-        Cmp     EAX,192000                                                      ;If rate > 192000, rate = 192000
-        JBE     .OKH
-            Mov     EAX,192000
+        Cmp     EAX,8000
+        SetB    CL
+        Cmp     EAX,192000
+        SetA    CH
+        Test    ECX,ECX
+        Mov     EDX,32000
+        CMovX   NZ,EAX,EDX
 
-        .OKH:
         Mov     [rawRate],EAX
 
 %if INTBK
-        Test    dword [dspOpts],DSP_ECHOFIR                                     ;Is actual emulation mode?
-        JZ      .OKA                                                            ;   No, smpRate = rawRate
-
-        Cmp     EAX,32000                                                       ;If rate > 32000, rate = 32000
-        JBE     .OKA
-            Mov     EAX,32000
-
-        .OKA:
+        Test    word [dspOpts],DSP_ECHOFIR                                      ;If actual emulation mode and
+        SetNZ   CL                                                              ; rate > 32000, rate = 32000
+        Mov     EDX,32000
+        Cmp     EAX,EDX
+        SetA    CH
+        And     CL,CH
+        CMovX   NZ,EAX,EDX
 %endif
 
         Mov     [smpRate],EAX
@@ -604,16 +622,15 @@ PROC SetAPUSmpClkI, speedI
 USES EDX
 
     Mov     EAX,[speedI]
-    Cmp     EAX,1024                                                            ;If speed < 1024, speed = 1024 (~1.5%)
-    JAE     .OKL                                                                ;NOTE: If lower any more, will crash or noisy.
-        Mov     EAX,1024
 
-    .OKL:
-    Cmp     EAX,1048576                                                         ;If speed > 1048576, speed = 1048576 (x16)
-    JBE     .OKH
-        Mov     EAX,1048576
+    Mov     EDX,1024                                                            ;If speed < 1024, speed = 1024 (~1.5%)
+    Cmp     EAX,EDX                                                             ;NOTE: If lower any more, will crash or noisy.
+    CMovX   B,EAX,EDX
 
-    .OKH:
+    Mov     EDX,1048576                                                         ;If speed > 1048576, speed = 1048576 (x16)
+    Cmp     EAX,EDX
+    CMovX   A,EAX,EDX
+
     Mov     [smpRAdj],EAX
 %ifdef DSP_INC
     Mov     [adsrAdj],EAX
@@ -651,11 +668,11 @@ ENDP
 ; see x64.inc's EXPROC for why a DEF-exported name that is also called internally needs this split.
 
 EXPROC EmuAPU, pBuf, len, type
+USES ECX
 
     Mov     PCX,[pBuf]
-    Mov     EDX,[len]
     MovZX   EAX,byte [type]
-    Call    EmuAPUI,PCX,EDX,EAX
+    Call    EmuAPUI,PCX,[len],EAX
 
 ENDP
 
@@ -771,7 +788,7 @@ USES ESI
         Sub     [outLen],EDX
 
         Dec     EBX                                                             ;Is emulation completed?
-        JZ      .Done                                                           ;   Yes, done
+        RetZ                                                                    ;   Yes, done
 
         Sub     EAX,EDX                                                         ;Is outBuf empty?
         JNZ     .BefLoop                                                        ;   No, continue
@@ -819,7 +836,7 @@ USES ESI
     MovZX   ECX,byte [rawByte]
     Div     ECX
     Sub     EBX,EAX                                                             ;Is emulation completed?
-    JZ      .Done                                                               ;   Yes, done
+    RetZ                                                                        ;   Yes, done
 
     ;Emulate to outBuf -----------------------
     .AftEmu:
@@ -833,9 +850,9 @@ USES ESI
 
     LoadPtr PSI,outBuf
     Mov     ECX,EAX                                                             ;ECX = clock cycles (min. 24576 = 192 samples at 192000Hz)
-    Cmp     ECX,24576                                                           ;NOTE: If clock cycles is less than 24576 and playback
-    JAE     .EmuLoop                                                            ; speed is below 25%, will crash or noisy.
-        Mov     ECX,24576
+    Mov     EDX,24576                                                           ;NOTE: If clock cycles is less than 24576 and playback
+    Cmp     ECX,EDX                                                             ; speed is below 25%, will crash or noisy.
+    CMovX   B,ECX,EDX
 
     .EmuLoop:
     Call    EmuAPUI,PSI,ECX,0
@@ -853,13 +870,11 @@ USES ESI
         Sub     [outLen],EDX
 
         Dec     EBX                                                             ;Is emulation completed?
-        JZ      .Done                                                           ;   Yes, done
+        RetZ                                                                    ;   Yes, done
 
         Sub     EAX,EDX                                                         ;Is outBuf empty?
         JNZ     .AftLoop                                                        ;   No, continue
         Jmp     .AftEmu                                                         ;   Yes, re-run emulation
-
-    .Done:
 
 ENDP
 
@@ -870,11 +885,11 @@ ENDP
 EXPROC SeekAPU, time, fast
 USES ECX,EDX
 
-    XOr     EDX,EDX
     Mov     EAX,[time]                                                          ;numSeconds = time / 64000
-    Test    EAX,EAX
-    RetZF
+    Test    EAX,EAX                                                             ;time = 0x00?
+    RetZ                                                                        ;   Yes, done
 
+    XOr     EDX,EDX
     Mov     ECX,64000
     Div     ECX
     Mov     ECX,EAX                                                             ;ECX = time / 64000
@@ -909,11 +924,10 @@ USES ECX,EDX
         Push    PAX,PDI                                                         ;Save APU speed (width fix only, not a pointer)
 
         Mov     EDI,EAX
-        ShR     EAX,16
-        JNZ     .MinSpeed                                                       ;When APU speed is less than 100%, temporarily increase
-            Mov     EDI,10000h                                                  ; it to 100% to speed up processing
+        ShR     EAX,16                                                          ;When APU speed is less than 100%, temporarily increase
+        Mov     EAX,10000h                                                      ; it to 100% to speed up processing
+        CMovX   Z,EDI,EAX
 
-        .MinSpeed:
         Test    EDX,EDX
         JZ      .EmuAPU
 
@@ -954,34 +968,34 @@ USES ECX,ESI
 
     Mov     CL,[scr700inc+02h]
     Test    CL,CL                                                               ;Include mode?
-    JNZ     .EXIT                                                               ;   Yes
+    RetNZ                                                                       ;   Yes, done
 
     Call    SetScript700I,0                                                     ;Reset Script700
     Mov     ECX,[wait]                                                          ;ECX = wait
     Test    ECX,ECX                                                             ;ECX = 0x00?
-    JZ      .EXIT                                                               ;   Yes
-        ;---------- TimerTrick -> Script700 binary converter ----------
+    RetZ                                                                        ;   Yes, done
 
-        Mov     PSI,[pSCRRAM]                                                   ;PSI = Script RAM Pointer
-        Mov     [PSI+02h],ECX                                                   ;Program[0x02] = ECX
-        Mov     CL,[port]                                                       ;CL = port
-        Mov     [PSI+0Eh],CL                                                    ;Program[0x0E] = CL
+    ;Convert from TimerTrick to Script700.  TimerTrick increments the value of a specific port by
+    ; 1 at regular intervals.  This process generates the Script700 binary code to achieve this
+    ; functionality.  The conversion rules are as follows.
+    ;-------------------------------------------------------------------------------
+    ; [Script700 Command]       [Binary]
+    ; :0    w   (WAIT)      ->  0x00 : 0x01 0x00 ???? ???? ???? ????
+    ;       a   #1  i(PORT) ->  0x06 : 0x04 0x00 0x00 0x01 0x00 0x00 0x00 0x02 ????
+    ;       bra 0           ->  0x0F : 0x05 0x00 0x00
+    ;       (EXIT)          ->  0x12 : 0x00
+    ;-------------------------------------------------------------------------------
 
-        ;-------------------------------------------------------------------------------
-        ; [Script700 Command]       [Binary]
-        ; :0    w   (WAIT)      ->  0x00 : 0x01 0x00 ???? ???? ???? ????
-        ;       a   #1  i(PORT) ->  0x06 : 0x04 0x00 0x00 0x01 0x00 0x00 0x00 0x02 ????
-        ;       bra 0           ->  0x0F : 0x05 0x00 0x00
-        ;       (EXIT)          ->  0x12 : 0x00
-        ;-------------------------------------------------------------------------------
+    Mov     PSI,[pSCRRAM]                                                       ;PSI = Script RAM Pointer
+    Mov     [PSI+02h],ECX                                                       ;Program[0x02] = ECX
+    Mov     CL,[port]                                                           ;CL = port
+    Mov     [PSI+0Eh],CL                                                        ;Program[0x0E] = CL
 
-        Mov     word  [PSI+00h],0001h
-        Mov     dword [PSI+06h],01000004h
-        Mov     dword [PSI+0Ah],02000000h
-        Mov     dword [PSI+0Fh],00000005h
-        Mov     dword [scr700lbl],0
-
-    .EXIT:
+    Mov     word  [PSI+00h],0001h
+    Mov     dword [PSI+06h],01000004h
+    Mov     dword [PSI+0Ah],02000000h
+    Mov     dword [PSI+0Fh],00000005h
+    Mov     dword [scr700lbl],0
 
 ENDP
 
@@ -1069,15 +1083,14 @@ PROC GetScript700Skip
     .RETURN:
     Mov     AL,[PCX]                                                            ;AL = [PCX]
     Cmp     AL,00h                                                              ;Is char NULL?
-    JE      .EXIT                                                               ;   Yes
+    RetZ                                                                        ;   Yes, done
     Cmp     AL,09h                                                              ;Is char TAB?
-    JE      .EXIT                                                               ;   Yes
+    RetZ                                                                        ;   Yes, done
     Cmp     AL,20h                                                              ;Is char SPACE?
-    JE      .EXIT                                                               ;   Yes
+    RetZ                                                                        ;   Yes, done
+
     Inc     PCX                                                                 ;PCX++
     Jmp     .RETURN
-
-    .EXIT:
 
 ENDP
 
@@ -1091,7 +1104,7 @@ PROC GetScript700NextLine
     .RETURN:
     Mov     AL,[PCX]                                                            ;AL = [PCX]
     Cmp     AL,00h                                                              ;Is char NULL?
-    JE      .EXIT                                                               ;   Yes
+    RetZ                                                                        ;   Yes, done
     Cmp     AL,0Ah                                                              ;Is char RETURN?
     JE      .NEXT2                                                              ;   Yes
     Cmp     AL,0Dh                                                              ;Is char RETURN?
@@ -1102,18 +1115,16 @@ PROC GetScript700NextLine
     .NEXT:
     Mov     AL,[PCX]                                                            ;AL = [PCX]
     Cmp     AL,00h                                                              ;Is char NULL?
-    JE      .EXIT                                                               ;   Yes
+    RetZ                                                                        ;   Yes, done
     Cmp     AL,0Ah                                                              ;Is char RETURN?
     JE      .NEXT2                                                              ;   Yes
     Cmp     AL,0Dh                                                              ;Is char RETURN?
     JE      .NEXT2                                                              ;   Yes
-    Jmp     .EXIT
+    RetN                                                                        ;Exit
 
     .NEXT2:
     Inc     PCX                                                                 ;PCX++
     Jmp     .NEXT
-
-    .EXIT:
 
 ENDP
 
@@ -1328,8 +1339,8 @@ USES ECX,EDX,EBX,ESI,EDI
     Mov     PCX,[pSourceI]                                                      ;PCX = Source Pointer
     Test    PCX,PCX                                                             ;PCX = NULL?
     JZ      .CRITICALERROR                                                      ;   Yes
-    XOr     PBX,PBX                                                             ;PBX = 0x00
-    XOr     PDI,PDI                                                             ;PDI = 0x00
+    XOr     EBX,EBX                                                             ;PBX = 0x00
+    XOr     EDI,EDI                                                             ;PDI = 0x00
 
     ;---------- Script Command Zone ----------
 
@@ -1975,7 +1986,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Sub     PBX,PCX
     MovZX   EAX,AH                                                              ;EAX = Size of file name
     LoadPtr PCX,scr700pth                                                       ;PCX = Pointer of file name
-    ExtCall PDI,EDX,PBX,EAX,PCX
+    ExCall  PDI,EDX,PBX,EAX,PCX
     Pop     PCX,PBX,PDI
 
     ShL     word [scr700inc+01h],8                                              ;Include = 02h:OLD 01h:00h 00h:NEW
@@ -1983,10 +1994,8 @@ USES ECX,EDX,EBX,ESI,EDI
     IdxLd   Mov,EDX,scr700inc,08h                                               ;EDX = Return value of SetScript700
     Test    EDX,EDX                                                             ;EDX = ?
     JS      .CRITICALERROR                                                      ;   < 0
-    JZ      .ShpEXIT                                                            ;   = 0
-        Mov     EBX,EDX                                                         ;PBX = EDX
+    CMovX   NZ,EBX,EDX                                                          ;PBX = EDX, unless it is 0
 
-    .ShpEXIT:
     Dec     PBX                                                                 ;PBX--
     Call    GetScript700Last                                                    ;Check Last
     JZ      .ShpERROR                                                           ;   Failure

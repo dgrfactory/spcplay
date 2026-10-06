@@ -79,8 +79,8 @@
 ;===================================================================================================
 ;Procedure Macros
 ;
-;PROC/ENDP/USES/PUBLIC/Call/RetN/RetZ/RetZF/RetNZ/RetNZF/LOCALS are defined by the backend included
-; above (x86.inc or x64.inc) -- see that file for documentation.  They share one interface across
+;PROC/ENDP/USES/PUBLIC/Call/RetN/RetZ/RetNZ/LOCALS are defined by the backend included
+; above (x86.inc or x64.inc), see that file for documentation.  They share one interface across
 ; both architectures so code below this point in APU.asm/DSP.asm/SPC700.asm never needs to know
 ; which one is active.
 

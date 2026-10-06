@@ -19,10 +19,10 @@
 * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                                        *
 *                                                                                                  *
 *                                                 Copyright (C) 2001-2004 Alpha-II Productions     *
-*                                                 Copyright (C) 2003-2025 degrade-factory          *
+*                                                 Copyright (C) 2003-2026 degrade-factory          *
 *                                                                                                  *
 * List of users and dates who/when modified this file:                                             *
-*    - degrade-factory in 2025-05-31                                                               *
+*    - degrade-factory in 2026-09-30                                                               *
 ***************************************************************************************************/
 
 #define WIN32_LEAN_AND_MEAN                                     //Leave out unnecessary grunt in windows.h
@@ -35,10 +35,6 @@
 #include    "DSP.h"
 #include    "APU.h"
 #pragma comment(linker, "/opt:nowin98")
-#pragma comment(linker, "/merge:.rdata=.text")
-#pragma comment(linker, "/section:.text,erw")
-#pragma comment(linker, "/ignore:4078")
-#pragma comment(linker, "/ignore:4089")
 
 /* Some SPC registers */
 #define SPC_PORT0           0xF4

@@ -87,41 +87,58 @@ library SNESAPU;
 
 
 // ===================================================================================================
-// External declarations, one per SNESAPU.def export.  Signatures follow snesapu.dll\SNESAPU.h:
-// u8=Byte, u16=Word, u32=Cardinal, s32=LongInt, b8=Byte, any struct pointer=Pointer.  None of these
-// 29 functions need the caller to know the pointed-to layout.  They hand back opaque pointers that
-// calling code stores and passes back, exactly as GetAPUData's own callers do.
+// Type aliases matching snesapu.dll\Types.h/SNESAPU.h exactly, so every parameter below carries the
+// same name as its C counterpart.  b8 and u8 are distinct C typedefs (both an 8-bit unsigned value,
+// b8 used only where SNESAPU.h treats it as a boolean-ish flag or return), so both are kept as
+// separate aliases here too, even though they share the same underlying Pascal type.
 
-function  EmuAPU(pBuf: Pointer; len: Cardinal; ltype: Byte): Pointer; stdcall; external name 'EmuAPU';
-procedure FixAPU(pc: Word; a, y, x, psw, sp: Byte); stdcall; external name 'FixAPU';
-procedure GetAPUData(ppAPURAM, ppExtraRAM, ppSPCOut, ppT64Cnt, ppDSP, ppMix, ppVMMaxL, ppVMMaxR: Pointer); stdcall; external name 'GetAPUData';
-procedure GetScript700Data(pVer: PAnsiChar; ppSPCReg, ppScript700: Pointer); stdcall; external name 'GetScript700Data';
-function  GetSNESAPUContext(pCtxOut: Pointer): Cardinal; stdcall; external name 'GetSNESAPUContext';
-function  GetSNESAPUContextSize: Cardinal; stdcall; external name 'GetSNESAPUContextSize';
-procedure GetSPCRegs(pPC, pA, pY, pX, pPSW, pSP: Pointer); stdcall; external name 'GetSPCRegs';
-procedure InPort(port: Cardinal; val: Byte); stdcall; external name 'InPort';
-function  InitAPU(reason: Cardinal): Cardinal; stdcall; external name 'InitAPU';
-procedure LoadSPCFile(pSPC: Pointer); stdcall; external name 'LoadSPCFile';
-procedure ResetAPU(amp: Cardinal); stdcall; external name 'ResetAPU';
-procedure SeekAPU(time: Cardinal; fast: Byte); stdcall; external name 'SeekAPU';
-function  SetAPULength(song, fade: Cardinal): Cardinal; stdcall; external name 'SetAPULength';
-procedure SetAPUOpt(mix, chn, bits, rate, inter, opts: Cardinal); stdcall; external name 'SetAPUOpt';
-procedure SetAPURAM(addr: Cardinal; val: Byte); stdcall; external name 'SetAPURAM';
-procedure SetAPUSmpClk(speed: Cardinal); stdcall; external name 'SetAPUSmpClk';
-procedure SetDSPAmp(level: Cardinal); stdcall; external name 'SetDSPAmp';
-function  SetDSPDbg(pTrace: Pointer): Pointer; stdcall; external name 'SetDSPDbg';
-procedure SetDSPEFBCT(leak: LongInt); stdcall; external name 'SetDSPEFBCT';
-procedure SetDSPPitch(base: Cardinal); stdcall; external name 'SetDSPPitch';
-function  SetDSPReg(reg, val: Byte): Byte; stdcall; external name 'SetDSPReg';
-procedure SetDSPStereo(sep: Cardinal); stdcall; external name 'SetDSPStereo';
-procedure SetDSPVol(vol: Cardinal); stdcall; external name 'SetDSPVol';
-function  SetScript700(pSource: Pointer): Cardinal; stdcall; external name 'SetScript700';
-function  SetScript700Data(addr: Cardinal; pData: Pointer; size: Cardinal): Cardinal; stdcall; external name 'SetScript700Data';
-function  SetSNESAPUContext(pCtxIn: Pointer): Cardinal; stdcall; external name 'SetSNESAPUContext';
-function  SetSPCDbg(pTrace: Pointer; opts: Cardinal): Pointer; stdcall; external name 'SetSPCDbg';
-procedure SetTimerTrick(port, wait: Cardinal); stdcall; external name 'SetTimerTrick';
-function  SNESAPUCallback(pCbFunc: Pointer; cbMask: Cardinal): Pointer; stdcall; external name 'SNESAPUCallback';
-procedure SNESAPUInfo(pVer, pMin, pOpt: Pointer); stdcall; external name 'SNESAPUInfo';
+type
+    b8  = Byte;
+    u8  = Byte;
+    u16 = Word;
+    u32 = Cardinal;
+    s32 = LongInt;
+    ptr = Pointer;
+
+
+// ===================================================================================================
+// External declarations, one per SNESAPU.def export, with signatures following snesapu.dll\
+// SNESAPU.h via the aliases above.  ptr covers every pointer parameter (struct pointers, out-
+// parameters, function pointers alike): none of these 29 functions need the caller to know the
+// pointed-to layout.  They hand back opaque pointers that calling code stores and passes back,
+// exactly as GetAPUData's own callers do.
+
+function  EmuAPU(pBuf: ptr; len: u32; ltype: b8): ptr; stdcall; external name 'EmuAPU';
+procedure FixAPU(pc: u16; a: u8; y: u8; x: u8; psw: u8; sp: u8); stdcall; external name 'FixAPU';
+procedure GetAPUData(ppAPURAM: ptr; ppExtraRAM: ptr; ppSPCOut: ptr; ppT64Cnt: ptr; ppDSP: ptr; ppMix: ptr; ppVMMaxL: ptr; ppVMMaxR: ptr); stdcall; external name 'GetAPUData';
+procedure GetScript700Data(pVer: ptr; ppSPCReg: ptr; ppScript700: ptr); stdcall; external name 'GetScript700Data';
+function  GetSNESAPUContext(pCtxOut: ptr): u32; stdcall; external name 'GetSNESAPUContext';
+function  GetSNESAPUContextSize: u32; stdcall; external name 'GetSNESAPUContextSize';
+procedure GetSPCRegs(pPC: ptr; pA: ptr; pY: ptr; pX: ptr; pPSW: ptr; pSP: ptr); stdcall; external name 'GetSPCRegs';
+procedure InPort(port: u32; val: u8); stdcall; external name 'InPort';
+function  InitAPU(reason: u32): u32; stdcall; external name 'InitAPU';
+procedure LoadSPCFile(pSPC: ptr); stdcall; external name 'LoadSPCFile';
+procedure ResetAPU(amp: u32); stdcall; external name 'ResetAPU';
+procedure SeekAPU(time: u32; fast: b8); stdcall; external name 'SeekAPU';
+function  SetAPULength(song: u32; fade: u32): u32; stdcall; external name 'SetAPULength';
+procedure SetAPUOpt(mix: u32; chn: u32; bits: u32; rate: u32; inter: u32; opts: u32); stdcall; external name 'SetAPUOpt';
+procedure SetAPURAM(addr: u32; val: u8); stdcall; external name 'SetAPURAM';
+procedure SetAPUSmpClk(speed: u32); stdcall; external name 'SetAPUSmpClk';
+procedure SetDSPAmp(level: u32); stdcall; external name 'SetDSPAmp';
+function  SetDSPDbg(pTrace: ptr): ptr; stdcall; external name 'SetDSPDbg';
+procedure SetDSPEFBCT(leak: s32); stdcall; external name 'SetDSPEFBCT';
+procedure SetDSPPitch(base: u32); stdcall; external name 'SetDSPPitch';
+function  SetDSPReg(reg: u8; val: u8): b8; stdcall; external name 'SetDSPReg';
+procedure SetDSPStereo(sep: u32); stdcall; external name 'SetDSPStereo';
+procedure SetDSPVol(vol: u32); stdcall; external name 'SetDSPVol';
+function  SetScript700(pSource: ptr): u32; stdcall; external name 'SetScript700';
+function  SetScript700Data(addr: u32; pData: ptr; size: u32): u32; stdcall; external name 'SetScript700Data';
+function  SetSNESAPUContext(pCtxIn: ptr): u32; stdcall; external name 'SetSNESAPUContext';
+function  SetSPCDbg(pTrace: ptr; opts: u32): ptr; stdcall; external name 'SetSPCDbg';
+procedure SetTimerTrick(port: u32; wait: u32); stdcall; external name 'SetTimerTrick';
+function  SNESAPUCallback(pCbFunc: ptr; cbMask: u32): ptr; stdcall; external name 'SNESAPUCallback';
+procedure SNESAPUInfo(pVer: ptr; pMin: ptr; pOpt: ptr); stdcall; external name 'SNESAPUInfo';
+
 
 // ===================================================================================================
 // Entry point, see the file header comment.  InitAPU only acts on DLL_PROCESS_ATTACH and always
@@ -129,44 +146,44 @@ procedure SNESAPUInfo(pVer, pMin, pOpt: Pointer); stdcall; external name 'SNESAP
 
 procedure SNESAPUDllProc(Reason: LongInt);
 begin
-  InitAPU(Reason);
+    InitAPU(Reason);
 end;
 
 exports
-  EmuAPU,
-  FixAPU,
-  GetAPUData,
-  GetScript700Data,
-  GetSNESAPUContext,
-  GetSNESAPUContextSize,
-  GetSPCRegs,
-  InPort,
-  LoadSPCFile,
-  ResetAPU,
-  SeekAPU,
-  SetAPULength,
-  SetAPUOpt,
-  SetAPURAM,
-  SetAPUSmpClk,
-  SetDSPAmp,
-  SetDSPDbg,
-  SetDSPEFBCT,
-  SetDSPPitch,
-  SetDSPReg,
-  SetDSPStereo,
-  SetDSPVol,
-  SetScript700,
-  SetScript700Data,
-  SetSNESAPUContext,
-  SetSPCDbg,
-  SetTimerTrick,
-  SNESAPUCallback,
-  SNESAPUInfo;
+    EmuAPU,
+    FixAPU,
+    GetAPUData,
+    GetScript700Data,
+    GetSNESAPUContext,
+    GetSNESAPUContextSize,
+    GetSPCRegs,
+    InPort,
+    LoadSPCFile,
+    ResetAPU,
+    SeekAPU,
+    SetAPULength,
+    SetAPUOpt,
+    SetAPURAM,
+    SetAPUSmpClk,
+    SetDSPAmp,
+    SetDSPDbg,
+    SetDSPEFBCT,
+    SetDSPPitch,
+    SetDSPReg,
+    SetDSPStereo,
+    SetDSPVol,
+    SetScript700,
+    SetScript700Data,
+    SetSNESAPUContext,
+    SetSPCDbg,
+    SetTimerTrick,
+    SNESAPUCallback,
+    SNESAPUInfo;
 
 begin
-  SNESAPUDllProc(1);   // 1 = DLL_PROCESS_ATTACH.  Avoids the Windows unit for one constant.
-                       // No DllProc hook is needed for later notifications: InitAPU checks
-                       // reason=DLL_PROCESS_ATTACH itself and no-ops for every other reason code
-                       // (see APU.asm), so this one direct call for the initial attach covers
-                       // everything InitAPU does.
+    SNESAPUDllProc(1);   // 1 = DLL_PROCESS_ATTACH.  Avoids the Windows unit for one constant.
+                         // No DllProc hook is needed for later notifications: InitAPU checks
+                         // reason=DLL_PROCESS_ATTACH itself and no-ops for every other reason code
+                         // (see APU.asm), so this one direct call for the initial attach covers
+                         // everything InitAPU does.
 end.

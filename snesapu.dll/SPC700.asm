@@ -25,7 +25,7 @@
 ;                                                   Copyright (C) 2003-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-09-01
+;   - degrade-factory in 2026-09-30
 ;===================================================================================================
 
 %ifdef WIN64
@@ -413,12 +413,11 @@ USES EDX
 
     Mov     PAX,[pTraceI]
     Cmp     PAX,-1
-    JE      .NoFunc
-        Mov     [pDebug],PAX
-
-    .NoFunc:
+    CMovX   NE,PDX,PAX                                                          ;If PAX = -1, leave pDebug unchanged
+    Mov     [pDebug],PDX                                                        ;PAX itself stays untouched: 'Test PAX,PAX' below
+                                                                                ; still needs the caller's original pTraceI value
     LblSt   pOpFetch,SPCFetch                                                   ;Disable instruction tracing
-    Cmp     byte [optsI],-1
+    Cmp     dword [optsI],-1
     JE      .NoOpts                                                             ;Leave options as they are
 
     Test    byte [optsI],SPC_TRACE                                              ;If trace is enabled, set fetch pointer to watch
@@ -628,7 +627,17 @@ ENDP
 
 
 ;===================================================================================================
-;Write to SPC700 Port(s)
+;Read SPC700 Port Value Through the Registered Callback
+;
+;In:
+;   PDX = Default port value (used as-is if no callback overrides it)
+;   ESI = Port number
+;
+;Out:
+;   PDX = Port value, possibly overridden by the registered callback
+;
+;Destroys:
+;   EDX
 
 %ifdef SHVC
 PROC ReadPort
@@ -640,7 +649,7 @@ PROC ReadPort
     Test    PAX,PAX
     JZ      .NoCallback
         Push    PCX                                                             ;STDCALL is destroy PAX,PCX,PDX
-        ExtCall PAX,PSI
+        ExCall  PAX,PSI
         Pop     PCX
         Test    EAX,EAX
         JS      .NoCallback
@@ -651,6 +660,12 @@ PROC ReadPort
 
 ENDP
 
+;===================================================================================================
+;Write SPC700 Port Value Through the Registered Callback
+;
+;In:
+;   ESI = Port number
+;   EDX = Write value
 
 PROC WritePort
 
@@ -661,7 +676,7 @@ PROC WritePort
     Test    PAX,PAX
     JZ      .NoCallback
         Push    PCX,PDX                                                         ;STDCALL is destroy PAX,PCX,PDX
-        ExtCall PAX,PSI,EDX
+        ExCall  PAX,PSI,EDX
         Pop     PDX,PCX
 
     .NoCallback:
@@ -670,6 +685,9 @@ PROC WritePort
 ENDP
 %endif
 
+
+;===================================================================================================
+;Write from SPC700 Port
 
 EXPROC InPort, portb, valb
 USES ECX
@@ -794,7 +812,7 @@ PROC RunScript700, interrupt
 
     .700GETPVAL:
     MovZX   EDI,AH                                                              ;EDI = AH
-    IdxLd   Mov,EDI,scrAsmSkip,PDI*4,PDX                                        ;EDI = Skip[EDI] (PDX scratch: PDI IS the val/index register)
+    IdxLd   Mov,EDI,scrAsmSkip,PDI*4                                            ;EDI = Skip[EDI]
     Test    AH,10h                                                              ;AH &= 0x10?
     JNZ     .700GETPCMP                                                         ;   Yes
     Mov     ESI,[PBP+PBX]                                                       ;ESI = Program[PBX]
@@ -855,21 +873,17 @@ PROC RunScript700, interrupt
     .700P1P:                                                                                                        ; [PORT]
     And     ESI,3                                                               ;ESI &= 3
     IdxLdX  MovZX,PDX,byte,outPortCp,PSI                                        ;EDX = OutPort[ESI]
-
 %ifdef SHVC
     Call    ReadPort
 %endif
-
     Ret
 
     .700P1O:                                                                                                        ; o[PORT]
     And     ESI,3                                                               ;ESI &= 3
     IdxLdX  MovZX,PDX,byte,outPort,PSI                                          ;EDX = OutPort[ESI]
-
 %ifdef SHVC
     Call    ReadPort
 %endif
-
     Ret
 
     .700P1W:                                                                                                        ; w[WORK]
@@ -1506,7 +1520,7 @@ PROC RunScript700, interrupt
 
     Mov     PCX,[apuCbFunc]
     MovZX   EDX,DX                                                              ;EDX = DX
-    ExtCall PCX,dword CBE_REQBP,EDX,FCH_PAUSE,dword 0
+    ExCall  PCX,CBE_REQBP,EDX,FCH_PAUSE,0
     Jmp     .700RETURN
 
     ;---------- Error ----------
@@ -1611,6 +1625,7 @@ SPCBreak:
     ; this behavior, the implementation manually pushes values to and pops them from the stack,
     ; invoking the function via a raw pointer.
 
+    AlignRawCallBegin 6*PTRSIZE                                                 ;6 Pushes follow, see its own doc
     Mov     EBX,[t0Step]                                                        ;Pass down counters (zero-extended into a full pointer-
     Push    PBX                                                                 ; sized slot, only the low 4 bytes carry real data)
     CmpPSW                                                                      ;DL = PSW
@@ -1642,6 +1657,7 @@ SPCBreak:
     Pop     PDX                                                                 ;Pop SP
     Mov     [regSP],DX
     Pop     PDX
+    AlignRawCallEnd
 
     LoadPtr PBP,SPCExit
     Mov     PDI,[pAPURAM]                                                       ;Restore PDI
@@ -1675,7 +1691,7 @@ SPCFetch:                                                                       
     Cmp     dword [clkLeft],0                                                   ;Already executed all clock cycles?
     JLE     SPCTimers                                                           ;   Yes, update timers
 
-    Test    dword [apuCbMask],CBE_S700FCH
+    Test    byte [apuCbMask],CBE_S700FCH
     JZ      .NoCallback
 
     Mov     PDX,[apuCbFunc]
@@ -1688,7 +1704,7 @@ SPCFetch:                                                                       
         Mov     [PCX+APURAMSIZE],EAX
 
         Mov     EAX,[PSI]
-        ExtCall PDX,dword CBE_S700FCH,EAX,dword 0,PSI
+        ExCall  PDX,CBE_S700FCH,EAX,0,PSI
         Mov     EDX,EAX
         Pop     PCX,PAX
 
@@ -2456,26 +2472,30 @@ Ret
 %endif
 %endmacro
 
+;===================================================================================================
+;Check Whether a Script700 Port-Wait Condition is Satisfied
+;
+;Destroys:
+;   ECX
+
 PROC CatchPort
 
     Push    PBX
     And     BX,0FFFCh
     Cmp     BX,00F4h                                                            ;Is read target address 0xF4-0xF7?
     Pop     PBX
-    JNZ     .NoInt                                                              ;   No
+    RetNZ                                                                       ;   No, done
 
     Push    PBX
     And     BL,3
     Or      BL,80h
     Cmp     BL,CL                                                               ;Waiting for ports interrupt?
     Pop     PBX
-    JNE     .NoInt                                                              ;   No
+    RetNZ                                                                       ;   No, done
 
     Mov     byte [scr700int],0                                                  ;Interrupt Input = 0
     Or      byte [scr700stf],20h                                                ;Status Flags |= 0x20
     XOr     CL,CL                                                               ;CL = 0
-
-    .NoInt:
 
 ENDP
 

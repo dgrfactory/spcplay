@@ -13,7 +13,7 @@
 ;                                                   Copyright (C) 2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-09-01
+;   - degrade-factory in 2026-09-29
 ;===================================================================================================
 
 %define ARCH_BITS   32
@@ -201,6 +201,22 @@ PTRSIZE EQU     4                                                               
 
 
 ;===================================================================================================
+;Align RSP Around A Raw, Non-ExCall Call Into Genuinely External Code (begin/end pair)
+;
+;x64-only concern (see x64.inc's own doc): x86's stdcall/cdecl convention has no 16-byte stack
+; alignment requirement to begin with, so DSP.asm's DSPIn and SPC700.asm's SPCBreak, which bracket
+; their own raw pTrace/pDebug calls with this pair, need no adjustment here.  The optional parameter
+; (the byte count of the bracketed Pushes, needed on x64 to pre-compensate for it) is accepted here
+; too, purely so both call sites' syntax stays identical across architectures, and ignored.
+
+%macro AlignRawCallBegin 0-1 0
+%endmacro
+
+%macro AlignRawCallEnd 0
+%endmacro
+
+
+;===================================================================================================
 ;Call Procedure
 ;
 ;If STDCALL is defined, the procedure is assumed to clean up the stack.
@@ -208,12 +224,12 @@ PTRSIZE EQU     4                                                               
 ;Params:
 ;   Function name followed by stack parameters.  All arguments are assumed to be dwords.
 ;
-;x64 needs two distinct calling conventions: a real Microsoft x64 ABI one (ExtCall) for anything
+;x64 needs two distinct calling conventions: a real Microsoft x64 ABI one (ExCall) for anything
 ; crossing the DLL boundary, and a stack-based internal one (Call) for everything else, since just
 ; marshalling arguments into RCX/RDX/R8/R9 there clobbers them in the caller's own context (see
 ; x64.inc's Call for the full story).  x86's stdcall/cdecl convention already passes every argument
-; on the stack, so that split does not exist here.  ExtCall is simply Call under another name, so
-; shared code can write EXPROC/ExtCall (for the ~29 DEF-exported entry points and genuinely
+; on the stack, so that split does not exist here.  ExCall is simply Call under another name, so
+; shared code can write EXPROC/ExCall (for the ~29 DEF-exported entry points and genuinely
 ; external callback pointers) without an x64-only %ifdef.
 
 %macro Call 2-*
@@ -230,12 +246,12 @@ PTRSIZE EQU     4                                                               
     %endif
 %endmacro
 
-;ExtCall duplicates Call's body rather than forwarding to it (e.g. 'Call %{1:-1}').  nasm 2.10.09's
+;ExCall duplicates Call's body rather than forwarding to it (e.g. 'Call %{1:-1}').  nasm 2.10.09's
 ; %{n:m} parameter-range forwarding re-splits a multi-token argument like 'dword CBE_DSPREG' on its
 ; internal space, so the forwarded Call sees "dword" and "CBE_DSPREG" as two separate arguments
 ; instead of one, corrupting the argument count.
 
-%macro ExtCall 2-*
+%macro ExCall 2-*
     %rep %0-1
         %rotate -1
         Push    dword %1
@@ -251,6 +267,59 @@ PTRSIZE EQU     4                                                               
 
 
 ;===================================================================================================
+;Set EAX to a Return Value, Preferring 'XOr EAX,EAX' for a Literal 0
+;
+;'XOr EAX,EAX' is 2 bytes versus 5 for 'Mov EAX,0', and breaks the register's dependency chain on
+; some microarchitectures, so RetN/RetZ/RetNZ below use this instead of a plain 'Mov EAX,%1'.  Only
+; a literal 0 known at assemble time qualifies: an EQU name or expression that merely evaluates to 0
+; still falls through to 'Mov', since NASM's preprocessor cannot tell its value applies here.
+
+%macro SetEAX 1
+    %ifnum %1
+        %if %1 == 0
+            XOr     EAX,EAX
+        %else
+            Mov     EAX,%1
+        %endif
+    %else
+        Mov     EAX,%1
+    %endif
+%endmacro
+
+
+;===================================================================================================
+;Conditional Move (architecture-neutral wrapper)
+;
+;CMOVcc needs at least a Pentium Pro, which predates this build's own 'CPU 386' target (see this
+; file's top), so real CMOVcc is not available here.  Emulates the same effect with a short branch
+; over a single Mov instead: behaviourally identical, just not branchless.  See x64.inc for the real
+; CMOVcc used there.  Each condition suffix needs its own inverse Jcc (the branch that SKIPS the
+; Mov) listed below; add a new one here, not by guessing, when a new condition is needed.
+;
+;Params:
+;   condition suffix (e.g. 'B', 'A', 'NE', 'NZ', matching a real CMOVcc mnemonic), destination
+;   register, source register or memory operand
+
+%macro CMovX 3
+    %ifidni %1,B
+        JAE     %%Skip
+    %elifidni %1,A
+        JBE     %%Skip
+    %elifidni %1,NE
+        JE      %%Skip
+    %elifidni %1,NZ
+        JZ      %%Skip
+    %elifidni %1,Z
+        JNZ     %%Skip
+    %else
+        %error  "CMovX :: unsupported condition, add its inverse Jcc above"
+    %endif
+        Mov     %2,%3
+    %%Skip:
+%endmacro
+
+
+;===================================================================================================
 ;Return from Procedure
 ;
 ;Ensures the stack frame will be cleaned up and any used registers restored.
@@ -260,7 +329,7 @@ PTRSIZE EQU     4                                                               
 
 %macro RetN 0-1
     %if %0
-        Mov     EAX,%1
+        SetEAX  %1
     %endif
 
     %ifdef %$paramsize
@@ -275,40 +344,31 @@ PTRSIZE EQU     4                                                               
 
 ;===================================================================================================
 ;Conditional Return from Procedure (see RetN)
+;
+;The optional value is only moved into EAX when the condition is actually taken, unlike a naive
+; 'Mov EAX,value' placed before the jump, which would clobber EAX on the not-taken path too.
 
 %macro RetZ 0-1
     %if %0
-        Mov     EAX,%1
+        JNZ     %%Skip
+        SetEAX  %1
+        Jmp     %$Done
+        %%Skip:
+    %else
+        JZ      %$Done
     %endif
-
-    JZ      short %$Done
-%endmacro
-
-
-%macro RetZF 0-1
-    %if %0
-        Mov     EAX,%1
-    %endif
-
-    JZ      %$Done
 %endmacro
 
 
 %macro RetNZ 0-1
     %if %0
-        Mov     EAX,%1
+        JZ      %%Skip
+        SetEAX  %1
+        Jmp     %$Done
+        %%Skip:
+    %else
+        JNZ     %$Done
     %endif
-
-    JNZ     short %$Done
-%endmacro
-
-
-%macro RetNZF 0-1
-    %if %0
-        Mov     EAX,%1
-    %endif
-
-    JNZ     %$Done
 %endmacro
 
 
@@ -326,27 +386,27 @@ PTRSIZE EQU     4                                                               
 
 %macro PUBLIC 1-*
     %ifdef STDCALL
-        %if %0==1
+        %if %0 == 1
             %xdefine    PUBNAME _%1
-        %elif %0==2
+        %elif %0 == 2
             %ifidni %2,NULL
                 %xdefine    PUBNAME _%1@0
             %else
                 %xdefine    PUBNAME _%1@4
             %endif
-        %elif %0==3
+        %elif %0 == 3
             %xdefine    PUBNAME _%1@8
-        %elif %0==4
+        %elif %0 == 4
             %xdefine    PUBNAME _%1@12
-        %elif %0==5
+        %elif %0 == 5
             %xdefine    PUBNAME _%1@16
-        %elif %0==6
+        %elif %0 == 6
             %xdefine    PUBNAME _%1@20
-        %elif %0==7
+        %elif %0 == 7
             %xdefine    PUBNAME _%1@24
-        %elif %0==8
+        %elif %0 == 8
             %xdefine    PUBNAME _%1@28
-        %elif %0==9
+        %elif %0 == 9
             %xdefine    PUBNAME _%1@32
         %elif
             %error  "PUBLIC :: Procedures cannot have more than 8 arguments"
@@ -379,15 +439,15 @@ PTRSIZE EQU     4                                                               
 ;
 ;See x64.inc's EXPROC for the full rationale (x64 needs a distinct, real-ABI entry macro for
 ; anything crossing the DLL boundary, while x86 does not, since stdcall/cdecl already applies
-; uniformly).  EXPROC is simply PROC under another name here, so shared code can write EXPROC
+; uniformly).  EXPROC is PROC plus the FPU control word guard here, so shared code can write EXPROC
 ; without an x64-only %ifdef.  A DEF-exported name that is also called from elsewhere in this
 ; codebase still does not need the EXPROC-plus-'I'-suffix split x64.inc describes, since on x86
 ; there is nothing to bridge, so calling the DEF-exported name directly is already the fast path.
 ;
-;EXPROC duplicates PROC's body rather than forwarding to it (e.g. 'PROC %{1:-1}').  See ExtCall's
+;EXPROC duplicates PROC's body rather than forwarding to it (e.g. 'PROC %{1:-1}').  See ExCall's
 ; note above on why nasm 2.10.09's %{n:m} forwarding is not used here either.  EXPROC's own
 ; arguments are plain identifiers (no multi-token values), so the bug that note describes cannot
-; actually trigger here today, but staying consistent with ExtCall avoids relying on that
+; actually trigger here today, but staying consistent with ExCall avoids relying on that
 ; forwarding at all.
 
 %macro EXPROC 1-*
@@ -396,38 +456,48 @@ PTRSIZE EQU     4                                                               
 
     %push PROC                                                                  ;Save context
 
-    %if %0>9
+    %if %0 > 9
         %error  "EXPROC :: Procedures cannot have more than 8 arguments"
     %endif
 
-    %if %0>1                                                                    ;Does this procedure have any arguments?
-        Push    EBP                                                             ;Create a frame pointer
-        Mov     EBP,ESP
+    ;The host's FPU control word is saved below the frame pointer and restored by ENDP, with 037Fh
+    ; (the 'FInit' default) loaded in between.  'FInit' itself is not used, since a host callback
+    ; may call an export while the x87 stack still holds live values.  The frame is always created,
+    ; so every RetN/RetZ/RetNZ goes through ENDP instead of a bare 'Ret'.
+    Push    EBP                                                                 ;Create a frame pointer
+    Mov     EBP,ESP
+    Sub     ESP,4                                                               ;[EBP-4] = Host's FPU control word
+    FNStCW  [EBP-4]                                                             ;[EBP-2] = Control word to run with
+    Mov     word [EBP-2],037Fh
+    FLdCW   [EBP-2]
+    %assign %$fpuslot 4
+    %assign %$paramsize 0
 
+    %if %0 > 1                                                                  ;Does this procedure have any arguments?
         %assign %$paramsize (%0*4)-4                                            ;Save the size of the frame
 
-        %if %0>=2                                                               ;Create pointers to each argument
+        %if %0 >= 2                                                             ;Create pointers to each argument
             %define %2  EBP+8
 
-        %if %0>=3
+        %if %0 >= 3
             %define %3  EBP+12
 
-        %if %0>=4
+        %if %0 >= 4
             %define %4  EBP+16
 
-        %if %0>=5
+        %if %0 >= 5
             %define %5  EBP+20
 
-        %if %0>=6
+        %if %0 >= 6
             %define %6  EBP+24
 
-        %if %0>=7
+        %if %0 >= 7
             %define %7  EBP+28
 
-        %if %0>=8
+        %if %0 >= 8
             %define %8  EBP+32
 
-        %if %0>=9
+        %if %0 >= 9
             %define %9  EBP+36
 
         %endif
@@ -458,38 +528,38 @@ PTRSIZE EQU     4                                                               
 
     %push PROC                                                                  ;Save context
 
-    %if %0>9
+    %if %0 > 9
         %error  "PROC :: Procedures cannot have more than 8 arguments"
     %endif
 
-    %if %0>1                                                                    ;Does this procedure have any arguments?
+    %if %0 > 1                                                                  ;Does this procedure have any arguments?
         Push    EBP                                                             ;Create a frame pointer
         Mov     EBP,ESP
 
         %assign %$paramsize (%0*4)-4                                            ;Save the size of the frame
 
-        %if %0>=2                                                               ;Create pointers to each argument
+        %if %0 >= 2                                                             ;Create pointers to each argument
             %define %2  EBP+8
 
-        %if %0>=3
+        %if %0 >= 3
             %define %3  EBP+12
 
-        %if %0>=4
+        %if %0 >= 4
             %define %4  EBP+16
 
-        %if %0>=5
+        %if %0 >= 5
             %define %5  EBP+20
 
-        %if %0>=6
+        %if %0 >= 6
             %define %6  EBP+24
 
-        %if %0>=7
+        %if %0 >= 7
             %define %7  EBP+28
 
-        %if %0>=8
+        %if %0 >= 8
             %define %8  EBP+32
 
-        %if %0>=9
+        %if %0 >= 9
             %define %9  EBP+36
 
         %endif
@@ -521,33 +591,39 @@ PTRSIZE EQU     4                                                               
         Mov     EBP,ESP
     %endif
 
-    %if %0>8
+    %if %0 > 8
         %error  "LOCALS :: Procedures cannot have more than 8 local variables"
     %endif
 
-    %if %0>=1                                                                   ;Create pointers to each of the locals
-        %define %1  EBP-4
+    %ifdef %$fpuslot                                                            ;Place the locals below EXPROC's FPU slot
+        %assign %$lbase %$fpuslot
+    %else
+        %assign %$lbase 0
+    %endif
 
-    %if %0>=2
-        %define %2  EBP-8
+    %if %0 >= 1                                                                 ;Create pointers to each of the locals
+        %xdefine %1 EBP-(%$lbase+4)
 
-    %if %0>=3
-        %define %3  EBP-12
+    %if %0 >= 2
+        %xdefine %2 EBP-(%$lbase+8)
 
-    %if %0>=4
-        %define %4  EBP-16
+    %if %0 >= 3
+        %xdefine %3 EBP-(%$lbase+12)
 
-    %if %0>=5
-        %define %5  EBP-20
+    %if %0 >= 4
+        %xdefine %4 EBP-(%$lbase+16)
 
-    %if %0>=6
-        %define %6  EBP-24
+    %if %0 >= 5
+        %xdefine %5 EBP-(%$lbase+20)
 
-    %if %0>=7
-        %define %7  EBP-28
+    %if %0 >= 6
+        %xdefine %6 EBP-(%$lbase+24)
 
-    %if %0>=8
-        %define %8  EBP-32
+    %if %0 >= 7
+        %xdefine %7 EBP-(%$lbase+28)
+
+    %if %0 >= 8
+        %xdefine %8 EBP-(%$lbase+32)
 
     %endif
     %endif
@@ -619,34 +695,39 @@ PTRSIZE EQU     4                                                               
 %macro ENDP 0
     %$Done:
 
+    %ifdef %$fpuslot                                                            ;Restore the host's FPU control word saved by
+        FNClEx                                                                  ; EXPROC, clearing the masked exception flags
+        FLdCW   [EBP-4]                                                         ; first so the host does not see them
+    %endif
+
     %assign %$i 4
     %rep 5
         %ifdef %$ECX                                                            ;Is "$ECX" defined?
-            %if %$ECX==%$i                                                      ;Does it equal the current pop position?
+            %if %$ECX == %$i                                                    ;Does it equal the current pop position?
                 Pop     ECX
             %endif
         %endif
 
         %ifdef %$EDX
-            %if %$EDX==%$i
+            %if %$EDX == %$i
                 Pop     EDX
             %endif
         %endif
 
         %ifdef %$EBX
-            %if %$EBX==%$i
+            %if %$EBX == %$i
                 Pop     EBX
             %endif
         %endif
 
         %ifdef %$ESI
-            %if %$ESI==%$i
+            %if %$ESI == %$i
                 Pop     ESI
             %endif
         %endif
 
         %ifdef %$EDI
-            %if %$EDI==%$i
+            %if %$EDI == %$i
                 Pop     EDI
             %endif
         %endif
@@ -657,7 +738,7 @@ PTRSIZE EQU     4                                                               
     %ifdef %$paramsize
         Leave
 
-        %if %$paramsize>0
+        %if %$paramsize > 0
             %ifdef STDCALL
                 Ret     %$paramsize
             %else

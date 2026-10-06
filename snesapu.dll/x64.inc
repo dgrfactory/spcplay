@@ -9,7 +9,7 @@
 ;
 ;Calling convention notes:
 ;   - Two conventions live in this file, and which one to use depends on who is calling:
-;       * EXPROC/ExtCall/ExtCallArg: the real Microsoft x64 convention (RCX/RDX/R8/R9, 32-byte
+;       * EXPROC/ExCall/ExCallArg: the real Microsoft x64 convention (RCX/RDX/R8/R9, 32-byte
 ;         shadow space, caller-cleans-stack, 16-byte alignment at each CALL).  Use it only for the
 ;         DEF-exported entry points something outside this DLL calls, and for calling a genuinely
 ;         external function pointer (a frontend-registered callback).
@@ -28,14 +28,14 @@
 ;   - Per the Windows x64 ABI, small (byte/word) typed arguments still occupy a full register or
 ;     stack slot with the upper bits unspecified.  Body code must keep reading parameters at their
 ;     true width (byte/word/dword), and never widen a byte/word parameter read to a qword.
-;   - Both Call and ExtCall stage every argument into memory before touching any register the
+;   - Both Call and ExCall stage every argument into memory before touching any register the
 ;     marshalling itself needs, so an argument expression may safely reference any register,
 ;     including one another argument also writes to.
 ;
 ;                                                   Copyright (C) 2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-09-01
+;   - degrade-factory in 2026-09-29
 ;===================================================================================================
 
 %define ARCH_BITS   64
@@ -193,61 +193,119 @@ PTRSIZE EQU     8                                                               
 ;   label - compile-time-constant symbol being indexed
 ;   index - index expression (a register, "reg*scale", or 0 for no index)
 ;   val   - the other operand
-;   reg   - (optional) scratch register to use, default PDI.  Must not also be used as the index or
-;           val operand in the same call (its value going into that instruction would be the
-;           label's address, not whatever the caller still needed it to hold).
-;
-;           R8-R15 look like a tempting default since they have no x86 counterpart and so never
-;           collide with a P-alias/index/val operand (see PAX/PBX/.../PSP above), but avoid them:
-;           any of R8-R15 forces a REX prefix onto the final op instruction, and a REX prefix makes
-;           AH/BH/CH/DH impossible to encode, and val is routinely one of those here (e.g. DSPInC's
-;           mix-flag test).  PDI/PSI/PBX/PCX/PDX never force a REX prefix, so they stay compatible
-;           with AH/BH/CH/DH, while an R8-R15 register is still fine to pass explicitly when
-;           val/index are known not to be a high-byte register.
+;   reg   - (optional) scratch register to use.  Must not also be used as the index or val operand
+;           in the same call.  If omitted, defaults to R10 with no Push/Pop, since R8-R15 never
+;           hold a live value across this port's internal call boundaries (see PushAD), and R10
+;           joins R11, already ExCall's own indirect-call-target scratch, as the pair these macros
+;           own, leaving R8 and R9 free for a future hand-written scratch use.  When val is
+;           AH/BH/CH/DH, or reg is explicitly passed as something other than R10, this falls back
+;           to PDI with Push/Pop instead, since a REX prefix (forced by R8-R15) cannot encode a
+;           high-byte register.
 
 ;IdxSt: op [label+index],val   (memory is the destination: a "store")
-%macro IdxSt 4-5 PDI
-    Push    %5
-    LoadPtr %5,%2
-    %1      [%5+%3],%4
-    Pop     %5
+%macro IdxSt 4-5 0
+    %push   IdxSt
+    %ifidni %5,0
+        %ifidni %4,AH
+            %define %$R PDI
+        %elifidni %4,BH
+            %define %$R PDI
+        %elifidni %4,CH
+            %define %$R PDI
+        %elifidni %4,DH
+            %define %$R PDI
+        %else
+            %define %$R R10
+        %endif
+    %else
+        %define %$R %5
+    %endif
+    %ifidni %$R,R10
+        LoadPtr %$R,%2
+        %1      [%$R+%3],%4
+    %else
+        Push    %$R
+        LoadPtr %$R,%2
+        %1      [%$R+%3],%4
+        Pop     %$R
+    %endif
+    %pop
 %endmacro
 
 ;IdxLd: op val,[label+index]   (memory is the source, a "load", val is usually a register)
-;If val IS the scratch register (i.e. the load's whole point is to get the value into it), the
-; pushed copy is discarded instead of restored.  Popping it back would overwrite the value just
-; loaded.
-%macro IdxLd 4-5 PDI
-    Push    %5
-    LoadPtr %5,%3
-    %1      %2,[%5+%4]
-    %ifnidni %2,%5
-        Pop     %5
+;If val IS the scratch register, the pushed copy is discarded (stack pointer adjusted) instead of
+; popped, since popping would overwrite the value just loaded.  Not needed on the R10 path, since
+; nothing was pushed.
+%macro IdxLd 4-5 0
+    %push   IdxLd
+    %ifidni %5,0
+        %ifidni %2,AH
+            %define %$R PDI
+        %elifidni %2,BH
+            %define %$R PDI
+        %elifidni %2,CH
+            %define %$R PDI
+        %elifidni %2,DH
+            %define %$R PDI
+        %else
+            %define %$R R10
+        %endif
     %else
-        Add     PSP,PTRSIZE
+        %define %$R %5
     %endif
+    %ifidni %$R,R10
+        LoadPtr %$R,%3
+        %1      %2,[%$R+%4]
+    %else
+        Push    %$R
+        LoadPtr %$R,%3
+        %1      %2,[%$R+%4]
+        %ifnidni %2,%$R
+            Pop     %$R
+        %else
+            Add     PSP,PTRSIZE
+        %endif
+    %endif
+    %pop
 %endmacro
 
 ;IdxLdX: op val,size [label+index]  memory is the source, a "load", for ops like MovZX/MovSX where
 ; val and the memory operand's size differ, e.g. a byte in memory zero-extended into a 32-bit
-; register.  IdxLd's plain "%1 %2,[...]" template has nowhere to put the size keyword, which needs
-; to sit between the comma and the bracket, so this is a separate macro for that shape, otherwise
-; identical to IdxLd (same val-is-the-scratch-register handling as above).  Pass val as a P-alias
-; (e.g. PDI, not EDI) if it might collide with the scratch register.  A bare 32-bit name would go
-; undetected by %ifnidni below, since it is spelled differently from the pointer-width alias even
-; though it is the same physical register, but writing PDI zero-extends the same way EDI would,
-; since a 32-bit write always zero-extends the full 64-bit register in x64, and MovZX's own byte to
-; 32-bit extension already leaves the result non-negative, so targeting the 64-bit name changes
-; nothing observable.
-%macro IdxLdX 5-6 PDI
-    Push    %6
-    LoadPtr %6,%4
-    %1      %2,%3 [%6+%5]
-    %ifnidni %2,%6
-        Pop     %6
+; register.  IdxLd's plain "%1 %2,[...]" template has nowhere to put the size keyword, so this is a
+; separate macro for that shape, otherwise identical to IdxLd.  Pass val as a P-alias (e.g. PDI,
+; not EDI) if it might collide with the scratch register; a bare 32-bit name would go undetected by
+; %ifnidni below, since it is spelled differently from the pointer-width alias for the same register.
+%macro IdxLdX 5-6 0
+    %push   IdxLdX
+    %ifidni %6,0
+        %ifidni %2,AH
+            %define %$R PDI
+        %elifidni %2,BH
+            %define %$R PDI
+        %elifidni %2,CH
+            %define %$R PDI
+        %elifidni %2,DH
+            %define %$R PDI
+        %else
+            %define %$R R10
+        %endif
     %else
-        Add     PSP,PTRSIZE
+        %define %$R %6
     %endif
+    %ifidni %$R,R10
+        LoadPtr %$R,%4
+        %1      %2,%3 [%$R+%5]
+    %else
+        Push    %$R
+        LoadPtr %$R,%4
+        %1      %2,%3 [%$R+%5]
+        %ifnidni %2,%$R
+            Pop     %$R
+        %else
+            Add     PSP,PTRSIZE
+        %endif
+    %endif
+    %pop
 %endmacro
 
 
@@ -265,15 +323,31 @@ PTRSIZE EQU     8                                                               
 ;   op    - instruction mnemonic (Add/Sub/And/Or/Cmp/...)
 ;   reg   - the register being combined with label's address
 ;   label - compile-time-constant symbol
-;   reg2  - (optional) scratch register to use, default PDI (see IdxSt/IdxLd's note above on why
-;           not an R8-R15 register).  Must not be the same register as reg.
+;   reg2  - (optional) scratch register to use.  Must not be the same register as reg.  reg and
+;           reg2 are two direct register operands to the same op, so op's encoding requires them
+;           to already be the same width, which rules out reg ever being AH/BH/CH/DH (an 8-bit
+;           register can never match reg2's pointer width).  There is therefore no REX conflict to
+;           guard against, unlike IdxSt: an omitted reg2 always defaults to R10 with no Push/Pop
+;           (see IdxSt's note above on why R10, not R8/R9).
 ;
 ;LblOp: op reg,label
-%macro LblOp 3-4 PDI
-    Push    %4
-    LoadPtr %4,%3
-    %1      %2,%4
-    Pop     %4
+%macro LblOp 3-4 0
+    %push   LblOp
+    %ifidni %4,0
+        %define %$R R10
+    %else
+        %define %$R %4
+    %endif
+    %ifidni %$R,R10
+        LoadPtr %$R,%3
+        %1      %2,%$R
+    %else
+        Push    %$R
+        LoadPtr %$R,%3
+        %1      %2,%$R
+        Pop     %$R
+    %endif
+    %pop
 %endmacro
 
 
@@ -288,15 +362,29 @@ PTRSIZE EQU     8                                                               
 ;Params:
 ;   dest  - the (non-indexed) memory location to store into, a resPTR-sized variable
 ;   label - compile-time-constant symbol whose address is stored
-;   reg   - (optional) scratch register to use, default PDI (see IdxSt/IdxLd's note on why not an
-;           R8-R15 register)
+;   reg   - (optional) scratch register to use.  Unlike IdxSt/LblOp, reg never sits alongside
+;           another register operand in the generated instruction, so there is no AH/BH/CH/DH
+;           conflict to guard against: an omitted reg always defaults to R10 with no Push/Pop
+;           (see IdxSt's note above on why R10, not R8/R9).
 ;
 ;LblSt: Mov [dest],label
-%macro LblSt 2-3 PDI
-    Push    %3
-    LoadPtr %3,%2
-    Mov     [%1],%3
-    Pop     %3
+%macro LblSt 2-3 0
+    %push   LblSt
+    %ifidni %3,0
+        %define %$R R10
+    %else
+        %define %$R %3
+    %endif
+    %ifidni %$R,R10
+        LoadPtr %$R,%2
+        Mov     [%1],%$R
+    %else
+        Push    %$R
+        LoadPtr %$R,%2
+        Mov     [%1],%$R
+        Pop     %$R
+    %endif
+    %pop
 %endmacro
 
 
@@ -310,15 +398,28 @@ PTRSIZE EQU     8                                                               
 ;   op    - instruction mnemonic, optionally with a size specifier (e.g. "FILd dword")
 ;   label - compile-time-constant symbol being indexed
 ;   index - index expression (a register, "reg*scale", or 0 for no index)
-;   reg   - (optional) scratch register to use, default PDI (see IdxSt/IdxLd's note above on why
-;           not an R8-R15 register).  Must not also be used as the index.
+;   reg   - (optional) scratch register to use.  Must not also be used as the index.  Like LblSt,
+;           reg never sits alongside another register operand here, so an omitted reg always
+;           defaults to R10 with no Push/Pop (see IdxSt's note above on why R10, not R8/R9).
 ;
 ;IdxUn: op [label+index]   (a single memory operand)
-%macro IdxUn 3-4 PDI
-    Push    %4
-    LoadPtr %4,%2
-    %1      [%4+%3]
-    Pop     %4
+%macro IdxUn 3-4 0
+    %push   IdxUn
+    %ifidni %4,0
+        %define %$R R10
+    %else
+        %define %$R %4
+    %endif
+    %ifidni %$R,R10
+        LoadPtr %$R,%2
+        %1      [%$R+%3]
+    %else
+        Push    %$R
+        LoadPtr %$R,%2
+        %1      [%$R+%3]
+        Pop     %$R
+    %endif
+    %pop
 %endmacro
 
 
@@ -341,14 +442,70 @@ PTRSIZE EQU     8                                                               
 
 
 ;===================================================================================================
-;Move One ExtCall Argument Into Its Destination Register
+;Align RSP Around A Raw, Non-ExCall Call Into Genuinely External Code (begin/end pair)
+;
+;For the rare hand-rolled callback invocation that passes arguments via its own private,
+; pushed-on-the-stack protocol instead of the real Win64 ABI's RCX/RDX/R8/R9 (pTrace/pDebug; see
+; DSP.asm's DSPIn and SPC700.asm's SPCBreak), not through ExCall.  Such a callback can only be a
+; hand-written external stub to begin with, since MSVC has no x64 equivalent of a 'naked' function
+; that could read arguments straight off the stack this way, so, unlike ExCall's genuine Win64 ABI
+; call below, no 32-byte shadow space is reserved here: the whole point of this private protocol is
+; that the callee does not expect a compiler-generated prologue to begin with.  RSP's 16-byte
+; alignment is still not optional, though, for the same reason as ExCall: whatever this callback
+; goes on to call itself, even indirectly, several frames deep, can still be genuine ABI-compliant
+; code that assumes it.
+;
+;Bracket the existing Push/Call/Pop sequence with this pair, unchanged in between: AlignRawCallBegin
+; at the very start, before the first Push, AlignRawCallEnd right after the last matching Pop.  The
+; padding this inserts sits below (pushed before) every existing Push, so it never shifts any offset
+; the callee's documented protocol, or this code's own matching Pops, already rely on.
+;
+;RSP's 16-byte alignment cannot be assumed on entry to either macro below.  This may be reached
+; through one or more internal Call frames (see that macro's own doc), which push arguments and a
+; return address with no alignment padding of their own, since nothing else in this codebase needs
+; 16-byte alignment.  R12 is saved and repurposed to remember the exact pre-call RSP (it is
+; otherwise unused anywhere in this codebase, so nothing this brackets can alias it), so restoring
+; RSP from R12 in AlignRawCallEnd always undoes everything done in between in a single move,
+; regardless of what that turns out to be.
+;
+;'And RSP,-16' alone only lands on a 16-byte boundary right here, not necessarily at the actual Call
+; a few instructions later: every Push in between (the bracketed protocol's own arguments) moves RSP
+; by another 8 bytes each, so an ODD number of them (DSP.asm's DSPIn: 5) flips the alignment this
+; macro just fixed right back to misaligned by the time Call runs, while an EVEN number (SPC700.asm's
+; SPCBreak: 6) happens to leave it correct by coincidence, not by design.  The optional parameter is
+; the exact byte count of every Push between this macro and the Call (e.g. 5*PTRSIZE for DSPIn's
+; five one-register Pushes), so this macro can pre-compensate: only when that count is not itself a
+; multiple of 16 does an extra 8-byte pad get added here, so that subtracting it back out during the
+; bracketed Pushes always lands exactly on a 16-byte boundary at the real Call, not just at this
+; macro's own call site.  Defaults to 0 (already a multiple of 16, so no pad), matching ExCall's own
+; use of this macro below, which pushes nothing of its own before its Call: its shadow-space/stack-
+; args Sub is always a compile-time multiple of 16 by construction, so it needs no compensation
+; either.
+
+%macro AlignRawCallBegin 0-1 0
+    Push    R12
+    Mov     R12,RSP
+    And     RSP,-16
+    %if (%1 % 16) != 0
+        Sub     RSP,8
+    %endif
+%endmacro
+
+%macro AlignRawCallEnd 0
+    Mov     RSP,R12
+    Pop     R12
+%endmacro
+
+
+;===================================================================================================
+;Move One ExCall Argument Into Its Destination Register
 ;
 ;A plain value (32-bit register or memory) is moved 32-bit-wide, which zero-extends the full 64-bit
 ; register, matching what most call sites pass and the x86 backend's behavior.  A pointer already
 ; sitting in a PAX/PBX/... alias register must instead be moved 64-bit wide: 'Mov ECX,RDI'
 ; (destination narrower than a 64-bit source register) is not encodable, and would silently truncate
-; the pointer's upper half anyway.  So, to pass a pointer to ExtCall, load it into a PAX/PBX/...
-; register at the call site first, since a bare '[label]' is not enough: ExtCall has no way to know
+; the pointer's upper half anyway.  So, to pass a pointer to ExCall, load it into a PAX/PBX/...
+; register at the call site first, since a bare '[label]' is not enough: ExCall has no way to know
 ; whether that memory holds a 4-byte or 8-byte value.
 ;
 ;A negative immediate (e.g. '-1', this codebase's usual pointer-typed 'leave unchanged' sentinel)
@@ -360,7 +517,7 @@ PTRSIZE EQU     8                                                               
 ;Params:
 ;   64-bit destination register, 32-bit destination register, source token
 
-%macro ExtCallArg 3
+%macro ExCallArg 3
     %ifidni %3,PAX
         Mov     %1,%3
     %elifidni %3,PBX
@@ -392,59 +549,7 @@ PTRSIZE EQU     8                                                               
 
 
 ;===================================================================================================
-;Move One (Internal) Call Argument Onto the Stack
-;
-;Unlike ExtCallArg, which loads into a fixed register, this pushes straight onto the
-; stack, for reasons the internal Call macro below explains.  A pointer sitting in a
-; PAX/PBX/... alias register is pushed verbatim, already 8 bytes wide.  A plain register
-; or memory source is first zero-extended into the scratch register pair, so a 4-byte
-; source (e.g. a plain dword variable) is never over-read as 8 bytes by a bare 'Push
-; qword'.
-;
-;A negative immediate (e.g. '-1', this codebase's usual pointer-typed 'leave unchanged'
-; sentinel) is sign-extended into the scratch register instead, for the same reason
-; ExtCallArg above sign-extends one: a callee reading the parameter back through a P-alias
-; and comparing against the same '-1' must see a match, as it would on x86.  A
-; non-negative immediate still zero-extends, unchanged from before, since zero-extension
-; and sign-extension agree for every value up to 07FFFFFFFh.
-;
-;Params:
-;   64-bit scratch register, 32-bit scratch register, source token
-
-%macro CallArg 3
-    %ifidni %3,PAX
-        Push    %3
-    %elifidni %3,PBX
-        Push    %3
-    %elifidni %3,PCX
-        Push    %3
-    %elifidni %3,PDX
-        Push    %3
-    %elifidni %3,PSI
-        Push    %3
-    %elifidni %3,PDI
-        Push    %3
-    %elifidni %3,PBP
-        Push    %3
-    %elifidni %3,PSP
-        Push    %3
-    %else
-        %ifnum %3
-            %if %3 < 0
-                Mov     %1,%3
-            %else
-                Mov     %2,%3
-            %endif
-        %else
-            Mov     %2,%3
-        %endif
-        Push    %1
-    %endif
-%endmacro
-
-
-;===================================================================================================
-;ExtCall Procedure (Microsoft x64 calling convention)
+;ExCall Procedure (Microsoft x64 calling convention)
 ;
 ;Use this only to call something that must honor the real Windows x64 ABI: a genuinely external
 ; function pointer (e.g. the frontend's registered apuCbFunc/pDebug/pTraceFunc callbacks).  For
@@ -455,33 +560,41 @@ PTRSIZE EQU     8                                                               
 ;   Function name followed by up to 8 arguments.  The first 4 are passed in RCX/RDX/R8/R9.  Any
 ;   further arguments go on the stack, above a 32-byte shadow space, 16-byte aligned, and are
 ;   cleaned up by the caller after the call returns (Win64 is caller-cleanup, so unlike the x86
-;   backend this needs no STDCALL/CDECL distinction).  See ExtCallArg above for how pointer
-;   arguments are handled.
+;   backend this needs no STDCALL/CDECL distinction).  See ExCallArg above for how pointer
+;   arguments are handled.  See AlignRawCallBegin above for why RSP cannot be assumed 16-byte
+;   aligned on entry, and for R12's role in fixing that up around the call below.
 
-%macro ExtCall 2-*
-    %if %0>9
-        %error  "ExtCall :: Procedures cannot have more than 8 arguments"
+%macro ExCall 2-*
+    %if %0 > 9
+        %error  "ExCall :: Procedures cannot have more than 8 arguments"
     %endif
 
-    %push ExtCallCtx                                                            ;Own context for %$n/%$stackn/%$framesz below.
-                                                                                ; ExtCall can be invoked from bare (non-PROC) code, e.g.
-                                                                                ; SPC700.asm's jump-table opcode handlers, so it cannot
-                                                                                ; rely on an enclosing PROC's %push context existing.
+    ;Own context for %$n/%$stackn/%$framesz below.
+    ; ExCall can be invoked from bare (non-PROC) code, e.g. SPC700.asm's jump-table opcode handlers,
+    ; so it cannot rely on an enclosing PROC's %push context existing.
+    %push ExCallCtx
+
     %assign %$n %0-1                                                            ;Number of real arguments
     %assign %$stackn 0
-    %if %$n>4
+    %if %$n > 4
         %assign %$stackn %$n-4
     %endif
 
     %assign %$framesz 32+(%$stackn*8)                                           ;Shadow space + stack args
-    %if (%$framesz % 16)!=0                                                     ;Keep RSP 16-byte aligned at CALL
+    %if (%$framesz % 16) != 0                                                   ;Keep RSP 16-byte aligned at CALL
         %assign %$framesz %$framesz+8
     %endif
 
+    ;See AlignRawCallBegin above: RSP cannot be assumed 16-byte aligned here, since ExCall may be
+    ; reached through one or more internal Call frames.  Restoring RSP via AlignRawCallEnd later
+    ; undoes both this alignment pad and the shadow-space/stack-args frame allocated below in a
+    ; single move, rather than reversing each separately.
+    AlignRawCallBegin
+
     Sub     RSP,%$framesz
 
-    ;An indirect call target (e.g. 'ExtCall PCX,...', calling through a register) can itself alias
-    ; one of the argument destination registers: 'ExtCall PCX,dword CBE_REQBP,...' calls through
+    ;An indirect call target (e.g. 'ExCall PCX,...', calling through a register) can itself alias
+    ; one of the argument destination registers: 'ExCall PCX,dword CBE_REQBP,...' calls through
     ; RCX while also passing arg 1 destined for RCX, so the target must be read out of RCX into a
     ; register nothing below ever writes (R11, since R10 is already the argument-staging scratch),
     ; before any argument setup begins, or the call would jump through its own clobbered first
@@ -523,56 +636,108 @@ PTRSIZE EQU     8                                                               
     ; EAX/PAX.  R10 has no x86 counterpart, so it is never a P-alias/index/val operand anywhere in
     ; the shared codebase (see IdxSt/IdxLd's note on R8-R15), making it a scratch register no
     ; source token can ever alias.
-    %if %$n>=8
-        ExtCallArg R10,R10D,%9
+    %if %$n >= 8
+        ExCallArg R10,R10D,%9
         Mov     [RSP+32+24],R10
     %endif
-    %if %$n>=7
-        ExtCallArg R10,R10D,%8
+    %if %$n >= 7
+        ExCallArg R10,R10D,%8
         Mov     [RSP+32+16],R10
     %endif
-    %if %$n>=6
-        ExtCallArg R10,R10D,%7
+    %if %$n >= 6
+        ExCallArg R10,R10D,%7
         Mov     [RSP+32+8],R10
     %endif
-    %if %$n>=5
-        ExtCallArg R10,R10D,%6
+    %if %$n >= 5
+        ExCallArg R10,R10D,%6
         Mov     [RSP+32+0],R10
     %endif
-    %if %$n>=4
-        ExtCallArg R10,R10D,%5
+    %if %$n >= 4
+        ExCallArg R10,R10D,%5
         Mov     [RSP+24],R10
     %endif
-    %if %$n>=3
-        ExtCallArg R10,R10D,%4
+    %if %$n >= 3
+        ExCallArg R10,R10D,%4
         Mov     [RSP+16],R10
     %endif
-    %if %$n>=2
-        ExtCallArg R10,R10D,%3
+    %if %$n >= 2
+        ExCallArg R10,R10D,%3
         Mov     [RSP+8],R10
     %endif
-    %if %$n>=1
-        ExtCallArg R10,R10D,%2
+    %if %$n >= 1
+        ExCallArg R10,R10D,%2
         Mov     [RSP+0],R10
     %endif
 
-    %if %$n>=1
+    %if %$n >= 1
         Mov     RCX,[RSP+0]
     %endif
-    %if %$n>=2
+    %if %$n >= 2
         Mov     RDX,[RSP+8]
     %endif
-    %if %$n>=3
+    %if %$n >= 3
         Mov     R8,[RSP+16]
     %endif
-    %if %$n>=4
+    %if %$n >= 4
         Mov     R9,[RSP+24]
     %endif
 
     Call    %$target
 
-    Add     RSP,%$framesz
+    AlignRawCallEnd
     %pop
+%endmacro
+
+
+;===================================================================================================
+;Move One (Internal) Call Argument Onto the Stack
+;
+;Unlike ExCallArg, which loads into a fixed register, this pushes straight onto the
+; stack, for reasons the internal Call macro below explains.  A pointer sitting in a
+; PAX/PBX/... alias register is pushed verbatim, already 8 bytes wide.  A plain register
+; or memory source is first zero-extended into the scratch register pair, so a 4-byte
+; source (e.g. a plain dword variable) is never over-read as 8 bytes by a bare 'Push
+; qword'.
+;
+;A negative immediate (e.g. '-1', this codebase's usual pointer-typed 'leave unchanged'
+; sentinel) is sign-extended into the scratch register instead, for the same reason
+; ExCallArg above sign-extends one: a callee reading the parameter back through a P-alias
+; and comparing against the same '-1' must see a match, as it would on x86.  A
+; non-negative immediate still zero-extends, unchanged from before, since zero-extension
+; and sign-extension agree for every value up to 07FFFFFFFh.
+;
+;Params:
+;   64-bit scratch register, 32-bit scratch register, source token
+
+%macro CallArg 3
+    %ifidni %3,PAX
+        Push    %3
+    %elifidni %3,PBX
+        Push    %3
+    %elifidni %3,PCX
+        Push    %3
+    %elifidni %3,PDX
+        Push    %3
+    %elifidni %3,PSI
+        Push    %3
+    %elifidni %3,PDI
+        Push    %3
+    %elifidni %3,PBP
+        Push    %3
+    %elifidni %3,PSP
+        Push    %3
+    %else
+        %ifnum %3
+            %if %3 < 0
+                Mov     %1,%3
+            %else
+                Mov     %2,%3
+            %endif
+        %else
+            Mov     %2,%3
+        %endif
+        Push    %1
+    %endif
 %endmacro
 
 
@@ -590,7 +755,7 @@ PTRSIZE EQU     8                                                               
 ; calls 'Call EmuDSP,PDX,EAX', silently clobbering RDX out from under the caller three frames up.
 ;
 ;So, every PROC-to-PROC call within this codebase, i.e. everything except a genuinely external
-; function pointer (see ExtCall above), goes through this Call instead, which passes arguments on
+; function pointer (see ExCall above), goes through this Call instead, which passes arguments on
 ; the stack the same way the x86 backend does (see x86.inc's Call), not through RCX/RDX/R8/R9.
 ; PCX/PDX/PBX/PSI/PDI/PBP then behave exactly as on x86: untouched by a call's argument setup,
 ; destroyed only if the callee's own body, and its USES if any, says so.
@@ -603,7 +768,7 @@ PTRSIZE EQU     8                                                               
 ;   e.g. a plain dword variable, must never be over-read as 8 bytes by a bare 'Push qword').
 
 %macro Call 2-*
-    %if %0>9
+    %if %0 > 9
         %error  "Call :: Procedures cannot have more than 8 arguments"
     %endif
 
@@ -616,9 +781,48 @@ PTRSIZE EQU     8                                                               
     Call    %1
 
     %assign %%argsize (%0*PTRSIZE)-PTRSIZE
-    %if %%argsize>0
+    %if %%argsize > 0
         Add     RSP,%%argsize
     %endif
+%endmacro
+
+
+;===================================================================================================
+;Set EAX to a Return Value, Preferring 'XOr EAX,EAX' for a Literal 0
+;
+;'XOr EAX,EAX' is 2 bytes versus 5 for 'Mov EAX,0', and breaks the register's dependency chain on
+; some microarchitectures, so RetN/RetZ/RetNZ below use this instead of a plain 'Mov EAX,%1'.  Only
+; a literal 0 known at assemble time qualifies: an EQU name or expression that merely evaluates to 0
+; still falls through to 'Mov', since NASM's preprocessor cannot tell its value applies here.
+
+%macro SetEAX 1
+    %ifnum %1
+        %if %1 == 0
+            XOr     EAX,EAX
+        %else
+            Mov     EAX,%1
+        %endif
+    %else
+        Mov     EAX,%1
+    %endif
+%endmacro
+
+
+;===================================================================================================
+;Conditional Move (architecture-neutral wrapper)
+;
+;This build's x64 CPU target (see this file's own 'CPU X64') supports CMOVcc natively, so this is
+; just a thin passthrough.  CMOVcc needs at least a Pentium Pro, which predates the x86 build's
+; 'CPU 386' target, so x86.inc emulates the same effect with a short branch instead.  Kept as a
+; single architecture-neutral spelling so shared code (APU.asm/DSP.asm/SPC700.asm) never needs its
+; own %ifdef WIN64 just to pick a branch or a real CMOVcc.
+;
+;Params:
+;   condition suffix (e.g. 'B', 'A', 'NE', 'NZ', matching a real CMOVcc mnemonic), destination
+;   register, source register or memory operand
+
+%macro CMovX 3
+    CMov%1  %2,%3
 %endmacro
 
 
@@ -631,7 +835,7 @@ PTRSIZE EQU     8                                                               
 
 %macro RetN 0-1
     %if %0
-        Mov     EAX,%1
+        SetEAX  %1
     %endif
 
     %ifdef %$paramsize
@@ -644,39 +848,33 @@ PTRSIZE EQU     8                                                               
 %endmacro
 
 
+;===================================================================================================
+;Conditional Return from Procedure (see RetN)
+;
+;The optional value is only moved into EAX when the condition is actually taken, unlike a naive
+; 'Mov EAX,value' placed before the jump, which would clobber EAX on the not-taken path too.
+
 %macro RetZ 0-1
     %if %0
-        Mov     EAX,%1
+        JNZ     %%Skip
+        SetEAX  %1
+        Jmp     %$Done
+        %%Skip:
+    %else
+        JZ      %$Done
     %endif
-
-    JZ      short %$Done
-%endmacro
-
-
-%macro RetZF 0-1
-    %if %0
-        Mov     EAX,%1
-    %endif
-
-    JZ      %$Done
 %endmacro
 
 
 %macro RetNZ 0-1
     %if %0
-        Mov     EAX,%1
+        JZ      %%Skip
+        SetEAX  %1
+        Jmp     %$Done
+        %%Skip:
+    %else
+        JNZ     %$Done
     %endif
-
-    JNZ     short %$Done
-%endmacro
-
-
-%macro RetNZF 0-1
-    %if %0
-        Mov     EAX,%1
-    %endif
-
-    JNZ     %$Done
 %endmacro
 
 
@@ -720,42 +918,51 @@ PTRSIZE EQU     8                                                               
 
     %push PROC                                                                  ;Save context
 
-    %if %0>9
+    %if %0 > 9
         %error  "EXPROC :: Procedures cannot have more than 8 arguments"
     %endif
 
-    %if %0>1                                                                    ;Does this procedure have any arguments?
-        Push    RBP                                                             ;Create a frame pointer
-        Mov     RBP,RSP
+    ;The x64 ABI treats the x87 control word as nonvolatile, so it is saved below the frame pointer
+    ; and restored by ENDP, with 037Fh loaded in between (see x86.inc EXPROC for why not 'FInit').
+    ; The slot is 16 bytes to keep RSP aligned, and the frame is always created.
+    Push    RBP                                                                 ;Create a frame pointer
+    Mov     RBP,RSP
+    Sub     RSP,16                                                              ;[RBP-8] = Host's FPU control word
+    FNStCW  [RBP-8]                                                             ;[RBP-6] = Control word to run with
+    Mov     word [RBP-6],037Fh
+    FLdCW   [RBP-6]
+    %assign %$fpuslot 16
+    %assign %$paramsize 0
 
+    %if %0 > 1                                                                  ;Does this procedure have any arguments?
         %assign %$paramsize (%0*8)-8                                            ;Save the size of the frame
 
-        %if %0>=2                                                               ;Home register args / point at stack args
+        %if %0 >= 2                                                             ;Home register args / point at stack args
             %define %2  RBP+16
             Mov     [RBP+16],RCX
 
-        %if %0>=3
+        %if %0 >= 3
             %define %3  RBP+24
             Mov     [RBP+24],RDX
 
-        %if %0>=4
+        %if %0 >= 4
             %define %4  RBP+32
             Mov     [RBP+32],R8
 
-        %if %0>=5
+        %if %0 >= 5
             %define %5  RBP+40
             Mov     [RBP+40],R9
 
-        %if %0>=6
+        %if %0 >= 6
             %define %6  RBP+48                                                  ;Already on the stack, caller-provided
 
-        %if %0>=7
+        %if %0 >= 7
             %define %7  RBP+56
 
-        %if %0>=8
+        %if %0 >= 8
             %define %8  RBP+64
 
-        %if %0>=9
+        %if %0 >= 9
             %define %9  RBP+72
 
         %endif
@@ -784,38 +991,38 @@ PTRSIZE EQU     8                                                               
 
     %push PROC                                                                  ;Save context
 
-    %if %0>9
+    %if %0 > 9
         %error  "PROC :: Procedures cannot have more than 8 arguments"
     %endif
 
-    %if %0>1                                                                    ;Does this procedure have any arguments?
+    %if %0 > 1                                                                  ;Does this procedure have any arguments?
         Push    RBP                                                             ;Create a frame pointer
         Mov     RBP,RSP
 
         %assign %$paramsize (%0*8)-8                                            ;Save the size of the frame
 
-        %if %0>=2                                                               ;Point at the stack slots Call already pushed
+        %if %0 >= 2                                                             ;Point at the stack slots Call already pushed
             %define %2  RBP+16
 
-        %if %0>=3
+        %if %0 >= 3
             %define %3  RBP+24
 
-        %if %0>=4
+        %if %0 >= 4
             %define %4  RBP+32
 
-        %if %0>=5
+        %if %0 >= 5
             %define %5  RBP+40
 
-        %if %0>=6
+        %if %0 >= 6
             %define %6  RBP+48
 
-        %if %0>=7
+        %if %0 >= 7
             %define %7  RBP+56
 
-        %if %0>=8
+        %if %0 >= 8
             %define %8  RBP+64
 
-        %if %0>=9
+        %if %0 >= 9
             %define %9  RBP+72
 
         %endif
@@ -845,33 +1052,39 @@ PTRSIZE EQU     8                                                               
         Mov     RBP,RSP
     %endif
 
-    %if %0>8
+    %if %0 > 8
         %error  "LOCALS :: Procedures cannot have more than 8 local variables"
     %endif
 
-    %if %0>=1
-        %define %1  RBP-8
+    %ifdef %$fpuslot                                                            ;Place the locals below EXPROC's FPU slot
+        %assign %$lbase %$fpuslot
+    %else
+        %assign %$lbase 0
+    %endif
 
-    %if %0>=2
-        %define %2  RBP-16
+    %if %0 >= 1
+        %xdefine %1 RBP-(%$lbase+8)
 
-    %if %0>=3
-        %define %3  RBP-24
+    %if %0 >= 2
+        %xdefine %2 RBP-(%$lbase+16)
 
-    %if %0>=4
-        %define %4  RBP-32
+    %if %0 >= 3
+        %xdefine %3 RBP-(%$lbase+24)
 
-    %if %0>=5
-        %define %5  RBP-40
+    %if %0 >= 4
+        %xdefine %4 RBP-(%$lbase+32)
 
-    %if %0>=6
-        %define %6  RBP-48
+    %if %0 >= 5
+        %xdefine %5 RBP-(%$lbase+40)
 
-    %if %0>=7
-        %define %7  RBP-56
+    %if %0 >= 6
+        %xdefine %6 RBP-(%$lbase+48)
 
-    %if %0>=8
-        %define %8  RBP-64
+    %if %0 >= 7
+        %xdefine %7 RBP-(%$lbase+56)
+
+    %if %0 >= 8
+        %xdefine %8 RBP-(%$lbase+64)
 
     %endif
     %endif
@@ -882,7 +1095,7 @@ PTRSIZE EQU     8                                                               
     %endif
     %endif
 
-    %if (%$localsize % 16)!=0
+    %if (%$localsize % 16) != 0
         %assign %$localsize %$localsize+8
     %endif
 
@@ -944,34 +1157,39 @@ PTRSIZE EQU     8                                                               
 %macro ENDP 0
     %$Done:
 
+    %ifdef %$fpuslot                                                            ;Restore the host's FPU control word saved by
+        FNClEx                                                                  ; EXPROC, clearing the masked exception flags
+        FLdCW   [RBP-8]                                                         ; first so the host does not see them
+    %endif
+
     %assign %$i 4
     %rep 5
         %ifdef %$ECX
-            %if %$ECX==%$i
+            %if %$ECX == %$i
                 Pop     RCX
             %endif
         %endif
 
         %ifdef %$EDX
-            %if %$EDX==%$i
+            %if %$EDX == %$i
                 Pop     RDX
             %endif
         %endif
 
         %ifdef %$EBX
-            %if %$EBX==%$i
+            %if %$EBX == %$i
                 Pop     RBX
             %endif
         %endif
 
         %ifdef %$ESI
-            %if %$ESI==%$i
+            %if %$ESI == %$i
                 Pop     RSI
             %endif
         %endif
 
         %ifdef %$EDI
-            %if %$EDI==%$i
+            %if %$EDI == %$i
                 Pop     RDI
             %endif
         %endif
