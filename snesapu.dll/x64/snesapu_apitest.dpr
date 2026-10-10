@@ -49,7 +49,7 @@
  same way Phase 9 is, SetAPULength song=3s/fade=2s.  A quick-listening convenience, separate from
  and not part of the x86/x64 comparison stream above.
 
- The 20 phases below already generate a fixed, deterministic amount of PCM output on their own
+ The phases below already generate a fixed, deterministic amount of PCM output on their own
  (currently around 8 seconds), so there is no separate sample-count argument to grow or shrink the
  run: every run of the same .spc file produces the same length of output.
 
@@ -200,9 +200,52 @@ const
   VOICE_SIDX_OFS  = 4;                                   // sIdx: resd, at byte offset 4
   VOICE_BCUR_OFS  = 8;                                   // bCur: resd, at byte offset 8
   VOICE_MFLG_OFS  = 13;                                  // mFlg: resb, at byte offset 13 (see MixF)
+  VOICE_MTGT_OFS  = 96;                                  // mTgtL, mTgtR: 2 resd, at byte offset 96
+  // Phase 22: the x87 control word a misbehaving host callback leaves behind, round toward zero
+  // with 24-bit precision and every exception still masked.  Any DLL FPU code that runs under it
+  // instead of 037Fh rounds differently.
+  CW_TAMPER       = $0C7F;
+  // Phase 25: one sample is exactly 128 APU clock cycles at this rate, and 0.1 second of calls.
+  SMPLOSS_RATE    = 192000;
+  SMPLOSS_CALLS   = 19200;
+  // Request sizes in APU clock cycles for the type 0 check.  With the 'DIV YA,X' loop, 64 and 96
+  // make many requests end exactly at the time the SPC700 already reached, 1, 95, 97, 127 and 287
+  // make some end one cycle after it, and every size but 287 makes others end before it.
+  SMPLOSS_REQ: array[0..7] of Cardinal = (1, 64, 95, 96, 97, 127, 128, 287);
+  // Phase 26: 0.1 second of APU clock cycles, which the DSP runs as 3200 samples at 32kHz and
+  // resamples to 4800 at this rate.
+  HALT_RATE       = 48000;
+  HALT_CYCLES     = 2457600;
+  HALT_SAMPLES    = 4800;
+  // Phase 27: a type 1 request at this rate is not a whole number of APU clock cycles, so part of
+  // it is made ahead into 'outBuf'.
+  KEEPBUF_RATE    = 44100;
+  KEEPBUF_SAMPLES = 100;
+  // Phase 28: one long type 1 request per case, each at or past the limit that a
+  // single EmuAPUBySmp call used to break at.  Speed, channels, bits, rate, opts, samples.
+  LONGREQ_COUNT   = 3;
+  LONGREQ_CANARY  = 16;                                  // bytes checked after the expected end
+  LONGREQ_NAMES: array[0..LONGREQ_COUNT-1] of String = (
+    'outBuf overflow (x15.99, 192kHz, DSP_ECHOFIR, 3 s)',
+    'Div overflow (8000Hz, 175 s)',
+    'speed overflow (x16, 48000Hz, 12.5 s)');
+  LONGREQ_SPEED: array[0..LONGREQ_COUNT-1] of Cardinal = (1048052, $10000, $100000);
+  LONGREQ_CHN:   array[0..LONGREQ_COUNT-1] of Cardinal = (2, 1, 1);
+  LONGREQ_BITS:  array[0..LONGREQ_COUNT-1] of Cardinal = (32, 8, 8);
+  LONGREQ_RATE:  array[0..LONGREQ_COUNT-1] of Cardinal = (192000, 8000, 48000);
+  LONGREQ_OPTS:  array[0..LONGREQ_COUNT-1] of Cardinal = (DSP_ECHOFIR, 0, 0);
+  LONGREQ_LEN:   array[0..LONGREQ_COUNT-1] of Cardinal = (576000, 1400000, 600000);
+  // Phase 29: a type 0 request at x16 whose speed-adjusted cycles come to exactly 2^32, which used
+  // to wrap to 0 cycles.  Mono 8-bit at 8000Hz keeps the buffer small.
+  LONG0_SPEED     = $100000;
+  LONG0_RATE      = 8000;
+  LONG0_LEN       = $10000000;                           // about 10.9 s, 2^32 cycles at x16
+  LONG0_CLK       = 24576000;                            // APU_CLK
+  LONG0_T64       = 11184810;                            // 2^32 cycles in 64kHz ticks (384 each)
   // MixF's user-facing bits (DSP.h), both in Voice.mFlg.
   MFLG_MUTE       = $01;
   MFLG_NOISE      = $02;
+  MFLG_OFF        = $08;                                 // voice inactive (DSP.inc), set by the DLL
 
 var
   hDLL: THandle;
@@ -291,6 +334,12 @@ var
   RegA, RegY, RegX, RegPSW, RegSP: Byte;
   NewRegA, NewRegY, NewRegX, NewRegPSW, NewRegSP: Byte;
   TestRegA, TestRegY, TestRegX, TestRegPSW, TestRegSP: Byte;
+  DecOp, DecIdx, DecFailCount: Integer;                  // Phase 21 (DAA/DAS sweep)
+  DecInA, DecInPSW, DecExpA, DecExpPSW: Byte;
+  // Phase 22: while CWTamper is set, APUCallback's CBE_S700FCH case loads CW_TAMPER, counted in
+  // CWTamperCount, so a scenario can confirm the callback really fired during it.
+  CWTamper: Boolean;
+  CWTamperCount: Int64;
 
 // =================================================================================================
 // Utility
@@ -408,7 +457,7 @@ end;
 
 // Logs Prefix_DSP_Hash/Prefix_Voice_Hash, the two GetAPUData outputs directly comparable across
 // x86/x64 (gDSP has no embedded pointers at all; HashVoiceArray normalizes bCur/sIdx into the same
-// offset both architectures use).  Called once at the end of every phase below, one pair of log
+// offset both architectures use).  Called once at the end of every PCM phase below, one pair of log
 // lines per phase rather than a single running hash, so a divergence's log line pinpoints the
 // phase it first appeared in instead of just proving one exists somewhere in the whole run.
 procedure CheckFpuCW(const Prefix: String); forward;
@@ -435,6 +484,21 @@ asm
   pop     eax
   {$ENDIF}
   movzx   eax, ax
+end;
+
+// Loads CW into the x87 control word.  Only Phase 22's tampering callback uses it, to change the
+// control word the way a host callback might, so the DLL's own resets can be checked.
+procedure SetX87CW(CW: Word); assembler; nostackframe;
+asm
+  {$IFDEF CPU64}
+  push    rcx
+  fldcw   [rsp]
+  pop     rcx
+  {$ELSE}
+  push    eax
+  fldcw   [esp]
+  pop     eax
+  {$ENDIF}
 end;
 
 procedure Info(const Msg: String);
@@ -474,6 +538,53 @@ begin
   if CW <> HostCW then
     Fail(Format('%s: x87 control word changed across snesapu calls (%.4x, expected %.4x)',
       [Prefix, CW, HostCW]));
+end;
+
+const
+  PSW_C = $01;
+  PSW_Z = $02;
+  PSW_H = $08;
+  PSW_N = $80;
+
+// The hardware's DAA/DAS (bsnes SMP::instructionDecimalAdjustAdd/Sub), the reference for Phase 21.
+// Only A, N, Z, and C change.  For DAS, a borrow from the low nibble adjustment does not touch C.
+procedure RefDecimalAdjust(IsSub: Boolean; InA, InPSW: Byte; out OutA, OutPSW: Byte);
+var
+  R: Integer;
+  C, H: Boolean;
+begin
+  R := InA;
+  C := (InPSW and PSW_C) <> 0;
+  H := (InPSW and PSW_H) <> 0;
+  if not IsSub then
+  begin
+    if C or (R > $99) then
+    begin
+      R := (R + $60) and $FF;
+      C := True;
+    end;
+    if H or ((R and $0F) > 9) then
+      R := (R + 6) and $FF;
+  end
+  else
+  begin
+    if (not C) or (R > $99) then
+    begin
+      R := (R - $60) and $FF;
+      C := False;
+    end;
+    if (not H) or ((R and $0F) > 9) then
+      R := (R - 6) and $FF;
+  end;
+
+  OutA := R;
+  OutPSW := InPSW and not (PSW_N or PSW_Z or PSW_C);
+  if R >= $80 then
+    OutPSW := OutPSW or PSW_N;
+  if R = 0 then
+    OutPSW := OutPSW or PSW_Z;
+  if C then
+    OutPSW := OutPSW or PSW_C;
 end;
 
 function LoadTextFile(const Path: String): AnsiString;
@@ -596,7 +707,15 @@ var
 begin
   TestWin32APIFromCallback(WTS_EXCALL);  // see its own comment; exercises the ExCall path this fires on
   case effect of
-    CBE_S700FCH: Inc(SpcFetchCallbackCount);
+    CBE_S700FCH:
+      begin
+        Inc(SpcFetchCallbackCount);
+        if CWTamper then
+        begin
+          SetX87CW(CW_TAMPER);
+          Inc(CWTamperCount);
+        end;
+      end;
     CBE_REQBP:
       begin
         Inc(ReqBPCallbackCount);
@@ -1028,6 +1147,90 @@ begin
 end;
 
 // =================================================================================================
+// SPC700 code helpers for Phases 22 and 23
+
+// Writes one byte of SPC700 code at Addr through SetAPURAM and advances Addr.
+procedure EmitSPC(var Addr: Word; B: Byte);
+begin
+  pSetAPURAM(Addr, B);
+  Inc(Addr);
+end;
+
+// Emits 'MOV dp,#imm' (8F imm dp).
+procedure EmitMovDpImm(var Addr: Word; Dp, Imm: Byte);
+begin
+  EmitSPC(Addr, $8F);
+  EmitSPC(Addr, Imm);
+  EmitSPC(Addr, Dp);
+end;
+
+// Emits the two writes that store Value in DSP register Reg ('MOV $F2,#Reg' then 'MOV $F3,#Value').
+procedure EmitDSPWrite(var Addr: Word; Reg, Value: Byte);
+begin
+  EmitMovDpImm(Addr, $F2, Reg);
+  EmitMovDpImm(Addr, $F3, Value);
+end;
+
+// Hash of every voice's mTgtL/mTgtR, the volumes ChnSep computes with FSqrt and FDiv when stereo
+// separation is on, so any difference in x87 rounding shows up here.
+function HashVoiceTargets: Cardinal;
+var
+  V: Integer;
+begin
+  Result := FNV32_SEED;
+  for V := 0 to VOICE_COUNT - 1 do
+    Result := Hash32(Result, PByte(gVoice)[V * VOICE_STRIDE + VOICE_MTGT_OFS], 8);
+end;
+
+// Runs one Phase 22 scenario from the current state and returns HashVoiceTargets afterwards.
+//   0: the SPC700 writes VOL L/R of voice 0, which Phase 22 keys on first (DSPIn, then ChnSep).
+//   1: the SPC700 clears KOF, then sets VOL L/R and keys on each voice in turn, so ChnSep also
+//      runs from CatchUp's deferred KON processing.  At the 8kHz output Phase 22 sets, most ticks
+//      reach it without calling EmuDSP.
+//   2: a fast seek during a fade.  FixSeek keys every voice off, so ChnSep does not run, but
+//      SetFade and the main volume handlers do.
+function RunCWScenario(Scenario: Integer): Cardinal;
+var
+  A: Word;
+  V: Integer;
+begin
+  case Scenario of
+    0:
+      begin
+        A := $0200;
+        EmitDSPWrite(A, $00, $71);
+        EmitDSPWrite(A, $01, $13);
+        EmitSPC(A, $2F);                                  // BRA $
+        EmitSPC(A, $FE);
+        pFixAPU($0200, 0, 0, 0, 0, $EF);
+        pEmuAPU(@Buf[0], 256 * 24, 0);
+      end;
+    1:
+      begin
+        A := $0200;
+        EmitDSPWrite(A, $5C, $00);                        // KOF = 0, so no KON below is cancelled
+        for V := 0 to VOICE_COUNT - 1 do
+        begin
+          EmitDSPWrite(A, V * 16, $70 + V);
+          EmitDSPWrite(A, V * 16 + 1, $20 + V * 3);
+          EmitDSPWrite(A, $4C, 1 shl V);                  // KON this voice only
+          EmitSPC(A, $8D);                                // MOV Y,#$40
+          EmitSPC(A, $40);
+          EmitSPC(A, $FE);                                // DBNZ Y,$ (spins 64 times)
+          EmitSPC(A, $FE);
+        end;
+        EmitSPC(A, $2F);                                  // BRA $
+        EmitSPC(A, $FE);
+        pFixAPU($0200, 0, 0, 0, 0, $EF);
+        pEmuAPU(@Buf[0], 256, 1);
+      end;
+    2:
+      pSeekAPU(16000, 1);
+  end;
+  Result := HashVoiceTargets;
+end;
+
+// =================================================================================================
 // Main
 
 var
@@ -1043,6 +1246,27 @@ var
   Blob: array[0..15] of Byte;
   BlobIdx: Integer;
   DataRes: Cardinal;
+  CWIdx: Integer;                                        // Phase 22
+  CWHashA, CWHashB: Cardinal;
+  CWCountA: Int64;
+  CtxA, CtxB: array of Byte;
+  NoDspAddr: Word;                                       // Phase 23
+  NoDspOld, NoDspNew: Byte;
+  SmpCallIdx, SmpReqIdx: Integer;                        // Phase 25
+  SmpReq: Cardinal;
+  SmpTotal, SmpZeroCalls: Int64;
+  SmpT64Start, SmpT64Delta: Cardinal;
+  SmpExcess, SmpCount: Int64;
+  SmpRet: Pointer;
+  HaltSilent: Boolean;                                   // Phase 26
+  KeepT64A, KeepT64B: Cardinal;                          // Phase 27
+  LongIdx, LongByteIdx: Integer;                         // Phase 28
+  LongBytes: NativeUInt;
+  LongBuf: array of Byte;
+  LongRet: Pointer;
+  LongOK: Boolean;
+  Long0T64Start, Long0T64Delta: Cardinal;                // Phase 29
+  Long0Bytes, Long0Expect: Int64;
   DSPRegResult: Byte;
   FrameBytes: Int64;
   RegIdx: Integer;
@@ -1689,7 +1913,7 @@ begin
   // SpcTraceStub to keep firing, and that later phases (including Phase 13's own regression check
   // right below) continue to assume.
 
-  // DSP_HALT is checked directly inside EmuDSP ('Test byte [dbgOpt],DSP_HALT / JNZ .Mute', see
+  // DSP_HALT sends RunDSP to its '.Mute' path ('Test byte [dbgOpt],DSP_HALT / JNZ .Mute', see
   // DSP.asm), so it reliably silences output, verified via WriteChunkCheckSilent, the same
   // technique the mixType=0 test (Phase 2) uses.
   pSetSPCDbg(@SpcTraceStub, DSP_HALT);
@@ -1771,9 +1995,8 @@ begin
   // SetSPCDbg/SetDSPDbg again now and checking the returned previous pointer, which both
   // functions always report before touching anything, proves those internal -1 calls really did
   // leave pDebug/pTrace as the addresses registered at startup, instead of the bogus
-  // 0x00000000FFFFFFFF value the pre-fix bug corrupted them to.  This also restores SPC_TRACE in
-  // dbgOpt, which SeekAPU's fast path clears and nothing else re-enables, so SpcTraceStub keeps
-  // firing for the rest of the run instead of going permanently silent after this phase.
+  // 0x00000000FFFFFFFF value the pre-fix bug corrupted them to.  SeekAPU's fast path now restores
+  // dbgOpt itself, so the SPC_TRACE passed here only re-registers the state already in place.
   OldPDebug := pSetSPCDbg(@SpcTraceStub, SPC_TRACE);
   if OldPDebug = @SpcTraceStub then
     Ok('SetSPCDbg: pDebug unchanged by SeekAPU (fast=1)''s internal -1 sentinel calls')
@@ -1985,9 +2208,10 @@ begin
   // GetAPUData's ppVoice exposes that the DLL documents as 'set by user', so this is the one place
   // in this run that pokes the voice array directly instead of going through an exported setter.
   // One voice at a time, on then off, exercises both bits across all 8 voices; any x86/x64
-  // mismatch in how DSP.asm reads mFlg (e.g. DSPIn's 'IdxSt Test,mix,PBX+mFlg,AH', RunDSP's 'Test
-  // byte [PBX+mFlg],MFLG_MUTE'/MFLG_NOISE) surfaces through the ordinary PCM-hash comparison like
-  // everywhere else in this tool, so nothing special is asserted for these two loops.
+  // mismatch in how DSP.asm reads mFlg (e.g. DSPIn's 'IdxSt Test,mix,PBX+mFlg,AH', or EmuDSP's
+  // '.UsrFlg' loop, which gathers MFLG_MUTE/MFLG_NOISE into usrMute/dspNoiseF once per call)
+  // surfaces through the ordinary PCM-hash comparison like everywhere else in this tool, so
+  // nothing special is asserted for these two loops.
   for VoiceIdx := 0 to VOICE_COUNT - 1 do
   begin
     VoiceMFlg := @PByte(gVoice)[VoiceIdx * VOICE_STRIDE + VOICE_MFLG_OFS];
@@ -2041,9 +2265,356 @@ begin
 
   CloseFile(fOut);
 
+  // === Phase 21: DAA/DAS against the hardware algorithm ===
+  // Runs 'DAA A' and 'DAS A' for every A with each C/H combination (1024 cases each) and compares A
+  // and PSW, read back through GetSPCRegs, with RefDecimalAdjust.  The opcode is written at $0200,
+  // followed by 'BRA $' so the CPU spins in place afterward.  Runs after the output file is closed,
+  // so the PCM stream is unaffected, and the -wav render below reloads the song anyway.
+  DecFailCount := 0;
+  for DecOp := 0 to 1 do
+  begin
+    if DecOp = 0 then
+      pSetAPURAM($0200, $DF)                              // DAA A
+    else
+      pSetAPURAM($0200, $BE);                             // DAS A
+    pSetAPURAM($0201, $2F);                               // BRA $
+    pSetAPURAM($0202, $FE);
+
+    for DecIdx := 0 to 1023 do
+    begin
+      DecInA := DecIdx and $FF;
+      DecInPSW := 0;
+      if (DecIdx and $100) <> 0 then
+        DecInPSW := DecInPSW or PSW_C;
+      if (DecIdx and $200) <> 0 then
+        DecInPSW := DecInPSW or PSW_H;
+
+      // 64 SPC cycles (24 APU clocks each) leave room for any overshoot carried over from the
+      // previous call, so the opcode at $0200 always runs before the CPU starts spinning.
+      pFixAPU($0200, DecInA, 0, 0, DecInPSW, $EF);
+      pEmuAPU(@Buf[0], 64 * 24, 0);
+      pGetSPCRegs(@RegPC, @RegA, @RegY, @RegX, @RegPSW, @RegSP);
+
+      RefDecimalAdjust(DecOp = 1, DecInA, DecInPSW, DecExpA, DecExpPSW);
+      if (RegA <> DecExpA) or (RegPSW <> DecExpPSW) then
+      begin
+        Inc(DecFailCount);
+        if DecFailCount <= 8 then
+          Fail(Format('%s: A=0x%.2x PSW=0x%.2x gave A=0x%.2x PSW=0x%.2x, ' +
+            'expected A=0x%.2x PSW=0x%.2x', [Copy('DAADAS', DecOp * 3 + 1, 3), DecInA, DecInPSW,
+            RegA, RegPSW, DecExpA, DecExpPSW]));
+      end;
+    end;
+  end;
+  if DecFailCount = 0 then
+    Ok('DAA/DAS: all 2048 cases match the hardware algorithm')
+  else
+    Fail(Format('DAA/DAS: %d of 2048 case(s) mismatched (first 8 shown above)', [DecFailCount]));
+  CheckFpuCW('Phase21');
+
+  // === Phase 22: FPU work after a host callback that changes the x87 control word ===
+  // Each scenario runs twice from the same snapshot, once with APUCallback loading CW_TAMPER on
+  // every SPC700 fetch and once without, and the whole DLL state (the context) must match byte for
+  // byte.  A missing control word reset on the way from SPC700 emulation into FPU code would round
+  // differently, so each scenario guards one reset: DSPIn's '.NoCallback' (0), CatchUp's '.Skip'
+  // (1) and FixSeek's entry (2).  Stereo separation is set off its neutral value so ChnSep takes
+  // its FSqrt/FDiv path, every voice gets different left and right volumes, the output rate drops
+  // to 8kHz so CatchUp skips EmuDSP on most ticks, and voice 0 is keyed on for scenario 0.
+  pSetDSPStereo(49152);
+  pSetAPUOpt(1, 2, 16, 8000, INT_GAUSS, 0);
+  for VoiceIdx := 0 to VOICE_COUNT - 1 do
+  begin
+    pSetDSPReg(VoiceIdx * 16, $60 + VoiceIdx);
+    pSetDSPReg(VoiceIdx * 16 + 1, $10 + VoiceIdx * 3);
+  end;
+  pSetDSPReg($5C, $00);
+  pSetDSPReg($4C, $01);
+  pEmuAPU(@Buf[0], 64, 1);                                // let the KON of voice 0 take effect
+  CtxSize := pGetSNESAPUContextSize();
+  SetLength(CtxBuf, CtxSize);
+  SetLength(CtxA, CtxSize);
+  SetLength(CtxB, CtxSize);
+  for CWIdx := 0 to 2 do
+  begin
+    if CWIdx = 2 then                                     // fade from now on, so the seek lands in it
+      pSetAPULength(PCardinal(gT64Cnt)^, 4 * 64000);
+    if (CWIdx = 0) and ((PByte(gVoice)[VOICE_MFLG_OFS] and MFLG_OFF) <> 0) then
+      Warn('x87 control word scenario 0: voice 0 is not playing, so ChnSep may not run');
+    pGetSNESAPUContext(@CtxBuf[0]);
+    CWTamperCount := 0;
+    CWTamper := True;
+    CWHashA := RunCWScenario(CWIdx);
+    CWTamper := False;
+    CWCountA := CWTamperCount;
+    pGetSNESAPUContext(@CtxA[0]);
+    pSetSNESAPUContext(@CtxBuf[0]);
+    CWHashB := RunCWScenario(CWIdx);
+    pGetSNESAPUContext(@CtxB[0]);
+    LogKV(Format('CWTamper%d_Hash', [CWIdx]), Format('%.8x', [CWHashB]));
+    if CWCountA = 0 then
+      Fail(Format('x87 control word scenario %d: the tampering callback never fired', [CWIdx]))
+    else if CompareMem(@CtxA[0], @CtxB[0], CtxSize) then
+      Ok(Format('x87 control word scenario %d: same DLL state with a tampering callback ' +
+        '(%d tampered fetches)', [CWIdx, CWCountA]))
+    else
+      Fail(Format('x87 control word scenario %d: DLL state differs with a tampering callback ' +
+        '(voice volume hash %.8x vs %.8x)', [CWIdx, CWHashA, CWHashB]));
+  end;
+  pSetAPULength(Cardinal(-1), 0);                         // end the fade again
+  pSetDSPStereo(32768);                                   // normal separation, as Phase 4 left it
+  CheckFpuCW('Phase22');
+
+  // === Phase 23: SPC_NODSP ignores DSPDATA writes to the $80-$FF mirror ===
+  // With DSPADDR bit 7 set, $80-$FF are read-only mirrors of $00-$7F, so writing MVOLL through
+  // $8C must leave it alone, while a write through $0C itself still lands.  SPC_NODSP routes
+  // these writes through Func3's '%%NoDSP' path, which a fast seek also takes.
+  pSetSPCDbg(@SpcTraceStub, SPC_NODSP);
+  NoDspOld := PByte(gDSP)[$0C];
+  NoDspNew := NoDspOld xor $55;
+  NoDspAddr := $0200;
+  EmitDSPWrite(NoDspAddr, $8C, NoDspNew);
+  EmitSPC(NoDspAddr, $2F);                                // BRA $
+  EmitSPC(NoDspAddr, $FE);
+  pFixAPU($0200, 0, 0, 0, 0, $EF);
+  pEmuAPU(@Buf[0], 64 * 24, 0);
+  if PByte(gDSP)[$0C] = NoDspOld then
+    Ok('SPC_NODSP: a DSPDATA write through $8C left MVOLL unchanged')
+  else
+    Fail(Format('SPC_NODSP: a DSPDATA write through $8C changed MVOLL from 0x%.2x to 0x%.2x',
+      [NoDspOld, PByte(gDSP)[$0C]]));
+  NoDspAddr := $0200;
+  EmitDSPWrite(NoDspAddr, $0C, NoDspNew);
+  pFixAPU($0200, 0, 0, 0, 0, $EF);
+  pEmuAPU(@Buf[0], 64 * 24, 0);
+  if PByte(gDSP)[$0C] = NoDspNew then
+    Ok('SPC_NODSP: a DSPDATA write through $0C still updated MVOLL')
+  else
+    Fail(Format('SPC_NODSP: a DSPDATA write through $0C left MVOLL at 0x%.2x, expected 0x%.2x',
+      [PByte(gDSP)[$0C], NoDspNew]));
+  pSetSPCDbg(@SpcTraceStub, SPC_TRACE);                   // restore the standing state
+  pSetDSPReg($0C, NoDspOld);
+  CheckFpuCW('Phase23');
+
+  // === Phase 24: SetScript700Data rejects an out-of-range addr or size ===
+  // Both are unsigned, so an addr at or above 80000000h, or a size that runs past the end of the
+  // Script700 area, must return -1 without writing anything.  A signed check let these through
+  // and wrote outside the buffer.
+  DataRes := pSetScript700Data($FFFFFF00, @Blob[0], SizeOf(Blob));
+  if DataRes = Cardinal(-1) then
+    Ok('SetScript700Data (addr=0xFFFFFF00): returned -1')
+  else
+    Fail(Format('SetScript700Data (addr=0xFFFFFF00): expected -1, got %d', [DataRes]));
+  DataRes := pSetScript700Data($80000000, @Blob[0], SizeOf(Blob));
+  if DataRes = Cardinal(-1) then
+    Ok('SetScript700Data (addr=0x80000000): returned -1')
+  else
+    Fail(Format('SetScript700Data (addr=0x80000000): expected -1, got %d', [DataRes]));
+  DataRes := pSetScript700Data(0, @Blob[0], $FFFFFFF0);
+  if DataRes = Cardinal(-1) then
+    Ok('SetScript700Data (size=0xFFFFFFF0): returned -1')
+  else
+    Fail(Format('SetScript700Data (size=0xFFFFFFF0): expected -1, got %d', [DataRes]));
+  CheckFpuCW('Phase24');
+
+  // === Phase 25: small EmuAPU requests produce the samples for all of their time ===
+  // At 192000Hz and 1.0x speed one sample is exactly 128 APU clock cycles.  The SPC700 runs a
+  // 'DIV YA,X' loop, whose 288-cycle instruction ends up to 287 cycles past the requested time, so
+  // the next request is often already covered, sometimes exactly.  Such a request must still create
+  // its samples.  For type 0, 19200 requests of R cycles are exactly 150*R samples whatever the
+  // fraction left from before, and 50*R 64kHz ticks give or take the last instruction.  For type 1,
+  // the SPC700 must not run ahead of the samples returned by more than the 192 samples EmuAPUBySmp
+  // may keep in 'outBuf'.
+  pSetAPUOpt(1, 2, 16, SMPLOSS_RATE, INT_GAUSS, 0);       // 4 bytes per sample, clears 'outBuf'
+  pSetAPUSmpClk($10000);
+  NoDspAddr := $0200;
+  EmitSPC(NoDspAddr, $9E);                                // DIV YA,X
+  EmitSPC(NoDspAddr, $2F);                                // BRA $0200
+  EmitSPC(NoDspAddr, $FD);
+  pFixAPU($0200, 0, 0, 1, 0, $EF);
+  pEmuAPU(@Buf[0], 24576, 0);                             // settle into the loop
+
+  for SmpReqIdx := 0 to High(SMPLOSS_REQ) do
+  begin
+    SmpReq := SMPLOSS_REQ[SmpReqIdx];
+    SmpTotal := 0;
+    SmpZeroCalls := 0;
+    SmpT64Start := PCardinal(gT64Cnt)^;
+    for SmpCallIdx := 1 to SMPLOSS_CALLS do
+    begin
+      SmpRet := pEmuAPU(@Buf[0], SmpReq, 0);
+      SmpCount := (NativeUInt(SmpRet) - NativeUInt(@Buf[0])) div 4;
+      Inc(SmpTotal, SmpCount);
+      if SmpCount = 0 then
+        Inc(SmpZeroCalls);
+    end;
+    SmpT64Delta := PCardinal(gT64Cnt)^ - SmpT64Start;
+    LogKV(Format('SmallReq_Type0_%d_Samples', [SmpReq]), IntToStr(SmpTotal));
+    LogKV(Format('SmallReq_Type0_%d_T64', [SmpReq]), IntToStr(SmpT64Delta));
+    if SmpTotal <> Int64(SMPLOSS_CALLS div 128) * SmpReq then
+      Fail(Format('EmuAPU type 0, %d calls of %d cycles: %d samples, expected %d ' +
+        '(%d calls returned none)', [SMPLOSS_CALLS, SmpReq, SmpTotal,
+        Int64(SMPLOSS_CALLS div 128) * SmpReq, SmpZeroCalls]))
+    else if Abs(Int64(SmpT64Delta) - Int64(SMPLOSS_CALLS div 384) * SmpReq) > 1 then
+      Fail(Format('EmuAPU type 0, %d calls of %d cycles: the SPC700 ran %d 64kHz ticks, ' +
+        'expected %d', [SMPLOSS_CALLS, SmpReq, SmpT64Delta,
+        Int64(SMPLOSS_CALLS div 384) * SmpReq]))
+    else
+      Ok(Format('EmuAPU type 0, %d calls of %d cycles: %d samples and %d 64kHz ticks ' +
+        '(%d calls returned none)', [SMPLOSS_CALLS, SmpReq, SmpTotal, SmpT64Delta,
+        SmpZeroCalls]));
+  end;
+
+  pSetAPUOpt(1, 2, 16, SMPLOSS_RATE, INT_GAUSS, 0);       // start type 1 with an empty 'outBuf'
+  SmpT64Start := PCardinal(gT64Cnt)^;
+  for SmpCallIdx := 1 to SMPLOSS_CALLS do
+    pEmuAPU(@Buf[0], 1, 1);
+  SmpT64Delta := PCardinal(gT64Cnt)^ - SmpT64Start;
+  // One 64kHz tick is 3 samples at 192000Hz, so this is how many samples the SPC700 ran ahead of
+  // the ones returned.  Up to 192 can sit in 'outBuf', plus a tick of rounding on either side.
+  SmpExcess := Int64(SmpT64Delta) * 3 - SMPLOSS_CALLS;
+  LogKV('SmallReq_Type1_T64', IntToStr(SmpT64Delta));
+  if (SmpExcess >= -3) and (SmpExcess <= 192 + 3) then
+    Ok(Format('EmuAPU type 1, %d calls of 1 sample: the SPC700 ran %d samples ahead',
+      [SMPLOSS_CALLS, SmpExcess]))
+  else
+    Fail(Format('EmuAPU type 1, %d calls of 1 sample: the SPC700 ran %d samples ahead, ' +
+      'expected 0 to 192', [SMPLOSS_CALLS, SmpExcess]));
+  CheckFpuCW('Phase25');
+
+  // === Phase 26: a suspended DSP outputs the resampled length, and seeks without a buffer ===
+  // With DSP_ECHOFIR above 32kHz the DSP runs at 32kHz and resamples its output.  DSP_HALT must
+  // still return silence of the resampled length, 4800 samples for 0.1 second at 48000Hz rather
+  // than the 3200 samples the DSP runs, give or take one for the resampler phase.  A slow seek
+  // emulates with no output buffer, which DSP_HALT used to fill with silence through NULL.
+  pSetAPUOpt(1, 2, 16, HALT_RATE, INT_GAUSS, DSP_ECHOFIR);  // 4 bytes per sample
+  pSetSPCDbg(@SpcTraceStub, DSP_HALT);
+  FillChar(Buf, SizeOf(Buf), $55);
+  SmpRet := pEmuAPU(@Buf[0], HALT_CYCLES, 0);
+  SmpCount := (NativeUInt(SmpRet) - NativeUInt(@Buf[0])) div 4;
+  HaltSilent := True;
+  if SmpCount * 4 <= SizeOf(Buf) then
+    for SmpCallIdx := 0 to Integer(SmpCount * 4) - 1 do
+      if Buf[SmpCallIdx] <> 0 then
+        HaltSilent := False;
+  LogKV('HaltResampled_Samples', IntToStr(SmpCount));
+  if Abs(SmpCount - HALT_SAMPLES) > 1 then
+    Fail(Format('DSP_HALT with DSP_ECHOFIR at %dHz: %d samples for 0.1 second, expected %d',
+      [HALT_RATE, SmpCount, HALT_SAMPLES]))
+  else if not HaltSilent then
+    Fail(Format('DSP_HALT with DSP_ECHOFIR at %dHz: %d samples, but not all silent',
+      [HALT_RATE, SmpCount]))
+  else
+    Ok(Format('DSP_HALT with DSP_ECHOFIR at %dHz: %d silent samples for 0.1 second',
+      [HALT_RATE, SmpCount]));
+  pSeekAPU(64000, 0);                                     // an access violation ends the run here
+  Ok('DSP_HALT: a slow seek of one second ran without writing through NULL');
+  pSetSPCDbg(@SpcTraceStub, SPC_TRACE);                   // restore the standing state
+  CheckFpuCW('Phase26');
+
+  // === Phase 27: SetAPUOpt with the same format keeps the samples in 'outBuf' ===
+  // EmuAPUBySmp makes the end of a 44100Hz type 1 request ahead into 'outBuf' and returns the rest
+  // on the next call.  A SetAPUOpt call with the same format in between must keep them, so from
+  // the same context the next request returns the same samples and leaves the SPC700 at the same
+  // time as with no SetAPUOpt call.  Discarding them makes EmuAPUBySmp emulate further instead.
+  pSetAPUOpt(1, 2, 16, KEEPBUF_RATE, INT_GAUSS, 0);       // 4 bytes per sample
+  pEmuAPU(@Buf[0], KEEPBUF_SAMPLES, 1);
+  CtxSize := pGetSNESAPUContextSize();
+  SetLength(CtxBuf, CtxSize);
+  SetLength(SegX, KEEPBUF_SAMPLES * 4);
+  SetLength(SegY, KEEPBUF_SAMPLES * 4);
+  pGetSNESAPUContext(@CtxBuf[0]);
+  pEmuAPU(@Buf[0], KEEPBUF_SAMPLES, 1);
+  pSetAPUOpt(1, 2, 16, KEEPBUF_RATE, INT_GAUSS, 0);       // the same format again
+  pEmuAPU(@SegX[0], KEEPBUF_SAMPLES, 1);
+  KeepT64A := PCardinal(gT64Cnt)^;
+  pSetSNESAPUContext(@CtxBuf[0]);
+  pEmuAPU(@Buf[0], KEEPBUF_SAMPLES, 1);
+  pEmuAPU(@SegY[0], KEEPBUF_SAMPLES, 1);
+  KeepT64B := PCardinal(gT64Cnt)^;
+  LogKV('KeepOutBuf_T64', Format('%d %d', [KeepT64A, KeepT64B]));
+  if KeepT64A <> KeepT64B then
+    Fail(Format('SetAPUOpt with the same format: the SPC700 ran to 64kHz tick %d, ' +
+      'expected %d as with no call (buffered samples were discarded)', [KeepT64A, KeepT64B]))
+  else if not CompareMem(@SegX[0], @SegY[0], KEEPBUF_SAMPLES * 4) then
+    Fail('SetAPUOpt with the same format: the next request returned different samples')
+  else
+    Ok('SetAPUOpt with the same format: the buffered samples were kept');
+  CheckFpuCW('Phase27');
+
+  // === Phase 28: long type 1 requests ===
+  // EmuAPUBySmp works out the clock cycles of its whole request at once, so EmuAPUI hands it one
+  // second at a time.  Each case makes one request well past a limit a single call used to break
+  // at: the samples lost to rounding smpREmu overflowing outBuf into apuCbMask/apuCbFunc, the
+  // samples-to-cycles Div raising #DE, and the speed-adjusted cycles wrapping into an endless
+  // loop.  Each must return exactly the samples asked for and leave the bytes after them alone.
+  // SPC_TRACE is off meanwhile, since its stub would run on every one of these instructions.
+  pSetSPCDbg(@SpcTraceStub, 0);
+  for LongIdx := 0 to LONGREQ_COUNT - 1 do
+  begin
+    pSetAPUSmpClk(LONGREQ_SPEED[LongIdx]);
+    pSetAPUOpt(1, LONGREQ_CHN[LongIdx], LONGREQ_BITS[LongIdx], LONGREQ_RATE[LongIdx], INT_GAUSS,
+      LONGREQ_OPTS[LongIdx]);
+    LongBytes := NativeUInt(LONGREQ_LEN[LongIdx]) * LONGREQ_CHN[LongIdx] *
+      (LONGREQ_BITS[LongIdx] div 8);
+    SetLength(LongBuf, LongBytes + LONGREQ_CANARY);
+    FillChar(LongBuf[0], Length(LongBuf), $A5);
+    LongRet := pEmuAPU(@LongBuf[0], LONGREQ_LEN[LongIdx], 1);
+    LongOK := True;
+    for LongByteIdx := 0 to LONGREQ_CANARY - 1 do
+      if LongBuf[LongBytes + NativeUInt(LongByteIdx)] <> $A5 then
+        LongOK := False;
+    if NativeUInt(LongRet) - NativeUInt(@LongBuf[0]) <> LongBytes then
+      Fail(Format('Long type 1 request, %s: returned %d bytes, expected %d',
+        [LONGREQ_NAMES[LongIdx], Int64(NativeUInt(LongRet) - NativeUInt(@LongBuf[0])),
+        Int64(LongBytes)]))
+    else if not LongOK then
+      Fail(Format('Long type 1 request, %s: wrote past the end of the buffer',
+        [LONGREQ_NAMES[LongIdx]]))
+    else
+      Ok(Format('Long type 1 request, %s: %d samples, nothing written past them',
+        [LONGREQ_NAMES[LongIdx], LONGREQ_LEN[LongIdx]]));
+  end;
+  SetLength(LongBuf, 0);
+  if pSNESAPUCallback(@APUCallback, 0) = @APUCallback then
+    Ok('Long type 1 requests: SNESAPUCallback still reports the installed callback')
+  else
+    Fail('Long type 1 requests: the installed callback pointer was overwritten');
+  pSetAPUSmpClk($10000);
+  pSetSPCDbg(@SpcTraceStub, SPC_TRACE);                 // restore the standing state
+  CheckFpuCW('Phase28');
+
+  // === Phase 29: a long type 0 request above 1.0x speed ===
+  // EmuAPUI converts len to speed-adjusted cycles, which at x16 reach 2^32 from about 10.9 s of
+  // len.  They used to be cut to 32 bits, so this request emulated 0 cycles and returned no
+  // samples.  It must return len * rate / APU_CLK samples and run the SPC700 for 2^32 cycles.
+  pSetSPCDbg(@SpcTraceStub, 0);
+  pSetAPUSmpClk(LONG0_SPEED);
+  pSetAPUOpt(1, 1, 8, LONG0_RATE, INT_GAUSS, 0);         // 1 byte per sample
+  Long0Expect := Int64(LONG0_LEN) * LONG0_RATE div LONG0_CLK;
+  SetLength(LongBuf, Long0Expect + 1 + LONGREQ_CANARY);
+  FillChar(LongBuf[0], Length(LongBuf), $A5);
+  Long0T64Start := PCardinal(gT64Cnt)^;
+  LongRet := pEmuAPU(@LongBuf[0], LONG0_LEN, 0);
+  Long0T64Delta := PCardinal(gT64Cnt)^ - Long0T64Start;
+  Long0Bytes := Int64(NativeUInt(LongRet) - NativeUInt(@LongBuf[0]));
+  LogKV('LongType0_Bytes_T64', Format('%d %d', [Long0Bytes, Long0T64Delta]));
+  if (Long0Bytes < Long0Expect) or (Long0Bytes > Long0Expect + 1) then
+    Fail(Format('Long type 0 request at x16: returned %d samples, expected %d',
+      [Long0Bytes, Long0Expect]))
+  else if Abs(Int64(Long0T64Delta) - LONG0_T64) > 2 then
+    Fail(Format('Long type 0 request at x16: the SPC700 ran %d ticks of 64kHz, expected %d',
+      [Long0T64Delta, LONG0_T64]))
+  else
+    Ok(Format('Long type 0 request at x16: %d samples, %d ticks of 64kHz',
+      [Long0Bytes, Long0T64Delta]));
+  SetLength(LongBuf, 0);
+  pSetAPUSmpClk($10000);
+  pSetSPCDbg(@SpcTraceStub, SPC_TRACE);                 // restore the standing state
+  CheckFpuCW('Phase29');
+
   // === Optional: '-wav' 5-second render ===
   // A separate, fixed-format excursion for quick listening/spot-checking, not part of the x86/x64
-  // comparison stream above.  Deliberately placed here, after all 20 phases' excursions, so it
+  // comparison stream above.  Deliberately placed here, after every phase's excursions, so it
   // doubles as a human-audible confirmation that ResetAPU/LoadSPCFile leave the DLL in a normal
   // state even after everything above, not just that the in-process FAIL checks passed.
   if WantWav then

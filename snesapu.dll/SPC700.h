@@ -25,7 +25,7 @@
 *                                                 Copyright (C) 2003-2026 degrade-factory          *
 *                                                                                                  *
 * List of users and dates who/when modified this file:                                             *
-*    - degrade-factory in 2026-09-11                                                               *
+*    - degrade-factory in 2026-10-09                                                               *
 ***************************************************************************************************/
 
 #ifndef __INC_SPC700
@@ -67,9 +67,8 @@
 //
 //Subsequent calls to EmuSPC will return that cycles were emulated, but nothing will have happened.
 //
-//Once this flag has been set, the next call to EmuSPC will also disable the DSP emulator.
-// Subsequent calls to EmuDSP will generate silence.  This way emulation can be halted in the
-// middle of EmuAPU without affecting the size of the output buffer.
+//The DSP keeps running with the registers as they are.  Add DSP_HALT to make EmuDSP generate
+// silence as well.  Either way EmuAPU still fills the whole output buffer.
 
 #define SPC_HALT    0x2
 
@@ -175,8 +174,8 @@ void InitSPC();
 //**************************************************************************************************
 // Reset SPC700
 //
-// Clears all memory, resets the function registers, T64Cnt, and halt flag, and copies ROM into the
-// IPL region.
+// Clears all memory, resets the function registers and T64Cnt, and copies ROM into the IPL region.
+// The debugging options set with SetSPCDbg are kept.
 //
 // Notes:
 //    Callers should use ResetAPU instead.
@@ -195,6 +194,7 @@ void ResetSPC();
 // Notes:
 //    pTrace is always called when a STOP instruction is encountered, regardless of the options.
 //    The build option SA_DEBUG must be enabled for pTrace to be called under other circumstances.
+//    The options are kept across ResetAPU, LoadSPCFile and SeekAPU until the frontend changes them.
 //
 // In:
 //    pTrace-> Debugging vector (NULL can be passed to disable the debug vector, -1 leaves the

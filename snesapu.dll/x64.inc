@@ -35,7 +35,7 @@
 ;                                                   Copyright (C) 2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-09-29
+;   - degrade-factory in 2026-10-09
 ;===================================================================================================
 
 %define ARCH_BITS   64
@@ -99,80 +99,6 @@ PTRSIZE EQU     8                                                               
 
 %macro PopAD 0
     Pop     PDI,PSI,PBP,PBX,PDX,PCX,PAX
-%endmacro
-
-
-;===================================================================================================
-;Decimal Adjust After Addition/Subtraction (see x86.inc EmuDAA/EmuDAS for the real-instruction form)
-;
-;DAA/DAS are not encodable in 64-bit mode, so this replicates Intel's documented algorithm exactly
-; (including the resulting CF/SF/ZF/PF) using ordinary arithmetic, reading the AL/CF/AF the caller
-; has just SAHF'd into place.  AH is clobbered as scratch, matching the real DAA/DAS instruction,
-; which touches only AL and the flags, never AH, and CL/DL are clobbered as scratch for snapshotting
-; the original AL/CF/AF, needed because the high-nibble adjustment's "> 0x99 or old CF" test must
-; use AL/CF exactly as they were on entry, before the low-nibble adjustment ran.  CL/DL, not CH/DH,
-; are used because SPC700.asm's '%define X CH' makes CH the emulated X register for the whole EmuSPC
-; call, and DH is commonly used by this codebase's own callers (e.g. OpcDF/OpcBE stash Y/AH there
-; across this macro, to restore afterward), leaving CL/DL as the only free scratch.
-
-%macro EmuDAA 0
-    Mov     CL,AL                                                               ;CL = old AL
-    LAHF
-    Mov     DL,AH                                                               ;DL.0 = old CF, DL.4 = old AF
-
-    Mov     AH,AL
-    And     AH,0Fh
-    Cmp     AH,9
-    JA      %%Lo
-    Test    DL,10h
-    JZ      %%LoDone
-    %%Lo:
-        Add     AL,6
-    %%LoDone:
-
-    Cmp     CL,99h
-    JA      %%Hi
-    Test    DL,1
-    JZ      %%HiDone
-    %%Hi:
-        Add     AL,60h
-        StC
-        Jmp     %%CFDone
-    %%HiDone:
-        ClC
-    %%CFDone:
-
-    Test    AL,AL                                                               ;Set SF/ZF/PF from the final AL (CF is already set above)
-%endmacro
-
-%macro EmuDAS 0
-    Mov     CL,AL                                                               ;CL = old AL
-    LAHF
-    Mov     DL,AH                                                               ;DL.0 = old CF, DL.4 = old AF
-
-    Mov     AH,AL
-    And     AH,0Fh
-    Cmp     AH,9
-    JA      %%Lo
-    Test    DL,10h
-    JZ      %%LoDone
-    %%Lo:
-        Sub     AL,6
-    %%LoDone:
-
-    Cmp     CL,99h
-    JA      %%Hi
-    Test    DL,1
-    JZ      %%HiDone
-    %%Hi:
-        Sub     AL,60h
-        StC
-        Jmp     %%CFDone
-    %%HiDone:
-        ClC
-    %%CFDone:
-
-    Test    AL,AL                                                               ;Set SF/ZF/PF from the final AL (CF is already set above)
 %endmacro
 
 
@@ -585,20 +511,21 @@ PTRSIZE EQU     8                                                               
         %assign %$framesz %$framesz+8
     %endif
 
-    ;See AlignRawCallBegin above: RSP cannot be assumed 16-byte aligned here, since ExCall may be
-    ; reached through one or more internal Call frames.  Restoring RSP via AlignRawCallEnd later
+    ;NOTE: See AlignRawCallBegin above: RSP cannot be assumed 16-byte aligned here, since ExCall may
+    ; be reached through one or more internal Call frames.  Restoring RSP via AlignRawCallEnd later
     ; undoes both this alignment pad and the shadow-space/stack-args frame allocated below in a
     ; single move, rather than reversing each separately.
     AlignRawCallBegin
 
     Sub     RSP,%$framesz
 
-    ;An indirect call target (e.g. 'ExCall PCX,...', calling through a register) can itself alias
-    ; one of the argument destination registers: 'ExCall PCX,dword CBE_REQBP,...' calls through
-    ; RCX while also passing arg 1 destined for RCX, so the target must be read out of RCX into a
-    ; register nothing below ever writes (R11, since R10 is already the argument-staging scratch),
-    ; before any argument setup begins, or the call would jump through its own clobbered first
-    ; argument instead of the real target.  A label target (the common case) needs no such staging.
+    ;NOTE: An indirect call target (e.g. 'ExCall PCX,...', calling through a register) can itself
+    ; alias one of the argument destination registers: 'ExCall PCX,dword CBE_REQBP,...' calls
+    ; through RCX while also passing arg 1 destined for RCX, so the target must be read out of RCX
+    ; into a register nothing below ever writes (R11, since R10 is already the argument-staging
+    ; scratch), before any argument setup begins, or the call would jump through its own clobbered
+    ; first argument instead of the real target.  A label target (the common case) needs no such
+    ; staging.
     %ifidni %1,PAX
         Mov     R11,%1
         %define %$target R11
@@ -627,15 +554,15 @@ PTRSIZE EQU     8                                                               
         %define %$target %1
     %endif
 
-    ;Stage every argument's source value into memory before touching RAX/RCX/RDX/R8/R9.  Otherwise
-    ; an earlier-assigned register (e.g. RDX for arg 2, or RAX used as scratch to stage another
-    ; arg) could also be the literal source token of a later-staged argument (e.g. "PDX" for arg
-    ; 1, or "EAX" for some other arg): assigning straight into the final registers in a fixed
-    ; order would let one argument's write clobber another's source before it is read, and using
-    ; RAX itself as staging scratch has the same problem if some argument's source is literally
-    ; EAX/PAX.  R10 has no x86 counterpart, so it is never a P-alias/index/val operand anywhere in
-    ; the shared codebase (see IdxSt/IdxLd's note on R8-R15), making it a scratch register no
-    ; source token can ever alias.
+    ;NOTE: Stage every argument's source value into memory before touching RAX/RCX/RDX/R8/R9.
+    ; Otherwise an earlier-assigned register (e.g. RDX for arg 2, or RAX used as scratch to stage
+    ; another arg) could also be the literal source token of a later-staged argument (e.g. "PDX" for
+    ; arg 1, or "EAX" for some other arg): assigning straight into the final registers in a fixed
+    ; order would let one argument's write clobber another's source before it is read, and using RAX
+    ; itself as staging scratch has the same problem if some argument's source is literally EAX/PAX.
+    ; R10 has no x86 counterpart, so it is never a P-alias/index/val operand anywhere in the shared
+    ; codebase (see IdxSt/IdxLd's note on R8-R15), making it a scratch register no source token can
+    ; ever alias.
     %if %$n >= 8
         ExCallArg R10,R10D,%9
         Mov     [RSP+32+24],R10
@@ -922,12 +849,12 @@ PTRSIZE EQU     8                                                               
         %error  "EXPROC :: Procedures cannot have more than 8 arguments"
     %endif
 
-    ;The x64 ABI treats the x87 control word as nonvolatile, so it is saved below the frame pointer
-    ; and restored by ENDP, with 037Fh loaded in between (see x86.inc EXPROC for why not 'FInit').
-    ; The slot is 16 bytes to keep RSP aligned, and the frame is always created.
+    ;NOTE: The x64 ABI treats the x87 control word as nonvolatile, so it is saved below the frame
+    ; pointer and restored by ENDP, with 037Fh loaded in between (see x86.inc EXPROC for why not
+    ; 'FInit').  The slot is 16 bytes to keep RSP aligned, and the frame is always created.
     Push    RBP                                                                 ;Create a frame pointer
     Mov     RBP,RSP
-    Sub     RSP,16                                                              ;[RBP-8] = Host's FPU control word
+    Sub     RSP,16                                                              ;[RBP-8] = Frontend's FPU control word
     FNStCW  [RBP-8]                                                             ;[RBP-6] = Control word to run with
     Mov     word [RBP-6],037Fh
     FLdCW   [RBP-6]
@@ -1157,9 +1084,9 @@ PTRSIZE EQU     8                                                               
 %macro ENDP 0
     %$Done:
 
-    %ifdef %$fpuslot                                                            ;Restore the host's FPU control word saved by
+    %ifdef %$fpuslot                                                            ;Restore the frontend's FPU control word saved by
         FNClEx                                                                  ; EXPROC, clearing the masked exception flags
-        FLdCW   [RBP-8]                                                         ; first so the host does not see them
+        FLdCW   [RBP-8]                                                         ; first so the frontend does not see them
     %endif
 
     %assign %$i 4

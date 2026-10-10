@@ -100,6 +100,10 @@
 #      register, so 'XOr EBX,EBX' zeroes RBX just as completely as 'XOr PBX,PBX' (RBX,RBX) does, at
 #      one byte less encoding (no REX.W prefix needed).  Purely a style/size nit, not a correctness
 #      bug like Checks 1-11, so it is reported the same way but never changes behavior if left as is.
+#  13. A memory reference below the stack pointer, either bracketed ('[PSP-4]') or passed bare as a
+#      macro argument that becomes one ('ZeroDN PSP-8').  Neither the Win32 nor the Win64 ABI keeps
+#      that memory safe (Win64 defines no red zone), so a debugger or the OS may overwrite it at any
+#      time.  Use a reserved slot instead: LOCALS, 'Sub PSP,n' with positive offsets, or dspScr.
 #
 # False positives this script cannot distinguish from real bugs, rare in practice but possible:
 #   - A line that legitimately needs the low 32 bits of a pointer for an unrelated reason.  None of
@@ -356,7 +360,7 @@ $ScratchRegMacros = @{
 }
 
 # ==================================================================================================
-# Pass 2: scan every line of every file for the twelve violation patterns above.
+# Pass 2: scan every line of every file for the thirteen violation patterns above.
 $Violations = New-Object System.Collections.Generic.List[string]
 
 foreach ($path in $ResolvedFiles) {
@@ -589,6 +593,12 @@ foreach ($path in $ResolvedFiles) {
                 $eAlias = $EAliasOf[$xorLhs.ToUpperInvariant()]
                 $Violations.Add("${fileName}:${lineNum}: 'XOr $xorLhs,$xorRhs' zeroes the full 64-bit register at 64-bit width for no reason, use 'XOr $eAlias,$eAlias' instead: $($code.Trim())")
             }
+        }
+
+        # Check 13: a memory reference below the stack pointer, bracketed or passed bare as a macro
+        # argument.  See the header comment above.
+        if ($code -match "(?i)\b(PSP|ESP|RSP)\s*-\s*[0-9A-Z_]+") {
+            $Violations.Add("${fileName}:${lineNum}: '$($Matches[0])' refers below the stack pointer, which neither the Win32 nor the Win64 ABI keeps safe, use LOCALS or a reserved slot instead: $($code.Trim())")
         }
     }
 }

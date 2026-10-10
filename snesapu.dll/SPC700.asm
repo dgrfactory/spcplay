@@ -25,7 +25,7 @@
 ;                                                   Copyright (C) 2003-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-09-30
+;   - degrade-factory in 2026-10-09
 ;===================================================================================================
 
 %ifdef WIN64
@@ -92,7 +92,7 @@
 ; touch P's own byte), so [PSW+P-1], read as a dword once RAM has been OR'd into it (FixSPC), stays a
 ; live pointer to the current Direct Page for the rest of the loaded session -- P's own 0/1 value
 ; occupies just its one byte within that window (bit 8-15 of the dword), so flipping it alone already
-; shifts the reconstructed pointer by 0x100, no extra bookkeeping required anywhere P changes.
+; shifts the reconstructed pointer by 100h, no extra bookkeeping required anywhere P changes.
 ;
 ;On x64 a real pointer doesn't fit in this byte-aligned window, so P stays a plain 0/1 flag there, and
 ; the Direct Page pointer is instead resolved fresh from RAM/[PSW+P] every time it is needed (see DPBase,
@@ -201,7 +201,7 @@ SECTION .bss ALIGN=64
     outPortCp   resb    4                                                       ;Out port copies (used to match the behavior of official Script700)
     flushPort   resb    4                                                       ;Port values for flush
     portMod     resb    1                                                       ;In port was modified (bits 3-0) SPC700 is sleeping (7)
-    tControl    resb    1                                                       ;Copy of [F1h]
+    tControl    resb    1                                                       ;Copy of $F1
                 resb    2
 
     t0Step      resb    1                                                       ;Timer pulses left until next counter increase,
@@ -241,6 +241,11 @@ SECTION .bss ALIGN=64
     t64DSP      resd    1                                                       ;Last cycles of DSP emulation
 
     spcVarEP    resd    1                                                       ;Endpoint of SPC700.asm variable
+
+    ;Host stack pointer right after RunScript700's PushAD.  .700ERROR restores it, which drops any
+    ; return address a subroutine leaves when it jumps there.  It sits past spcVarEP, so the context
+    ; functions do not save it.
+    scr700hsp   resPTR  1
 
 
 ;===================================================================================================
@@ -339,8 +344,7 @@ USES ECX,EDX,ESI,EDI
     Mov     PAX,[pAPURAM]
     Mov     AX,0F0h
     Mov     byte [PAX+0],0Ah                                                    ;Test gets set to 0Ah
-    And     byte [PAX+1],07h                                                    ;Timer status is preserved, other bits are reset
-    Or      byte [PAX+1],80h                                                    ;Enable ROM reading
+    Mov     byte [PAX+1],80h                                                    ;Enable ROM reading, timers stopped as on reset
     Mov     dword [PAX+4],0                                                     ;Reset in-ports
     Mov     word [PAX+8],-1                                                     ;See above comment on erasing RAM
     Mov     dword [PAX+0Ah],0                                                   ;Timers set to 00h
@@ -407,26 +411,32 @@ EXPROC SetSPCDbg, pTrace, opts
 ENDP
 
 PROC SetSPCDbgI, pTraceI, optsI
-USES EDX
+USES ECX,EDX
 
-    Mov     PDX,[pDebug]
-
+    Mov     PDX,[pDebug]                                                        ;PDX = Previous vector, returned below
+    Mov     PCX,PDX
     Mov     PAX,[pTraceI]
     Cmp     PAX,-1
-    CMovX   NE,PDX,PAX                                                          ;If PAX = -1, leave pDebug unchanged
-    Mov     [pDebug],PDX                                                        ;PAX itself stays untouched: 'Test PAX,PAX' below
-                                                                                ; still needs the caller's original pTraceI value
-    LblSt   pOpFetch,SPCFetch                                                   ;Disable instruction tracing
-    Cmp     dword [optsI],-1
-    JE      .NoOpts                                                             ;Leave options as they are
+    CMovX   NE,PCX,PAX                                                          ;If PAX = -1, leave pDebug unchanged
+    Mov     [pDebug],PCX                                                        ;PCX = Vector now installed
 
-    Test    byte [optsI],SPC_TRACE                                              ;If trace is enabled, set fetch pointer to watch
+    LblSt   pOpFetch,SPCFetch                                                   ;Disable instruction tracing
+    Mov     EAX,[optsI]
+    Cmp     EAX,-1                                                              ;Leave options as they are?
+    JNE     .NewOpts
+        Mov     EAX,[dbgOpt]                                                    ;   Yes, but recheck tracing with the vector now installed
+
+    .NewOpts:
+    Test    AL,SPC_TRACE                                                        ;If trace is enabled, set fetch pointer to watch
     JZ      .TraceOff
-    Test    PAX,PAX                                                             ;Make sure function pointer is not null
+    Test    PCX,PCX                                                             ;Make sure the installed vector is not null
     JZ      .TraceOff
         LblSt   pOpFetch,SPCTrace
 
     .TraceOff:
+    Cmp     dword [optsI],-1
+    JE      .NoOpts
+
 %ifdef DSP_INC
     Mov     AL,[optsI]                                                          ;Update disable envelope flags
     And     AL,DSP_PAUSE
@@ -440,7 +450,7 @@ USES EDX
     Mov     [dbgOpt],EAX
 
     .NoOpts:
-    Mov     PAX,PDX
+    Mov     PAX,PDX                                                             ;Return the previous vector
 
 ENDP
 
@@ -731,282 +741,292 @@ PROC RunScript700, interrupt
 
     ;---------- Initialize ----------
 
-    PushAD                                                                      ;Push all registers
-    Mov     EBX,[scr700ptr]                                                     ;EBX = Program pointer
+    PushAD
+    Mov     [scr700hsp],PSP                                                     ;Stack pointer for .700ERROR, at any call depth
+    Mov     EBX,[scr700ptr]                                                     ;Resume where the script stopped
 
     ;NOTE: Since the argument cannot be obtained when EBP is changed, the argument is judged before
     ; assignment of EBP.
-    Test    byte [interrupt],-1                                                 ;Is called in interrupt mode?
-    Mov     PBP,[pSCRRAM]                                                       ;PBP = Script RAM Pointer
+    Test    byte [interrupt],-1                                                 ;Called right after an awaited port event?
+    Mov     PBP,[pSCRRAM]                                                       ;The program base
     JZ      .700RETURN                                                          ;   No
 
-    Mov     EAX,[clkExec]                                                       ;EAX = Actual number of clock cycles emulated
+    Mov     EAX,[clkExec]                                                       ;SPC700 cycles past the last 64 kHz tick
     Sub     EAX,[clkLeft]
     Add     EAX,T64_CYC
     Sub     EAX,[t64kHz]
-    XOr     EDX,EDX                                                             ;EDX = 0
-    Mov     ECX,12                                                              ;Base on 2.048MHz (see APU.inc)
-    Div     ECX                                                                 ;EAX = EDX:EAX / ECX
-    Add     [scr700cmp],EAX                                                     ;Left cycle on Script700
-    Sub     [scr700cnt],EAX
+    XOr     EDX,EDX
+    Mov     ECX,12                                                              ;In 2.048 MHz units, as the waits count (see APU.inc)
+    Div     ECX
+    Add     [scr700cmp],EAX                                                     ;Add them to the time waited
+    Sub     [scr700cnt],EAX                                                     ;Count them against the next wait
 
     ;---------- Command Fetcher ----------
 
     .700RETURN:
-    Test    byte [scr700stf],-1                                                 ;Is aborted force from frontend?
+    Test    byte [scr700stf],-1                                                 ;Aborted by the frontend (bit 7)?
     JS      .700ERROR                                                           ;   Yes
 
-    Mov     AH,[PBP+PBX]                                                        ;AH = Program[PBX]
-    Test    AH,AH                                                               ;Is command E,Q?
+    Mov     AH,[PBP+PBX]                                                        ;Opcode
+    Test    AH,AH                                                               ;'q' (00h), the end of the program?
     JZ      .700EXIT                                                            ;   Yes
-    Inc     EBX                                                                 ;EBX++
-    Dec     AH                                                                  ;Is command W?
+    Inc     EBX
+    Dec     AH                                                                  ;'w' (01h)?
     JZ      .700W                                                               ;   Yes
-    Dec     AH                                                                  ;Is command M?
+    Dec     AH                                                                  ;'m' (02h)?
     JZ      .700M                                                               ;   Yes
-    Dec     AH                                                                  ;Is command C?
+    Dec     AH                                                                  ;'c' (03h)?
     JZ      .700C                                                               ;   Yes
-    Dec     AH                                                                  ;Is command A,S,U,D,N?
+    Dec     AH                                                                  ;'n' (04h), also 'a', 's', 'u' and 'd'?
     JZ      .700N                                                               ;   Yes
-    Dec     AH                                                                  ;Is command BRA?
+    Dec     AH                                                                  ;'bra' (05h)?
     JZ      .700BRA                                                             ;   Yes
-    Dec     AH                                                                  ;Is command BEQ?
+    Dec     AH                                                                  ;'beq' (06h)?
     JZ      .700BEQ                                                             ;   Yes
-    Dec     AH                                                                  ;Is command BNE?
+    Dec     AH                                                                  ;'bne' (07h)?
     JZ      .700BNE                                                             ;   Yes
-    Dec     AH                                                                  ;Is command BGE?
+    Dec     AH                                                                  ;'bge' (08h)?
     JZ      .700BGE                                                             ;   Yes
-    Dec     AH                                                                  ;Is command BLE?
+    Dec     AH                                                                  ;'ble' (09h)?
     JZ      .700BLE                                                             ;   Yes
-    Dec     AH                                                                  ;Is command BGT?
+    Dec     AH                                                                  ;'bgt' (0Ah)?
     JZ      .700BGT                                                             ;   Yes
-    Dec     AH                                                                  ;Is command BLT?
+    Dec     AH                                                                  ;'blt' (0Bh)?
     JZ      .700BLT                                                             ;   Yes
-    Dec     AH                                                                  ;Is command BCC?
+    Dec     AH                                                                  ;'bcc' (0Ch)?
     JZ      .700BCC                                                             ;   Yes
-    Dec     AH                                                                  ;Is command BLO?
+    Dec     AH                                                                  ;'blo' (0Dh)?
     JZ      .700BLO                                                             ;   Yes
-    Dec     AH                                                                  ;Is command BHI?
+    Dec     AH                                                                  ;'bhi' (0Eh)?
     JZ      .700BHI                                                             ;   Yes
-    Dec     AH                                                                  ;Is command BCS?
+    Dec     AH                                                                  ;'bcs' (0Fh)?
     JZ      .700BCS                                                             ;   Yes
-    Dec     AH                                                                  ;Is command R?
+    Dec     AH                                                                  ;'r' (10h)?
     JZ      .700R                                                               ;   Yes
-    Dec     AH                                                                  ;Is command R0?
+    Dec     AH                                                                  ;'r0' (11h)?
     JZ      .700R0                                                              ;   Yes
-    Dec     AH                                                                  ;Is command R1?
+    Dec     AH                                                                  ;'r1' (12h)?
     JZ      .700R1                                                              ;   Yes
-    Dec     AH                                                                  ;Is command F?
+    Dec     AH                                                                  ;'f' (13h)?
     JZ      .700F                                                               ;   Yes
-    Dec     AH                                                                  ;Is command F0?
+    Dec     AH                                                                  ;'f0' (14h)?
     JZ      .700F0                                                              ;   Yes
-    Dec     AH                                                                  ;Is command F1?
+    Dec     AH                                                                  ;'f1' (15h)?
     JZ      .700F1                                                              ;   Yes
-    Dec     AH                                                                  ;Is command WI?
+    Dec     AH                                                                  ;'wi' (16h)?
     JZ      .700WI                                                              ;   Yes
-    Dec     AH                                                                  ;Is command WO?
+    Dec     AH                                                                  ;'wo' (17h)?
     JZ      .700WO                                                              ;   Yes
-    Dec     AH                                                                  ;Is command BP?
+    Dec     AH                                                                  ;'bp' (18h)?
     JZ      .700BP                                                              ;   Yes
-    Jmp     .700ERROR
+    Jmp     .700ERROR                                                           ;   No, an unknown opcode
 
     .700GETPVAL:
-    MovZX   EDI,AH                                                              ;EDI = AH
-    IdxLd   Mov,EDI,scrAsmSkip,PDI*4                                            ;EDI = Skip[EDI]
-    Test    AH,10h                                                              ;AH &= 0x10?
+    MovZX   EDI,AH
+    IdxLd   Mov,EDI,scrAsmSkip,PDI*4                                            ;Size of the operand value, by its type
+    Test    AH,10h                                                              ;'?', the compare value?
     JNZ     .700GETPCMP                                                         ;   Yes
-    Mov     ESI,[PBP+PBX]                                                       ;ESI = Program[PBX]
+    Mov     ESI,[PBP+PBX]                                                       ;The operand value, masked to its size by each handler
     Ret
 
     .700GETPCMP:
-    MovZX   ESI,CL                                                              ;ESI = CL
-    IdxLd   Mov,ESI,scr700cmp,PSI                                               ;ESI = CmpParam[ESI]
-    And     AH,0Fh                                                              ;AH &= 0x0F
+    MovZX   ESI,CL
+    IdxLd   Mov,ESI,scr700cmp,PSI                                               ;The compare value that CL selects
+    And     AH,0Fh                                                              ;The type without the '?' bit
     Ret
 
     ;---------- No.1 Parameter Fetcher (Getter) ----------
     ;   AH  = [in] Parameter type
-    ;   CL  = [in] Address of compare parameter (Cmp1=0x00, Cmp2=0x04)
+    ;   CL  = [in] Address of compare parameter (Cmp1=00h, Cmp2=04h)
     ;   EDX = [out] Parameter value
     ;   EDI = [out] Binary size of parameter
 
     .700P1:
-    Call    .700GETPVAL                                                         ;Get Parameter Value
-    Test    AH,AH                                                               ;Is parameter #[NUM]?
+    Call    .700GETPVAL                                                         ;Operand value and its size
+    Test    AH,AH                                                               ;'#', an immediate (00h)?
     JZ      .700P1N                                                             ;   Yes
-    Dec     AH                                                                  ;Is parameter [PORT]?
+    Dec     AH                                                                  ;A bare port (01h)?
     JZ      .700P1P                                                             ;   Yes
-    Dec     AH                                                                  ;Is parameter i[PORT]?
+    Dec     AH                                                                  ;'i', an input port (02h)?
     JZ      .700P1I                                                             ;   Yes
-    Dec     AH                                                                  ;Is parameter o[PORT]?
+    Dec     AH                                                                  ;'o', an output port (03h)?
     JZ      .700P1O                                                             ;   Yes
-    Dec     AH                                                                  ;Is parameter w[WORK]?
+    Dec     AH                                                                  ;'w', a work register (04h)?
     JZ      .700P1W                                                             ;   Yes
-    Dec     AH                                                                  ;Is parameter x[XRAM]?
+    Dec     AH                                                                  ;'x', extra RAM (05h)?
     JZ      .700P1X                                                             ;   Yes
-    Dec     AH                                                                  ;Is parameter r[RAM],rb[RAM]?
+    Dec     AH                                                                  ;'r' or 'rb' (06h)?
     JZ      .700P1RB                                                            ;   Yes
-    Dec     AH                                                                  ;Is parameter rw[RAM]?
+    Dec     AH                                                                  ;'rw' (07h)?
     JZ      .700P1RW                                                            ;   Yes
-    Dec     AH                                                                  ;Is parameter rd[RAM]?
+    Dec     AH                                                                  ;'rd' (08h)?
     JZ      .700P1RD                                                            ;   Yes
-    Dec     AH                                                                  ;Is parameter d[DATA],db[DATA]?
+    Dec     AH                                                                  ;'d' or 'db' (09h)?
     JZ      .700P1DB                                                            ;   Yes
-    Dec     AH                                                                  ;Is parameter dw[DATA]?
+    Dec     AH                                                                  ;'dw' (0Ah)?
     JZ      .700P1DW                                                            ;   Yes
-    Dec     AH                                                                  ;Is parameter dd[DATA]?
+    Dec     AH                                                                  ;'dd' (0Bh)?
     JZ      .700P1DD                                                            ;   Yes
-    Dec     AH                                                                  ;Is parameter l[LABEL]?
+    Dec     AH                                                                  ;'l', a label (0Ch)?
     JZ      .700P1L                                                             ;   Yes
-    Pop     PAX                                                                 ;Cancel Return Address
-    Jmp     .700ERROR
+    Jmp     .700ERROR                                                           ;   No, an unknown type
 
     .700P1N:                                                                                                        ; #[NUM]
-    Mov     EDX,ESI                                                             ;EDX = ESI
+    Mov     EDX,ESI
     Ret
 
     .700P1I:                                                                                                        ; i[PORT]
-    And     ESI,3                                                               ;ESI &= 3
-    IdxLdX  MovZX,PDX,byte,inPortCp,PSI                                         ;EDX = InPort[ESI]
+    And     ESI,3                                                               ;Ports 0 to 3
+    IdxLdX  MovZX,PDX,byte,inPortCp,PSI                                         ;The input port
     Ret
 
     .700P1P:                                                                                                        ; [PORT]
-    And     ESI,3                                                               ;ESI &= 3
-    IdxLdX  MovZX,PDX,byte,outPortCp,PSI                                        ;EDX = OutPort[ESI]
+    And     ESI,3                                                               ;Ports 0 to 3
+    IdxLdX  MovZX,PDX,byte,outPortCp,PSI                                        ;The output port copy, as official Script700 reads it
 %ifdef SHVC
     Call    ReadPort
 %endif
     Ret
 
     .700P1O:                                                                                                        ; o[PORT]
-    And     ESI,3                                                               ;ESI &= 3
-    IdxLdX  MovZX,PDX,byte,outPort,PSI                                          ;EDX = OutPort[ESI]
+    And     ESI,3                                                               ;Ports 0 to 3
+    IdxLdX  MovZX,PDX,byte,outPort,PSI                                          ;The output port
 %ifdef SHVC
     Call    ReadPort
 %endif
     Ret
 
     .700P1W:                                                                                                        ; w[WORK]
-    And     ESI,7                                                               ;ESI &= 7
-    IdxLd   Mov,EDX,scr700wrk,PSI*4                                             ;EDX = Work[ESI]
+    And     ESI,7                                                               ;w0 to w7
+    IdxLd   Mov,EDX,scr700wrk,PSI*4
     Ret
 
     .700P1X:                                                                                                        ; x[XRAM]
-    And     ESI,63                                                              ;ESI &= 63
-    IdxLdX  MovZX,PDX,byte,extraRAM,PSI                                         ;EDX = XRAM[ESI]
+    And     ESI,63                                                              ;64 bytes of extra RAM
+    IdxLdX  MovZX,PDX,byte,extraRAM,PSI
     Ret
 
     .700P1RB:                                                                                                       ; r[RAM], rb[RAM]
-    MovZX   ESI,SI                                                              ;ESI = SI
-    Add     PSI,[pAPURAM]                                                       ;PSI += RAM Pointer
-    MovZX   EDX,byte [PSI]                                                      ;EDX = RAM[PSI]
+    MovZX   ESI,SI                                                              ;16-bit RAM address
+    Add     PSI,[pAPURAM]
+    MovZX   EDX,byte [PSI]
     Ret
 
     .700P1RW:                                                                                                       ; rw[RAM]
-    MovZX   ESI,SI                                                              ;ESI = SI
-    Add     PSI,[pAPURAM]                                                       ;PSI += RAM Pointer
-    MovZX   EDX,word [PSI]                                                      ;EDX = RAM[PSI]
+    MovZX   ESI,SI                                                              ;16-bit RAM address
+    Add     PSI,[pAPURAM]
+    MovZX   EDX,word [PSI]
     Ret
 
     .700P1RD:                                                                                                       ; rd[RAM]
-    MovZX   ESI,SI                                                              ;ESI = SI
-    Add     PSI,[pAPURAM]                                                       ;PSI += RAM Pointer
-    Mov     EDX,[PSI]                                                           ;EDX = RAM[PSI]
+    MovZX   ESI,SI                                                              ;16-bit RAM address
+    Add     PSI,[pAPURAM]
+    Mov     EDX,[PSI]
     Ret
 
     .700P1DB:                                                                                                       ; d[DATA], db[DATA]
-    Add     ESI,[scr700dat]                                                     ;ESI += Data area offset
-    And     ESI,SCR700MASK                                                      ;ESI &= Program Mask
-    MovZX   EDX,byte [PBP+PSI]                                                  ;EDX = DATA[PSI]
+    And     ESI,7FFFFFFFh                                                       ;Bit 31 only marks a data label
+    Add     ESI,[scr700dat]                                                     ;Offset in the Script700 area
+    Cmp     ESI,SCR700SIZE-1                                                    ;Past its end, reading 1 byte?
+    JA      .700P1DOUT                                                          ;   Yes, ignore the command
+    MovZX   EDX,byte [PBP+PSI]
     Ret
 
     .700P1DW:                                                                                                       ; dw[DATA]
-    Add     ESI,[scr700dat]                                                     ;ESI += Data area offset
-    And     ESI,SCR700MASK                                                      ;ESI &= Program Mask
-    MovZX   EDX,word [PBP+PSI]                                                  ;EDX = DATA[PSI]
+    And     ESI,7FFFFFFFh                                                       ;Bit 31 only marks a data label
+    Add     ESI,[scr700dat]                                                     ;Offset in the Script700 area
+    Cmp     ESI,SCR700SIZE-2                                                    ;Past its end, reading 2 bytes?
+    JA      .700P1DOUT                                                          ;   Yes, ignore the command
+    MovZX   EDX,word [PBP+PSI]
     Ret
 
     .700P1DD:                                                                                                       ; dd[DATA]
-    Add     ESI,[scr700dat]                                                     ;ESI += Data area offset
-    And     ESI,SCR700MASK                                                      ;ESI &= Program Mask
-    Mov     EDX,[PBP+PSI]                                                       ;EDX = DATA[PSI]
+    And     ESI,7FFFFFFFh                                                       ;Bit 31 only marks a data label
+    Add     ESI,[scr700dat]                                                     ;Offset in the Script700 area
+    Cmp     ESI,SCR700SIZE-4                                                    ;Past its end, reading 4 bytes?
+    JA      .700P1DOUT                                                          ;   Yes, ignore the command
+    Mov     EDX,[PBP+PSI]
+    Ret
+
+    .700P1DOUT:
+    Mov     CH,-1                                                               ;0FFh tells the caller to ignore this command (callers clear
+    XOr     EDX,EDX                                                             ; CH before calling, and no getter changes it)
     Ret
 
     .700P1L:                                                                                                        ; l[LABEL]
-    MovZX   ESI,SI                                                              ;ESI = SI
-    And     ESI,1023                                                            ;ESI &= 1023
-    IdxLd   Mov,EDX,scr700lbl,PSI*4                                             ;ESI = Label[ESI]
+    MovZX   ESI,SI
+    And     ESI,1023                                                            ;Labels wrap at 1024
+    IdxLd   Mov,EDX,scr700lbl,PSI*4
     Ret
 
     ;---------- No.2 Parameter Fetcher (Setter) ----------
     ;   AL  = [in] Calcuration operator (N command only) / Free
     ;   AH  = [in] Parameter type
-    ;   CL  = [in] Address of compare parameter (Cmp1=0x00, Cmp2=0x04)
-    ;   CH  = [in] Setter mode (Move=0x00, Calc=0x01)
+    ;   CL  = [in] Address of compare parameter (Cmp1=00h, Cmp2=04h)
+    ;   CH  = [in] Setter mode (Move=00h, Calc=01h)
     ;   EDX = [in] Parameter value
     ;   EDI = [out] Binary size of parameter
 
     .700P2:
-    Call    .700GETPVAL                                                         ;Get Parameter Value
-    Test    AH,AH                                                               ;Is parameter #[NUM]?
+    Call    .700GETPVAL                                                         ;Operand value and its size
+    Test    AH,AH                                                               ;'#', an immediate (00h)?
     JZ      .700P2N                                                             ;   Yes
-    Dec     AH                                                                  ;Is parameter [PORT]?
+    Dec     AH                                                                  ;A bare port (01h)?
     JZ      .700P2P                                                             ;   Yes
-    Dec     AH                                                                  ;Is parameter i[PORT]?
+    Dec     AH                                                                  ;'i', an input port (02h)?
     JZ      .700P2I                                                             ;   Yes
-    Dec     AH                                                                  ;Is parameter o[PORT]?
+    Dec     AH                                                                  ;'o', an output port (03h)?
     JZ      .700P2O                                                             ;   Yes
-    Dec     AH                                                                  ;Is parameter w[WORK]?
+    Dec     AH                                                                  ;'w', a work register (04h)?
     JZ      .700P2W                                                             ;   Yes
-    Dec     AH                                                                  ;Is parameter x[XRAM]?
+    Dec     AH                                                                  ;'x', extra RAM (05h)?
     JZ      .700P2X                                                             ;   Yes
-    Dec     AH                                                                  ;Is parameter r[RAM],rb[RAM]?
+    Dec     AH                                                                  ;'r' or 'rb' (06h)?
     JZ      .700P2RB                                                            ;   Yes
-    Dec     AH                                                                  ;Is parameter rw[RAM]?
+    Dec     AH                                                                  ;'rw' (07h)?
     JZ      .700P2RW                                                            ;   Yes
-    Dec     AH                                                                  ;Is parameter rd[RAM]?
+    Dec     AH                                                                  ;'rd' (08h)?
     JZ      .700P2RD                                                            ;   Yes
-    Dec     AH                                                                  ;Is parameter d[DATA],db[DATA]?
+    Dec     AH                                                                  ;'d' or 'db' (09h)?
     JZ      .700P2DB                                                            ;   Yes
-    Dec     AH                                                                  ;Is parameter dw[DATA]?
+    Dec     AH                                                                  ;'dw' (0Ah)?
     JZ      .700P2DW                                                            ;   Yes
-    Dec     AH                                                                  ;Is parameter dd[DATA]?
+    Dec     AH                                                                  ;'dd' (0Bh)?
     JZ      .700P2DD                                                            ;   Yes
-    Dec     AH                                                                  ;Is parameter l[LABEL]?
+    Dec     AH                                                                  ;'l', a label (0Ch)?
     JZ      .700P2L                                                             ;   Yes
-    Pop     PAX                                                                 ;Cancel Return Address
-    Jmp     .700ERROR
+    Jmp     .700ERROR                                                           ;   No, an unknown type
 
     .700P2N:                                                                                                        ; #[NUM] (NOP)
     Ret
 
     .700P2P:                                                                                                        ; [PORT]
-    And     ESI,3                                                               ;ESI &= 3
-    Test    CH,CH                                                               ;CH = 0x00? (Move?)
+    And     ESI,3                                                               ;Ports 0 to 3
+    Test    CH,CH                                                               ;A plain move ('m')?
     JZ      .700P2I2                                                            ;   Yes
-        IdxLdX  MovZX,PCX,byte,outPortCp,PSI                                    ;ECX = OutPort[ESI]
-        Call    .700NCAL                                                        ;AL = Calc Option, EDX = Param1, ECX = Param2
-    Jmp     .700P2I2
+        IdxLdX  MovZX,PCX,byte,outPortCp,PSI                                    ;The output port copy, as for reading
+        Call    .700NCAL                                                        ;Apply the operator, current value first
+    Jmp     .700P2I2                                                            ;Written as an input port
 
     .700P2I:                                                                                                        ; i[PORT]
-    And     ESI,3                                                               ;ESI &= 3
-    Test    CH,CH                                                               ;CH = 0x00? (Move?)
+    And     ESI,3                                                               ;Ports 0 to 3
+    Test    CH,CH                                                               ;A plain move ('m')?
     JZ      .700P2I2                                                            ;   Yes
-        IdxLdX  MovZX,PCX,byte,inPortCp,PSI                                     ;ECX = InPort[ESI]
-        Call    .700NCAL                                                        ;AL = Calc Option, EDX = Param1, ECX = Param2
+        IdxLdX  MovZX,PCX,byte,inPortCp,PSI                                     ;The current value
+        Call    .700NCAL
 
-    .700P2I2:                                                                   ;EDX = New Value
-    IdxSt   Mov,flushPort,PSI,DL                                                ;FlushPort[ESI]
-    Test    byte [scr700stf],02h                                                ;Is enabled flushing ports?
-    JZ      .700P2I3                                                            ;   No
+    .700P2I2:                                                                   ;EDX holds the new value
+    IdxSt   Mov,flushPort,PSI,DL                                                ;Queued for the next 'f'
+    Test    byte [scr700stf],02h                                                ;Write the port right away ('f1')?
+    JZ      .700P2I3                                                            ;   No, only on 'f'
 
-    Mov     ECX,ESI                                                             ;ECX = ESI
-    Mov     AL,1                                                                ;AL = 1
-    ShL     AL,CL                                                               ;AL << CL
-    Or      [portMod],AL                                                        ;PortMod |= AL
-    IdxSt   Mov,inPortCp,PSI,DL                                                 ;InPort[ESI] = DL
-    Add     PSI,[pAPURAM]                                                       ;PSI += RAM Pointer
-    Mov     [PSI+0F4h],DL                                                       ;RAM[PSI + F4h] = DL
+    Mov     ECX,ESI                                                             ;Mark the port as written by the 65816
+    Mov     AL,1
+    ShL     AL,CL
+    Or      [portMod],AL
+    IdxSt   Mov,inPortCp,PSI,DL                                                 ;The input port
+    Add     PSI,[pAPURAM]
+    Mov     [PSI+0F4h],DL                                                       ;And what the SPC700 reads at $F4-$F7
 
 %ifdef SHVC
     Call    WritePort
@@ -1016,529 +1036,583 @@ PROC RunScript700, interrupt
     Ret
 
     .700P2O:                                                                                                        ; o[PORT]
-    And     ESI,3                                                               ;ESI &= 3
-    Test    CH,CH                                                               ;CH = 0x00? (Move?)
+    And     ESI,3                                                               ;Ports 0 to 3
+    Test    CH,CH                                                               ;A plain move ('m')?
     JZ      .700P2O2                                                            ;   Yes
-        IdxLdX  MovZX,PCX,byte,outPort,PSI                                      ;ECX = OutPort[ESI]
-        Call    .700NCAL                                                        ;AL = Calc Option, EDX = Param1, ECX = Param2
+        IdxLdX  MovZX,PCX,byte,outPort,PSI
+        Call    .700NCAL
 
-    .700P2O2:                                                                   ;EDX = New Value
-    IdxSt   Mov,outPort,PSI,DL                                                  ;OutPort[ESI] = DL
-    IdxSt   Mov,outPortCp,PSI,DL                                                ;Copy value
+    .700P2O2:
+    IdxSt   Mov,outPort,PSI,DL                                                  ;The output port
+    IdxSt   Mov,outPortCp,PSI,DL                                                ;And its copy
     Ret
 
     .700P2W:                                                                                                        ; w[WORK]
-    And     ESI,7                                                               ;ESI &= 7
-    Test    CH,CH                                                               ;CH = 0x00? (Move?)
+    And     ESI,7                                                               ;w0 to w7
+    Test    CH,CH                                                               ;A plain move ('m')?
     JZ      .700P2W2                                                            ;   Yes
-        IdxLd   Mov,ECX,scr700wrk,PSI*4                                         ;ECX = Work[ESI]
-        Call    .700NCAL                                                        ;AL = Calc Option, EDX = Param1, ECX = Param2
+        IdxLd   Mov,ECX,scr700wrk,PSI*4
+        Call    .700NCAL
 
-    .700P2W2:                                                                   ;EDX = New Value
-    IdxSt   Mov,scr700wrk,PSI*4,EDX                                             ;Work[ESI] = EDX
+    .700P2W2:
+    IdxSt   Mov,scr700wrk,PSI*4,EDX
     Ret
 
     .700P2X:                                                                                                        ; x[XRAM]
-    And     ESI,63                                                              ;ESI &= 63
-    Test    CH,CH                                                               ;CH = 0x00? (Move?)
+    And     ESI,63                                                              ;64 bytes of extra RAM
+    Test    CH,CH                                                               ;A plain move ('m')?
     JZ      .700P2X2                                                            ;   Yes
-        IdxLdX  MovZX,PCX,byte,extraRAM,PSI                                     ;ECX = XRAM[ESI]
-        Call    .700NCAL                                                        ;AL = Calc Option, EDX = Param1, ECX = Param2
+        IdxLdX  MovZX,PCX,byte,extraRAM,PSI
+        Call    .700NCAL
 
-    .700P2X2:                                                                   ;EDX = New Value
-    IdxSt   Mov,extraRAM,PSI,DL                                                 ;XRAM[ESI] = DL
+    .700P2X2:
+    IdxSt   Mov,extraRAM,PSI,DL
     Ret
 
     .700P2RB:                                                                                                       ; r[RAM], rb[RAM]
-    MovZX   ESI,SI                                                              ;ESI = SI
-    Add     PSI,[pAPURAM]                                                       ;PSI += RAM Pointer
-    Test    CH,CH                                                               ;CH = 0x00? (Move?)
+    MovZX   ESI,SI                                                              ;16-bit RAM address
+    Add     PSI,[pAPURAM]
+    Test    CH,CH                                                               ;A plain move ('m')?
     JZ      .700P2RB2                                                           ;   Yes
-        MovZX   ECX,byte [PSI]                                                  ;ECX = RAM[PSI]
-        Call    .700NCAL                                                        ;AL = Calc Option, EDX = Param1, ECX = Param2
+        MovZX   ECX,byte [PSI]
+        Call    .700NCAL
 
-    .700P2RB2:                                                                  ;EDX = New Value
-    Mov     [PSI],DL                                                            ;RAM[PSI] = DL
+    .700P2RB2:
+    Mov     [PSI],DL
     Ret
 
     .700P2RW:                                                                                                       ; rw[RAM]
-    MovZX   ESI,SI                                                              ;ESI = SI
-    Add     PSI,[pAPURAM]                                                       ;PSI += RAM Pointer
-    Test    CH,CH                                                               ;CH = 0x00? (Move?)
+    MovZX   ESI,SI                                                              ;16-bit RAM address
+    Add     PSI,[pAPURAM]
+    Test    CH,CH                                                               ;A plain move ('m')?
     JZ      .700P2RW2                                                           ;   Yes
-        MovZX   ECX,word [PSI]                                                  ;ECX = RAM[PSI]
-        Call    .700NCAL                                                        ;AL = Calc Option, EDX = Param1, ECX = Param2
+        MovZX   ECX,word [PSI]
+        Call    .700NCAL
 
-    .700P2RW2:                                                                  ;EDX = New Value
-    Mov     [PSI],DX                                                            ;RAM[PSI] = DX
+    .700P2RW2:
+    Mov     [PSI],DX
     Ret
 
     .700P2RD:                                                                                                       ; rd[RAM]
-    MovZX   ESI,SI                                                              ;ESI = SI
-    Add     PSI,[pAPURAM]                                                       ;PSI += RAM Pointer
-    Test    CH,CH                                                               ;CH = 0x00? (Move?)
+    MovZX   ESI,SI                                                              ;16-bit RAM address
+    Add     PSI,[pAPURAM]
+    Test    CH,CH                                                               ;A plain move ('m')?
     JZ      .700P2RD2                                                           ;   Yes
-        Mov     ECX,[PSI]                                                       ;ECX = RAM[PSI]
-        Call    .700NCAL                                                        ;AL = Calc Option, EDX = Param1, ECX = Param2
+        Mov     ECX,[PSI]
+        Call    .700NCAL
 
-    .700P2RD2:                                                                  ;EDX = New Value
-    Mov     [PSI],EDX                                                           ;RAM[PSI] = EDX
+    .700P2RD2:
+    Mov     [PSI],EDX
     Ret
 
     .700P2DB:                                                                                                       ; d[DATA], db[DATA]
-    Add     ESI,[scr700dat]                                                     ;ESI += Data area offset
-    And     ESI,SCR700MASK                                                      ;ESI &= Program Mask
-    Add     PSI,PBP                                                             ;PSI += PBP (Script RAM Pointer)
-    Test    CH,CH                                                               ;CH = 0x00? (Move?)
+    And     ESI,7FFFFFFFh                                                       ;Bit 31 only marks a data label
+    Add     ESI,[scr700dat]                                                     ;Offset in the Script700 area
+    Cmp     ESI,SCR700SIZE-1                                                    ;Past its end, writing 1 byte?
+    JA      .700P2DOUT                                                          ;   Yes, ignore the write
+    Add     PSI,PBP
+    Test    CH,CH                                                               ;A plain move ('m')?
     JZ      .700P2DB2                                                           ;   Yes
-        MovZX   ECX,byte [PSI]                                                  ;ECX = DATA[PSI]
-        Call    .700NCAL                                                        ;AL = Calc Option, EDX = Param1, ECX = Param2
+        MovZX   ECX,byte [PSI]
+        Call    .700NCAL
 
-    .700P2DB2:                                                                  ;EDX = New Value
-    Mov     [PSI],DL                                                            ;DATA[PSI] = DL
+    .700P2DB2:
+    Mov     [PSI],DL
     Ret
 
     .700P2DW:                                                                                                       ; dw[DATA]
-    Add     ESI,[scr700dat]                                                     ;ESI += Data area offset
-    And     ESI,SCR700MASK                                                      ;ESI &= Program Mask
-    Add     PSI,PBP                                                             ;PSI += PBP (Script RAM Pointer)
-    Test    CH,CH                                                               ;CH = 0x00? (Move?)
+    And     ESI,7FFFFFFFh                                                       ;Bit 31 only marks a data label
+    Add     ESI,[scr700dat]                                                     ;Offset in the Script700 area
+    Cmp     ESI,SCR700SIZE-2                                                    ;Past its end, writing 2 bytes?
+    JA      .700P2DOUT                                                          ;   Yes, ignore the write
+    Add     PSI,PBP
+    Test    CH,CH                                                               ;A plain move ('m')?
     JZ      .700P2DW2                                                           ;   Yes
-        MovZX   ECX,word [PSI]                                                  ;ECX = DATA[PSI]
-        Call    .700NCAL                                                        ;AL = Calc Option, EDX = Param1, ECX = Param2
+        MovZX   ECX,word [PSI]
+        Call    .700NCAL
 
-    .700P2DW2:                                                                  ;EDX = New Value
-    Mov     [PSI],DX                                                            ;DATA[PSI] = DX
+    .700P2DW2:
+    Mov     [PSI],DX
     Ret
 
     .700P2DD:                                                                                                       ; dd[DATA]
-    Add     ESI,[scr700dat]                                                     ;ESI += Data area offset
-    And     ESI,SCR700MASK                                                      ;ESI &= Program Mask
-    Add     PSI,PBP                                                             ;PSI += PBP (Script RAM Pointer)
-    Test    CH,CH                                                               ;CH = 0x00? (Move?)
+    And     ESI,7FFFFFFFh                                                       ;Bit 31 only marks a data label
+    Add     ESI,[scr700dat]                                                     ;Offset in the Script700 area
+    Cmp     ESI,SCR700SIZE-4                                                    ;Past its end, writing 4 bytes?
+    JA      .700P2DOUT                                                          ;   Yes, ignore the write
+    Add     PSI,PBP
+    Test    CH,CH                                                               ;A plain move ('m')?
     JZ      .700P2DD2                                                           ;   Yes
-        Mov     ECX,[PSI]                                                       ;ECX = DATA[PSI]
-        Call    .700NCAL                                                        ;AL = Calc Option, EDX = Param1, ECX = Param2
+        Mov     ECX,[PSI]
+        Call    .700NCAL
 
-    .700P2DD2:                                                                  ;EDX = New Value
-    Mov     [PSI],EDX                                                           ;DATA[PSI] = EDX
+    .700P2DD2:
+    Mov     [PSI],EDX
     Ret
 
-    .700P2L:                                                                                                        ; l[LABEL]
-    MovZX   ESI,SI                                                              ;ESI = SI
-    And     ESI,1023                                                            ;ESI &= 1023
-    Test    CH,CH                                                               ;CH = 0x00? (Move?)
-    JZ      .700P2L2                                                            ;   Yes
-        IdxLd   Mov,ECX,scr700lbl,PSI*4                                         ;ECX = Label[ESI]
-        Call    .700NCAL                                                        ;AL = Calc Option, EDX = Param1, ECX = Param2
+    .700P2DOUT:
+    Ret                                                                         ;Outside the data area, so the write is ignored
 
-    .700P2L2:                                                                   ;EDX = New Value
-    IdxSt   Mov,scr700lbl,PSI*4,EDX                                             ;Label[ESI] = EDX
+    .700P2L:                                                                                                        ; l[LABEL]
+    MovZX   ESI,SI
+    And     ESI,1023                                                            ;Labels wrap at 1024
+    Test    CH,CH                                                               ;A plain move ('m')?
+    JZ      .700P2L2                                                            ;   Yes
+        IdxLd   Mov,ECX,scr700lbl,PSI*4
+        Call    .700NCAL
+
+    .700P2L2:
+    IdxSt   Mov,scr700lbl,PSI*4,EDX
     Ret
 
     ;---------- Command Main Routine (CALC) ----------
 
     .700W:                                                                                                          ; w
-    Mov     AH,[PBP+PBX]                                                        ;AH = Program[PBX]
-    Inc     EBX                                                                 ;EBX++
-    XOr     CX,CX                                                               ;CH = 0x00, CL = 0x00
-    Call    .700P1                                                              ;Get Value of Parameter
-    Add     EBX,EDI                                                             ;EBX += EDI
-    Add     [scr700cnt],EDX                                                     ;TimeCount += EDX
-    Cmp     dword [scr700cnt],32                                                ;TimeCount < 32?
-    JL      .700RETURN                                                          ;   Yes
-    Jmp     .700END
+    Mov     AH,[PBP+PBX]                                                        ;Operand type
+    Inc     EBX
+    XOr     CX,CX                                                               ;No error yet, and '?' is compare value 1
+    Call    .700P1                                                              ;The wait
+    Add     EBX,EDI
+    Test    CH,CH                                                               ;Is the operand out of range?
+    JNZ     .700RETURN                                                          ;   Yes, ignore this command
+    Add     [scr700cnt],EDX                                                     ;Add the wait
+    Cmp     dword [scr700cnt],32                                                ;Less than one 64 kHz tick?
+    JL      .700RETURN                                                          ;   Yes, go on without waiting
+    Jmp     .700END                                                             ;Wait, then resume at the next command
 
     .700M:                                                                                                          ; m
-    Mov     AH,[PBP+PBX]                                                        ;AH = Program[PBX]
-    Inc     EBX                                                                 ;EBX++
-    XOr     CX,CX                                                               ;CH = 0x00, CL = 0x00
-    Call    .700P1                                                              ;Get Value of Parameter
-    Add     EBX,EDI                                                             ;EBX += EDI
-    Mov     AH,[PBP+PBX]                                                        ;AH = Program[PBX]
-    Inc     EBX                                                                 ;EBX++
-    Mov     CX,0004h                                                            ;CH = 0x00, CL = 0x04
-    Call    .700P2                                                              ;Set Value of Parameter
-    Add     EBX,EDI                                                             ;EBX += EDI
+    Mov     AH,[PBP+PBX]                                                        ;Operand type
+    Inc     EBX
+    XOr     CX,CX                                                               ;No error yet, and '?' is compare value 1
+    Call    .700P1                                                              ;The value to move
+    Add     EBX,EDI
+    Test    CH,CH                                                               ;Is the operand out of range?
+    JNZ     .700SKIPP                                                           ;   Yes, ignore this command
+    Mov     AH,[PBP+PBX]                                                        ;Operand type
+    Inc     EBX
+    Mov     CX,0004h                                                            ;A plain move, and '?' is compare value 2
+    Call    .700P2                                                              ;Store it into the 2nd operand
+    Add     EBX,EDI
     Jmp     .700RETURN
 
     .700C:                                                                                                          ; c
-    Mov     AH,[PBP+PBX]                                                        ;AH = Program[PBX]
-    Inc     EBX                                                                 ;EBX++
-    XOr     CX,CX                                                               ;CH = 0x00, CL = 0x00
-    Call    .700P1                                                              ;Get Value of Parameter
-    Mov     [scr700cmp],EDX                                                     ;CmpParam[0] = EDX
-    Add     EBX,EDI                                                             ;EBX += EDI
-    Mov     AH,[PBP+PBX]                                                        ;AH = Program[PBX]
-    Inc     EBX                                                                 ;EBX++
-    Mov     CX,0004h                                                            ;CH = 0x00, CL = 0x04
-    Call    .700P1                                                              ;Get Value of Parameter
-    Mov     [scr700cmp+4],EDX                                                   ;CmpParam[1] = EDX
-    Add     EBX,EDI                                                             ;EBX += EDI
+    Mov     AH,[PBP+PBX]                                                        ;Operand type
+    Inc     EBX
+    XOr     CX,CX                                                               ;No error yet, and '?' is compare value 1
+    Call    .700P1                                                              ;Compare value 1
+    Add     EBX,EDI
+    Test    CH,CH                                                               ;Is the operand out of range?
+    JNZ     .700SKIPP                                                           ;   Yes, ignore this command
+    Push    PDX                                                                 ;Keep the 1st value until the 2nd is known to be valid
+    Mov     AH,[PBP+PBX]                                                        ;Operand type
+    Inc     EBX
+    Mov     CX,0004h                                                            ;No error yet, and '?' is compare value 2
+    Call    .700P1                                                              ;Compare value 2
+    Add     EBX,EDI
+    Test    CH,CH                                                               ;Is the operand out of range? ('Pop' keeps the flags)
+    Pop     PCX
+    JNZ     .700RETURN                                                          ;   Yes, ignore this command
+    Mov     [scr700cmp],ECX
+    Mov     [scr700cmp+4],EDX
     Jmp     .700RETURN
 
     .700N:                                                                                                          ; a, s, u, d, n
-    Mov     AX,[PBP+PBX]                                                        ;AX = Program[PBX]
-    Add     EBX,2                                                               ;EBX += 2
-    XOr     CX,CX                                                               ;CH = 0x00, CL = 0x00
-    Call    .700P1                                                              ;Get Value of Parameter
-    Add     EBX,EDI                                                             ;EBX += EDI
-    Mov     AH,[PBP+PBX]                                                        ;AH = Program[PBX]
-    Inc     EBX                                                                 ;EBX++
-    Mov     CX,0104h                                                            ;CH = 0x01, CL = 0x04
-    Call    .700P2                                                              ;Set Value of Parameter
-    Add     EBX,EDI                                                             ;EBX += EDI
+    Mov     AX,[PBP+PBX]                                                        ;Operator (AL) and operand type (AH)
+    Add     EBX,2
+    XOr     CX,CX                                                               ;No error yet, and '?' is compare value 1
+    Call    .700P1                                                              ;The 1st operand
+    Add     EBX,EDI
+    Test    CH,CH                                                               ;Is the operand out of range?
+    JNZ     .700SKIPP                                                           ;   Yes, ignore this command
+    Mov     AH,[PBP+PBX]                                                        ;Operand type
+    Inc     EBX
+    Mov     CX,0104h                                                            ;Calculate, and '?' is compare value 2
+    Call    .700P2                                                              ;Apply it to the 2nd operand
+    Add     EBX,EDI
+    Jmp     .700RETURN
+
+    ;NOTE: Skips the next parameter, then fetches the next command.  Used to ignore a command whose
+    ; earlier operand was out of range.
+    .700SKIPP:
+    Mov     AH,[PBP+PBX]                                                        ;Operand type
+    Inc     EBX
+    Call    .700GETPVAL                                                         ;Its size
+    Add     EBX,EDI
     Jmp     .700RETURN
 
     .700NCAL:
-    Test    AL,AL                                                               ;Is parameter +?
-    JZ      .700NCALADD                                                         ;   No
-    Dec     AL                                                                  ;Is parameter -?
+    Test    AL,AL                                                               ;'+' (00h)?
+    JZ      .700NCALADD                                                         ;   Yes
+    Dec     AL                                                                  ;'-' (01h)?
     JZ      .700NCALSUB                                                         ;   Yes
-    Dec     AL                                                                  ;Is parameter *?
+    Dec     AL                                                                  ;'*' (02h)?
     JZ      .700NCALMUL                                                         ;   Yes
-    Dec     AL                                                                  ;Is parameter /?
+    Dec     AL                                                                  ;'/' (03h)?
     JZ      .700NCALIDIV                                                        ;   Yes
-    Dec     AL                                                                  ;Is parameter \?
+    Dec     AL                                                                  ;'\' (04h)?
     JZ      .700NCALDIV                                                         ;   Yes
-    Dec     AL                                                                  ;Is parameter %?
+    Dec     AL                                                                  ;'%' (05h)?
     JZ      .700NCALIMOD                                                        ;   Yes
-    Dec     AL                                                                  ;Is parameter $?
+    Dec     AL                                                                  ;'$' (06h)?
     JZ      .700NCALMOD                                                         ;   Yes
-    Dec     AL                                                                  ;Is parameter &?
+    Dec     AL                                                                  ;'&' (07h)?
     JZ      .700NCALAND                                                         ;   Yes
-    Dec     AL                                                                  ;Is parameter |?
+    Dec     AL                                                                  ;'|' (08h)?
     JZ      .700NCALOR                                                          ;   Yes
-    Dec     AL                                                                  ;Is parameter ^?
+    Dec     AL                                                                  ;'^' (09h)?
     JZ      .700NCALXOR                                                         ;   Yes
-    Dec     AL                                                                  ;Is parameter <?
+    Dec     AL                                                                  ;'<' (0Ah)?
     JZ      .700NCALSHL                                                         ;   Yes
-    Dec     AL                                                                  ;Is parameter >?
+    Dec     AL                                                                  ;'>' (0Bh)?
     JZ      .700NCALSHR                                                         ;   Yes
-    Dec     AL                                                                  ;Is parameter _?
+    Dec     AL                                                                  ;'_' (0Ch)?
     JZ      .700NCALSAR                                                         ;   Yes
-    Dec     AL                                                                  ;Is parameter !?
+    Dec     AL                                                                  ;'!' (0Dh)?
     JZ      .700NCALNOT                                                         ;   Yes
-    Pop     PAX                                                                 ;Cancel Return Address
-    Jmp     .700ERROR
+    Jmp     .700ERROR                                                           ;   No, an unknown operator
 
     .700NCALADD:                                                                                                    ; + (ADD)
-    Add     EDX,ECX                                                             ;EDX = EDX + ECX
+    Add     EDX,ECX
     Ret
 
     .700NCALSUB:                                                                                                    ; - (SUB)
-    Sub     ECX,EDX                                                             ;ECX = ECX - EDX
-    Mov     EDX,ECX                                                             ;EDX = ECX
+    Sub     ECX,EDX                                                             ;Current value minus the operand
+    Mov     EDX,ECX
     Ret
 
     .700NCALMUL:                                                                                                    ; * (MUL)
-    Mov     EAX,EDX                                                             ;EAX = EDX
-    IMul    ECX                                                                 ;EDX:EAX = EAX * ECX
-    Mov     EDX,EAX                                                             ;EDX = EAX
+    Mov     EAX,EDX
+    IMul    ECX
+    Mov     EDX,EAX                                                             ;Low 32 bits of the product
     Ret
 
     .700NCALIDIV:                                                                                                   ; / (IDIV)
-    Test    EDX,EDX                                                             ;EDX = 0x00?
-    JZ      .700NCALERROR                                                       ;   Yes
-    Mov     EAX,ECX                                                             ;EAX = ECX
-    Mov     ECX,EDX                                                             ;ECX = EDX
-    CDQ                                                                         ;(EAX < 0) EDX = 0xFFFFFFFF / (EAX >= 0) EDX = 0x00
-    IDiv    ECX                                                                 ;EAX = EDX:EAX / ECX
-    Mov     EDX,EAX                                                             ;EDX = EAX
+    Test    EDX,EDX                                                             ;Division by 0?
+    JZ      .700NCALERROR                                                       ;   Yes, keep the value
+    Cmp     EDX,-1                                                              ;Division by -1?
+    JNE     .700NCALIDIV2                                                       ;   No
+    Cmp     ECX,80000000h                                                       ;80000000h / -1, which overflows?
+    JE      .700NCALERROR                                                       ;   Yes, keep the value
+
+    .700NCALIDIV2:
+    Mov     EAX,ECX                                                             ;Current value divided by the operand
+    Mov     ECX,EDX
+    CDQ
+    IDiv    ECX
+    Mov     EDX,EAX                                                             ;The quotient
     Ret
 
     .700NCALDIV:                                                                                                    ; \_(DIV)
-    Test    EDX,EDX                                                             ;EDX = 0x00?
-    JZ      .700NCALERROR                                                       ;   Yes
-    Mov     EAX,ECX                                                             ;EAX = ECX
-    Mov     ECX,EDX                                                             ;ECX = EDX
-    XOr     EDX,EDX                                                             ;EDX = 0x00
-    Div     ECX                                                                 ;EAX = EDX:EAX / ECX
-    Mov     EDX,EAX                                                             ;EDX = EAX
+    Test    EDX,EDX                                                             ;Division by 0?
+    JZ      .700NCALERROR                                                       ;   Yes, keep the value
+    Mov     EAX,ECX                                                             ;Current value divided by the operand, unsigned
+    Mov     ECX,EDX
+    XOr     EDX,EDX
+    Div     ECX
+    Mov     EDX,EAX                                                             ;The quotient
     Ret
 
     .700NCALIMOD:                                                                                                   ; % (IMOD)
-    Test    EDX,EDX                                                             ;EDX = 0x00?
-    JZ      .700NCALERROR                                                       ;   Yes
-    Mov     EAX,ECX                                                             ;EAX = ECX
-    Mov     ECX,EDX                                                             ;ECX = EDX
-    CDQ                                                                         ;(EAX < 0) EDX = 0xFFFFFFFF / (EAX >= 0) EDX = 0x00
-    IDiv    ECX                                                                 ;EAX = EDX:EAX / ECX
+    Test    EDX,EDX                                                             ;Division by 0?
+    JZ      .700NCALERROR                                                       ;   Yes, keep the value
+    Cmp     EDX,-1                                                              ;Division by -1?
+    JNE     .700NCALIMOD2                                                       ;   No
+    Cmp     ECX,80000000h                                                       ;80000000h % -1, which overflows?
+    JE      .700NCALERROR                                                       ;   Yes, keep the value
+
+    .700NCALIMOD2:
+    Mov     EAX,ECX                                                             ;Current value divided by the operand
+    Mov     ECX,EDX
+    CDQ
+    IDiv    ECX                                                                 ;The remainder is in EDX
     Ret
 
     .700NCALMOD:                                                                                                    ; $ (MOD)
-    Test    EDX,EDX                                                             ;EDX = 0x00?
-    JZ      .700NCALERROR                                                       ;   Yes
-    Mov     EAX,ECX                                                             ;EAX = ECX
-    Mov     ECX,EDX                                                             ;ECX = EDX
-    XOr     EDX,EDX                                                             ;EDX = 0x00
-    Div     ECX                                                                 ;EAX = EDX:EAX / ECX
+    Test    EDX,EDX                                                             ;Division by 0?
+    JZ      .700NCALERROR                                                       ;   Yes, keep the value
+    Mov     EAX,ECX                                                             ;Current value divided by the operand, unsigned
+    Mov     ECX,EDX
+    XOr     EDX,EDX
+    Div     ECX                                                                 ;The remainder is in EDX
     Ret
 
     .700NCALERROR:
-    Mov     EDX,ECX                                                             ;EDX = ECX
+    Mov     EDX,ECX                                                             ;The value stays as it is
     Ret
 
     .700NCALAND:                                                                                                    ; & (AND)
-    And     ECX,EDX                                                             ;ECX &= EDX
-    Mov     EDX,ECX                                                             ;EDX = ECX
+    And     ECX,EDX
+    Mov     EDX,ECX
     Ret
 
     .700NCALOR:                                                                                                     ; | (OR)
-    Or      ECX,EDX                                                             ;ECX |= EDX
-    Mov     EDX,ECX                                                             ;EDX = ECX
+    Or      ECX,EDX
+    Mov     EDX,ECX
     Ret
 
     .700NCALXOR:                                                                                                    ; ^ (XOR)
-    XOr     ECX,EDX                                                             ;ECX ^= EDX
-    Mov     EDX,ECX                                                             ;EDX = ECX
+    XOr     ECX,EDX
+    Mov     EDX,ECX
     Ret
 
     .700NCALSHL:                                                                                                    ; < (SHL)
-    Mov     EAX,ECX                                                             ;EAX = ECX
-    Mov     CL,DL                                                               ;CL = DL
-    ShL     EAX,CL                                                              ;EAX << CL
-    Mov     EDX,EAX                                                             ;EDX = EAX
+    Mov     EAX,ECX
+    Mov     CL,DL                                                               ;Shift count, taken modulo 32
+    ShL     EAX,CL
+    Mov     EDX,EAX
     Ret
 
     .700NCALSHR:                                                                                                    ; > (SHR)
-    Mov     EAX,ECX                                                             ;EAX = ECX
-    Mov     CL,DL                                                               ;CL = DL
-    ShR     EAX,CL                                                              ;EAX >> CL
-    Mov     EDX,EAX                                                             ;EDX = EAX
+    Mov     EAX,ECX
+    Mov     CL,DL
+    ShR     EAX,CL
+    Mov     EDX,EAX
     Ret
 
     .700NCALSAR:                                                                                                    ; _ (SAR)
-    Mov     EAX,ECX                                                             ;EAX = ECX
-    Mov     CL,DL                                                               ;CL = DL
-    SaR     EAX,CL                                                              ;EAX >> CL
-    Mov     EDX,EAX                                                             ;EDX = EAX
+    Mov     EAX,ECX
+    Mov     CL,DL
+    SaR     EAX,CL                                                              ;Arithmetic shift, keeping the sign
+    Mov     EDX,EAX
     Ret
 
     .700NCALNOT:                                                                                                    ; ! (NOT)
-    Not     EDX                                                                 ;EDX = !EDX
+    Not     EDX                                                                 ;The operand inverted, the current value is not used
     Ret
 
     ;---------- Command Main Routine (JUMP) ----------
 
     .700BRA:                                                                                                        ; bra (TRUE)
-    Mov     SI,[PBP+PBX]                                                        ;SI = Program[PBX]
-    Add     EBX,2                                                               ;EBX += 2
-    Test    SI,SI                                                               ;SI >= 0x8000?
+    Mov     SI,[PBP+PBX]                                                        ;Label number, or 8000h + n to read it from wn
+    Add     EBX,2
+    Test    SI,SI                                                               ;From a work register?
     JNS     .700BRAN                                                            ;   No
-    And     ESI,7                                                               ;ESI &= 7
-    IdxLd   Mov,ESI,scr700wrk,PSI*4                                             ;ESI = Work[ESI]
+    And     ESI,7
+    IdxLd   Mov,ESI,scr700wrk,PSI*4                                             ;The label number in wn
 
     .700BRAN:
-    And     ESI,1023                                                            ;ESI &= 1023
-    IdxLd   Mov,ESI,scr700lbl,PSI*4                                             ;ESI = Label[ESI]
-    Inc     ESI                                                                 ;ESI++, ESI = 0x00?
-    JZ      .700RETURN                                                          ;   Yes
-    Dec     ESI                                                                 ;ESI--, ESI is minus?
-    JS      .700RETURN                                                          ;   Yes
+    And     ESI,1023                                                            ;Labels wrap at 1024
+    IdxLd   Mov,ESI,scr700lbl,PSI*4                                             ;Where the label points
+    Inc     ESI                                                                 ;Undefined label (-1)?
+    JZ      .700RETURN                                                          ;   Yes, do not branch
+    Dec     ESI                                                                 ;A data label (bit 31)?
+    JS      .700RETURN                                                          ;   Yes, do not branch
+    Cmp     ESI,SCR700SIZE                                                      ;Past the Script700 area?
+    JAE     .700RETURN                                                          ;   Yes, do not branch
 
-    Mov     EDX,EBX                                                             ;EDX = EBX
-    Mov     EBX,ESI                                                             ;EBX = ESI
-    Test    byte [scr700stf],01h                                                ;Is enabled stacking address?
+    Mov     EDX,EBX                                                             ;Return address
+    Mov     EBX,ESI                                                             ;Branch
+    Test    byte [scr700stf],01h                                                ;Push the return address ('r1')?
     JZ      .700RETURN                                                          ;   No
 
-    Mov     PCX,[scr700stp]                                                     ;PCX = Stack Pointer
-    Sub     CL,4                                                                ;CL -= 4
-    Mov     [scr700stp],PCX                                                     ;Stack Pointer = PCX
-    Mov     [PCX],EDX                                                           ;Stack Value = EDX
-    XOr     EDX,EDX                                                             ;EDX = 0x00
-    Dec     EDX                                                                 ;EDX-- (EDX = 0xFFFFFFFF)
-    Sub     CL,4                                                                ;CL -= 4
-    Mov     [PCX],EDX                                                           ;Stack Value = EDX
+    Mov     PCX,[scr700stp]
+    Sub     CL,4                                                                ;The stack wraps within its 256 bytes
+    Mov     [scr700stp],PCX
+    Mov     [PCX],EDX                                                           ;Push the return address
+    XOr     EDX,EDX
+    Dec     EDX
+    Sub     CL,4
+    Mov     [PCX],EDX                                                           ;Mark the slot below as empty (-1)
     Jmp     .700RETURN
 
     .700BEQ:                                                                                                        ; beq (CmpParam2 == CmpParam1)
-    Mov     ECX,[scr700cmp+4]                                                   ;ECX = CmpParam[1]
-    Mov     EDX,[scr700cmp]                                                     ;EDX = CmpParam[0]
-    Cmp     ECX,EDX                                                             ;ECX = EDX?
+    Mov     ECX,[scr700cmp+4]
+    Mov     EDX,[scr700cmp]
+    Cmp     ECX,EDX                                                             ;Equal?
     JE      .700BRA                                                             ;   Yes
-    Add     EBX,2                                                               ;EBX += 2
+    Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BNE:                                                                                                        ; bne (CmpParam2 != CmpParam1)
-    Mov     ECX,[scr700cmp+4]                                                   ;ECX = CmpParam[1]
-    Mov     EDX,[scr700cmp]                                                     ;EDX = CmpParam[0]
-    Cmp     ECX,EDX                                                             ;ECX != EDX?
+    Mov     ECX,[scr700cmp+4]
+    Mov     EDX,[scr700cmp]
+    Cmp     ECX,EDX                                                             ;Not equal?
     JNE     .700BRA                                                             ;   Yes
-    Add     EBX,2                                                               ;EBX += 2
+    Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BGE:                                                                                                        ; bge ((signed)CmpParam2 >= CmpParam1)
-    Mov     ECX,[scr700cmp+4]                                                   ;ECX = CmpParam[1]
-    Mov     EDX,[scr700cmp]                                                     ;EDX = CmpParam[0]
-    Cmp     ECX,EDX                                                             ;ECX >= EDX?
+    Mov     ECX,[scr700cmp+4]
+    Mov     EDX,[scr700cmp]
+    Cmp     ECX,EDX                                                             ;2nd >= 1st, signed?
     JGE     .700BRA                                                             ;   Yes
-    Add     EBX,2                                                               ;EBX += 2
+    Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BLE:                                                                                                        ; ble ((signed)CmpParam2 <= CmpParam1)
-    Mov     ECX,[scr700cmp+4]                                                   ;ECX = CmpParam[1]
-    Mov     EDX,[scr700cmp]                                                     ;EDX = CmpParam[0]
-    Cmp     ECX,EDX                                                             ;ECX <= EDX?
+    Mov     ECX,[scr700cmp+4]
+    Mov     EDX,[scr700cmp]
+    Cmp     ECX,EDX                                                             ;2nd <= 1st, signed?
     JLE     .700BRA                                                             ;   Yes
-    Add     EBX,2                                                               ;EBX += 2
+    Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BGT:                                                                                                        ; bgt ((signed)CmpParam2 > CmpParam1)
-    Mov     ECX,[scr700cmp+4]                                                   ;ECX = CmpParam[1]
-    Mov     EDX,[scr700cmp]                                                     ;EDX = CmpParam[0]
-    Cmp     ECX,EDX                                                             ;ECX > EDX?
+    Mov     ECX,[scr700cmp+4]
+    Mov     EDX,[scr700cmp]
+    Cmp     ECX,EDX                                                             ;2nd > 1st, signed?
     JG      .700BRA                                                             ;   Yes
-    Add     EBX,2                                                               ;EBX += 2
+    Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BLT:                                                                                                        ; blt ((signed)CmpParam2 < CmpParam1)
-    Mov     ECX,[scr700cmp+4]                                                   ;ECX = CmpParam[1]
-    Mov     EDX,[scr700cmp]                                                     ;EDX = CmpParam[0]
-    Cmp     ECX,EDX                                                             ;ECX < EDX?
+    Mov     ECX,[scr700cmp+4]
+    Mov     EDX,[scr700cmp]
+    Cmp     ECX,EDX                                                             ;2nd < 1st, signed?
     JL      .700BRA                                                             ;   Yes
-    Add     EBX,2                                                               ;EBX += 2
+    Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BCC:                                                                                                        ; bcc ((unsigned)CmpParam2 >= CmpParam1)
-    Mov     ECX,[scr700cmp+4]                                                   ;ECX = CmpParam[1]
-    Mov     EDX,[scr700cmp]                                                     ;EDX = CmpParam[0]
-    Cmp     ECX,EDX                                                             ;ECX >= EDX?
+    Mov     ECX,[scr700cmp+4]
+    Mov     EDX,[scr700cmp]
+    Cmp     ECX,EDX                                                             ;2nd >= 1st, unsigned?
     JAE     .700BRA                                                             ;   Yes
-    Add     EBX,2                                                               ;EBX += 2
+    Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BLO:                                                                                                        ; blo ((unsigned)CmpParam2 <= CmpParam1)
-    Mov     ECX,[scr700cmp+4]                                                   ;ECX = CmpParam[1]
-    Mov     EDX,[scr700cmp]                                                     ;EDX = CmpParam[0]
-    Cmp     ECX,EDX                                                             ;ECX <= EDX?
+    Mov     ECX,[scr700cmp+4]
+    Mov     EDX,[scr700cmp]
+    Cmp     ECX,EDX                                                             ;2nd <= 1st, unsigned?
     JBE     .700BRA                                                             ;   Yes
-    Add     EBX,2                                                               ;EBX += 2
+    Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BHI:                                                                                                        ; bhi ((unsigned)CmpParam2 > CmpParam1)
-    Mov     ECX,[scr700cmp+4]                                                   ;ECX = CmpParam[1]
-    Mov     EDX,[scr700cmp]                                                     ;EDX = CmpParam[0]
-    Cmp     ECX,EDX                                                             ;ECX > EDX?
+    Mov     ECX,[scr700cmp+4]
+    Mov     EDX,[scr700cmp]
+    Cmp     ECX,EDX                                                             ;2nd > 1st, unsigned?
     JA      .700BRA                                                             ;   Yes
-    Add     EBX,2                                                               ;EBX += 2
+    Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BCS:                                                                                                        ; bcs ((unsigned)CmpParam2 < CmpParam1)
-    Mov     ECX,[scr700cmp+4]                                                   ;ECX = CmpParam[1]
-    Mov     EDX,[scr700cmp]                                                     ;EDX = CmpParam[0]
-    Cmp     ECX,EDX                                                             ;ECX < EDX?
+    Mov     ECX,[scr700cmp+4]
+    Mov     EDX,[scr700cmp]
+    Cmp     ECX,EDX                                                             ;2nd < 1st, unsigned?
     JB      .700BRA                                                             ;   Yes
-    Add     EBX,2                                                               ;EBX += 2
+    Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700R:                                                                                                          ; r
-    Mov     PCX,[scr700stp]                                                     ;PCX = Stack Pointer
-    Mov     EDX,[PCX]                                                           ;EDX = Stack Value
-    Inc     EDX                                                                 ;EDX++, EDX = 0x00?
-    JZ      .700RETURN                                                          ;   Yes
-    Dec     EDX                                                                 ;EDX--
-    Add     CL,4                                                                ;CL += 4
-    Mov     [scr700stp],PCX                                                     ;Stack Pointer = PCX
-    Mov     EBX,EDX                                                             ;EBX = EDX
+    Mov     PCX,[scr700stp]
+    Mov     EDX,[PCX]                                                           ;Return address on the top
+    Inc     EDX                                                                 ;Is the stack empty (-1)?
+    JZ      .700RETURN                                                          ;   Yes, go on
+    Dec     EDX
+    Add     CL,4                                                                ;Pop it, within the 256 bytes
+    Mov     [scr700stp],PCX
+    Mov     EBX,EDX                                                             ;Return, and push again from now on
 
     .700R1:                                                                                                         ; r1
-    Or      byte [scr700stf],01h                                                ;Status Flags |= 0x01
+    Or      byte [scr700stf],01h                                                ;Push return addresses on branches
     Jmp     .700RETURN
 
     .700R0:                                                                                                         ; r0
-    And     byte [scr700stf],~01h                                               ;Status Flags &= ~0x01
+    And     byte [scr700stf],~01h                                               ;Do not push return addresses
     Jmp     .700RETURN
 
     ;---------- Command Main Routine (I/O PORTS) ----------
 
     .700F:                                                                                                          ; f
-    Or      byte [portMod],0Fh                                                  ;PortMod |= 0x0F
-    Mov     EDX,[flushPort]                                                     ;EDX = FlushPort
-    Mov     [inPortCp],EDX                                                      ;InPort = EDX
-    Mov     PSI,[pAPURAM]                                                       ;PSI = RAM Pointer
-    Mov     [PSI+0F4h],EDX                                                      ;RAM[PSI + F4h] = EDX
+    Or      byte [portMod],0Fh                                                  ;Mark all four ports as written by the 65816
+    Mov     EDX,[flushPort]                                                     ;The last value written to each port
+    Mov     [inPortCp],EDX                                                      ;The input ports
+    Mov     PSI,[pAPURAM]
+    Mov     [PSI+0F4h],EDX                                                      ;And what the SPC700 reads at $F4-$F7
 
 %ifdef SHVC
-    Mov     ESI,-1                                                              ;ESI = -1
+    Mov     ESI,-1                                                              ;All four ports
     Call    WritePort
 %endif
 
-    Mov     DL,08h                                                              ;If SHVC-SOUND transfer mode, DL = 0x08
-    And     byte [scr700stf],40h                                                ;If not, DL = 0x04
+    Mov     DL,08h
+    And     byte [scr700stf],40h                                                ;Clear all flags but transfer mode (bit 6)
     SetZ    CL
-    ShR     DL,CL
-    Or      [scr700stf],DL                                                      ;Status Flags |= DL
+    ShR     DL,CL                                                               ;Bit 3 in SHVC-SOUND transfer mode, bit 2 otherwise
+    Or      [scr700stf],DL                                                      ;Wait until port 0 matches the value written
 
-    XOr     EDX,EDX                                                             ;EDX = 0x00
-    Mov     [scr700cnt],EDX                                                     ;TimeCount = EDX (0x00)
-    Mov     [scr700cmp],EDX                                                     ;CmpParam[0] = EDX (0x00)
-    Jmp     .700END
+    XOr     EDX,EDX
+    Mov     [scr700cnt],EDX                                                     ;No timed wait
+    Mov     [scr700cmp],EDX                                                     ;Start counting the time waited
+    Jmp     .700END                                                             ;Wait, then resume at the next command
 
     .700F1:                                                                                                         ; f1
-    Or      byte [scr700stf],02h                                                ;Status Flags |= 0x02
+    Or      byte [scr700stf],02h                                                ;Write ports right away
     Jmp     .700RETURN
 
     .700F0:                                                                                                         ; f0
-    And     byte [scr700stf],~02h                                               ;Status Flags &= ~0x02
+    And     byte [scr700stf],~02h                                               ;Write ports only on 'f'
     Jmp     .700RETURN
 
     .700WX:
-    Mov     AH,[PBP+PBX]                                                        ;AH = Program[PBX]
-    Inc     EBX                                                                 ;EBX++
-    XOr     CX,CX                                                               ;CH = 0x00, CL = 0x00
-    Call    .700P1                                                              ;Get Value of Parameter
-    Add     EBX,EDI                                                             ;EBX += EDI
-    And     DL,3                                                                ;DL &= 3
-    Or      DL,80h                                                              ;DL |= 0x80
-    Mov     dword [scr700cmp],0                                                 ;CmpParam[0] = 0
+    Mov     AH,[PBP+PBX]                                                        ;Operand type
+    Inc     EBX
+    XOr     CX,CX                                                               ;No error yet, and '?' is compare value 1
+    Call    .700P1                                                              ;The port number
+    Add     EBX,EDI
+    Test    CH,CH                                                               ;Is the operand out of range?
+    JNZ     .700WXSKIP                                                          ;   Yes, the caller ignores this command
+    And     DL,3                                                                ;Ports 0 to 3
+    Or      DL,80h                                                              ;Bit 7 marks the wait as active
+    Mov     dword [scr700cmp],0                                                 ;Start counting the time waited
+
+    .700WXSKIP:
     Ret
 
     .700WI:                                                                                                         ; wi
     Call    .700WX
-    Mov     [scr700int],DL                                                      ;Interrupt Input = DL
-    Jmp     .700EXIT
+    Test    CH,CH                                                               ;Is the operand out of range?
+    JNZ     .700RETURN                                                          ;   Yes, ignore this command
+    Mov     [scr700int],DL                                                      ;Wait until the SPC700 reads the port
+    Jmp     .700EXIT                                                            ;Stop until then
 
     .700WO:                                                                                                         ; wo
     Call    .700WX
-    Mov     [scr700int+1],DL                                                    ;Interrupt Output = DL
-    Jmp     .700EXIT
+    Test    CH,CH                                                               ;Is the operand out of range?
+    JNZ     .700RETURN                                                          ;   Yes, ignore this command
+    Mov     [scr700int+1],DL                                                    ;Wait until the SPC700 writes the port
+    Jmp     .700EXIT                                                            ;Stop until then
 
     ;---------- Command Main Routine (REQUEST) ----------
 
     .700BP:
-    Mov     AH,[PBP+PBX]                                                        ;AH = Program[PBX]
-    Inc     EBX                                                                 ;EBX++
-    XOr     CX,CX                                                               ;CH = 0x00, CL = 0x00
-    Call    .700P1                                                              ;Get Value of Parameter
-    Add     EBX,EDI                                                             ;EBX += EDI
+    Mov     AH,[PBP+PBX]                                                        ;Operand type
+    Inc     EBX
+    XOr     CX,CX                                                               ;No error yet, and '?' is compare value 1
+    Call    .700P1                                                              ;The value passed to the frontend
+    Add     EBX,EDI
+    Test    CH,CH                                                               ;Is the operand out of range?
+    JNZ     .700RETURN                                                          ;   Yes, ignore this command
 
-    Test    dword [apuCbMask],CBE_REQBP                                         ;Is supported callback?
-    JZ      .700RETURN                                                          ;   No
-    Test    PTRKW [apuCbFunc],-1                                                ;Is defined callback function?
-    JZ      .700RETURN                                                          ;   No
+    Test    dword [apuCbMask],CBE_REQBP                                         ;Does the frontend take breakpoint requests?
+    JZ      .700RETURN                                                          ;   No, ignore 'bp'
+    Test    PTRKW [apuCbFunc],-1                                                ;Is a callback installed?
+    JZ      .700RETURN                                                          ;   No, ignore 'bp'
 
     Mov     PCX,[apuCbFunc]
-    MovZX   EDX,DX                                                              ;EDX = DX
+    MovZX   EDX,DX                                                              ;Only the low 16 bits are passed
     ExCall  PCX,CBE_REQBP,EDX,FCH_PAUSE,0
     Jmp     .700RETURN
 
     ;---------- Error ----------
 
     .700ERROR:
-    XOr     EBX,EBX                                                             ;EBX = 0x00
-    Dec     EBX                                                                 ;EBX-- (EBX = 0xFFFFFFFF)
+    Mov     PSP,[scr700hsp]                                                     ;Drop any return addresses a failing subroutine left
+    XOr     EBX,EBX
+    Dec     EBX                                                                 ;Program pointer -1, as the script has stopped
 
     ;---------- Exit ----------
 
     .700EXIT:
-    Mov     dword [scr700cnt],0                                                 ;TimeCount = 0
+    Mov     dword [scr700cnt],0                                                 ;No timed wait, only a port wait resumes the script
 
     ;---------- Finalize ----------
 
     .700END:
-    Mov     [scr700ptr],EBX                                                     ;Program pointer = EBX
-    PopAD                                                                       ;Pop all registers
+    Mov     [scr700ptr],EBX                                                     ;Where to resume
+    PopAD
 
 ENDP
 
@@ -1584,6 +1658,7 @@ PROC EmuSPC, cyc
     ;Update DSP data register ----------------
     ;(Incase it was modifed during DSP emulation)
     MovZX   EBX,byte [RAM+dspAddr]
+    And     EBX,7Fh                                                             ;Registers $80-$FF mirror $00-$7F, as in Func2
     IdxLd   Mov,CL,dsp,PBX
     Mov     [RAM+dspData],CL
 
@@ -1617,13 +1692,9 @@ SPCTrace:
 
 SPCBreak:
     ;Call SPCTrace ---------------------------
-    ;pDebug does not use a standard STDCALL calling convention.  Instead, it employs a custom handshake
-    ; protocol wherein the callback accesses the caller's stack frame—specifically, locations relative
-    ; to the caller's return address—to read and overwrite six specific values, thereby allowing the
-    ; debugger to directly modify the emulator's execution state.  Since standard Win64 register-based
-    ; calling macros (where the first four arguments are not placed on the stack) cannot accommodate
-    ; this behavior, the implementation manually pushes values to and pops them from the stack,
-    ; invoking the function via a raw pointer.
+    ;NOTE: pDebug does not use a standard calling convention.  The callback reads and overwrites six
+    ; values relative to its return address, which lets the debugger change the emulator state.  As
+    ; Win64 passes the first four arguments in registers, they are pushed and popped here by hand.
 
     AlignRawCallBegin 6*PTRSIZE                                                 ;6 Pushes follow, see its own doc
     Mov     EBX,[t0Step]                                                        ;Pass down counters (zero-extended into a full pointer-
@@ -1852,8 +1923,8 @@ SPCTimers:
 
         Cmp     [flushPort],BL                                                  ;FlushPort[0] = BL?
         JNE     .No700                                                          ;   No
-        And     byte [scr700stf],~0Ch                                           ;Status Flags &= ~0x0C
-        Or      byte [scr700stf],02h                                            ;Status Flags |= ~0x02
+        And     byte [scr700stf],~0Ch                                           ;Status Flags &= ~0Ch
+        Or      byte [scr700stf],02h                                            ;Status Flags |= 02h
 
         .Run700:
         Call    RunScript700,0                                                  ;Run Script700 emulation
@@ -1898,7 +1969,7 @@ SPCTimers:
 ; which greatly increases emulation speed.
 ;
 ;In:
-;   PBX-> Counter just read (FD-FFh)
+;   PBX-> Counter just read ($FD-$FF)
 ;
 ;Out:
 ;   Counter = 0
@@ -1939,7 +2010,7 @@ CntHack:
         ; if (APURAM.control & 1)
         ;    EDX = t0Step * T8_CYC + t8kHz; //T64_CYC for timer 2
         ; else
-        ;    EDX = 0xffffffff;
+        ;    EDX = 0FFFFFFFFh;
 
         MovZX   ECX,byte [t2Step]                                               ;Get up counter 2
         XOr     EDX,EDX
@@ -2180,7 +2251,7 @@ Ret
 ;Load pointers
 ;   Load DPI or ABSL (aliases for EBX) with the value needed by the instruction.
 
-;The Direct Page base address (RAM, or RAM + 0x100 if PSW.P=1) is loaded into PBX.
+;The Direct Page base address (RAM, or RAM + 100h if PSW.P=1) is loaded into PBX.
 ; On x64, the value is resolved from the current [PSW+P] each time, so there is no cached state that
 ; could retain stale data (see the notes for SPCFlags STRUC).  This differs from the previous revision,
 ; which cached the value in the pDPage variable and required re-synchronization whenever P could change
@@ -2197,28 +2268,66 @@ Ret
 %endif
 %endmacro
 
+;On x86, the four loaders below write EBX whole and then OR in the Direct Page base, instead of
+; writing BL after DPBase, since addressing through EBX right after a BL write stalls on P6/Core2.
+; The low byte of [PSW+P-1] is byte 3 of B, which only FixSPC writes (as 0), so the OR sets BL.
+
 ;dp - Load DPI with the 8-bit immediate value
 %macro Ldp 0
+%ifdef WIN64
     DPBase                                                                      ;PBX -> Direct Page 0 or 1
     Mov     BL,[OP1]                                                            ;BL = Location in DP
+%else
+    MovZX   EBX,byte [OP1]                                                      ;EBX = Location in DP
+    Or      EBX,dword [PSW+P-1]                                                 ;PBX -> Direct Page 0 or 1, plus location
+%endif
+%endmacro
+
+;[OP2] - Refresh the copy of $0000 at $10000 before reading the 2nd operand
+;   When the instruction starts at $FFFE, PC is $FFFF and the 2nd operand lies past $FFFF, where it
+;   must wrap to $0000.  LRAM calls this, and instructions that read OP2 without LRAM call it
+;   directly.
+%macro LOP2 0
+    Cmp     PC,0FFFFh
+    JNE     %%Done
+        Mov     CL,[RAM]
+        Mov     [RAM+APURAMSIZE],CL
+    %%Done:
 %endmacro
 
 ;dp - Load DPI with the 2nd 8-bit immediate value
 %macro Ldp2 0
+%ifdef WIN64
     DPBase
+    LOP2
     Mov     BL,[OP2]
+%else
+    LOP2
+    MovZX   EBX,byte [OP2]
+    Or      EBX,dword [PSW+P-1]
+%endif
 %endmacro
 
 ;(X) - Load DPI with the value in X
 %macro LX 0
+%ifdef WIN64
     DPBase
     Mov     BL,X
+%else
+    MovZX   EBX,X
+    Or      EBX,dword [PSW+P-1]
+%endif
 %endmacro
 
 ;(Y) - Load DPI with the value in Y
 %macro LY 0
+%ifdef WIN64
     DPBase
     Mov     BL,Y
+%else
+    MovZX   EBX,Y
+    Or      EBX,dword [PSW+P-1]
+%endif
 %endmacro
 
 ;dp+X - Load DPI with the 8-bit immediate value + X
@@ -2233,14 +2342,12 @@ Ret
     Add     BL,Y
 %endmacro
 
-;abs+?
-;   Because an overflow occurs when a 16bit value is obtained from address $FFFF,
-;   and an unexpected value is obtained, copy value of address $0000 to $10000
-;   it so that the correct 16bit value can be obtained.
+;abs+? - Load PBX with the RAM base for an absolute address
+;   A 16-bit operand read when PC is $FFFF wraps to $0000 through the copy at $10000, which LOP2
+;   refreshes only in that case.  RAM (PDI) always holds the RAM base while an opcode runs.
 %macro LRAM 0
-    Mov     PBX,[pAPURAM]
-    Mov     CL,[PBX]
-    Mov     [PBX+APURAMSIZE],CL
+    Mov     PBX,RAM
+    LOP2
 %endmacro
 
 ;abs - Load ABSL with the 16-bit immediate value
@@ -2264,13 +2371,37 @@ Ret
 %endmacro
 
 ;[dp+?] - (dp+?+1)(dp+?)
-;   Do not obtain 16bit values beyond the address of direct page.
+;   Do not obtain 16bit values beyond the address of direct page.  The pointer read is not passed
+;   to CheckIO, since Script700 port waits only count a port value used as data, not one read to
+;   form an address.
+;   A pointer byte read from a counter ($00FD-$00FF) still clears it, as any read does.
 %macro Ladp 0
-;   Mov     BX,[DPI]
+    Cmp     BX,0FCh                                                             ;Does the pointer touch a counter ($00FC-$00FF)?
+    JB      %%Read1                                                             ;   No
+    Cmp     BX,0FFh
+    JA      %%Read1                                                             ;   No
+        Mov     CL,[DPI]                                                        ;CL = Low byte
+        Cmp     BL,0FDh                                                         ;Is it a counter?
+        JB      %%NoLow                                                         ;   No
+            Mov     byte [DPI],0                                                ;   Yes, reading it clears it
+
+        %%NoLow:
+        Inc     BL                                                              ;BX -> High byte, wrapping within page 0
+        Cmp     BL,0FDh                                                         ;Is it a counter?
+        JB      %%Read2                                                         ;   No ($00 when the pointer is at $00FF)
+            XChg    BH,[DPI]                                                    ;   Yes, BH = High byte and the counter is cleared, as BH
+            Mov     BL,CL                                                       ;    was 0 in page 0
+            Jmp     %%Done
+
+    %%Read1:
     Mov     CL,[DPI]
     Inc     BL
+
+    %%Read2:
     Mov     BH,[DPI]
     Mov     BL,CL
+
+    %%Done:
 %endmacro
 
 ;[dp+X] - Load ABSL with the 16-bit value at [dp+X]
@@ -2287,15 +2418,19 @@ Ret
     AdC     BH,0
 %endmacro
 
-;[abs+X] - Load ABSL with the 16-bit value at [abs+X]
+;[abs+X] - Load ABSL with abs+X, the address of the 16-bit pointer
+;   The pointer itself can sit at $FFFF whatever PC is, so the copy of $0000 at $10000 is always
+;   refreshed here, not only through LOP2.
 %macro LaabsX 0
-    LRAM
+    Mov     PBX,RAM
+    Mov     CL,[RAM]
+    Mov     [RAM+APURAMSIZE],CL
     Mov     BL,X
     Add     BX,[OP1]
 %endmacro
 
 ;mem.bit - Load ABSL with the first 13-bits of the immediate value, and DL with the last 3
-;   ABSL-> byte in mem 0-1FFFh
+;   ABSL-> byte in mem $0000-$1FFF
 ;   DL  -> bit in byte
 %macro Lmbit 0
     Labs
@@ -2344,6 +2479,18 @@ Ret
     SetO    [PSW+V]
 %endmacro
 
+;Get Negative, Overflow, Zero, and Carry flags (for ADDW, which sets H itself)
+%macro GetNVZC 0
+    GetC
+    GetNVZ
+%endmacro
+
+;Get Negative, Overflow, Zero, and Not Carry flags (for SUBW, which sets H itself)
+%macro GetNVZCs 0
+    GetCs
+    GetNVZ
+%endmacro
+
 ;Get Negative, Overflow, Half-Carry, Zero, and Carry flags (for addition instructions)
 %macro GetNVHZC 0
     GetC
@@ -2351,8 +2498,8 @@ Ret
 
 %if HALFC
     Mov     DH,AH
-    LAHF
-    ShL     AH,4
+    LAHF                                                                        ;NOTE: x64 needs CPUID LAHF-LM (missing on the
+    ShL     AH,4                                                                ; earliest AMD64/EM64T CPUs), on hold for now
     SetC    [PSW+H]
     Mov     AH,DH
 %endif
@@ -2365,7 +2512,7 @@ Ret
 
 %if HALFC
     Mov     DH,AH
-    LAHF
+    LAHF                                                                        ;NOTE: x64 needs LAHF-LM (see GetNVHZC)
     ShL     AH,4
     SetNC   [PSW+H]
     Mov     AH,DH
@@ -2462,10 +2609,16 @@ Ret
 %endif
 %endmacro
 
-%macro CheckDSP 0
+%macro CheckDSP 1
 %if DSPBK && DSPINTEG
     Cmp     BX,0F3h
+%if %1 & 4                                                                      ;16 bits (RD16)
+    JE      %%F3
+    Cmp     BX,0F2h                                                             ;A 16-bit read at $F2 also reads $F3
+%endif
     JNE     %%NotF3
+
+    %%F3:
         Call    CatchUp
 
     %%NotF3:
@@ -2482,7 +2635,7 @@ PROC CatchPort
 
     Push    PBX
     And     BX,0FFFCh
-    Cmp     BX,00F4h                                                            ;Is read target address 0xF4-0xF7?
+    Cmp     BX,00F4h                                                            ;Is read target address $F4-$F7?
     Pop     PBX
     RetNZ                                                                       ;   No, done
 
@@ -2494,14 +2647,14 @@ PROC CatchPort
     RetNZ                                                                       ;   No, done
 
     Mov     byte [scr700int],0                                                  ;Interrupt Input = 0
-    Or      byte [scr700stf],20h                                                ;Status Flags |= 0x20
+    Or      byte [scr700stf],20h                                                ;Status Flags |= 20h
     XOr     CL,CL                                                               ;CL = 0
 
 ENDP
 
 %macro CatchPortB 0
-    XOr     CL,CL                                                               ;Enable ports interrupt?
-    Or      CL,[scr700int]
+    Mov     CL,[scr700int]                                                      ;Enable ports interrupt?
+    Test    CL,CL
     JZ      %%NoInt                                                             ;   No
 
     Call    CatchPort
@@ -2510,21 +2663,15 @@ ENDP
 %endmacro
 
 %macro CatchPortW 1
-    XOr     CL,CL                                                               ;Enable ports interrupt?
-    Or      CL,[scr700int]
+    Mov     CL,[scr700int]                                                      ;Enable ports interrupt?
+    Test    CL,CL
     JZ      %%NoInt                                                             ;   No
 
     Call    CatchPort
-    JZ      %%NoInt                                                             ;   No
+    JZ      %%NoInt
 
     Push    PBX
-
-    %if %1 & 4                                                                  ;16 bits from direct page
-        Inc     BL
-    %else                                                                       ;Absolute address
-        Inc     BX
-    %endif
-
+    Inc     BL                                                                  ;The 2nd byte stays in the direct page (RD16 only)
     Call    CatchPort
     Pop     PBX
 
@@ -2533,13 +2680,13 @@ ENDP
 
 %macro CheckIO 1
 %if %1 & 2
-    CheckDSP
+    CheckDSP    %1
 
-    %if %1 & 12                                                                 ;16 bits
-        CatchPortW  %1
-    %else                                                                       ;8 bits
-        CatchPortB
-    %endif
+%if %1 & 4                                                                      ;16 bits (RD16)
+    CatchPortW  %1
+%else                                                                           ;8 bits, including RA, so a byte read
+    CatchPortB                                                                  ; does not also count as reading the next port
+%endif
 %endif
 %endmacro
 
@@ -2561,6 +2708,21 @@ ENDP
 %macro RdPost 1
     Dec     BH
     BreakDSP
+
+%if %1 & 1
+    ;NOTE: A 16-bit read also reads BL+1 in the same page, so a counter there is reset too.  BX is
+    ; 0FFFCh-0FFFEh exactly when BL+1 is a counter in page 0 (BL=0FFh wraps to 00h, not a counter).
+    Cmp     BX,0FFFCh
+    JB      %%NoHigh
+    Cmp     BX,0FFFEh
+    JA      %%NoHigh
+        Inc     BL
+        ResetCnt
+        Dec     BH
+        Dec     BL
+    %%NoHigh:
+%endif
+
     Cmp     BX,0FFFDh                                                           ;Was a counter read from?
 
 %if %1 & 2
@@ -2605,10 +2767,10 @@ ENDP
 
     Sub     dword [clkLeft],%1*CPU_CYC                                          ;Subtract cycles instruction takes to execute
 
-    %if %2 > 1                                                                  ;Is number of instruction bytes greater than 1?
-        %rep %2-1                                                               ;   Yes, increase PC for each operand byte
-            Inc     PC
-        %endrep
+    %if %2 == 2                                                                 ;Move PC past the operand bytes.  One 'Add' replaces
+        Inc     PC                                                              ; two 'Inc's.  Its flag changes do not matter, since
+    %elif %2 > 2                                                                ; the 'Sub' above already overwrote the flags.
+        Add     PC,%2-1
     %endif
 
     %if %0 >= 3                                                                 ;Is memory check parameter not blank?
@@ -2879,6 +3041,7 @@ ENDP
     Mov     DH,[DPI]
     RdPost  0
     Ldp2
+    CheckIO RD
     CheckIO WD
     ShR     byte [PSW+CF],1
     AdC     [DPI],DH
@@ -2892,6 +3055,7 @@ ENDP
     Mov     DH,[DPI]
     RdPost  0
     LX
+    CheckIO RD
     CheckIO WD
     ShR     byte [PSW+CF],1
     AdC     [DPI],DH
@@ -2911,8 +3075,19 @@ ENDP
     Inc     BL
     Mov     DH,[DPI]
     Dec     BL
+%if HALFC
+    Mov     CL,Y                                                                ;H is the carry out of bit 11, not x86 AF (out of bit 3)
+    XOr     CL,DH                                                               ;CL = Y ^ high byte of dp
     Add     YA,DX
-    CleanUp 5,2,RD16,NVHZC
+    GetNVZC                                                                     ;Capture the flags before XOr/Test overwrite them
+    XOr     CL,Y                                                                ;Bit 4 of (Y ^ dp ^ sum) is the carry out of bit 11
+    Test    CL,10h
+    SetNZ   [PSW+H]
+    CleanUp 5,2,RD16
+%else
+    Add     YA,DX
+    CleanUp 5,2,RD16,NVZC
+%endif
 %endmacro
 
 
@@ -3007,6 +3182,7 @@ ENDP
     Mov     DH,[DPI]
     RdPost  0
     Ldp2
+    CheckIO RD
     CheckIO WD
     And     [DPI],DH
     CleanUp 6,3,WD,NZ
@@ -3019,6 +3195,7 @@ ENDP
     Mov     DH,[DPI]
     RdPost  0
     LX
+    CheckIO RD
     CheckIO WD
     And     [DPI],DH
     CleanUp 5,1,WD,NZ
@@ -3031,30 +3208,30 @@ ENDP
 ;               *
 ;And1 C,mem.bit
 %macro Opc4A 0
+    Lmbit                                                                       ;The byte is always read, even when C is zero
+    CheckIO RA
     Cmp     byte [PSW+CF],0                                                     ;Is carry zero?
-    JZ      %%Nc                                                                ;   Yes, result will be zero anyway so quit
-        Lmbit
-        CheckIO RA
-        Mov     BL,[ABSL]
-        BT      EBX,EDX                                                         ;(Bit Test only uses the first five bits of EDX)
-        CleanUp 4,3,na,C
+    JZ      %%Nc                                                                ;   Yes, result will be zero anyway
+        Mov     CL,[ABSL]                                                       ;CL, not BL, so BX keeps the address for RdPost
+        BT      ECX,EDX                                                         ;(Bit Test only uses the first five bits of EDX)
+        CleanUp 4,3,RA,C
 
     %%Nc:
-    CleanUp 4,3
+    CleanUp 4,3,RA
 %endmacro
 
 ;And1 C,/mem.bit
 %macro Opc6A 0
+    Lmbit
+    CheckIO RA
     Cmp     byte [PSW+CF],0
     JZ      %%Ncn
-        Lmbit
-        CheckIO RA
-        Mov     BL,[ABSL]
-        BT      EBX,EDX
-        CleanUp 4,3,na,Cs
+        Mov     CL,[ABSL]
+        BT      ECX,EDX
+        CleanUp 4,3,RA,Cs
 
     %%Ncn:
-    CleanUp 4,3
+    CleanUp 4,3,RA
 %endmacro
 
 
@@ -3109,6 +3286,7 @@ ENDP
         CheckIO RD
         Test    byte [DPI],1 << %1                                              ;Test requested bit, is it clear?
         JNZ     %%BCDone                                                        ;   No, clean up
+            LOP2
             MovSX   EDX,byte [OP2]                                              ;EDX = Relative adjustment
             Add     PC,DX                                                       ;Adjust PC
             CleanUp 7,3,RD
@@ -3171,6 +3349,7 @@ ENDP
         CheckIO RD
         Test    byte [DPI],1 << %1                                              ;Test the requested bit, is it set?
         JZ      %%BSDone                                                        ;   No, clean up
+            LOP2
             MovSX   EDX,byte [OP2]                                              ;DX = Relative adjustment
             Add     PC,DX                                                       ;Add relative displacement to PC
             CleanUp 7,3,RD
@@ -3321,13 +3500,15 @@ ENDP
 ;
 ;Call abs
 %macro Opc3F 0
+    LRAM                                                                        ;Refresh the $10000 copy in case the operand wraps
+    Mov     DX,[OP1]                                                            ;Read the target before pushing, as the hardware
+    Push    PDX                                                                 ; does, so a push onto the operand cannot change it
     Add     PC,2
     PushW   PC
-    LRAM
-    Mov     BX,[OP1]
-    CheckIO RA
-    Sub     PC,2
-    Mov     PC,[OP1]
+    Mov     BX,[PSP]                                                            ;BX = Target, as in JMP abs (PBX still points into
+    CheckIO RA                                                                  ; RAM after PushW, so only BX needs replacing)
+    Pop     PDX
+    Mov     PC,DX
     CleanUp 8,na
 %endmacro
 
@@ -3342,6 +3523,7 @@ ENDP
     CheckIO RD
     Cmp     A,[DPI]
     JE      %%NCBdp
+        LOP2
         MovSX   EDX,byte [OP2]
         Add     PC,DX
         CleanUp 7,3,RD
@@ -3356,6 +3538,7 @@ ENDP
     CheckIO RD
     Cmp     A,[DPI]
     JE      %%NCBdpx
+        LOP2
         MovSX   EDX,byte [OP2]
         Add     PC,DX
         CleanUp 8,3,RD
@@ -3630,15 +3813,30 @@ ENDP
 ; N V P B H I Z C
 ; *           * *
 ;DAA A
+;   The hardware algorithm, applied to the PSW flags directly.  The x86 'DAA' instruction is not
+;   used, since it is not encodable in 64-bit mode.
 %macro OpcDF 0
-    Mov     DH,AH                                                               ;Save AH (Y)
-    Mov     AH,[PSW+H]                                                          ;Set AF and CF in AH
-    ShL     AH,4
-    Or      AH,[PSW+CF]
-    SAHF                                                                        ;Store AH into flags register
-    EmuDAA                                                                      ;Execute DAA on AL (A) (see EmuDAA)
-    Mov     AH,DH                                                               ;Restore AH
-    CleanUp 3,1,na,NZC
+    Test    byte [PSW+CF],-1                                                    ;If C or A > 99h, add 60h and set C
+    JNZ     %%Hi
+    Cmp     A,99h
+    JBE     %%Lo
+    %%Hi:
+        Add     A,60h
+        Mov     byte [PSW+CF],1
+
+    %%Lo:
+    Test    byte [PSW+H],-1                                                     ;If H or the low nibble > 9, add 6
+    JNZ     %%Adj
+    Mov     DL,A
+    And     DL,0Fh
+    Cmp     DL,9
+    JBE     %%Done
+    %%Adj:
+        Add     A,6
+
+    %%Done:
+    Test    A,A
+    CleanUp 3,1,na,NZ
 %endmacro
 
 
@@ -3647,16 +3845,30 @@ ENDP
 ; N V P B H I Z C
 ; *           * *
 ;DAS A
+;   The hardware algorithm, applied to the PSW flags directly.  Unlike the x86 'DAS' instruction, a
+;   borrow from the low nibble adjustment does not change C.
 %macro OpcBE 0
-    Mov     DH,AH                                                               ;Save AH (Y)
-    Mov     AH,[PSW+H]                                                          ;Set AF and CF in AH
-    ShL     AH,4
-    Or      AH,[PSW+CF]
-    XOr     AH,11h                                                              ;Reverse flags for x86
-    SAHF                                                                        ;Store AH into flags register
-    EmuDAS                                                                      ;Execute DAS on AL (A) (see EmuDAS)
-    Mov     AH,DH                                                               ;Restore AH
-    CleanUp 3,1,na,NZCs
+    Test    byte [PSW+CF],-1                                                    ;If not C or A > 99h, subtract 60h and clear C
+    JZ      %%Hi
+    Cmp     A,99h
+    JBE     %%Lo
+    %%Hi:
+        Sub     A,60h
+        Mov     byte [PSW+CF],0
+
+    %%Lo:
+    Test    byte [PSW+H],-1                                                     ;If not H or the low nibble > 9, subtract 6
+    JZ      %%Adj
+    Mov     DL,A
+    And     DL,0Fh
+    Cmp     DL,9
+    JBE     %%Done
+    %%Adj:
+        Sub     A,6
+
+    %%Done:
+    Test    A,A
+    CleanUp 3,1,na,NZ
 %endmacro
 
 
@@ -3683,6 +3895,7 @@ ENDP
     CheckIO WD
     Dec     byte [DPI]
     JZ      %%NDBdp
+        LOP2
         MovSX   EDX,byte [OP2]
         Add     PC,DX
         CleanUp 7,3,WD
@@ -3937,6 +4150,7 @@ ENDP
     Mov     DH,[DPI]
     RdPost  0
     Ldp2
+    CheckIO RD
     CheckIO WD
     XOr     [DPI],DH
     CleanUp 6,3,WD,NZ
@@ -3949,6 +4163,7 @@ ENDP
     Mov     DH,[DPI]
     RdPost  0
     LX
+    CheckIO RD
     CheckIO WD
     XOr     [DPI],DH
     CleanUp 5,1,WD,NZ
@@ -3963,12 +4178,10 @@ ENDP
 %macro Opc8A 0
     Lmbit
     CheckIO RA
-    Push    PBX
-    Mov     BL,[ABSL]
-    BT      EBX,EDX
+    Mov     CL,[ABSL]
+    BT      ECX,EDX
     AdC     byte [PSW+CF],0
     And     byte [PSW+CF],1
-    Pop     PBX
     CleanUp 5,3,RA
 %endmacro
 
@@ -4060,8 +4273,36 @@ ENDP
 ;Jmp [abs+X]
 %macro Opc1F 0
     LaabsX
-    CheckIO RA
-    Mov     PC,[ABSL]
+    Cmp     BX,0FCh                                                             ;Does the pointer touch a counter ($00FC-$00FF)?
+    JB      %%Read                                                              ;   No
+    Cmp     BX,0FFh
+    JA      %%Read                                                              ;   No
+        Mov     CL,[ABSL+1]                                                     ;CL = High byte
+        Cmp     BL,0FEh                                                         ;Is it a counter ($00FD-$00FF)?
+        JA      %%NoHigh                                                        ;   No ($0100 when the pointer is at $00FF)
+            Mov     byte [ABSL+1],0                                             ;   Yes, reading it clears it
+
+        %%NoHigh:
+        Cmp     BL,0FDh                                                         ;Is the low byte a counter?
+        JB      %%LowFC                                                         ;   No
+            XChg    BH,[ABSL]                                                   ;   Yes, BH = Low byte and the counter is cleared, as BH
+            Mov     BL,BH                                                       ;    was 0 in page 0
+            Jmp     %%High
+
+        %%LowFC:
+        Mov     BL,[ABSL]
+
+        %%High:
+        Mov     BH,CL
+        Jmp     %%Target
+
+    %%Read:
+    Mov     BX,[ABSL]                                                           ;BX = Jump target
+
+    %%Target:
+    CheckIO RA                                                                  ;The pointer read only forms the address, so the target is
+                                                                                ; checked instead, as in 'JMP !a'
+    Mov     PC,BX
     CleanUp 6,na
 %endmacro
 
@@ -4487,11 +4728,9 @@ ENDP
 %macro OpcAA 0
     Lmbit
     CheckIO RA
-    Push    PBX
-    Mov     BL,[ABSL]
-    BT      EBX,EDX
+    Mov     CL,[ABSL]
+    BT      ECX,EDX
     GetC
-    Pop     PBX
     CleanUp 4,3,RA
 %endmacro
 
@@ -4503,6 +4742,7 @@ ENDP
 ;Mov1 mem.bit,C
 %macro OpcCA 0
     Lmbit
+    CheckIO RA                                                                  ;The byte is read, then written back
     CheckIO WA
     Mov     CL,DL
     Mov     DL,[PSW+CF]
@@ -4675,6 +4915,7 @@ ENDP
     Mov     DH,[DPI]
     RdPost  0
     Ldp2
+    CheckIO RD
     CheckIO WD
     Or      [DPI],DH
     CleanUp 6,3,WD,NZ
@@ -4687,6 +4928,7 @@ ENDP
     Mov     DH,[DPI]
     RdPost  0
     LX
+    CheckIO RD
     CheckIO WD
     Or      [DPI],DH
     CleanUp 5,1,WD,NZ
@@ -5026,6 +5268,7 @@ ENDP
     Mov     DH,[DPI]
     RdPost  0
     Ldp2
+    CheckIO RD
     CheckIO WD
     Cmp     byte [PSW+CF],1
     SbB     [DPI],DH
@@ -5039,6 +5282,7 @@ ENDP
     Mov     DH,[DPI]
     RdPost  0
     LX
+    CheckIO RD
     CheckIO WD
     Cmp     byte [PSW+CF],1
     SbB     [DPI],DH
@@ -5190,8 +5434,19 @@ ENDP
     Inc     BL
     Mov     DH,[DPI]
     Dec     BL
+%if HALFC
+    Mov     CL,Y                                                                ;H is no borrow out of bit 11, not x86 AF (out of bit 3)
+    XOr     CL,DH                                                               ;CL = Y ^ high byte of dp
     Sub     YA,DX
-    CleanUp 5,2,RD16,NVHZCs
+    GetNVZCs                                                                    ;Capture the flags before XOr/Test overwrite them
+    XOr     CL,Y                                                                ;Bit 4 of (Y ^ dp ^ difference) is the borrow out of bit 11
+    Test    CL,10h
+    SetZ    [PSW+H]
+    CleanUp 5,2,RD16
+%else
+    Sub     YA,DX
+    CleanUp 5,2,RD16,NVZCs
+%endif
 %endmacro
 
 
@@ -5303,8 +5558,7 @@ ENDP
     Not     A
     And     [ABSL],A
     Not     A
-;   Test    A,DH                                                                ;Perhaps, bug of SPC700's opecode
-    Cmp     A,DH
+    Cmp     A,DH                                                                ;N and Z from A - old value, a compare as on hardware
     CleanUp 6,3,WA,NZ
 %endmacro
 
@@ -5320,8 +5574,7 @@ ENDP
     CheckIO WA
     Mov     DH,[ABSL]
     Or      [ABSL],A
-;   Test    A,DH                                                                ;Perhaps, bug of SPC700's opecode
-    Cmp     A,DH
+    Cmp     A,DH                                                                ;N and Z from A - old value, a compare as on hardware
     CleanUp 6,3,WA,NZ
 %endmacro
 
@@ -5341,19 +5594,16 @@ ENDP
 ;===================================================================================================
 ;Function Register Handlers
 ;
-;These are specific functions to handle data written to the function registers (F0h to FFh)
+;These are specific functions to handle data written to the function registers ($F0 to $FF)
 
 ;===================================================================================================
 ;Test (unused)
 
 %macro Func0 0
-%if DEBUG
-    Jmp     PBP
-%else
-    Jmp     SPCFetch
-%endif
+    Jmp     PBP                                                                 ;Not 'SPCFetch', since a 16-bit write and SetAPURAM set
+                                                                                ; PBP to return elsewhere, as the other handlers expect
 
-;This is a bit of code to handle 16-bit writes to the F0h - FEh range.
+;This is a bit of code to handle 16-bit writes to the $F0-$FE range.
 ; During a 16-bit write, EBP is loaded with the address here, and the address of the handler for
 ; the high byte is pushed onto the stack.  After handling the low byte, the emulator will jump
 ; here where EBP will be restored then control will be passed to the handler for the high byte.
@@ -5461,8 +5711,8 @@ ALIGN 16
 
 ;===================================================================================================
 ;DSP Address
-;   Loads 0F3h with value indexed in DSP RAM.  In the SNES, reads from registers 80-FF mirror
-;   registers 00-7F.
+;   Loads $F3 with value indexed in DSP RAM.  In the SNES, reads from registers $80-$FF mirror
+;   registers $00-$7F.
 
 %macro Func2 0
     Mov     BL,[RAM+dspAddr]                                                    ;BL = DSP register
@@ -5490,10 +5740,18 @@ ALIGN 16
     Jmp     PBP
 
     %%NoDSP:
-    Mov     BL,[RAM+dspAddr]
-    And     EBX,7Fh
-    Mov     CL,[RAM+dspData]
-    IdxSt   Mov,dsp,PBX,CL
+    MovZX   EBX,byte [RAM+dspAddr]
+    Test    BL,80h
+    JNZ     %%Done                                                              ;Writes to $80-$FF have no effect, as in DSPIn
+        Mov     CL,[RAM+dspData]
+        Cmp     BL,endx                                                         ;Any write to ENDX clears it, as REndX does
+        JNE     %%Store
+            XOr     CL,CL
+
+        %%Store:
+        IdxSt   Mov,dsp,PBX,CL
+
+    %%Done:
     Jmp     PBP
 %endmacro
 
@@ -5521,11 +5779,11 @@ ALIGN 16
     Cmp     [flushPort],CL                                                      ;FlushPort[0] = BL?
     JNE     %%NoFlush                                                           ;   No
 
-    And     byte [scr700stf],~0Ch                                               ;Status Flags &= ~0x0C
-    Or      byte [scr700stf],02h                                                ;Status Flags |= 0x02
+    And     byte [scr700stf],~0Ch                                               ;Status Flags &= ~0Ch
+    Or      byte [scr700stf],02h                                                ;Status Flags |= 02h
 
     %%Run700:
-    Or      byte [scr700stf],20h                                                ;Status Flags |= 0x20
+    Or      byte [scr700stf],20h                                                ;Status Flags |= 20h
 
     %%NoFlush:
     Jmp     PBP
@@ -5542,7 +5800,7 @@ ALIGN 16
     JNE     %%NoInt                                                             ;   No
 
     Mov     byte [scr700int+1],0                                                ;Interrupt Output = 0
-    Or      byte [scr700stf],20h                                                ;Status Flags |= 0x20
+    Or      byte [scr700stf],20h                                                ;Status Flags |= 20h
 
     %%NoInt:
     Jmp     PBP
@@ -5559,7 +5817,7 @@ ALIGN 16
     JNE     %%NoInt                                                             ;   No
 
     Mov     byte [scr700int+1],0                                                ;Interrupt Output = 0
-    Or      byte [scr700stf],20h                                                ;Status Flags |= 0x20
+    Or      byte [scr700stf],20h                                                ;Status Flags |= 20h
 
     %%NoInt:
     Jmp     PBP
@@ -5576,7 +5834,7 @@ ALIGN 16
     JNE     %%NoInt                                                             ;   No
 
     Mov     byte [scr700int+1],0                                                ;Interrupt Output = 0
-    Or      byte [scr700stf],20h                                                ;Status Flags |= 0x20
+    Or      byte [scr700stf],20h                                                ;Status Flags |= 20h
 
     %%NoInt:
     Jmp     PBP
@@ -5585,7 +5843,7 @@ ALIGN 16
 
 ;===================================================================================================
 ;Unused
-;   No special handling is associated with registers 0F8h and 0F9h
+;   No special handling is associated with registers $F8 and $F9
 
 %macro Func8 0
     Jmp     PBP

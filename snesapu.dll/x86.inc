@@ -13,7 +13,7 @@
 ;                                                   Copyright (C) 2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-09-29
+;   - degrade-factory in 2026-10-09
 ;===================================================================================================
 
 %define ARCH_BITS   32
@@ -69,22 +69,6 @@ PTRSIZE EQU     4                                                               
 
 %macro PopAD 0
     DB      61h
-%endmacro
-
-
-;===================================================================================================
-;Decimal Adjust After Addition/Subtraction
-;
-;DAA/DAS are not encodable in 64-bit mode.  See x64.inc for the algorithmic replacement there.  On
-; x86 they are real instructions, touching only AL and the flags (never AH), so callers do not need
-; to know or care which form actually ran.
-
-%macro EmuDAA 0
-    DAA
-%endmacro
-
-%macro EmuDAS 0
-    DAS
 %endmacro
 
 
@@ -460,13 +444,13 @@ PTRSIZE EQU     4                                                               
         %error  "EXPROC :: Procedures cannot have more than 8 arguments"
     %endif
 
-    ;The host's FPU control word is saved below the frame pointer and restored by ENDP, with 037Fh
-    ; (the 'FInit' default) loaded in between.  'FInit' itself is not used, since a host callback
-    ; may call an export while the x87 stack still holds live values.  The frame is always created,
-    ; so every RetN/RetZ/RetNZ goes through ENDP instead of a bare 'Ret'.
+    ;NOTE: The frontend's FPU control word is saved below the frame pointer and restored by ENDP,
+    ; with 037Fh (the 'FInit' default) loaded in between.  'FInit' itself is not used, since a
+    ; frontend callback may call an export while the x87 stack still holds live values.  The frame
+    ; is always created, so every RetN/RetZ/RetNZ goes through ENDP instead of a bare 'Ret'.
     Push    EBP                                                                 ;Create a frame pointer
     Mov     EBP,ESP
-    Sub     ESP,4                                                               ;[EBP-4] = Host's FPU control word
+    Sub     ESP,4                                                               ;[EBP-4] = Frontend's FPU control word
     FNStCW  [EBP-4]                                                             ;[EBP-2] = Control word to run with
     Mov     word [EBP-2],037Fh
     FLdCW   [EBP-2]
@@ -695,9 +679,9 @@ PTRSIZE EQU     4                                                               
 %macro ENDP 0
     %$Done:
 
-    %ifdef %$fpuslot                                                            ;Restore the host's FPU control word saved by
+    %ifdef %$fpuslot                                                            ;Restore the frontend's FPU control word saved by
         FNClEx                                                                  ; EXPROC, clearing the masked exception flags
-        FLdCW   [EBP-4]                                                         ; first so the host does not see them
+        FLdCW   [EBP-4]                                                         ; first so the frontend does not see them
     %endif
 
     %assign %$i 4

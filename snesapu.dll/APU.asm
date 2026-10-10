@@ -22,7 +22,7 @@
 ;                                                   Copyright (C) 2003-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-09-30
+;   - degrade-factory in 2026-10-09
 ;===================================================================================================
 
 %ifdef WIN64
@@ -349,9 +349,9 @@ USES EBX,ECX
     Mov     PBX,[ppScript700]
     Test    PBX,PBX
     JZ      .ppScript700Next
-        Mov     ECX,[PBX]
-        Sub     ECX,PTRSIZE
-        JL      .ppScript700Next
+        Mov     ECX,[PBX]                                                       ;ECX = Size of the caller's structure, including this field
+        Sub     ECX,2*PTRSIZE                                                   ;Does it reach past the work memory pointer?
+        JL      .ppScript700Next                                                ;   No
 
         LoadPtr PAX,scr700wrk
         Add     PBX,PTRSIZE
@@ -429,16 +429,16 @@ USES ECX,ESI,EDI
 
     Mov     PSI,[pFile]
 
-    Add     PSI,100h                                                            ;memcpy(&apuRAM, &spc[0x100], 0x10000)
+    Add     PSI,100h                                                            ;memcpy(&apuRAM, &spc[100h], 10000h)
     Mov     PDI,[pAPURAM]
     Mov     ECX,4000h
     Rep     MovSD
 
-    LoadPtr PDI,dsp                                                             ;memcpy(&dsp, &spc[0x10100], 128)
+    LoadPtr PDI,dsp                                                             ;memcpy(&dsp, &spc[10100h], 128)
     Mov     ECX,32
     Rep     MovSD
 
-    Add     PSI,40h                                                             ;memcpy(&xram, &spc[0x101C0], 64)
+    Add     PSI,40h                                                             ;memcpy(&xram, &spc[101C0h], 64)
     LoadPtr PDI,extraRAM
     Mov     ECX,16
     Rep     MovSD
@@ -500,6 +500,8 @@ USES ECX,EDX
         Mov     AL,2
 
         .OKChn:
+        Cmp     AL,[rawChn]                                                     ;Discard the samples kept in outBuf only when the
+        JE      .DefChn                                                         ; output format changes
         Mov     [outCur],EDX
         Mov     [outLen],EDX
 
@@ -527,6 +529,8 @@ USES ECX,EDX
         Mov     CL,16
 
         .OKBits:
+        Cmp     CL,[rawBits]                                                    ;Discard the samples kept in outBuf only when the
+        JE      .DefBits                                                        ; output format changes
         Mov     [outCur],EDX
         Mov     [outLen],EDX
 
@@ -551,6 +555,15 @@ USES ECX,EDX
     Mov     EDX,[rateI]
     Cmp     EDX,-1
     CMovX   NE,EAX,EDX                                                          ;If EDX = -1, use the current rate
+
+    XOr     ECX,ECX                                                             ;Range check before the comparison with rawRate below,
+    Cmp     EAX,8000                                                            ; so an invalid rate is not seen as a change every time
+    SetB    CL
+    Cmp     EAX,192000
+    SetA    CH
+    Test    ECX,ECX
+    Mov     EDX,32000
+    CMovX   NZ,EAX,EDX
     Mov     [rateI],EAX
 
     ;opts ------------------------------------
@@ -574,17 +587,10 @@ USES ECX,EDX
     Mov     EAX,[rateI]
     Cmp     EAX,[rawRate]                                                       ;Has sample rate changed?
     JE      .KeepRate                                                           ;   No
-        XOr     ECX,ECX
-
-        Cmp     EAX,8000
-        SetB    CL
-        Cmp     EAX,192000
-        SetA    CH
-        Test    ECX,ECX
-        Mov     EDX,32000
-        CMovX   NZ,EAX,EDX
-
         Mov     [rawRate],EAX
+        XOr     EDX,EDX
+        Mov     [outCur],EDX                                                    ;Discard the samples made at the old rate
+        Mov     [outLen],EDX
 
 %if INTBK
         Test    word [dspOpts],DSP_ECHOFIR                                      ;If actual emulation mode and
@@ -671,16 +677,21 @@ EXPROC EmuAPU, pBuf, len, type
 USES ECX
 
     Mov     PCX,[pBuf]
+    Mov     PAX,PCX
+    Test    PCX,PCX                                                             ;NULL pBuf does nothing and returns NULL.  Internal callers
+    RetZ                                                                        ; such as SeekAPU call EmuAPUI with no buffer on purpose.
+
     MovZX   EAX,byte [type]
     Call    EmuAPUI,PCX,[len],EAX
 
 ENDP
 
 PROC EmuAPUI, pBufI, lenI, typeI
-USES ECX,EDX,EBX,EDI
+USES ECX,EDX,EBX,ESI,EDI
 
     Mov     PDI,[pBufI]
     Mov     EAX,[lenI]
+    XOr     ESI,ESI                                                             ;ESI = High bits of the clock cycles left
     Test    EAX,EAX
     JZ      .Done
 
@@ -691,31 +702,31 @@ USES ECX,EDX,EBX,EDI
         Jmp     .Done
 
     .AdjCycles:
-    XOr     EDX,EDX                                                             ;EAX = EAX * smpRAdj / 65536
-    Mov     ECX,[smpRAdj]
+    ;NOTE: Above 1.0x speed, the adjusted cycles of a long request do not fit in 32 bits (from about
+    ; 10.9 seconds at x16), so they are kept in ESI:EAX, up to 36 bits.
+    Mov     ECX,[smpRAdj]                                                       ;ESI:EAX = EAX * smpRAdj / 65536
     Mul     ECX
     ShRD    EAX,EDX,16
+    ShR     EDX,16
+    Mov     ESI,EDX
 
     .NextSec:
     Mov     ECX,APU_CLK
-    XOr     EDX,EDX
     Mov     EBX,EAX
 
     ;Fixup cycles ----------------------------
-    Sub     EAX,ECX                                                             ;If EAX > APU_CLK, EAX = APU_CLK
-    CDQ
-    And     EAX,EDX
-    Add     EAX,ECX
-
-    Sub     EBX,EAX                                                             ;len -= clock cycles
-    Mov     EDX,EAX
-    Add     EAX,[cycLeft]                                                       ;Is emulation completed?
-    JLE     .NoCycles                                                           ;   Yes
+    Cmp     EAX,ECX                                                             ;If ESI:EAX > APU_CLK, EAX = APU_CLK (unsigned, as len is)
+    CMovX   A,EAX,ECX
+    Test    ESI,ESI
+    CMovX   NZ,EAX,ECX
+    Sub     EBX,EAX                                                             ;len -= clock cycles, borrowing from the high bits
+    SbB     ESI,0
 
     ;Initialize DSP --------------------------
+    ;NOTE: The samples are created on every pass, even when the SPC700 already ran past this time in
+    ; the previous call, so that every clock cycle of SPC700 time has its output.
     Push    PAX
-    Mov     EAX,EDX                                                             ;samples = ((smpREmu * cycles) + smpDec) / APU_CLK
-    Mul     dword [smpREmu]
+    Mul     dword [smpREmu]                                                     ;samples = ((smpREmu * cycles) + smpDec) / APU_CLK
     Add     EAX,[smpDec]
     AdC     EDX,0
     Div     ECX
@@ -728,17 +739,18 @@ USES ECX,EDX,EBX,EDI
     ;NOTE: For more accurate emulation, instead of waiting for cycles after doing 1 opcode
     ; processing, running opcode should be processed internally every cycle.  However, this
     ; requires complex logic and sophisticated analysis.
+    Add     EAX,[cycLeft]                                                       ;Did the previous call already emulate past this time?
+    JLE     .NoCycles                                                           ;   Yes, only create the samples
     Call    EmuSPC,EAX
+
+    .NoCycles:
     Mov     ECX,EAX                                                             ;ECX = len - emulated clock cycles
 
     Call    SetEmuDSP,0,0,0                                                     ;Create any remaining samples
     Mov     PDI,PAX                                                             ;PDI = End of buffer
-    Mov     EAX,ECX
-
-    .NoCycles:
-    Mov     [cycLeft],EAX
+    Mov     [cycLeft],ECX
     Mov     EAX,EBX
-    Test    EBX,EBX                                                             ;Is emulation completed?
+    Or      EBX,ESI                                                             ;Is emulation completed?
     JNZ     .NextSec                                                            ;   No, continue
 
     .Done:
@@ -796,7 +808,27 @@ USES ESI
     .BefEnd:
     Mov     [outCur],EAX                                                        ;EAX = 0
 
+    ;Emulate whole seconds -------------------
+    ;NOTE: The code below works out the clock cycles of the request in one go, so more than one
+    ; second is first emulated a second at a time, rawRate samples being exactly APU_CLK cycles.
+    ; This keeps its 32-bit math in range, and leaves at most one second of rounding loss for
+    ; outBuf.
+    .NextSec:
+    Cmp     EBX,[rawRate]                                                       ;Is more than one second left?
+    JBE     .Fixup                                                              ;   No
+        Call    EmuAPUI,PDI,APU_CLK,0
+        Mov     PDX,PAX                                                         ;Save return value of EmuAPU
+        Sub     PAX,PDI                                                         ;EAX = Emulated buffer size (bytes)
+        Mov     PDI,PDX                                                         ;PDI = End of buffer
+
+        XOr     EDX,EDX                                                         ;EAX = Bytes to samples
+        MovZX   ECX,byte [rawByte]
+        Div     ECX
+        Sub     EBX,EAX                                                         ;No more than rawRate samples come out, so EBX stays
+        Jmp     .NextSec                                                        ; above 0
+
     ;Fixup samples ---------------------------
+    .Fixup:
     XOr     EDX,EDX                                                             ;EAX = samples * APU_CLK / rawRate
     Mov     EAX,EBX                                                             ;EDX = samples * APU_CLK % rawRate .. (1)
     Mov     ECX,APU_CLK
@@ -874,7 +906,9 @@ USES ESI
 
         Sub     EAX,EDX                                                         ;Is outBuf empty?
         JNZ     .AftLoop                                                        ;   No, continue
-        Jmp     .AftEmu                                                         ;   Yes, re-run emulation
+
+        Mov     [outCur],EAX                                                    ;EAX = 0, since outBuf is refilled from its start when
+        Jmp     .AftEmu                                                         ; emulation is re-run
 
 ENDP
 
@@ -886,7 +920,7 @@ EXPROC SeekAPU, time, fast
 USES ECX,EDX
 
     Mov     EAX,[time]                                                          ;numSeconds = time / 64000
-    Test    EAX,EAX                                                             ;time = 0x00?
+    Test    EAX,EAX                                                             ;time = 00h?
     RetZ                                                                        ;   Yes, done
 
     XOr     EDX,EDX
@@ -897,6 +931,8 @@ USES ECX,EDX
 
     Test    byte [fast],-1                                                      ;Fast mode completely bypasses the DSP emulation
     JZ      .Slow
+        Mov     EAX,[dbgOpt]                                                    ;Save the frontend's debugging options (width fix only,
+        Push    PAX                                                             ; not a pointer), restored after the seek
         Call    SetSPCDbgI,-1,SPC_NODSP                                         ;Disable writes to the DSP registers
 
         Test    EDX,EDX
@@ -912,7 +948,8 @@ USES ECX,EDX
         JNZ     .EmuSPC
 
         .DoneSeek:
-        Call    SetSPCDbgI,-1,0                                                 ;Re-enable writes to the DSP registers
+        Pop     PAX
+        Call    SetSPCDbgI,-1,EAX                                               ;Restore the frontend's options, which re-enables DSP writes
         Jmp     .Done
 
     .Slow:
@@ -955,6 +992,9 @@ USES ECX,EDX
         Call    SetAPUOptI,-1,-1,-1,-1,-1,EAX                                   ;Restore APU options
 
     .Done:
+    XOr     EAX,EAX
+    Mov     [outCur],EAX                                                        ;Discard samples EmuAPUBySmp kept from before the seek
+    Mov     [outLen],EAX
     Call    FixSeek,[fast]                                                      ;Fixup DSP after seeking
 
 ENDP
@@ -967,29 +1007,38 @@ EXPROC SetTimerTrick, port, wait
 USES ECX,ESI
 
     Mov     CL,[scr700inc+02h]
-    Test    CL,CL                                                               ;Include mode?
-    RetNZ                                                                       ;   Yes, done
+    Test    CL,CL                                                               ;Is a script being compiled for an include?
+    RetNZ                                                                       ;   Yes, leave it alone
 
-    Call    SetScript700I,0                                                     ;Reset Script700
-    Mov     ECX,[wait]                                                          ;ECX = wait
-    Test    ECX,ECX                                                             ;ECX = 0x00?
-    RetZ                                                                        ;   Yes, done
+    Call    SetScript700I,0                                                     ;Clear the current script first
+    Mov     ECX,[wait]
+    Test    ECX,ECX                                                             ;Is TimerTrick being turned off?
+    RetZ                                                                        ;   Yes, the script is already cleared
 
-    ;Convert from TimerTrick to Script700.  TimerTrick increments the value of a specific port by
-    ; 1 at regular intervals.  This process generates the Script700 binary code to achieve this
+    ;NOTE: The 'w' command adds the wait to a signed count, so a wait of 80000000h or more wraps it.
+    ; The wait then comes out wrong, or the loop spins forever.  The wait is capped at about 17
+    ; minutes.
+    Cmp     ECX,7FFFFF00h                                                       ;Is the wait too long?
+    JBE     .WaitOK                                                             ;   No
+        Mov     ECX,7FFFFF00h                                                   ;   Yes, cap it
+
+    .WaitOK:
+
+    ;NOTE: Convert from TimerTrick to Script700.  TimerTrick increments the value of a specific port
+    ; by 1 at regular intervals.  This process generates the Script700 binary code to achieve this
     ; functionality.  The conversion rules are as follows.
     ;-------------------------------------------------------------------------------
     ; [Script700 Command]       [Binary]
-    ; :0    w   (WAIT)      ->  0x00 : 0x01 0x00 ???? ???? ???? ????
-    ;       a   #1  i(PORT) ->  0x06 : 0x04 0x00 0x00 0x01 0x00 0x00 0x00 0x02 ????
-    ;       bra 0           ->  0x0F : 0x05 0x00 0x00
-    ;       (EXIT)          ->  0x12 : 0x00
+    ; :0    w   (WAIT)      ->  00h : 01h 00h ??? ??? ??? ???
+    ;       a   #1  i(PORT) ->  06h : 04h 00h 00h 01h 00h 00h 00h 02h ???
+    ;       bra 0           ->  0Fh : 05h 00h 00h
+    ;       (EXIT)          ->  12h : 00h
     ;-------------------------------------------------------------------------------
 
-    Mov     PSI,[pSCRRAM]                                                       ;PSI = Script RAM Pointer
-    Mov     [PSI+02h],ECX                                                       ;Program[0x02] = ECX
-    Mov     CL,[port]                                                           ;CL = port
-    Mov     [PSI+0Eh],CL                                                        ;Program[0x0E] = CL
+    Mov     PSI,[pSCRRAM]
+    Mov     [PSI+02h],ECX                                                       ;Operand of 'w': the wait
+    Mov     CL,[port]
+    Mov     [PSI+0Eh],CL                                                        ;Destination of 'a': the port number
 
     Mov     word  [PSI+00h],0001h
     Mov     dword [PSI+06h],01000004h
@@ -1007,32 +1056,32 @@ ENDP
 
 PROC GetScript700First
 
-    XOr     DH,DH                                                               ;DH = 0x00
+    XOr     DH,DH                                                               ;Failure until a command is found
 
     .RETURN:
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,00h                                                              ;Is char NULL?
-    JE      .ERROR                                                              ;   Yes
-    Cmp     AL,09h                                                              ;Is char TAB?
-    JE      .NEXT                                                               ;   Yes
-    Cmp     AL,0Ah                                                              ;Is char RETURN?
-    JE      .ERROR                                                              ;   Yes
-    Cmp     AL,0Dh                                                              ;Is char RETURN?
-    JE      .ERROR                                                              ;   Yes
-    Cmp     AL,20h                                                              ;Is char SPACE?
-    JE      .NEXT                                                               ;   Yes
-    Or      DH,01h                                                              ;DH = 0x01 (Success)
+    Mov     AL,[PCX]
+    Cmp     AL,00h                                                              ;End of the text?
+    JE      .ERROR                                                              ;   Yes, no command
+    Cmp     AL,09h                                                              ;TAB?
+    JE      .NEXT                                                               ;   Yes, skip it
+    Cmp     AL,0Ah                                                              ;End of the line?
+    JE      .ERROR                                                              ;   Yes, no command on this line
+    Cmp     AL,0Dh                                                              ;End of the line?
+    JE      .ERROR                                                              ;   Yes, no command on this line
+    Cmp     AL,20h                                                              ;SPACE?
+    JE      .NEXT                                                               ;   Yes, skip it
+    Or      DH,01h                                                              ;Success, PCX is on the command
     Jmp     .EXIT
 
     .NEXT:
-    Inc     PCX                                                                 ;PCX++
+    Inc     PCX
     Jmp     .RETURN
 
     .ERROR:
-    XOr     DH,DH                                                               ;DH = 0x00 (Failure)
+    XOr     DH,DH
 
     .EXIT:
-    Test    DH,DH                                                               ;DH = 0x00 (Failure)?
+    Test    DH,DH                                                               ;ZF = 1 on failure, for the caller
 
 ENDP
 
@@ -1044,32 +1093,32 @@ ENDP
 
 PROC GetScript700Next
 
-    XOr     DH,DH                                                               ;DH = 0x00
+    XOr     DH,DH                                                               ;Failure until a separator is passed
 
     .RETURN:
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,00h                                                              ;Is char NULL?
-    JE      .ERROR                                                              ;   Yes
-    Cmp     AL,09h                                                              ;Is char TAB?
-    JE      .NEXT                                                               ;   Yes
-    Cmp     AL,0Ah                                                              ;Is char RETURN?
-    JE      .ERROR                                                              ;   Yes
-    Cmp     AL,0Dh                                                              ;Is char RETURN?
-    JE      .ERROR                                                              ;   Yes
-    Cmp     AL,20h                                                              ;Is char SPACE?
-    JE      .NEXT                                                               ;   Yes
-    Jmp     .EXIT
+    Mov     AL,[PCX]
+    Cmp     AL,00h                                                              ;End of the text?
+    JE      .ERROR                                                              ;   Yes, no next token
+    Cmp     AL,09h                                                              ;TAB?
+    JE      .NEXT                                                               ;   Yes, skip it
+    Cmp     AL,0Ah                                                              ;End of the line?
+    JE      .ERROR                                                              ;   Yes, no next token on this line
+    Cmp     AL,0Dh                                                              ;End of the line?
+    JE      .ERROR                                                              ;   Yes, no next token on this line
+    Cmp     AL,20h                                                              ;SPACE?
+    JE      .NEXT                                                               ;   Yes, skip it
+    Jmp     .EXIT                                                               ;PCX is on the next token, if a separator came first
 
     .NEXT:
-    Inc     PCX                                                                 ;PCX++
-    Or      DH,01h                                                              ;DH = 0x01 (Success)
+    Inc     PCX
+    Or      DH,01h                                                              ;A separator was passed
     Jmp     .RETURN
 
     .ERROR:
-    XOr     DH,DH                                                               ;DH = 0x00 (Failure)
+    XOr     DH,DH
 
     .EXIT:
-    Test    DH,DH                                                               ;DH = 0x00 (Failure)?
+    Test    DH,DH                                                               ;ZF = 1 on failure, for the caller
 
 ENDP
 
@@ -1081,15 +1130,19 @@ ENDP
 PROC GetScript700Skip
 
     .RETURN:
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,00h                                                              ;Is char NULL?
-    RetZ                                                                        ;   Yes, done
-    Cmp     AL,09h                                                              ;Is char TAB?
-    RetZ                                                                        ;   Yes, done
-    Cmp     AL,20h                                                              ;Is char SPACE?
-    RetZ                                                                        ;   Yes, done
+    Mov     AL,[PCX]
+    Cmp     AL,00h                                                              ;End of the text?
+    RetZ                                                                        ;   Yes, the token ends here
+    Cmp     AL,09h                                                              ;TAB?
+    RetZ                                                                        ;   Yes, the token ends here
+    Cmp     AL,0Ah                                                              ;End of the line?
+    RetZ                                                                        ;   Yes, the token ends here
+    Cmp     AL,0Dh                                                              ;End of the line?
+    RetZ                                                                        ;   Yes, the token ends here
+    Cmp     AL,20h                                                              ;SPACE?
+    RetZ                                                                        ;   Yes, the token ends here
 
-    Inc     PCX                                                                 ;PCX++
+    Inc     PCX
     Jmp     .RETURN
 
 ENDP
@@ -1102,29 +1155,29 @@ ENDP
 PROC GetScript700NextLine
 
     .RETURN:
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,00h                                                              ;Is char NULL?
-    RetZ                                                                        ;   Yes, done
-    Cmp     AL,0Ah                                                              ;Is char RETURN?
-    JE      .NEXT2                                                              ;   Yes
-    Cmp     AL,0Dh                                                              ;Is char RETURN?
-    JE      .NEXT2                                                              ;   Yes
-    Inc     PCX                                                                 ;PCX++
+    Mov     AL,[PCX]
+    Cmp     AL,00h                                                              ;End of the text?
+    RetZ                                                                        ;   Yes, there is no next line
+    Cmp     AL,0Ah                                                              ;End of the line?
+    JE      .NEXT2                                                              ;   Yes, pass the line break
+    Cmp     AL,0Dh                                                              ;End of the line?
+    JE      .NEXT2                                                              ;   Yes, pass the line break
+    Inc     PCX                                                                 ;Skip the rest of the line
     Jmp     .RETURN
 
-    .NEXT:
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,00h                                                              ;Is char NULL?
-    RetZ                                                                        ;   Yes, done
-    Cmp     AL,0Ah                                                              ;Is char RETURN?
-    JE      .NEXT2                                                              ;   Yes
-    Cmp     AL,0Dh                                                              ;Is char RETURN?
-    JE      .NEXT2                                                              ;   Yes
-    RetN                                                                        ;Exit
+    .NEXT1:
+    Mov     AL,[PCX]
+    Cmp     AL,00h                                                              ;End of the text?
+    RetZ                                                                        ;   Yes, there is no next line
+    Cmp     AL,0Ah                                                              ;Another line break?
+    JE      .NEXT2                                                              ;   Yes, pass it too, which also skips empty lines
+    Cmp     AL,0Dh                                                              ;Another line break?
+    JE      .NEXT2                                                              ;   Yes, pass it too, which also skips empty lines
+    RetN                                                                        ;PCX is at the start of the next line
 
     .NEXT2:
-    Inc     PCX                                                                 ;PCX++
-    Jmp     .NEXT
+    Inc     PCX
+    Jmp     .NEXT1
 
 ENDP
 
@@ -1138,101 +1191,102 @@ ENDP
 PROC GetScript700Number
 
     Push    PBX
-    XOr     EAX,EAX                                                             ;EAX = 0x00
-    XOr     EBX,EBX                                                             ;EBX = 0x00
-    XOr     DH,DH                                                               ;DH = 0x00
+    XOr     EAX,EAX                                                             ;Value so far
+    XOr     EBX,EBX                                                             ;Each digit goes in BL, with the rest of EBX kept 0
+    XOr     DH,DH                                                               ;Flags: 01h digits read, 02h minus, 04h hexadecimal
 
-    Mov     BL,[PCX]                                                            ;BL = [PCX]
-    Cmp     BL,2Bh                                                              ;Is char "+"?
-    JE      .NOP                                                                ;   Yes
-    Cmp     BL,2Dh                                                              ;Is char "-"?
-    JE      .MINUS                                                              ;   Yes
+    Mov     BL,[PCX]
+    Cmp     BL,2Bh                                                              ;'+'?
+    JE      .NOP                                                                ;   Yes, skip it
+    Cmp     BL,2Dh                                                              ;'-'?
+    JE      .MINUS                                                              ;   Yes, negate at the end
 
     .RETURNFIRST:
-    Cmp     BL,30h                                                              ;Is char "0"?
-    JE      .HEXZ                                                               ;   Yes
-    Cmp     BL,24h                                                              ;Is char "$"?
-    JE      .HEXOK                                                              ;   Yes
+    Cmp     BL,30h                                                              ;'0', which may start '0x'?
+    JE      .HEXZ                                                               ;   Yes, look for the 'x'
+    Cmp     BL,24h                                                              ;'$'?
+    JE      .HEXOK                                                              ;   Yes, hexadecimal
 
     .RETURN:
-    Mov     BL,[PCX]                                                            ;BL = Char
-    Sub     BL,30h                                                              ;BL -= 0x30
-    Cmp     BL,10                                                               ;BL >= 10? (Is not char "0" to "9"?)
-    JAE     .HEXCHECK                                                           ;   Yes
+    Mov     BL,[PCX]
+    Sub     BL,30h                                                              ;Digit value, if '0' to '9'
+    Cmp     BL,10                                                               ;Not a decimal digit?
+    JAE     .HEXCHECK                                                           ;   Yes, maybe a hex digit or the end
     Jmp     .RETURNNEXT
 
     .HEXCHECKNEXT:
-    Add     BL,10                                                               ;BL += 10
+    Add     BL,10                                                               ;Value of the hex digit A to F
 
     .RETURNNEXT:
-    Test    DH,04h                                                              ;DH &= 0x04? (HEX mode?)
+    Test    DH,04h                                                              ;Hexadecimal?
     JNZ     .SETHEX                                                             ;   Yes
-        LEA     EAX,[EAX+EAX*4]                                                 ;EAX *= 5
-        Add     EAX,EAX                                                         ;EAX += EAX                         ;(EAX *= 10)
+        LEA     EAX,[EAX+EAX*4]                                                 ;Value * 10, as * 5 and then * 2
+        Add     EAX,EAX
         Jmp     .SETOK
 
     .SETHEX:
-        ShL     EAX,4                                                           ;EAX << 4
+        ShL     EAX,4                                                           ;Value * 16
 
     .SETOK:
-    Add     EAX,EBX                                                             ;EAX += EBX
-    Inc     PCX                                                                 ;PCX++
-    Or      DH,01h                                                              ;DH |= 0x01 (Success)
+    Add     EAX,EBX                                                             ;Add the digit
+    Inc     PCX
+    Or      DH,01h                                                              ;At least one digit has been read
     Jmp     .RETURN
 
     .MINUS:
-    Or      DH,02h                                                              ;DH |= 0x02 (MINUS mode)
+    Or      DH,02h                                                              ;Negate at the end
 
     .NOP:
-    Inc     PCX                                                                 ;PCX++
-    Mov     BL,[PCX]                                                            ;BL = Char
+    Inc     PCX
+    Mov     BL,[PCX]
     Jmp     .RETURNFIRST
 
     .HEXZ:
-    Inc     PCX                                                                 ;PCX++
-    Mov     BL,[PCX]                                                            ;BL = Char
-    And     BL,0DFh                                                             ;BL &= 0xDF
-    Cmp     BL,58h                                                              ;Is char "X"?
-    JE      .HEXOK                                                              ;   Yes
-    Dec     PCX                                                                 ;PCX--
+    Inc     PCX
+    Mov     BL,[PCX]
+    And     BL,0DFh                                                             ;To upper case
+    Cmp     BL,58h                                                              ;'x' after the '0'?
+    JE      .HEXOK                                                              ;   Yes, hexadecimal
+    Dec     PCX                                                                 ;   No, read the '0' as a decimal digit
     Jmp     .RETURN
 
     .HEXOK:
-    Or      DH,04h                                                              ;DH |= 0x04 (HEX mode)
-    Inc     PCX                                                                 ;PCX++
+    Or      DH,04h                                                              ;Hexadecimal
+    Inc     PCX                                                                 ;Skip the 'x' or '$'
     Jmp     .RETURN
 
     .HEXCHECK:
-    Test    DH,04h                                                              ;DH &= 0x04? (HEX mode?)
-    JZ      .NEXT                                                               ;   No
-    Sub     BL,11h                                                              ;BL -= 0x11 (0x41)
-    Cmp     BL,6                                                                ;BL < 6? (Is char "A" to "F"?)
+    Test    DH,04h                                                              ;Hexadecimal?
+    JZ      .NEXT                                                               ;   No, the number ends here
+    Sub     BL,11h                                                              ;'A' to 'F' become 0 to 5
+    Cmp     BL,6                                                                ;'A' to 'F'?
     JB      .HEXCHECKNEXT                                                       ;   Yes
-    Sub     BL,20h                                                              ;BL -= 0x20 (0x61)
-    Cmp     BL,6                                                                ;BL < 6? (Is char "a" to "f"?)
+    Sub     BL,20h                                                              ;'a' to 'f' become 0 to 5
+    Cmp     BL,6                                                                ;'a' to 'f'?
     JB      .HEXCHECKNEXT                                                       ;   Yes
 
     .NEXT:
-    Mov     BL,[PCX]                                                            ;BL = Char
-    Cmp     BL,00h                                                              ;Is char NULL?
-    JE      .EXIT                                                               ;   Yes
-    Cmp     BL,09h                                                              ;Is char TAB?
-    JE      .EXIT                                                               ;   Yes
-    Cmp     BL,0Ah                                                              ;Is char RETURN?
-    JE      .EXIT                                                               ;   Yes
-    Cmp     BL,0Dh                                                              ;Is char RETURN?
-    JE      .EXIT                                                               ;   Yes
-    Cmp     BL,20h                                                              ;Is char SPACE?
-    JE      .EXIT                                                               ;   Yes
-    XOr     DH,DH                                                               ;DH = 0x00 (Failure)
+    Mov     BL,[PCX]
+    Cmp     BL,00h                                                              ;End of the text?
+    JE      .EXIT                                                               ;   Yes, the number ends here
+    Cmp     BL,09h                                                              ;TAB?
+    JE      .EXIT                                                               ;   Yes, the number ends here
+    Cmp     BL,0Ah                                                              ;End of the line?
+    JE      .EXIT                                                               ;   Yes, the number ends here
+    Cmp     BL,0Dh                                                              ;End of the line?
+    JE      .EXIT                                                               ;   Yes, the number ends here
+    Cmp     BL,20h                                                              ;SPACE?
+    JE      .EXIT                                                               ;   Yes, the number ends here
+    XOr     DH,DH                                                               ;Failure, another character follows the number
 
     .EXIT:
-    Test    DH,02h                                                              ;DH &= 0x02? (MINUS mode?)
+    Test    DH,02h                                                              ;Minus?
     JZ      .PLUS                                                               ;   No
-        Neg     EAX                                                             ;EAX = -EAX
+        Neg     EAX
+
     .PLUS:
     Pop     PBX
-    And     DH,01h                                                              ;DH &= 0x01
+    And     DH,01h                                                              ;ZF = 1 on failure (no digit, or a bad end), for the caller
 
 ENDP
 
@@ -1244,24 +1298,25 @@ ENDP
 
 PROC GetScript700Last
 
-    XOr     DH,DH                                                               ;DH = 0x00
-    Or      DH,01h                                                              ;DH = 0x01 (Success)
-    Inc     PCX                                                                 ;PCX++
-    Mov     AL,[PCX]                                                            ;AL = Char
-    Cmp     AL,00h                                                              ;Is char NULL?
-    JE      .OK                                                                 ;   Yes
-    Cmp     AL,09h                                                              ;Is char TAB?
-    JE      .OK                                                                 ;   Yes
-    Cmp     AL,0Ah                                                              ;Is char RETURN?
-    JE      .OK                                                                 ;   Yes
-    Cmp     AL,0Dh                                                              ;Is char RETURN?
-    JE      .OK                                                                 ;   Yes
-    Cmp     AL,20h                                                              ;Is char SPACE?
-    JE      .OK                                                                 ;   Yes
-    XOr     DH,DH                                                               ;DH = 0x00 (Failure)
+    XOr     DH,DH
+    Or      DH,01h                                                              ;Success unless another character follows
+    Inc     PCX                                                                 ;Look at the character after the token's last one
+
+    Mov     AL,[PCX]
+    Cmp     AL,00h                                                              ;End of the text?
+    JE      .OK                                                                 ;   Yes, the token ends cleanly
+    Cmp     AL,09h                                                              ;TAB?
+    JE      .OK                                                                 ;   Yes, the token ends cleanly
+    Cmp     AL,0Ah                                                              ;End of the line?
+    JE      .OK                                                                 ;   Yes, the token ends cleanly
+    Cmp     AL,0Dh                                                              ;End of the line?
+    JE      .OK                                                                 ;   Yes, the token ends cleanly
+    Cmp     AL,20h                                                              ;SPACE?
+    JE      .OK                                                                 ;   Yes, the token ends cleanly
+    XOr     DH,DH                                                               ;Failure, the token runs on into other characters
 
     .OK:
-    Test    DH,DH                                                               ;DH = 0x00 (Failure)?
+    Test    DH,DH                                                               ;ZF = 1 on failure, for the caller
 
 ENDP
 
@@ -1290,734 +1345,734 @@ USES ECX,EDX,EBX,ESI,EDI
 
     ;---------- Initialize ----------
 
-    Mov     PSI,[pSCRRAM]                                                       ;PSI = Script RAM Pointer
+    Mov     PSI,[pSCRRAM]
 
     Mov     AX,[scr700inc+02h]
-    Test    AL,AL                                                               ;Include mode?
-    JZ      .INIT                                                               ;   No
-        Mov     PCX,[pSourceI]                                                  ;PCX = Source Pointer
-        Test    PCX,PCX                                                         ;PCX = NULL?
+    Test    AL,AL                                                               ;Called back to compile an included text?
+    JZ      .INIT                                                               ;   No, start a new script
+        Mov     PCX,[pSourceI]
+        Test    PCX,PCX                                                         ;No text?
         JZ      .CRITICALERROR                                                  ;   Yes
 
-        IdxLd   Mov,EBX,scr700inc,04h
-        Mov     EDI,EBX
-        Dec     AH
-        JZ      .EXTRETURN
-        Dec     AH
-        JZ      .DATARETURN2
-        Jmp     .NORMALRETURN
+        IdxLd   Mov,EBX,scr700inc,04h                                           ;Continue at the program cursor of the including script
+        Mov     EDI,EBX                                                         ;Rollback point for an error
+        Dec     AH                                                              ;Was the include in the EXT zone?
+        JZ      .EXTRETURN                                                      ;   Yes
+        Dec     AH                                                              ;In the data zone?
+        JZ      .DATARETURN2                                                    ;   Yes
+        Jmp     .NORMALRETURN                                                   ;   No, in the script command zone
 
     .INIT:
-    XOr     EAX,EAX                                                             ;EAX = 0x00
-    Mov     [PSI],AL                                                            ;Program[0] = AL
-    Mov     [scr700ptr],EAX                                                     ;Reset Pointer
-    Mov     [scr700dat],EAX
-    Mov     [scr700inc],EAX
-
-    XOr     EBX,EBX                                                             ;EBX = 0x00
-    Inc     EBX                                                                 ;EBX++ (0x01)
-    Mov     [scr700cnt],EBX
+    XOr     EAX,EAX
+    Mov     [PSI],AL                                                            ;Start with an empty program ('q')
+    Mov     [scr700ptr],EAX                                                     ;Run from the start of the program
+    Mov     [scr700dat],EAX                                                     ;No data area yet
+    Mov     [scr700inc],EAX                                                     ;Not in include mode
+    Mov     dword [scr700cnt],32                                                ;Same start count as ResetSPC
 
     LoadPtr PDI,scr700dsp
-    Mov     PCX,328                                                             ;Channel(256/4) + Master(32/4) + Detune(256)
+    Mov     PCX,328                                                             ;Clear the DSP flags (256/4 + 32/4 dwords) and detune (256)
     Rep     StoSD
 
     LoadPtr PDI,scr700chg
-    Mov     ECX,EAX                                                             ;PCX = EAX (0x00)
+    Mov     ECX,EAX                                                             ;Note change table as identity, entry n = n
 
     .CLEARCHG:
-        Dec     CL                                                              ;CL--
+        Dec     CL
         Mov     [PDI+PCX],CL
-    Dec     AL                                                                  ;AL--
+    Dec     AL                                                                  ;All 256 entries
     JNZ     .CLEARCHG
 
     LoadPtr PDI,scr700lbl
-    Dec     EAX                                                                 ;EAX-- (0xFFFFFFFF)
-    Mov     PCX,1024                                                            ;4096byte
+    Dec     EAX                                                                 ;-1 marks a label as undefined
+    Mov     PCX,1024                                                            ;All 1024 labels
     Rep     StoSD
 
-    Mov     PCX,[pSourceI]                                                      ;PCX = Source Pointer
-    Test    PCX,PCX                                                             ;PCX = NULL?
-    JZ      .CRITICALERROR                                                      ;   Yes
-    XOr     EBX,EBX                                                             ;PBX = 0x00
-    XOr     EDI,EDI                                                             ;PDI = 0x00
+    Mov     PCX,[pSourceI]
+    Test    PCX,PCX                                                             ;No text?
+    JZ      .CRITICALERROR                                                      ;   Yes, Script700 is disabled
+    XOr     EBX,EBX                                                             ;Reset the program cursor
+    XOr     EDI,EDI                                                             ;Reset the rollback point for an error
 
     ;---------- Script Command Zone ----------
 
     .NORMALRETURN:
-    And     PBX,SCR700MASK                                                      ;PBX &= Program Mask
-    Cmp     PBX,PDI                                                             ;PBX < PDI?
-    JB      .CRITICALERROR                                                      ;   Yes
+    And     PBX,SCR700MASK                                                      ;Keep the program cursor inside the Script700 area
+    Cmp     PBX,PDI                                                             ;Did the cursor wrap back before this line?
+    JB      .CRITICALERROR                                                      ;   Yes, the program is too large
 
-    Mov     PDI,PBX                                                             ;PDI = PBX
-    Call    GetScript700First                                                   ;Seek First
-    JZ      .NORMALERROR                                                        ;   Failure
-    XOr     DL,DL                                                               ;DL = 0x00
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,3Ah                                                              ;Is char ":"?
+    Mov     PDI,PBX                                                             ;Rollback point: the start of this line's code
+    Call    GetScript700First                                                   ;Find the command on this line
+    JZ      .NORMALERROR                                                        ;   None, so the line is skipped
+    XOr     DL,DL
+
+    Mov     AL,[PCX]
+    Cmp     AL,3Ah                                                              ;':', a label?
     JE      .LABEL                                                              ;   Yes
-    Cmp     AL,23h                                                              ;Is char "#"?
+    Cmp     AL,23h                                                              ;'#', a directive such as an include?
     JE      .Shp                                                                ;   Yes
-    And     AL,0DFh                                                             ;AL &= 0xDF
-    Cmp     AL,45h                                                              ;Is char "E"?
+    And     AL,0DFh                                                             ;To upper case
+    Cmp     AL,45h                                                              ;'e', the start of the EXT zone?
     JE      .E                                                                  ;   Yes
-    Cmp     AL,51h                                                              ;Is char "Q"?
+    Cmp     AL,51h                                                              ;'q'?
     JE      .Q                                                                  ;   Yes
-    Cmp     AL,57h                                                              ;Is char "W"?
+    Cmp     AL,57h                                                              ;'w'?
     JE      .W                                                                  ;   Yes
-    Cmp     AL,4Dh                                                              ;Is char "M"?
+    Cmp     AL,4Dh                                                              ;'m'?
     JE      .M                                                                  ;   Yes
-    Cmp     AL,43h                                                              ;Is char "C"?
+    Cmp     AL,43h                                                              ;'c'?
     JE      .C                                                                  ;   Yes
-    Cmp     AL,41h                                                              ;Is char "A"?
+    Cmp     AL,41h                                                              ;'a'?
     JE      .A                                                                  ;   Yes
-    Cmp     AL,53h                                                              ;Is char "S"?
+    Cmp     AL,53h                                                              ;'s'?
     JE      .S                                                                  ;   Yes
-    Cmp     AL,55h                                                              ;Is char "U"?
+    Cmp     AL,55h                                                              ;'u'?
     JE      .U                                                                  ;   Yes
-    Cmp     AL,44h                                                              ;Is char "D"?
+    Cmp     AL,44h                                                              ;'d'?
     JE      .D                                                                  ;   Yes
-    Cmp     AL,4Eh                                                              ;Is char "N"?
+    Cmp     AL,4Eh                                                              ;'n'?
     JE      .N                                                                  ;   Yes
-    Cmp     AL,42h                                                              ;Is char "B"?
+    Cmp     AL,42h                                                              ;'b', a branch?
     JE      .B                                                                  ;   Yes
-    Cmp     AL,52h                                                              ;Is char "R"?
+    Cmp     AL,52h                                                              ;'r'?
     JE      .R                                                                  ;   Yes
-    Cmp     AL,46h                                                              ;Is char "F"?
+    Cmp     AL,46h                                                              ;'f'?
     JE      .F                                                                  ;   Yes
-    Jmp     .NORMALERROR                                                        ;   No
+    Jmp     .NORMALERROR                                                        ;   No, an unknown command
 
     .E:                                                                                                             ; e
-    Call    GetScript700Last                                                    ;Check Last
-    JZ      .NORMALERROR                                                        ;   Failure
+    Call    GetScript700Last                                                    ;Is 'e' alone?
+    JZ      .NORMALERROR                                                        ;   No, an error
 
-    Mov     byte [scr700inc+03h],01h                                            ;Extension Command Zone
+    Mov     byte [scr700inc+03h],01h                                            ;Now in the EXT zone
     Jmp     .EXTRETURN
 
     .Q:                                                                                                             ; q
-    Call    GetScript700Last                                                    ;Check Last
-    JZ      .NORMALERROR                                                        ;   Failure
+    Call    GetScript700Last                                                    ;Is 'q' alone?
+    JZ      .NORMALERROR                                                        ;   No, an error
 
-    Mov     byte [PSI+PBX],00h                                                  ;Program[PBX] = 0x00
-    Inc     PBX                                                                 ;PBX++
+    Mov     byte [PSI+PBX],00h                                                  ;Emit 'q' (opcode 00h)
+    Inc     PBX
     Jmp     .NORMALRETURN
 
     .LABEL:
-    Inc     PCX                                                                 ;PCX++
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,3Ah                                                              ;Is char ":"?
+    Inc     PCX                                                                 ;Past the ':'
+    Mov     AL,[PCX]
+    Cmp     AL,3Ah                                                              ;'::', the start of the EXT zone?
     JE      .LABEL2                                                             ;   Yes
-    Call    GetScript700Number                                                  ;Parse Number (EAX = result)        ; :[LABEL]
-    JZ      .NORMALERROR                                                        ;   Failure
+    Call    GetScript700Number                                                  ;Label number                       ; :[LABEL]
+    JZ      .NORMALERROR                                                        ;   Not a number, an error
 
-    And     EAX,1023                                                            ;EAX &= 1023
-    IdxSt   Mov,scr700lbl,PAX*4,EBX                                             ;Label[EAX] = EBX
+    And     EAX,1023                                                            ;Labels wrap at 1024
+    IdxSt   Mov,scr700lbl,PAX*4,EBX                                             ;The label points at the next command's code
     Jmp     .NORMALRETURN
 
     .LABEL2:                                                                                                        ; ::
-    Call    GetScript700Last                                                    ;Check Last
-    JZ      .NORMALERROR                                                        ;   Failure
+    Call    GetScript700Last                                                    ;Is '::' alone?
+    JZ      .NORMALERROR                                                        ;   No, an error
 
-    Mov     byte [scr700inc+03h],01h                                            ;Extension Command Zone
+    Mov     byte [scr700inc+03h],01h                                            ;Now in the EXT zone
     Jmp     .EXTRETURN
 
     .NOP:                                                                                                           ; nop
-    Inc     PCX                                                                 ;PCX++
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Test    AL,AL                                                               ;AL = 0x00?
-    JZ      .NORMALERROR                                                        ;   Yes
+    Inc     PCX
+    Mov     AL,[PCX]
+    Test    AL,AL                                                               ;End of the text?
+    JZ      .NORMALERROR                                                        ;   Yes, an error
 
-    And     AL,0DFh                                                             ;AL &= 0xDF
-    Cmp     AL,50h                                                              ;Is char "P"?
-    JNE     .NORMALERROR                                                        ;   No
+    And     AL,0DFh                                                             ;To upper case
+    Cmp     AL,50h                                                              ;'nop'?
+    JNE     .NORMALERROR                                                        ;   No, an error
 
-    Call    GetScript700Last                                                    ;Check Last
-    JZ      .NORMALERROR                                                        ;   Failure
-    Jmp     .NORMALRETURN
+    Call    GetScript700Last                                                    ;Is 'nop' alone?
+    JZ      .NORMALERROR                                                        ;   No, an error
+    Jmp     .NORMALRETURN                                                       ;'nop' emits no code
 
     .N:                                                                                                             ; n
-    Inc     PCX                                                                 ;PCX++
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    And     AL,0DFh                                                             ;AL &= 0xDF
-    Cmp     AL,4Fh                                                              ;Is char "O"?
+    Inc     PCX
+    Mov     AL,[PCX]
+    And     AL,0DFh                                                             ;To upper case
+    Cmp     AL,4Fh                                                              ;'no', so maybe 'nop'?
     JE      .NOP                                                                ;   Yes
-    Mov     DL,04h                                                              ;DL = 0x04
-    Call    GetScript700Next                                                    ;Seek Next
-    JZ      .NORMALERROR                                                        ;   Failure
+    Mov     DL,04h                                                              ;Opcode of 'n'
+    Call    GetScript700Next                                                    ;Find the 1st operand
+    JZ      .NORMALERROR                                                        ;   None, an error
 
-    Mov     [scr700tmp],PCX                                                     ;Temp = PCX (Save Param1 Pointer)
-    Call    GetScript700Skip                                                    ;Skip
-    Call    GetScript700Next                                                    ;Seek Next
-    JZ      .NORMALERROR                                                        ;   Failure
+    Mov     [scr700tmp],PCX                                                     ;Remember the 1st operand, encoded after the operator
+    Call    GetScript700Skip                                                    ;Over the 1st operand
+    Call    GetScript700Next                                                    ;Find the operator
+    JZ      .NORMALERROR                                                        ;   None, an error
 
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    XOr     DH,DH                                                               ;DH = 0x00
-    Cmp     AL,2Bh                                                              ;Is char "+"?
+    Mov     AL,[PCX]
+    XOr     DH,DH                                                               ;Operator code, counted up as each one is tried
+    Cmp     AL,2Bh                                                              ;'+', operator 00h?
     JE      .NORMALNEXT                                                         ;   Yes
-    Inc     DH                                                                  ;DH++ (0x01)
-    Cmp     AL,2Dh                                                              ;Is char "-"?
+    Inc     DH
+    Cmp     AL,2Dh                                                              ;'-', operator 01h?
     JE      .NORMALNEXT                                                         ;   Yes
-    Inc     DH                                                                  ;DH++ (0x02)
-    Cmp     AL,2Ah                                                              ;Is char "*"?
+    Inc     DH
+    Cmp     AL,2Ah                                                              ;'*', operator 02h?
     JE      .NORMALNEXT                                                         ;   Yes
-    Inc     DH                                                                  ;DH++ (0x03)
-    Cmp     AL,2Fh                                                              ;Is char "/"?
+    Inc     DH
+    Cmp     AL,2Fh                                                              ;'/', operator 03h?
     JE      .NORMALNEXT                                                         ;   Yes
-    Inc     DH                                                                  ;DH++ (0x04)
-    Cmp     AL,5Ch                                                              ;Is char "\"?
+    Inc     DH
+    Cmp     AL,5Ch                                                              ;'\', operator 04h?
     JE      .NORMALNEXT                                                         ;   Yes
-    Inc     DH                                                                  ;DH++ (0x05)
-    Cmp     AL,25h                                                              ;Is char "%"?
+    Inc     DH
+    Cmp     AL,25h                                                              ;'%', operator 05h?
     JE      .NORMALNEXT                                                         ;   Yes
-    Inc     DH                                                                  ;DH++ (0x06)
-    Cmp     AL,24h                                                              ;Is char "$"?
+    Inc     DH
+    Cmp     AL,24h                                                              ;'$', operator 06h?
     JE      .NORMALNEXT                                                         ;   Yes
-    Inc     DH                                                                  ;DH++ (0x07)
-    Cmp     AL,26h                                                              ;Is char "&"?
+    Inc     DH
+    Cmp     AL,26h                                                              ;'&', operator 07h?
     JE      .NORMALNEXT                                                         ;   Yes
-    Inc     DH                                                                  ;DH++ (0x08)
-    Cmp     AL,7Ch                                                              ;Is char "|"?
+    Inc     DH
+    Cmp     AL,7Ch                                                              ;'|', operator 08h?
     JE      .NORMALNEXT                                                         ;   Yes
-    Inc     DH                                                                  ;DH++ (0x09)
-    Cmp     AL,5Eh                                                              ;Is char "^"?
+    Inc     DH
+    Cmp     AL,5Eh                                                              ;'^', operator 09h?
     JE      .NORMALNEXT                                                         ;   Yes
-    Inc     DH                                                                  ;DH++ (0x0A)
-    Cmp     AL,3Ch                                                              ;Is char "<"?
+    Inc     DH
+    Cmp     AL,3Ch                                                              ;'<', operator 0Ah?
     JE      .NORMALNEXT                                                         ;   Yes
-    Inc     DH                                                                  ;DH++ (0x0B)
-    Cmp     AL,3Eh                                                              ;Is char ">"?
+    Inc     DH
+    Cmp     AL,3Eh                                                              ;'>', operator 0Bh?
     JE      .NORMALNEXT                                                         ;   Yes
-    Inc     DH                                                                  ;DH++ (0x0C)
-    Cmp     AL,5Fh                                                              ;Is char "_"?
+    Inc     DH
+    Cmp     AL,5Fh                                                              ;'_', operator 0Ch?
     JE      .NORMALNEXT                                                         ;   Yes
-    Inc     DH                                                                  ;DH++ (0x0D)
-    Cmp     AL,21h                                                              ;Is char "!"?
+    Inc     DH
+    Cmp     AL,21h                                                              ;'!', operator 0Dh?
     JE      .NORMALNEXT                                                         ;   Yes
-    Mov     DH,0FFh                                                             ;DH = 0xFF
+    Mov     DH,0FFh                                                             ;Unknown operator, rejected below
     Jmp     .NORMALNEXT
 
     .M:                                                                                                             ; m
-    Mov     DL,02h                                                              ;DL = 0x02
+    Mov     DL,02h                                                              ;Opcode of 'm'
     Jmp     .NORMALNEXT
 
     .C:                                                                                                             ; c
-    Mov     DL,03h                                                              ;DL = 0x03
+    Mov     DL,03h                                                              ;Opcode of 'c'
     Jmp     .NORMALNEXT
 
     .A:                                                                                                             ; a
-    Mov     DX,0005h                                                            ;DL = 0x05, DH = 0x00
+    Mov     DX,0005h                                                            ;'a' is 'n' with '+' (DL = 05h marks a, s, u and d)
     Jmp     .NORMALNEXT
 
     .S:                                                                                                             ; s
-    Mov     DX,0105h                                                            ;DL = 0x05, DH = 0x01
+    Mov     DX,0105h                                                            ;'s' is 'n' with '-'
     Jmp     .NORMALNEXT
 
     .U:                                                                                                             ; u
-    Mov     DX,0205h                                                            ;DL = 0x05, DH = 0x02
+    Mov     DX,0205h                                                            ;'u' is 'n' with '*'
     Jmp     .NORMALNEXT
 
     .D:                                                                                                             ; d
-    Mov     DX,0305h                                                            ;DL = 0x05, DH = 0x03
+    Mov     DX,0305h                                                            ;'d' is 'n' with '/'
 
     .NORMALNEXT:
-    Cmp     DL,04h                                                              ;DL = 0x04? (Is command N?)
+    Cmp     DL,04h                                                              ;'n'?
     JE      .SETN                                                               ;   Yes
-    Cmp     DL,05h                                                              ;DL = 0x05? (Is command A,S,U,D?)
+    Cmp     DL,05h                                                              ;'a', 's', 'u' or 'd'?
     JE      .SETASUD                                                            ;   Yes
-        Mov     [PSI+PBX],DL                                                    ;Program[PBX] = DL
+        Mov     [PSI+PBX],DL                                                    ;Emit the opcode
         Jmp     .SETNE
 
     .SETN:
-        Inc     DH                                                              ;DH++ (DH = 0xFF?)
-        JZ      .NORMALERROR                                                    ;   Yes
+        Inc     DH                                                              ;Unknown operator (0FFh)?
+        JZ      .NORMALERROR                                                    ;   Yes, an error
 
-        Dec     DH                                                              ;DH--
-        Mov     [PSI+PBX],DL                                                    ;Program[PBX] = DL
-        Inc     PBX                                                             ;PBX++
-        Mov     [PSI+PBX],DH                                                    ;Program[PBX] = DH
+        Dec     DH
+        Mov     [PSI+PBX],DL                                                    ;Emit the opcode of 'n'
+        Inc     PBX
+        Mov     [PSI+PBX],DH                                                    ;Emit the operator
         Jmp     .SETNE
 
     .SETASUD:
-        Inc     DH                                                              ;DH++ (DH = 0xFF?)
-        JZ      .NORMALERROR                                                    ;   Yes
+        Inc     DH                                                              ;Unknown operator (0FFh)?
+        JZ      .NORMALERROR                                                    ;   Yes, an error
 
-        Dec     DH                                                              ;DH--
-        Mov     byte [PSI+PBX],04h                                              ;Program[PBX] = 0x04
-        Inc     PBX                                                             ;PBX++
-        Mov     [PSI+PBX],DH                                                    ;Program[PBX] = DH
+        Dec     DH
+        Mov     byte [PSI+PBX],04h                                              ;Emit them as 'n'
+        Inc     PBX
+        Mov     [PSI+PBX],DH                                                    ;Emit the operator
 
     .SETNE:
-    Inc     PBX                                                                 ;PBX++
-    Cmp     DL,04h                                                              ;DL = 0x04? (Is command N?)
+    Inc     PBX
+    Cmp     DL,04h                                                              ;'n'?
     JNE     .NNEXT                                                              ;   No
-        Call    GetScript700Last                                                ;Check Last
-        JZ      .NORMALERROR                                                    ;   Failure
+        Call    GetScript700Last                                                ;Is the operator a single character?
+        JZ      .NORMALERROR                                                    ;   No, an error
 
-        Mov     PCX,[scr700tmp]                                                 ;PCX = Temp (Restore Param1 Pointer)
+        Mov     PCX,[scr700tmp]                                                 ;Back to the 1st operand
         Jmp     .N1E
 
     .NNEXT:
-        Inc     PCX                                                             ;PCX++
-        Call    GetScript700Next                                                ;Seek Next
-        JZ      .NORMALERROR                                                    ;   Failure
+        Inc     PCX                                                             ;Past the command letter
+        Call    GetScript700Next                                                ;Find the 1st operand
+        JZ      .NORMALERROR                                                    ;   None, an error
 
     .N1E:
-    ShL     EDX,16                                                              ;EDX << 16
-    LoadPtr PAX,.N2                                                             ;Set Return Address
+    ShL     EDX,16                                                              ;Keep the opcode (DL) and operator (DH) in the upper half
+    LoadPtr PAX,.N2                                                             ;After the 1st operand, go on to the 2nd
     Mov     [scr700jmp],PAX
-    Inc     DH                                                                  ;DH++ (DH = 0x01)
-    Jmp     .SETVAL
+    Inc     DH                                                                  ;Not 'w', so a bare number is a port
+    Jmp     .SETVAL                                                             ;Encode the 1st operand
 
     .W:                                                                                                             ; w
-    Inc     PCX                                                                 ;PCX++
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    And     AL,0DFh                                                             ;AL &= 0xDF
-    Cmp     AL,49h                                                              ;Is char "I"?
+    Inc     PCX
+    Mov     AL,[PCX]
+    And     AL,0DFh                                                             ;To upper case
+    Cmp     AL,49h                                                              ;'wi'?
     JE      .WI                                                                 ;   Yes
-    Cmp     AL,4Fh                                                              ;Is char "O"?
+    Cmp     AL,4Fh                                                              ;'wo'?
     JE      .WO                                                                 ;   Yes
-    Dec     PCX                                                                 ;PCX--
+    Dec     PCX                                                                 ;   No, a plain 'w'
 
-    Mov     byte [PSI+PBX],01h                                                  ;Program[PBX] = 0x01
+    Mov     byte [PSI+PBX],01h                                                  ;Emit 'w' (01h)
     Jmp     .WNEXT
 
     .WI:                                                                                                            ; wi
-    Mov     byte [PSI+PBX],16h                                                  ;Program[PBX] = 0x16
+    Mov     byte [PSI+PBX],16h                                                  ;Emit 'wi' (16h)
     Jmp     .WNEXT
 
     .WO:                                                                                                            ; wo
-    Mov     byte [PSI+PBX],17h                                                  ;Program[PBX] = 0x17
+    Mov     byte [PSI+PBX],17h                                                  ;Emit 'wo' (17h)
 
     .WNEXT:
-    Inc     PBX                                                                 ;PBX++
-    Inc     PCX                                                                 ;PCX++
-    Call    GetScript700Next                                                    ;Seek Next
-    JZ      .NORMALERROR                                                        ;   Failure
+    Inc     PBX
+    Inc     PCX                                                                 ;Past the command
+    Call    GetScript700Next                                                    ;Find the operand
+    JZ      .NORMALERROR                                                        ;   None, an error
 
-    LoadPtr PAX,.NORMALRETURN                                                   ;Set Return Address
+    LoadPtr PAX,.NORMALRETURN                                                   ;After the operand, the command is done
     Mov     [scr700jmp],PAX
-    XOr     DH,DH                                                               ;DH = 0x00
-    Jmp     .SETVAL
+    XOr     DH,DH                                                               ;'w', 'wi' or 'wo', so a bare number is an immediate
+    Jmp     .SETVAL                                                             ;Encode the operand
 
     .N2:
-    ShR     EDX,16                                                              ;EDX >> 16
-    Cmp     DL,04h                                                              ;DL = 0x04? (Is command N?)
+    ShR     EDX,16                                                              ;Get the opcode back into DL
+    Cmp     DL,04h                                                              ;'n'?
     JNE     .N2E                                                                ;   No
-        Call    GetScript700Next                                                ;Seek Next
-        JZ      .NORMALERROR                                                    ;   Failure
-        Call    GetScript700Skip                                                ;Skip
+        Call    GetScript700Next                                                ;Find the operator
+        JZ      .NORMALERROR                                                    ;   None, an error
+        Call    GetScript700Skip                                                ;Over the operator
 
     .N2E:
-    Call    GetScript700Next                                                    ;Seek Next
-    JZ      .NORMALERROR                                                        ;   Failure
+    Call    GetScript700Next                                                    ;Find the 2nd operand
+    JZ      .NORMALERROR                                                        ;   None, an error
 
-    LoadPtr PAX,.NORMALRETURN                                                   ;Set Return Address
+    LoadPtr PAX,.NORMALRETURN                                                   ;After the 2nd operand, the command is done
     Mov     [scr700jmp],PAX
-    Mov     DH,01h                                                              ;DH = 0x01
+    Mov     DH,01h                                                              ;Not 'w', so a bare number is a port
 
     .SETVAL:
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    XOr     DL,DL                                                               ;DL = 0x00
-    Cmp     AL,23h                                                              ;Is char "#"?                       ; #[NUM]
-    JE      .SETVAL4B                                                           ;   Yes
-    And     AL,0DFh                                                             ;AL &= 0xDF
-    Add     DL,2                                                                ;DL += 2 (0x02)
-    Cmp     AL,49h                                                              ;Is char "I"?                       ; i[PORT]
-    JE      .SETVAL1B                                                           ;   Yes
-    Inc     DL                                                                  ;DL++ (0x03)
-    Cmp     AL,4Fh                                                              ;Is char "O"?                       ; o[PORT]
-    JE      .SETVAL1B                                                           ;   Yes
-    Inc     DL                                                                  ;DL++ (0x04)
-    Cmp     AL,57h                                                              ;Is char "W"?                       ; w[WORK]
-    JE      .SETVAL1B                                                           ;   Yes
-    Inc     DL                                                                  ;DL++ (0x05)
-    Cmp     AL,58h                                                              ;Is char "X"?                       ; x[XRAM]
-    JE      .SETVAL1B                                                           ;   Yes
-    XOr     AH,AH                                                               ;AH = 0x00
-    Inc     DL                                                                  ;DL++ (0x06)
-    Cmp     AL,52h                                                              ;Is char "R"?                       ; r(x)[RAM]
-    JE      .SETVALRD                                                           ;   Yes
-    Inc     AH                                                                  ;AH++ (0x01)
-    Add     DL,3                                                                ;DL += 3 (0x09)
-    Cmp     AL,44h                                                              ;Is char "D"?                       ; d(x)[DATA]
-    JE      .SETVALRD                                                           ;   Yes
-    Add     DL,3                                                                ;DL += 3 (0x0C)
-    Cmp     AL,4Ch                                                              ;Is char "L"?                       ; l[LABEL]
-    JE      .SETVAL2B                                                           ;   Yes
+    Mov     AL,[PCX]
+    XOr     DL,DL                                                               ;Operand type, counted up as each prefix is tried
+    Cmp     AL,23h                                                              ;'#', an immediate (00h)?           ; #[NUM]
+    JE      .SETVAL4B                                                           ;   Yes, 4 bytes
+    And     AL,0DFh                                                             ;To upper case
+    Add     DL,2
+    Cmp     AL,49h                                                              ;'i', an input port (02h)?          ; i[PORT]
+    JE      .SETVAL1B                                                           ;   Yes, 1 byte
+    Inc     DL
+    Cmp     AL,4Fh                                                              ;'o', an output port (03h)?         ; o[PORT]
+    JE      .SETVAL1B                                                           ;   Yes, 1 byte
+    Inc     DL
+    Cmp     AL,57h                                                              ;'w', a work register (04h)?        ; w[WORK]
+    JE      .SETVAL1B                                                           ;   Yes, 1 byte
+    Inc     DL
+    Cmp     AL,58h                                                              ;'x', extra RAM (05h)?              ; x[XRAM]
+    JE      .SETVAL1B                                                           ;   Yes, 1 byte
+    XOr     AH,AH                                                               ;AH = 0 for RAM, 1 for the data area
+    Inc     DL
+    Cmp     AL,52h                                                              ;'r', SPC700 RAM (06h-08h)?         ; r(x)[RAM]
+    JE      .SETVALRD                                                           ;   Yes, look for its size
+    Inc     AH
+    Add     DL,3
+    Cmp     AL,44h                                                              ;'d', data area (09h-0Bh)?          ; d(x)[DATA]
+    JE      .SETVALRD                                                           ;   Yes, look for its size
+    Add     DL,3
+    Cmp     AL,4Ch                                                              ;'l', a label (0Ch)?                ; l[LABEL]
+    JE      .SETVAL2B                                                           ;   Yes, 2 bytes
 
-    Dec     PCX                                                                 ;PCX--                              ; (#)[NUM]/[PORT]
-    Mov     DL,DH                                                               ;DL = DH
-    Dec     DH                                                                  ;DH-- (DH = 0x01?)
-    JNZ     .SETVAL4B                                                           ;   No (w command)
-    Jmp     .SETVAL1B                                                           ;   Yes (others command)
+    Dec     PCX                                                                 ;No prefix, back one character      ; (#)[NUM]/[PORT]
+    Mov     DL,DH                                                               ;Type 00h (immediate) for 'w' and 'bp', 01h (port) otherwise
+    Dec     DH                                                                  ;'w' or 'bp'?
+    JNZ     .SETVAL4B                                                           ;   Yes, a 4-byte immediate
+    Jmp     .SETVAL1B                                                           ;   No, a 1-byte port
 
     .SETVALRD:
-    Inc     PCX                                                                 ;PCX++
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    And     AL,0DFh                                                             ;AL &= 0xDF
-    Cmp     AL,42h                                                              ;Is char "B"?                       ; rb[RAM], db[DATA]
+    Inc     PCX
+    Mov     AL,[PCX]
+    And     AL,0DFh                                                             ;To upper case
+    Cmp     AL,42h                                                              ;'b', byte size?                    ; rb[RAM], db[DATA]
     JE      .SETVALRD2                                                          ;   Yes
-    Inc     DL                                                                  ;DL++ (0x07 or 0x0A)
-    Cmp     AL,57h                                                              ;Is char "W"?                       ; rw[RAM], dw[DATA]
+    Inc     DL
+    Cmp     AL,57h                                                              ;'w', word size?                    ; rw[RAM], dw[DATA]
     JE      .SETVALRD2                                                          ;   Yes
-    Inc     DL                                                                  ;DL++ (0x08 or 0x0B)
-    Cmp     AL,44h                                                              ;Is char "D"?                       ; rd[RAM], dd[DATA]
+    Inc     DL
+    Cmp     AL,44h                                                              ;'d', dword size?                   ; rd[RAM], dd[DATA]
     JE      .SETVALRD2                                                          ;   Yes
-    Dec     PCX                                                                 ;PCX--                              ; r[RAM], d[DATA]
-    Sub     DL,2                                                                ;DL -= 2 (0x06 or 0x09)
+    Dec     PCX                                                                 ;   No size, so byte size           ; r[RAM], d[DATA]
+    Sub     DL,2                                                                ;Back to the byte type
 
     .SETVALRD2:
-    Dec     AH                                                                  ;AH-- (AH = 0x01?)
-    JNZ     .SETVAL2B                                                           ;   No
+    Dec     AH                                                                  ;RAM?
+    JNZ     .SETVAL2B                                                           ;   Yes, a 2-byte address
 
     .SETVAL4B:                                                                                                      ; 4 byte method
-    Inc     PCX                                                                 ;PCX++
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,3Fh                                                              ;Is char "?"?
+    Inc     PCX
+    Mov     AL,[PCX]
+    Cmp     AL,3Fh                                                              ;'?', the compare value?
     JE      .SETVALCMP                                                          ;   Yes
-    Call    GetScript700Number                                                  ;Parse Number (EAX = result)
-    JZ      .NORMALERROR                                                        ;   Failure
+    Call    GetScript700Number                                                  ;The operand value
+    JZ      .NORMALERROR                                                        ;   Not a number, an error
 
-    Mov     [PSI+PBX],DL                                                        ;Program[PBX] = DL
-    Inc     PBX                                                                 ;PBX++
-    Mov     [PSI+PBX],EAX                                                       ;Program[PBX] = EAX
-    Add     PBX,4                                                               ;PBX += 4
-    Jmp     [scr700jmp]
+    Mov     [PSI+PBX],DL                                                        ;Emit the operand type and its 4-byte value
+    Inc     PBX
+    Mov     [PSI+PBX],EAX
+    Add     PBX,4
+    Jmp     [scr700jmp]                                                         ;Back to the command
 
     .SETVAL1B:                                                                                                      ; 1 byte method
-    Inc     PCX                                                                 ;PCX++
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,3Fh                                                              ;Is char "?"?
+    Inc     PCX
+    Mov     AL,[PCX]
+    Cmp     AL,3Fh                                                              ;'?', the compare value?
     JE      .SETVALCMP                                                          ;   Yes
-    Call    GetScript700Number                                                  ;Parse Number (EAX = result)
-    JZ      .NORMALERROR                                                        ;   Failure
+    Call    GetScript700Number
+    JZ      .NORMALERROR                                                        ;   Not a number, an error
 
-    Mov     [PSI+PBX],DL                                                        ;Program[PBX] = DL
-    Inc     PBX                                                                 ;PBX++
-    Mov     [PSI+PBX],AL                                                        ;Program[PBX] = AL
-    Inc     PBX                                                                 ;PBX++
+    Mov     [PSI+PBX],DL                                                        ;Emit the operand type and its 1-byte value
+    Inc     PBX
+    Mov     [PSI+PBX],AL
+    Inc     PBX
     Jmp     [scr700jmp]
 
     .SETVAL2B:                                                                                                      ; 2 byte method
-    Inc     PCX                                                                 ;PCX++
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,3Fh                                                              ;Is char "?"?
+    Inc     PCX
+    Mov     AL,[PCX]
+    Cmp     AL,3Fh                                                              ;'?', the compare value?
     JE      .SETVALCMP                                                          ;   Yes
-    Call    GetScript700Number                                                  ;Parse Number (EAX = result)
-    JZ      .NORMALERROR                                                        ;   Failure
+    Call    GetScript700Number
+    JZ      .NORMALERROR                                                        ;   Not a number, an error
 
-    Mov     [PSI+PBX],DL                                                        ;Program[PBX] = DL
-    Inc     PBX                                                                 ;PBX++
-    Mov     [PSI+PBX],AX                                                        ;Program[PBX] = AX
-    Add     PBX,2                                                               ;PBX += 2
+    Mov     [PSI+PBX],DL                                                        ;Emit the operand type and its 2-byte value
+    Inc     PBX
+    Mov     [PSI+PBX],AX
+    Add     PBX,2
     Jmp     [scr700jmp]
 
     .SETVALCMP:                                                                                                     ; cmp method
-    Call    GetScript700Last                                                    ;Check Last
-    JZ      .NORMALERROR                                                        ;   Failure
+    Call    GetScript700Last                                                    ;Is '?' alone?
+    JZ      .NORMALERROR                                                        ;   No, an error
 
-    Add     DL,10h                                                              ;DL += 0x10
-    Mov     [PSI+PBX],DL                                                        ;Program[PBX] = DL
-    Inc     PBX                                                                 ;PBX++
+    Add     DL,10h                                                              ;Types 10h and up read the compare value instead
+    Mov     [PSI+PBX],DL                                                        ;Emit the operand type, no value follows
+    Inc     PBX
     Jmp     [scr700jmp]
 
     .B:                                                                                                             ; bxx
-    Inc     PCX                                                                 ;PCX++
-    Mov     AH,[PCX]                                                            ;AH = [PCX]
-    And     AH,0DFh                                                             ;AH &= 0xDF
-    Test    AH,AH                                                               ;AH = 0x00?
-    JZ      .NORMALERROR                                                        ;   Yes
+    Inc     PCX
+    Mov     AH,[PCX]                                                            ;2nd letter
+    And     AH,0DFh                                                             ;To upper case
+    Test    AH,AH                                                               ;End of the text or a SPACE?
+    JZ      .NORMALERROR                                                        ;   Yes, an error
 
-    Cmp     AH,50h                                                              ;Is char "P"?
+    Cmp     AH,50h                                                              ;'bp'?
     JE      .BP                                                                 ;   Yes
-    Inc     PCX                                                                 ;PCX++
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    And     AL,0DFh                                                             ;AL &= 0xDF
-    Test    AL,AL                                                               ;AL = 0x00?
-    JZ      .NORMALERROR                                                        ;   Yes
+    Inc     PCX
+    Mov     AL,[PCX]                                                            ;3rd letter
+    And     AL,0DFh                                                             ;To upper case
+    Test    AL,AL                                                               ;End of the text or a SPACE?
+    JZ      .NORMALERROR                                                        ;   Yes, an error
 
-    Mov     DL,05h                                                              ;DL = 0x05
-    Cmp     AX,5241h                                                            ;Is string "BRA"?                   ; bra
+    Mov     DL,05h                                                              ;Opcode, counted up as each branch is tried
+    Cmp     AX,5241h                                                            ;'bra' (05h)?                       ; bra
     JE      .BXXNEXT                                                            ;   Yes
-    Inc     DL                                                                  ;DL++ (0x06)
-    Cmp     AX,4551h                                                            ;Is string "BEQ"?                   ; beq
+    Inc     DL
+    Cmp     AX,4551h                                                            ;'beq' (06h)?                       ; beq
     JE      .BXXNEXT                                                            ;   Yes
-    Inc     DL                                                                  ;DL++ (0x07)
-    Cmp     AX,4E45h                                                            ;Is string "BNE"?                   ; bne
+    Inc     DL
+    Cmp     AX,4E45h                                                            ;'bne' (07h)?                       ; bne
     JE      .BXXNEXT                                                            ;   Yes
-    Inc     DL                                                                  ;DL++ (0x08)
-    Cmp     AX,4745h                                                            ;Is string "BGE"?                   ; bge
+    Inc     DL
+    Cmp     AX,4745h                                                            ;'bge' (08h)?                       ; bge
     JE      .BXXNEXT                                                            ;   Yes
-    Inc     DL                                                                  ;DL++ (0x09)
-    Cmp     AX,4C45h                                                            ;Is string "BLE"?                   ; ble
+    Inc     DL
+    Cmp     AX,4C45h                                                            ;'ble' (09h)?                       ; ble
     JE      .BXXNEXT                                                            ;   Yes
-    Inc     DL                                                                  ;DL++ (0x0A)
-    Cmp     AX,4754h                                                            ;Is string "BGT"?                   ; bgt
+    Inc     DL
+    Cmp     AX,4754h                                                            ;'bgt' (0Ah)?                       ; bgt
     JE      .BXXNEXT                                                            ;   Yes
-    Inc     DL                                                                  ;DL++ (0x0B)
-    Cmp     AX,4C54h                                                            ;Is string "BLT"?                   ; blt
+    Inc     DL
+    Cmp     AX,4C54h                                                            ;'blt' (0Bh)?                       ; blt
     JE      .BXXNEXT                                                            ;   Yes
-    Inc     DL                                                                  ;DL++ (0x0C)
-    Cmp     AX,4343h                                                            ;Is string "BCC"?                   ; bcc
+    Inc     DL
+    Cmp     AX,4343h                                                            ;'bcc' (0Ch)?                       ; bcc
     JE      .BXXNEXT                                                            ;   Yes
-    Inc     DL                                                                  ;DL++ (0x0D)
-    Cmp     AX,4C4Fh                                                            ;Is string "BLO"?                   ; blo
+    Inc     DL
+    Cmp     AX,4C4Fh                                                            ;'blo' (0Dh)?                       ; blo
     JE      .BXXNEXT                                                            ;   Yes
-    Inc     DL                                                                  ;DL++ (0x0E)
-    Cmp     AX,4849h                                                            ;Is string "BHI"?                   ; bhi
+    Inc     DL
+    Cmp     AX,4849h                                                            ;'bhi' (0Eh)?                       ; bhi
     JE      .BXXNEXT                                                            ;   Yes
-    Inc     DL                                                                  ;DL++ (0x0F)
-    Cmp     AX,4353h                                                            ;Is string "BCS"?                   ; bcs
+    Inc     DL
+    Cmp     AX,4353h                                                            ;'bcs' (0Fh)?                       ; bcs
     JE      .BXXNEXT                                                            ;   Yes
-    Jmp     .NORMALERROR                                                        ;   No
+    Jmp     .NORMALERROR                                                        ;   No, an unknown branch
 
     .BXXNEXT:
-    Inc     PCX                                                                 ;PCX++
-    Call    GetScript700Next                                                    ;Seek Next
-    JZ      .NORMALERROR                                                        ;   Failure
+    Inc     PCX                                                                 ;Past the command
+    Call    GetScript700Next                                                    ;Find the target
+    JZ      .NORMALERROR                                                        ;   None, an error
 
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,23h                                                              ;Is char "#"?
+    Mov     AL,[PCX]
+    Cmp     AL,23h                                                              ;'#', a label number?
     JE      .BXXVALN                                                            ;   Yes
-    And     AL,0DFh                                                             ;AL &= 0xDF
-    Cmp     AL,57h                                                              ;Is char "W"?
+    And     AL,0DFh                                                             ;To upper case
+    Cmp     AL,57h                                                              ;'w', a label number in a work register?
     JE      .BXXVALW                                                            ;   Yes
-    Dec     PCX                                                                 ;PCX--
+    Dec     PCX                                                                 ;   No, a bare label number
 
     .BXXVALN:
-    Inc     PCX                                                                 ;PCX++
-    Call    GetScript700Number                                                  ;Parse Number (EAX = result)
-    JZ      .NORMALERROR                                                        ;   Failure
+    Inc     PCX
+    Call    GetScript700Number                                                  ;Label number
+    JZ      .NORMALERROR                                                        ;   Not a number, an error
 
-    And     EAX,1023                                                            ;EAX &= 1023
-    Mov     [PSI+PBX],DL                                                        ;Program[PBX] = DL
-    Inc     PBX                                                                 ;PBX++
-    Mov     [PSI+PBX],AX                                                        ;Program[PBX] = AX
-    Add     PBX,2                                                               ;PBX += 2
+    And     EAX,1023                                                            ;Labels wrap at 1024
+    Mov     [PSI+PBX],DL                                                        ;Emit the opcode and the label number
+    Inc     PBX
+    Mov     [PSI+PBX],AX
+    Add     PBX,2
     Jmp     .NORMALRETURN
 
     .BXXVALW:
-    Inc     PCX                                                                 ;PCX++
-    Call    GetScript700Number                                                  ;Parse Number (EAX = result)
-    JZ      .NORMALERROR                                                        ;   Failure
+    Inc     PCX                                                                 ;Past the 'w'
+    Call    GetScript700Number                                                  ;Work register number
+    JZ      .NORMALERROR                                                        ;   Not a number, an error
 
-    Mov     AH,80h                                                              ;AH = 0x80
-    Mov     [PSI+PBX],DL                                                        ;Program[PBX] = DL
-    Inc     PBX                                                                 ;PBX++
-    Mov     [PSI+PBX],AX                                                        ;Program[PBX] = AX
-    Add     PBX,2                                                               ;PBX += 2
+    Mov     AH,80h                                                              ;8000h + n reads the label number from wn
+    Mov     [PSI+PBX],DL                                                        ;Emit the opcode and the work register
+    Inc     PBX
+    Mov     [PSI+PBX],AX
+    Add     PBX,2
     Jmp     .NORMALRETURN
 
     .BP:                                                                                                            ; bp
-    Test    dword [apuCbMask],CBE_REQBP                                         ;Is supported callback?
-    JZ      .NORMALERROR                                                        ;   No
-    Test    PTRKW [apuCbFunc],-1                                                ;Is defined callback function?
-    JZ      .NORMALERROR                                                        ;   No
+    Test    dword [apuCbMask],CBE_REQBP                                         ;Does the frontend take breakpoint requests?
+    JZ      .NORMALERROR                                                        ;   No, 'bp' is an error
+    Test    PTRKW [apuCbFunc],-1                                                ;Is a callback installed?
+    JZ      .NORMALERROR                                                        ;   No, 'bp' is an error
 
-    Mov     byte [PSI+PBX],18h                                                  ;Program[PBX] = 0x18
-    Inc     PBX                                                                 ;PBX++
-    Inc     PCX                                                                 ;PCX++
-    Call    GetScript700Next                                                    ;Seek Next
-    JZ      .NORMALERROR                                                        ;   Failure
+    Mov     byte [PSI+PBX],18h                                                  ;Emit 'bp' (18h)
+    Inc     PBX
+    Inc     PCX                                                                 ;Past the command
+    Call    GetScript700Next                                                    ;Find the operand
+    JZ      .NORMALERROR                                                        ;   None, an error
 
-    LoadPtr PAX,.NORMALRETURN                                                   ;Set Return Address
+    LoadPtr PAX,.NORMALRETURN                                                   ;After the operand, the command is done
     Mov     [scr700jmp],PAX
-    XOr     DH,DH                                                               ;DH = 0x00
-    Jmp     .SETVAL
+    XOr     DH,DH                                                               ;A bare number is an immediate, as for 'w'
+    Jmp     .SETVAL                                                             ;Encode the operand
 
     .R:                                                                                                             ; r
-    Inc     PCX                                                                 ;PCX++
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,30h                                                              ;Is char "0"?
+    Inc     PCX
+    Mov     AL,[PCX]
+    Cmp     AL,30h                                                              ;'r0'?
     JE      .R0                                                                 ;   Yes
-    Cmp     AL,31h                                                              ;Is char "1"?
+    Cmp     AL,31h                                                              ;'r1'?
     JE      .R1                                                                 ;   Yes
-    Dec     PCX                                                                 ;PCX--
-    Call    GetScript700Last                                                    ;Check Last
-    JZ      .NORMALERROR                                                        ;   Failure
+    Dec     PCX                                                                 ;   No, a plain 'r'
+    Call    GetScript700Last                                                    ;Is 'r' alone?
+    JZ      .NORMALERROR                                                        ;   No, an error
 
-    Mov     byte [PSI+PBX],10h                                                  ;Program[PBX] = 0x10
-    Inc     PBX                                                                 ;PBX++
+    Mov     byte [PSI+PBX],10h                                                  ;Emit 'r' (10h)
+    Inc     PBX
     Jmp     .NORMALRETURN
 
     .R0:                                                                                                            ; r0
-    Call    GetScript700Last                                                    ;Check Last
-    JZ      .NORMALERROR                                                        ;   Failure
-    Mov     byte [PSI+PBX],11h                                                  ;Program[PBX] = 0x11
-    Inc     PBX                                                                 ;PBX++
+    Call    GetScript700Last                                                    ;Is 'r0' alone?
+    JZ      .NORMALERROR                                                        ;   No, an error
+    Mov     byte [PSI+PBX],11h                                                  ;Emit 'r0' (11h)
+    Inc     PBX
     Jmp     .NORMALRETURN
 
     .R1:                                                                                                            ; r1
-    Call    GetScript700Last                                                    ;Check Last
-    JZ      .NORMALERROR                                                        ;   Failure
+    Call    GetScript700Last                                                    ;Is 'r1' alone?
+    JZ      .NORMALERROR                                                        ;   No, an error
 
-    Mov     byte [PSI+PBX],12h                                                  ;Program[PBX] = 0x12
-    Inc     PBX                                                                 ;PBX++
+    Mov     byte [PSI+PBX],12h                                                  ;Emit 'r1' (12h)
+    Inc     PBX
     Jmp     .NORMALRETURN
 
     .F:                                                                                                             ; f
-    Inc     PCX                                                                 ;PCX++
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,30h                                                              ;Is char "0"?
+    Inc     PCX
+    Mov     AL,[PCX]
+    Cmp     AL,30h                                                              ;'f0'?
     JE      .F0                                                                 ;   Yes
-    Cmp     AL,31h                                                              ;Is char "1"?
+    Cmp     AL,31h                                                              ;'f1'?
     JE      .F1                                                                 ;   Yes
-    Dec     PCX                                                                 ;PCX--
-    Call    GetScript700Last                                                    ;Check Last
-    JZ      .NORMALERROR                                                        ;   Failure
+    Dec     PCX                                                                 ;   No, a plain 'f'
+    Call    GetScript700Last                                                    ;Is 'f' alone?
+    JZ      .NORMALERROR                                                        ;   No, an error
 
-    Mov     byte [PSI+PBX],13h                                                  ;Program[PBX] = 0x13
-    Inc     PBX                                                                 ;PBX++
+    Mov     byte [PSI+PBX],13h                                                  ;Emit 'f' (13h)
+    Inc     PBX
     Jmp     .NORMALRETURN
 
     .F0:                                                                                                            ; f0
-    Call    GetScript700Last                                                    ;Check Last
-    JZ      .NORMALERROR                                                        ;   Failure
+    Call    GetScript700Last                                                    ;Is 'f0' alone?
+    JZ      .NORMALERROR                                                        ;   No, an error
 
-    Mov     byte [PSI+PBX],14h                                                  ;Program[PBX] = 0x14
-    Inc     PBX                                                                 ;PBX++
+    Mov     byte [PSI+PBX],14h                                                  ;Emit 'f0' (14h)
+    Inc     PBX
     Jmp     .NORMALRETURN
 
     .F1:                                                                                                            ; f1
-    Call    GetScript700Last                                                    ;Check Last
-    JZ      .NORMALERROR                                                        ;   Failure
+    Call    GetScript700Last                                                    ;Is 'f1' alone?
+    JZ      .NORMALERROR                                                        ;   No, an error
 
-    Mov     byte [PSI+PBX],15h                                                  ;Program[PBX] = 0x15
-    Inc     PBX                                                                 ;PBX++
+    Mov     byte [PSI+PBX],15h                                                  ;Emit 'f1' (15h)
+    Inc     PBX
     Jmp     .NORMALRETURN
 
     .Shp:                                                                                                           ; #
-    Test    dword [apuCbMask],CBE_INCS700 | CBE_INCDATA                         ;Is supported callback?
-    JZ      .ShpERROR                                                           ;   No
-    Test    PTRKW [apuCbFunc],-1                                                ;Is defined callback function?
-    JZ      .ShpERROR                                                           ;   No
+    Test    dword [apuCbMask],CBE_INCS700 | CBE_INCDATA                         ;Does the frontend take include requests?
+    JZ      .ShpERROR                                                           ;   No, '#' is an error
+    Test    PTRKW [apuCbFunc],-1                                                ;Is a callback installed?
+    JZ      .ShpERROR                                                           ;   No, '#' is an error
 
-    Inc     PCX                                                                 ;PCX++
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    And     AL,0DFh                                                             ;AL &= 0xDF
-    Cmp     AL,49h                                                              ;Is char "I"?                       ; #i
+    Inc     PCX
+    Mov     AL,[PCX]
+    And     AL,0DFh                                                             ;To upper case
+    Cmp     AL,49h                                                              ;'#i'?                              ; #i
     JE      .ShpI                                                               ;   Yes
-    Jmp     .ShpERROR                                                           ;   No
+    Jmp     .ShpERROR                                                           ;   No, an unknown directive
 
     .ShpI:
-    Inc     PCX                                                                 ;PCX++
-    Mov     DL,40h                                                              ;DL = 0x40 (TEXT mode)
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,09h                                                              ;AL = 0x09? (TAB)
-    JE      .ShpI1                                                              ;   Yes
-    Cmp     AL,20h                                                              ;AL = 0x20? (SPACE)
-    JE      .ShpI1                                                              ;   Yes
+    Inc     PCX
+    Mov     DL,40h                                                              ;A text include, unless 'b' follows
+    Mov     AL,[PCX]
+    Cmp     AL,09h                                                              ;TAB after '#i'?
+    JE      .ShpI1                                                              ;   Yes, a text include
+    Cmp     AL,20h                                                              ;SPACE after '#i'?
+    JE      .ShpI1                                                              ;   Yes, a text include
 
-    And     AL,0DFh                                                             ;AL &= 0xDF
-    Cmp     AL,54h                                                              ;Is char "T"?                       ; #it
+    And     AL,0DFh                                                             ;To upper case
+    Cmp     AL,54h                                                              ;'#it'?                             ; #it
     JE      .ShpIT                                                              ;   Yes
 
-    Test    byte [scr700inc+03h],02h                                            ;Data Command Zone?
-    JZ      .ShpERROR                                                           ;   No
-    Mov     DL,20h                                                              ;DL = 0x20 (DATA mode)
-    Cmp     AL,42h                                                              ;Is char "B"?                       ; #ib
+    Test    byte [scr700inc+03h],02h                                            ;In the data zone?
+    JZ      .ShpERROR                                                           ;   No, '#ib' is only allowed there
+    Mov     DL,20h                                                              ;A binary include
+    Cmp     AL,42h                                                              ;'#ib'?                             ; #ib
     JE      .ShpIB                                                              ;   Yes
-    Jmp     .ShpERROR                                                           ;   No
+    Jmp     .ShpERROR                                                           ;   No, an unknown directive
 
     .ShpIT:
-    Inc     PCX                                                                 ;PCX++
+    Inc     PCX                                                                 ;Past the 't'
 
     .ShpI1:
-    Test    byte [scr700inc+02h],-1                                             ;Include mode?
-    JNZ     .ShpERROR                                                           ;   Yes
+    Test    byte [scr700inc+02h],-1                                             ;Already compiling an included text?
+    JNZ     .ShpERROR                                                           ;   Yes, text includes do not nest
     Jmp     .ShpI2
 
     .ShpIB:
-    Inc     PCX                                                                 ;PCX++
+    Inc     PCX                                                                 ;Past the 'b'
 
     .ShpI2:
-    Call    GetScript700Next                                                    ;Seek Next
-    JZ      .ShpERROR                                                           ;   Failure
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,22h                                                              ;Is char "\""?
-    JNE     .ShpERROR                                                           ;   No
+    Call    GetScript700Next                                                    ;Find the file name
+    JZ      .ShpERROR                                                           ;   None, an error
+    Mov     AL,[PCX]
+    Cmp     AL,22h                                                              ;Opening quote?
+    JNE     .ShpERROR                                                           ;   No, an error
 
-    Mov     [scr700inc],DL                                                      ;Include = 00h:NEW
-    Inc     PCX                                                                 ;PCX++
+    Mov     [scr700inc],DL                                                      ;Kind of this include (40h text, 20h binary)
+    Inc     PCX                                                                 ;Past the quote
 
     Push    PDI,PCX
     LoadPtr PDI,scr700pth
     XOr     EAX,EAX
-    Mov     PCX,64
+    Mov     PCX,64                                                              ;Clear the first 256 bytes of the file name buffer
     Rep     StoSD
     Pop     PCX,PDI
 
     LoadPtr PDX,scr700pth
 
     .ShpI3:
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,00h                                                              ;Is char NULL?
-    JE      .ShpERROR                                                           ;   Yes
-    Cmp     AL,0Ah                                                              ;Is char RETURN?
-    JE      .ShpERROR                                                           ;   Yes
-    Cmp     AL,0Dh                                                              ;Is char RETURN?
-    JE      .ShpERROR                                                           ;   Yes
-    Cmp     AL,22h                                                              ;Is char "\""?
-    JE      .ShpI4                                                              ;   Yes
+    Mov     AL,[PCX]
+    Cmp     AL,00h                                                              ;End of the text?
+    JE      .ShpERROR                                                           ;   Yes, the name is not closed
+    Cmp     AL,0Ah                                                              ;End of the line?
+    JE      .ShpERROR                                                           ;   Yes, the name is not closed
+    Cmp     AL,0Dh                                                              ;End of the line?
+    JE      .ShpERROR                                                           ;   Yes, the name is not closed
+    Cmp     AL,22h                                                              ;Closing quote?
+    JE      .ShpI4                                                              ;   Yes, the name is complete
 
-    Inc     AH
-    JZ      .ShpERROR
-    Mov     [PDX],AL                                                            ;Path[PDX] = AL
-    Inc     PDX                                                                 ;PDX++
-    Inc     PCX                                                                 ;PCX++
+    Inc     AH                                                                  ;Name length, at most 255
+    JZ      .ShpERROR                                                           ;   Longer, an error
+    Mov     [PDX],AL                                                            ;Copy the name
+    Inc     PDX
+    Inc     PCX
     Jmp     .ShpI3
 
     .ShpI4:
-    IdxSt   Mov,scr700inc,04h,EBX                                               ;Save program cursor
-    Inc     EBX                                                                 ;PBX++
-    IdxSt   Mov,scr700inc,08h,EBX                                               ;Store pointer of successful for not call SetScript700
+    Call    GetScript700Last                                                    ;Is the closing quote followed by a separator? (AH is kept)
+    JZ      .ShpERROR                                                           ;   No, an error
 
-    MovZX   EDX,byte [scr700inc]                                                ;Include = 02h:OLD 01h:00h 00h:NEW
-    ShR     word [scr700inc+01h],8                                              ;          02h:00h 01h:OLD 00h:NEW
-    Mov     [scr700inc+02h],DL                                                  ;          02h:NEW 01h:OLD 00h:NEW
-                                                                                ;EDX = 0x40 (TEXT) or 0x20 (DATA)
-    ShL     EDX,24                                                              ;EDX << 24 (0x40000000 or 0x20000000)
-    Test    dword [apuCbMask],EDX                                               ;Is supported callback?
-    JZ      .ShpERROR                                                           ;   No
+    IdxSt   Mov,scr700inc,04h,EBX                                               ;Where the included code goes
+    Inc     EBX                                                                 ;Default result if the frontend sets none
+    IdxSt   Mov,scr700inc,08h,EBX
 
-    Push    PDI,PBX,PCX                                                         ;STDCALL is destroy PAX,PCX,PDX
+    MovZX   EDX,byte [scr700inc]                                                ;Event: CBE_INCS700 (40000000h) or CBE_INCDATA (20000000h)
+    ShL     EDX,24
+    Test    dword [apuCbMask],EDX                                               ;Does the frontend take this kind of include?
+    JZ      .ShpERROR                                                           ;   No, an error, before entering include mode
+
+    Mov     AL,[scr700inc]                                                      ;Enter include mode, saving the outer mode in byte 01h
+    ShR     word [scr700inc+01h],8
+    Mov     [scr700inc+02h],AL
+
+    Push    PDI,PBX,PCX                                                         ;The callback may destroy PAX, PCX and PDX
     Mov     PDI,[apuCbFunc]
     Mov     ECX,[scr700dat]
-    Sub     PBX,PCX
-    MovZX   EAX,AH                                                              ;EAX = Size of file name
-    LoadPtr PCX,scr700pth                                                       ;PCX = Pointer of file name
-    ExCall  PDI,EDX,PBX,EAX,PCX
+    Sub     PBX,PCX                                                             ;addr: one past the cursor, relative to the data area
+    MovZX   EAX,AH                                                              ;size: length of the file name
+    LoadPtr PCX,scr700pth                                                       ;The file name
+    ExCall  PDI,EDX,PBX,EAX,PCX                                                 ;Callback(event, addr, size, name)
     Pop     PCX,PBX,PDI
 
-    ShL     word [scr700inc+01h],8                                              ;Include = 02h:OLD 01h:00h 00h:NEW
+    ShL     word [scr700inc+01h],8                                              ;Back to the outer include mode
 
-    IdxLd   Mov,EDX,scr700inc,08h                                               ;EDX = Return value of SetScript700
-    Test    EDX,EDX                                                             ;EDX = ?
-    JS      .CRITICALERROR                                                      ;   < 0
-    CMovX   NZ,EBX,EDX                                                          ;PBX = EDX, unless it is 0
+    IdxLd   Mov,EDX,scr700inc,08h                                               ;Result of SetScript700 or SetScript700Data, or the default
+    Test    EDX,EDX                                                             ;Did it fail?
+    JS      .CRITICALERROR                                                      ;   Yes, the whole script fails
+    CMovX   NZ,EBX,EDX                                                          ;Continue after the included code
 
-    Dec     PBX                                                                 ;PBX--
-    Call    GetScript700Last                                                    ;Check Last
-    JZ      .ShpERROR                                                           ;   Failure
+    Dec     PBX                                                                 ;The result is one past the last byte used
     Mov     AH,[scr700inc+03h]
-    Dec     AH
-    JZ      .EXTRETURN
-    Dec     AH
-    JZ      .DATARETURN2
-    Jmp     .NORMALRETURN
+    Dec     AH                                                                  ;Was the include in the EXT zone?
+    JZ      .EXTRETURN                                                          ;   Yes
+    Dec     AH                                                                  ;In the data zone?
+    JZ      .DATARETURN2                                                        ;   Yes
+    Jmp     .NORMALRETURN                                                       ;   No, in the script command zone
 
     .ShpERROR:
     Mov     AH,[scr700inc+03h]
-    Dec     AH
-    JZ      .EXTERROR
-    Dec     AH
-    JZ      .DATAERROR
+    Dec     AH                                                                  ;Was the error in the EXT zone?
+    JZ      .EXTERROR                                                           ;   Yes
+    Dec     AH                                                                  ;In the data zone?
+    JZ      .DATAERROR                                                          ;   Yes
 
     .NORMALERROR:
-    Mov     PBX,PDI                                                             ;PBX = PDI
-    Test    byte [PCX],-1                                                       ;Is char NULL?
-    JZ      .EXIT                                                               ;   Yes
-    Call    GetScript700NextLine                                                ;Next Line
+    Mov     PBX,PDI                                                             ;Roll back the code of this line
+    Test    byte [PCX],-1                                                       ;End of the text?
+    JZ      .EXIT                                                               ;   Yes, finish
+    Call    GetScript700NextLine                                                ;Skip the rest of the line
     Jmp     .NORMALRETURN
 
     ;---------- Extension Command Zone ----------
@@ -2027,408 +2082,409 @@ USES ECX,EDX,EBX,ESI,EDI
     ;NOTE (x64 port): Array accesses below use IdxSt and IdxLd, which load their own scratch base
     ; pointer per access.  So PSI and PDI keep their usual meaning here, unlike elsewhere in this
     ; proc.
-    Call    GetScript700First                                                   ;Seek First
-    JZ      .EXTERROR                                                           ;   Failure
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,3Ah                                                              ;Is char ":"?
+    Call    GetScript700First                                                   ;Find the command on this line
+    JZ      .EXTERROR                                                           ;   None, so the line is skipped
+    Mov     AL,[PCX]
+    Cmp     AL,3Ah                                                              ;'::', the start of the EXT zone?
     JE      .EXLABEL                                                            ;   Yes
-    Cmp     AL,23h                                                              ;Is char "#"?
+    Cmp     AL,23h                                                              ;'#', a directive?
     JE      .Shp                                                                ;   Yes
-    And     AL,0DFh                                                             ;AL &= 0xDF
-    Cmp     AL,45h                                                              ;Is char "E"?
+    And     AL,0DFh                                                             ;To upper case
+    Cmp     AL,45h                                                              ;'e', the end of the EXT zone?
     JE      .EXE                                                                ;   Yes
-    Cmp     AL,4Dh                                                              ;Is char "M"?
+    Cmp     AL,4Dh                                                              ;'m', mute?
     JE      .EXM                                                                ;   Yes
-    Cmp     AL,43h                                                              ;Is char "C"?
+    Cmp     AL,43h                                                              ;'c', change the source?
     JE      .EXC                                                                ;   Yes
-    Cmp     AL,44h                                                              ;Is char "D"?
+    Cmp     AL,44h                                                              ;'d', detune?
     JE      .EXD                                                                ;   Yes
-    Cmp     AL,56h                                                              ;Is char "V"?
+    Cmp     AL,56h                                                              ;'v', volume?
     JE      .EXV                                                                ;   Yes
-    Jmp     .EXTERROR                                                           ;   No
+    Jmp     .EXTERROR                                                           ;   No, an unknown command
 
     .EXLABEL:                                                                                                       ; ::
-    Inc     PCX                                                                 ;PCX++
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,3Ah                                                              ;Is char ":"?
-    JNE     .EXTERROR                                                           ;   No
+    Inc     PCX
+    Mov     AL,[PCX]
+    Cmp     AL,3Ah                                                              ;Second ':'?
+    JNE     .EXTERROR                                                           ;   No, an error
 
-    Call    GetScript700Last                                                    ;Check Last
-    JZ      .EXTERROR                                                           ;   Failure
-    Jmp     .EXTRETURN
+    Call    GetScript700Last                                                    ;Is '::' alone?
+    JZ      .EXTERROR                                                           ;   No, an error
+    Jmp     .EXTRETURN                                                          ;Already in the EXT zone, so nothing to do
 
     .EXE:                                                                                                           ; e
-    Call    GetScript700Last                                                    ;Check Last
-    JZ      .EXTERROR                                                           ;   Failure
+    Call    GetScript700Last                                                    ;Is 'e' alone?
+    JZ      .EXTERROR                                                           ;   No, an error
 
-    Mov     byte [scr700inc+03h],02h                                            ;Data Command Zone
+    Mov     byte [scr700inc+03h],02h                                            ;Now in the data zone
     Jmp     .DATARETURN
 
     .EXM:                                                                                                           ; m
-    Inc     PCX                                                                 ;PCX++
-    Call    GetScript700Next                                                    ;Seek Next
-    JZ      .EXTERROR                                                           ;   Failure
+    Inc     PCX                                                                 ;Past the 'm'
+    Call    GetScript700Next                                                    ;Find the source number
+    JZ      .EXTERROR                                                           ;   None, an error
 
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,21h                                                              ;Is char "!"?
+    Mov     AL,[PCX]
+    Cmp     AL,21h                                                              ;'!', all sources?
     JE      .EXMALL                                                             ;   Yes
-    Call    GetScript700Number                                                  ;Parse Number (EAX = result)
-    JZ      .EXTERROR                                                           ;   Failure
+    Call    GetScript700Number
+    JZ      .EXTERROR                                                           ;   Not a number, an error
 
-    MovZX   EAX,AL                                                              ;EAX = AL
-    IdxSt   XOr byte,scr700dsp,PAX,01h                                          ;pDSPFlag[EAX] ^= 0x01
+    MovZX   EAX,AL
+    IdxSt   XOr byte,scr700dsp,PAX,01h                                          ;Toggle S700_MUTE of the source
     Jmp     .EXTRETURN
 
     .EXMALL:                                                                                                        ; !
-    Call    GetScript700Last                                                    ;Check Last
-    JZ      .EXTERROR                                                           ;   Failure
-    XOr     EDX,EDX                                                             ;EDX = 0x00
+    Call    GetScript700Last                                                    ;Is '!' alone?
+    JZ      .EXTERROR                                                           ;   No, an error
+    XOr     EDX,EDX
 
     .EXMALLRETURN:
-    IdxSt   XOr dword,scr700dsp,PDX,01010101h                                   ;pDSPFlag[EDX] ^= 0x01010101
-    Add     EDX,4                                                               ;EDX += 4
-    Cmp     EDX,256                                                             ;EDX = 256?
+    IdxSt   XOr dword,scr700dsp,PDX,01010101h                                   ;Toggle S700_MUTE of 4 sources at a time
+    Add     EDX,4
+    Cmp     EDX,256                                                             ;All 256 sources done?
     JNE     .EXMALLRETURN                                                       ;   No
     Jmp     .EXTRETURN
 
     .EXC:                                                                                                           ; c
-    Inc     PCX                                                                 ;PCX++
-    Call    GetScript700Next                                                    ;Seek Next
-    JZ      .EXTERROR                                                           ;   Failure
+    Inc     PCX                                                                 ;Past the 'c'
+    Call    GetScript700Next                                                    ;Find the source number
+    JZ      .EXTERROR                                                           ;   None, an error
 
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,21h                                                              ;Is char "!"?
+    Mov     AL,[PCX]
+    Cmp     AL,21h                                                              ;'!', all sources?
     JE      .EXCALL                                                             ;   Yes
-    Call    GetScript700Number                                                  ;Parse Number (EAX = result)
-    JZ      .EXTERROR                                                           ;   Failure
+    Call    GetScript700Number
+    JZ      .EXTERROR                                                           ;   Not a number, an error
 
-    Mov     DL,AL                                                               ;DL = AL
-    Call    GetScript700Next                                                    ;Seek Next
-    JZ      .EXTERROR                                                           ;   Failure
-    Call    GetScript700Number                                                  ;Parse Number (EAX = result)
-    JZ      .EXTERROR                                                           ;   Failure
+    Mov     DL,AL                                                               ;Source to change
+    Call    GetScript700Next                                                    ;Find the new source number
+    JZ      .EXTERROR                                                           ;   None, an error
+    Call    GetScript700Number
+    JZ      .EXTERROR                                                           ;   Not a number, an error
 
-    MovZX   EDX,DL                                                              ;EDX = DL
-    IdxSt   Or byte,scr700dsp,PDX,02h                                           ;pDSPFlag[EDX] |= 0x02
-    IdxSt   Mov,scr700chg,PDX,AL                                                ;pDSPChange[EDX] = AL
+    MovZX   EDX,DL
+    IdxSt   Or byte,scr700dsp,PDX,02h                                           ;Set S700_CHANGE of the source
+    IdxSt   Mov,scr700chg,PDX,AL                                                ;The source played instead
     Jmp     .EXTRETURN
 
     .EXCALL:                                                                                                        ; !
-    Inc     PCX                                                                 ;PCX++
-    Call    GetScript700Next                                                    ;Seek Next
-    JZ      .EXTERROR                                                           ;   Failure
-    Call    GetScript700Number                                                  ;Parse Number (EAX = result)
-    JZ      .EXTERROR                                                           ;   Failure
-    XOr     EDX,EDX                                                             ;EDX = 0x00
+    Inc     PCX                                                                 ;Past the '!'
+    Call    GetScript700Next                                                    ;Find the new source number
+    JZ      .EXTERROR                                                           ;   None, an error
+    Call    GetScript700Number
+    JZ      .EXTERROR                                                           ;   Not a number, an error
+    XOr     EDX,EDX
 
     .EXCALLRETURN:
-    IdxSt   Or dword,scr700dsp,PDX,02020202h                                    ;pDSPFlag[EDX] |= 0x02020202
-    IdxSt   Mov,scr700chg,PDX+0,AL                                              ;pDSPChange[EDX+0] = AL
-    IdxSt   Mov,scr700chg,PDX+1,AL                                              ;pDSPChange[EDX+1] = AL
-    IdxSt   Mov,scr700chg,PDX+2,AL                                              ;pDSPChange[EDX+2] = AL
-    IdxSt   Mov,scr700chg,PDX+3,AL                                              ;pDSPChange[EDX+3] = AL
-    Add     EDX,4                                                               ;EDX += 4
-    Cmp     EDX,256                                                             ;EDX = 256?
+    IdxSt   Or dword,scr700dsp,PDX,02020202h                                    ;Set S700_CHANGE of 4 sources at a time
+    IdxSt   Mov,scr700chg,PDX+0,AL                                              ;The source played instead
+    IdxSt   Mov,scr700chg,PDX+1,AL
+    IdxSt   Mov,scr700chg,PDX+2,AL
+    IdxSt   Mov,scr700chg,PDX+3,AL
+    Add     EDX,4
+    Cmp     EDX,256                                                             ;All 256 sources done?
     JNE     .EXCALLRETURN                                                       ;   No
     Jmp     .EXTRETURN
 
     .EXD:                                                                                                           ; d
-    Inc     PCX                                                                 ;PCX++
-    Call    GetScript700Next                                                    ;Seek Next
-    JZ      .EXTERROR                                                           ;   Failure
+    Inc     PCX                                                                 ;Past the 'd'
+    Call    GetScript700Next                                                    ;Find the source number
+    JZ      .EXTERROR                                                           ;   None, an error
 
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,21h                                                              ;Is char "!"?
+    Mov     AL,[PCX]
+    Cmp     AL,21h                                                              ;'!', all sources?
     JE      .EXDALL                                                             ;   Yes
-    Call    GetScript700Number                                                  ;Parse Number (EAX = result)
-    JZ      .EXTERROR                                                           ;   Failure
+    Call    GetScript700Number
+    JZ      .EXTERROR                                                           ;   Not a number, an error
 
-    Mov     DL,AL                                                               ;DL = AL
-    Call    GetScript700Next                                                    ;Seek Next
-    JZ      .EXTERROR                                                           ;   Failure
-    Call    GetScript700Number                                                  ;Parse Number (EAX = result)
-    JZ      .EXTERROR                                                           ;   Failure
+    Mov     DL,AL                                                               ;Source to detune
+    Call    GetScript700Next                                                    ;Find the detune value
+    JZ      .EXTERROR                                                           ;   None, an error
+    Call    GetScript700Number
+    JZ      .EXTERROR                                                           ;   Not a number, an error
 
-    MovZX   EDX,DL                                                              ;EDX = DL
-    IdxSt   Or byte,scr700dsp,PDX,04h                                           ;pDSPFlag[EDX] |= 0x04
-    IdxSt   Mov,scr700det,PDX*4,EAX                                             ;pDSPDetune[EDX] = EAX
+    MovZX   EDX,DL
+    IdxSt   Or byte,scr700dsp,PDX,04h                                           ;Set S700_DETUNE of the source
+    IdxSt   Mov,scr700det,PDX*4,EAX                                             ;Added to the pitch rate
     Jmp     .EXTRETURN
 
     .EXDALL:                                                                                                        ; !
-    Inc     PCX                                                                 ;PCX++
-    Call    GetScript700Next                                                    ;Seek Next
-    JZ      .EXTERROR                                                           ;   Failure
-    Call    GetScript700Number                                                  ;Parse Number (EAX = result)
-    JZ      .EXTERROR                                                           ;   Failure
-    XOr     EDX,EDX                                                             ;EDX = 0x00
+    Inc     PCX                                                                 ;Past the '!'
+    Call    GetScript700Next                                                    ;Find the detune value
+    JZ      .EXTERROR                                                           ;   None, an error
+    Call    GetScript700Number
+    JZ      .EXTERROR                                                           ;   Not a number, an error
+    XOr     EDX,EDX
 
     .EXDALLRETURN:
-    IdxSt   Or dword,scr700dsp,PDX,04040404h                                    ;pDSPFlag[EDX] |= 0x04040404
-    IdxSt   Mov,scr700det,PDX*4+0,EAX                                           ;pDSPDetune[EDX+0] = EAX
-    IdxSt   Mov,scr700det,PDX*4+4,EAX                                           ;pDSPDetune[EDX+1] = EAX
-    IdxSt   Mov,scr700det,PDX*4+8,EAX                                           ;pDSPDetune[EDX+2] = EAX
-    IdxSt   Mov,scr700det,PDX*4+12,EAX                                          ;pDSPDetune[EDX+3] = EAX
-    Add     EDX,4                                                               ;EDX += 4
-    Cmp     EDX,256                                                             ;EDX = 256?
+    IdxSt   Or dword,scr700dsp,PDX,04040404h                                    ;Set S700_DETUNE of 4 sources at a time
+    IdxSt   Mov,scr700det,PDX*4+0,EAX                                           ;Added to the pitch rate
+    IdxSt   Mov,scr700det,PDX*4+4,EAX
+    IdxSt   Mov,scr700det,PDX*4+8,EAX
+    IdxSt   Mov,scr700det,PDX*4+12,EAX
+    Add     EDX,4
+    Cmp     EDX,256                                                             ;All 256 sources done?
     JNE     .EXDALLRETURN                                                       ;   No
     Jmp     .EXTRETURN
 
     .EXV:                                                                                                           ; v
-    Inc     PCX                                                                 ;PCX++
-    Call    GetScript700Next                                                    ;Seek Next
-    JZ      .EXTERROR                                                           ;   Failure
+    Inc     PCX                                                                 ;Past the 'v'
+    Call    GetScript700Next                                                    ;Find the target
+    JZ      .EXTERROR                                                           ;   None, an error
 
-    XOr     DH,DH                                                               ;DH = 0x00
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Inc     PCX                                                                 ;PCX++
-    Cmp     AL,21h                                                              ;Is char "!"?
+    XOr     DH,DH                                                               ;DH = 0 for a source, 1 for a master entry
+    Mov     AL,[PCX]
+    Inc     PCX
+    Cmp     AL,21h                                                              ;'!', all sources?
     JE      .EXVALL                                                             ;   Yes
-    And     AL,0DFh                                                             ;AL &= 0xDF
-    Cmp     AL,56h                                                              ;Is char "V"?
+    And     AL,0DFh                                                             ;To upper case
+    Cmp     AL,56h                                                              ;'vv', master volume only?
     JE      .EXVV                                                               ;   Yes
-    Cmp     AL,45h                                                              ;Is char "E"?
+    Cmp     AL,45h                                                              ;'ve', echo volume only?
     JE      .EXVE                                                               ;   Yes
-    Mov     DL,S700_MVOL_L                                                      ;DL = MasterVolumeLeft
-    Cmp     AL,4Ch                                                              ;Is char "L"?
+    Mov     DL,S700_MVOL_L
+    Cmp     AL,4Ch                                                              ;'vl', left master and echo?
     JE      .EXVL                                                               ;   Yes
-    Mov     DL,S700_MVOL_R                                                      ;DL = MasterVolumeRight
-    Cmp     AL,52h                                                              ;Is char "R"?
+    Mov     DL,S700_MVOL_R
+    Cmp     AL,52h                                                              ;'vr', right master and echo?
     JE      .EXVR                                                               ;   Yes
-    Dec     PCX                                                                 ;PCX--
-    Call    GetScript700Number                                                  ;Parse Number (EAX = result)
-    JZ      .EXTERROR                                                           ;   Failure
+    Dec     PCX                                                                 ;No letter, so back to the source number
+    Call    GetScript700Number
+    JZ      .EXTERROR                                                           ;   Not a number, an error
 
-    MovZX   DX,AL                                                               ;DL = AL, DH = 0x00
-    LoadPtr PAX,.EXTRETURN                                                      ;Set Return Address
+    MovZX   DX,AL                                                               ;Source number, DH = 0
+    LoadPtr PAX,.EXTRETURN                                                      ;Where .ENVSET returns to
     Mov     [scr700jmp],PAX
 
     .ENVSET:
-    ShL     EDX,16                                                              ;EDX << 16
-    Call    GetScript700Next                                                    ;Seek Next
-    JZ      .EXTERROR                                                           ;   Failure
-    Call    GetScript700Number                                                  ;Parse Number (EAX = result)
-    JZ      .EXTERROR                                                           ;   Failure
+    ShL     EDX,16                                                              ;Keep DX in the upper half while EDX is used below
+    Call    GetScript700Next                                                    ;Find the volume
+    JZ      .EXTERROR                                                           ;   None, an error
+    Call    GetScript700Number
+    JZ      .EXTERROR                                                           ;   Not a number, an error
 
     Push    PDX                                                                 ;(width fix only, not a pointer)
-    XOr     EDX,EDX                                                             ;EDX = 0
-    Test    EAX,EAX                                                             ;If EAX < 0
-    SetS    DL                                                                  ;   Yes, EDX = 1
-    Dec     EDX                                                                 ;EDX--
-    And     EAX,EDX                                                             ;EAX &= EDX
+    XOr     EDX,EDX
+    Test    EAX,EAX                                                             ;A negative volume becomes 0
+    SetS    DL
+    Dec     EDX
+    And     EAX,EDX
     Pop     PDX                                                                 ;(width fix only, not a pointer)
-    ShR     EDX,16                                                              ;EDX >> 16
-    IdxSt   Or byte,scr700dsp,PDX,08h                                           ;pDSPFlag[EDX] |= 0x08
-    IdxSt   Mov,scr700vol,PDX*4,EAX                                             ;pDSPVolume[EDX] = EAX
+    ShR     EDX,16                                                              ;DH = 1 reaches the master arrays after the source ones
+    IdxSt   Or byte,scr700dsp,PDX,08h                                           ;Set S700_VOLUME of the entry
+    IdxSt   Mov,scr700vol,PDX*4,EAX                                             ;The volume
     Jmp     [scr700jmp]
 
     .EXVL:
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    And     AL,0DFh                                                             ;AL &= 0xDF
-    Cmp     AL,52h                                                              ;Is char "R"?
+    Mov     AL,[PCX]
+    And     AL,0DFh                                                             ;To upper case
+    Cmp     AL,52h                                                              ;'vlr', all four?
     JE      .EXVLR                                                              ;   Yes
 
     .EXVR:
-    Inc     DH                                                                  ;DH++
-    LoadPtr PAX,.EXVLR3                                                         ;Set Return Address
+    Inc     DH
+    LoadPtr PAX,.EXVLR3                                                         ;Then set the echo volume too
     Mov     [scr700jmp],PAX
     Jmp     .ENVSET
 
     .EXVLR:
-    Inc     PCX                                                                 ;PCX++
-    Inc     DH                                                                  ;DH++
-    LoadPtr PAX,.EXVLR2                                                         ;Set Return Address
+    Inc     PCX                                                                 ;Past the 'r'
+    Inc     DH
+    LoadPtr PAX,.EXVLR2                                                         ;Then set the other three too
     Mov     [scr700jmp],PAX
     Jmp     .ENVSET
 
     .EXVLR2:
-    IdxSt   Or dword,scr700dsp,PDX,08080808h                                    ;pDSPFlag[EDX] |= 0x08080808
-    IdxSt   Mov,scr700vol,PDX*4+4,EAX                                           ;pDSPVolume[EDX+1] = EAX
-    IdxSt   Mov,scr700vol,PDX*4+12,EAX                                          ;pDSPVolume[EDX+3] = EAX
+    IdxSt   Or dword,scr700dsp,PDX,08080808h                                    ;Set S700_VOLUME of all four master entries
+    IdxSt   Mov,scr700vol,PDX*4+4,EAX                                           ;S700_MVOL_R
+    IdxSt   Mov,scr700vol,PDX*4+12,EAX                                          ;S700_ECHO_R
 
     .EXVLR3:
-    IdxSt   Or byte,scr700dsp,PDX+2,08h                                         ;pDSPFlag[EDX+2] |= 0x08
-    IdxSt   Mov,scr700vol,PDX*4+8,EAX                                           ;pDSPVolume[EDX+2] = EAX
+    IdxSt   Or byte,scr700dsp,PDX+2,08h                                         ;The echo volume on the same side
+    IdxSt   Mov,scr700vol,PDX*4+8,EAX
     Jmp     .EXTRETURN
 
     .EXVALL:
-    Call    GetScript700Next                                                    ;Seek Next
-    JZ      .EXTERROR                                                           ;   Failure
-    Call    GetScript700Number                                                  ;Parse Number (EAX = result)
-    JZ      .EXTERROR                                                           ;   Failure
+    Call    GetScript700Next                                                    ;Find the volume
+    JZ      .EXTERROR                                                           ;   None, an error
+    Call    GetScript700Number
+    JZ      .EXTERROR                                                           ;   Not a number, an error
 
-    XOr     EDX,EDX                                                             ;EDX = 0
-    Test    EAX,EAX                                                             ;If EAX < 0
-    SetS    DL                                                                  ;   Yes, EDX = 1
-    Dec     EDX                                                                 ;EDX--
-    And     EAX,EDX                                                             ;EAX &= EDX
+    XOr     EDX,EDX
+    Test    EAX,EAX                                                             ;A negative volume becomes 0
+    SetS    DL
+    Dec     EDX
+    And     EAX,EDX
     XOr     EDX,EDX
 
     .EXVALLRETURN:
-    IdxSt   Or dword,scr700dsp,PDX,08080808h                                    ;pDSPFlag[EDX] |= 0x08080808
-    IdxSt   Mov,scr700vol,PDX*4+0,EAX                                           ;pDSPVolume[EDX+0] = EAX
-    IdxSt   Mov,scr700vol,PDX*4+4,EAX                                           ;pDSPVolume[EDX+1] = EAX
-    IdxSt   Mov,scr700vol,PDX*4+8,EAX                                           ;pDSPVolume[EDX+2] = EAX
-    IdxSt   Mov,scr700vol,PDX*4+12,EAX                                          ;pDSPVolume[EDX+3] = EAX
-    Add     EDX,4                                                               ;EDX += 4
-    Cmp     EDX,256                                                             ;EDX = 256?
+    IdxSt   Or dword,scr700dsp,PDX,08080808h                                    ;Set S700_VOLUME of 4 sources at a time
+    IdxSt   Mov,scr700vol,PDX*4+0,EAX                                           ;The volume
+    IdxSt   Mov,scr700vol,PDX*4+4,EAX
+    IdxSt   Mov,scr700vol,PDX*4+8,EAX
+    IdxSt   Mov,scr700vol,PDX*4+12,EAX
+    Add     EDX,4
+    Cmp     EDX,256                                                             ;All 256 sources done?
     JNE     .EXVALLRETURN                                                       ;   No
     Jmp     .EXTRETURN
 
     .EXVV:
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    And     AL,0DFh                                                             ;AL &= 0xDF
-    Mov     DL,S700_MVOL_L                                                      ;DL = MasterVolumeLeft
-    Cmp     AL,4Ch                                                              ;Is char "L"?
+    Mov     AL,[PCX]
+    And     AL,0DFh                                                             ;To upper case
+    Mov     DL,S700_MVOL_L
+    Cmp     AL,4Ch                                                              ;'vvl'?
     JE      .EXVCMD                                                             ;   Yes
-    Mov     DL,S700_MVOL_R                                                      ;DL = MasterVolumeRight
-    Cmp     AL,52h                                                              ;Is char "R"?
+    Mov     DL,S700_MVOL_R
+    Cmp     AL,52h                                                              ;'vvr'?
     JE      .EXVCMD                                                             ;   Yes
-    Jmp     .EXTERROR
+    Jmp     .EXTERROR                                                           ;   No, an error
 
     .EXVE:
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    And     AL,0DFh                                                             ;AL &= 0xDF
-    Mov     DL,S700_ECHO_L                                                      ;DL = EchoVolumeLeft
-    Cmp     AL,4Ch                                                              ;Is char "L"?
+    Mov     AL,[PCX]
+    And     AL,0DFh                                                             ;To upper case
+    Mov     DL,S700_ECHO_L
+    Cmp     AL,4Ch                                                              ;'vel'?
     JE      .EXVCMD                                                             ;   Yes
-    Mov     DL,S700_ECHO_R                                                      ;DL = EchoVolumeRight
-    Cmp     AL,52h                                                              ;Is char "R"?
+    Mov     DL,S700_ECHO_R
+    Cmp     AL,52h                                                              ;'ver'?
     JE      .EXVCMD                                                             ;   Yes
-    Jmp     .EXTERROR
+    Jmp     .EXTERROR                                                           ;   No, an error
 
     .EXVCMD:
-    Inc     PCX                                                                 ;PCX++
-    Inc     DH                                                                  ;DH++
-    LoadPtr PAX,.EXTRETURN                                                      ;Set Return Address
+    Inc     PCX                                                                 ;Past the 'l' or 'r'
+    Inc     DH
+    LoadPtr PAX,.EXTRETURN                                                      ;Where .ENVSET returns to
     Mov     [scr700jmp],PAX
     Jmp     .ENVSET
 
     .EXTERROR:
-    Test    byte [PCX],-1                                                       ;Is char NULL?
-    JZ      .EXIT                                                               ;   Yes
-    Call    GetScript700NextLine                                                ;Next Line
+    Test    byte [PCX],-1                                                       ;End of the text?
+    JZ      .EXIT                                                               ;   Yes, finish
+    Call    GetScript700NextLine                                                ;Skip the rest of the line
     Jmp     .EXTRETURN
 
     ;---------- Data Command Zone ----------
 
     .DATARETURN:
-    XOr     AH,AH                                                               ;AH = 0x00
-    Mov     PDI,PBX                                                             ;PDI = PBX
-    Mov     [PSI+PBX],AH                                                        ;Program[PBX] = AH
-    Mov     [scr700dat],EBX                                                     ;Data Offset = PBX
-    Inc     dword [scr700dat]                                                   ;Data Offset++
-    Call    GetScript700First                                                   ;Seek First
+    XOr     AH,AH
+    Mov     PDI,PBX                                                             ;The data must not wrap back below this
+    Mov     [PSI+PBX],AH                                                        ;End the program with 'q'
+    Mov     [scr700dat],EBX                                                     ;The data area starts after it
+    Inc     dword [scr700dat]
+    Call    GetScript700First                                                   ;Skip the blanks after 'e'
 
     .DATARETURN2:
-    Mov     DL,AH                                                               ;DL = AH (0x00)
+    Mov     DL,AH                                                               ;Expect the high digit of a byte
 
     .DATARETURNLINE:
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Cmp     AL,00h                                                              ;AL = 0x00?
-    JE      .EXIT                                                               ;   Yes
-    Cmp     AL,3Ah                                                              ;Is char ":"?
+    Mov     AL,[PCX]
+    Cmp     AL,00h                                                              ;End of the text?
+    JE      .EXIT                                                               ;   Yes, finish
+    Cmp     AL,3Ah                                                              ;':', a label?
     JE      .DATALABEL                                                          ;   Yes
-    Cmp     AL,23h                                                              ;Is char "#"?
+    Cmp     AL,23h                                                              ;'#', a directive?
     JE      .Shp                                                                ;   Yes
-    Inc     PCX                                                                 ;PCX++
-    Cmp     AL,0Ah                                                              ;Is char RETURN?
+    Inc     PCX
+    Cmp     AL,0Ah                                                              ;End of the line?
     JE      .DATANEWLINE                                                        ;   Yes
-    Cmp     AL,0Dh                                                              ;Is char RETURN?
+    Cmp     AL,0Dh                                                              ;End of the line?
     JE      .DATANEWLINE                                                        ;   Yes
-    Cmp     AL,09h                                                              ;AL = 0x09? (TAB)
-    JE      .DATARETURNLINE                                                     ;   Yes
-    Cmp     AL,20h                                                              ;AL = 0x20? (SPACE)
-    JE      .DATARETURNLINE                                                     ;   Yes
-    Sub     AL,30h                                                              ;AL -= 0x30
-    Cmp     AL,10                                                               ;AL < 10? (Is char "0" to "9"?)
+    Cmp     AL,09h                                                              ;TAB?
+    JE      .DATARETURNLINE                                                     ;   Yes, skip it
+    Cmp     AL,20h                                                              ;SPACE?
+    JE      .DATARETURNLINE                                                     ;   Yes, skip it
+    Sub     AL,30h
+    Cmp     AL,10                                                               ;'0' to '9'?
     JB      .DATANUM                                                            ;   Yes
-    Sub     AL,11h                                                              ;AL -= 0x11 (0x41)
-    Cmp     AL,6                                                                ;AL < 6? (Is char "A" to "F"?)
+    Sub     AL,11h
+    Cmp     AL,6                                                                ;'A' to 'F'?
     JB      .DATAHEX                                                            ;   Yes
-    Sub     AL,20h                                                              ;AL -= 0x20 (0x61)
-    Cmp     AL,6                                                                ;AL < 6? (Is not char "a" to "f"?)
+    Sub     AL,20h
+    Cmp     AL,6                                                                ;'a' to 'f'?
     JB      .DATAHEX                                                            ;   Yes
-    Dec     PCX                                                                 ;PCX--
-    Call    GetScript700NextLine                                                ;Next Line
+    Dec     PCX
+    Call    GetScript700NextLine                                                ;Anything else ends the line, as a comment
     Jmp     .DATARETURNLINE
 
     .DATALABEL:
-    Inc     PCX                                                                 ;PCX++
-    Mov     AL,[PCX]                                                            ;AL = [PCX]
-    Call    GetScript700Number                                                  ;Parse Number (EAX = result)        ; :[LABEL]
-    JZ      .DATAERROR                                                          ;   Failure
+    Inc     PCX                                                                 ;Past the ':'
+    Mov     AL,[PCX]
+    Call    GetScript700Number                                                  ;Label number                       ; :[LABEL]
+    JZ      .DATAERROR                                                          ;   Not a number, an error
 
-    And     EAX,1023                                                            ;EAX &= 1023
-    Mov     EDX,EBX                                                             ;EDX = PBX
-    Sub     EDX,[scr700dat]                                                     ;EDX -= Data Offset
-    Inc     EDX                                                                 ;EDX++
-    Or      EDX,80000000h                                                       ;EDX |= 0x80000000
-    IdxSt   Mov,scr700lbl,PAX*4,EDX                                             ;Label[EAX] = EDX
+    And     EAX,1023                                                            ;Labels wrap at 1024
+    Mov     EDX,EBX                                                             ;Offset of the next byte in the data area
+    Sub     EDX,[scr700dat]
+    Inc     EDX
+    Or      EDX,80000000h                                                       ;Bit 31 keeps branches from jumping to it
+    IdxSt   Mov,scr700lbl,PAX*4,EDX
 
     .DATANEWLINE:
-    XOr     AH,AH                                                               ;AH = 0x00
+    XOr     AH,AH                                                               ;A digit left alone before a line break is dropped
     Jmp     .DATARETURN2
 
     .DATAHEX:
-    Add     AL,10                                                               ;AL += 10
+    Add     AL,10                                                               ;Value of the hex digit A to F
 
     .DATANUM:
-    Dec     DL                                                                  ;DL-- (DL = 0x00?)
+    Dec     DL                                                                  ;The low digit?
     JZ      .DATANUM2                                                           ;   Yes
 
-    ShL     AX,12                                                               ;AX << 12 (Mov AH,AL; ShL AH,4)
-    Add     DL,2                                                                ;DL += 2
+    ShL     AX,12                                                               ;The high digit into AH, as 'Mov AH,AL' and 'ShL AH,4'
+    Add     DL,2                                                                ;Expect the low digit
     Jmp     .DATARETURNLINE
 
     .DATANUM2:
-    Or      AH,AL                                                               ;AH |= AL
-    Inc     PBX                                                                 ;PBX++
-    And     PBX,SCR700MASK                                                      ;PBX &= Program Mask
-    Cmp     PBX,PDI                                                             ;PBX < PDI?
-    JB      .CRITICALERROR                                                      ;   Yes
+    Or      AH,AL                                                               ;The byte is complete
+    Inc     PBX
+    And     PBX,SCR700MASK
+    Cmp     PBX,PDI                                                             ;Wrapped around the Script700 area?
+    JB      .CRITICALERROR                                                      ;   Yes, the data does not fit
 
-    Mov     [PSI+PBX],AH                                                        ;Program[PBX] = AH
-    Mov     PDI,PBX                                                             ;PDI = PBX
+    Mov     [PSI+PBX],AH
+    Mov     PDI,PBX
     Jmp     .DATARETURNLINE
 
     .DATAERROR:
-    Test    byte [PCX],-1                                                       ;Is char NULL?
-    JZ      .EXIT                                                               ;   Yes
-    Call    GetScript700NextLine                                                ;Next Line
-    XOr     AH,AH                                                               ;AH = 0x00
+    Test    byte [PCX],-1                                                       ;End of the text?
+    JZ      .EXIT                                                               ;   Yes, finish
+    Call    GetScript700NextLine                                                ;Skip the rest of the line
+    XOr     AH,AH                                                               ;Drop a digit left alone
     Jmp     .DATARETURN2
 
     ;---------- Error ----------
 
     .CRITICALERROR:
-    XOr     EAX,EAX                                                             ;EAX = 0x00
-    Test    byte [scr700inc+02h],-1                                             ;Include mode?
-    JNZ     .NORESET                                                            ;   Yes
-        Mov     [PSI],AL                                                        ;Program[0] = AL
+    XOr     EAX,EAX
+    Test    byte [scr700inc+02h],-1                                             ;Compiling an included text?
+    JNZ     .NORESET                                                            ;   Yes, the including script disables it
+        Mov     [PSI],AL                                                        ;Disable the program with 'q' at the start
+        Mov     [scr700dat],EAX                                                 ;No data area, so SetScript700Data writes nothing
 
     .NORESET:
-    Test    PCX,PCX                                                             ;PCX = NULL?
-    SetZ    AL                                                                  ;AL = Zero?
-    Dec     EAX                                                                 ;EAX--
+    Test    PCX,PCX                                                             ;No text, so only disabling Script700?
+    SetZ    AL
+    Dec     EAX                                                                 ;0 if so, -1 for an error
     Jmp     .FINALIZE
 
     ;---------- Finalize ----------
 
     .EXIT:
-    Mov     EAX,EBX                                                             ;EAX = PBX
-    Inc     EAX                                                                 ;EAX++
-    Test    byte [scr700inc+02h],-1                                             ;Include mode?
-    JNZ     .FINALIZE                                                           ;   Yes
+    Mov     EAX,EBX                                                             ;Result: the end of the program memory used
+    Inc     EAX
+    Test    byte [scr700inc+02h],-1                                             ;Compiling an included text?
+    JNZ     .FINALIZE                                                           ;   Yes, the including script ends the program
 
-    Mov     ECX,[scr700dat]                                                     ;ECX = Data Offset
-    Test    ECX,ECX                                                             ;ECX = 0x00?
-    JNZ     .FINALIZE                                                           ;   No
+    Mov     ECX,[scr700dat]
+    Test    ECX,ECX                                                             ;Is there a data area?
+    JNZ     .FINALIZE                                                           ;   Yes, the program already ends with 'q'
 
-    Mov     [PSI+PBX],CL                                                        ;Program[PBX] = CL
-    Mov     [scr700dat],EAX                                                     ;Data Offset = EAX
+    Mov     [PSI+PBX],CL                                                        ;End the program with 'q'
+    Mov     [scr700dat],EAX                                                     ;An empty data area after it
 
     .FINALIZE:
-    IdxSt   Mov,scr700inc,08h,EAX
+    IdxSt   Mov,scr700inc,08h,EAX                                               ;Also the result for an including script
 
 ENDP
 
@@ -2438,47 +2494,49 @@ ENDP
 
 EXPROC SetScript700Data, addr, pData, size
 
-    Mov     PAX,[pData]                                                         ;PAX = Data Pointer
-    Test    PAX,PAX                                                             ;PAX = NULL?
-    JZ      .FINALIZE                                                           ;   Yes
+    Mov     PAX,[pData]
+    Test    PAX,PAX                                                             ;No data?
+    JZ      .FINALIZE                                                           ;   Yes, return 0 and change nothing
 
-    Mov     EAX,[scr700dat]                                                     ;EAX = Data Offset
-    Add     EAX,[addr]                                                          ;EAX += addr, is overflow?
-    JO      .CRITICALERROR                                                      ;   Yes
-    Add     EAX,[size]                                                          ;EAX += size, is overflow?
-    JO      .CRITICALERROR                                                      ;   Yes
-    Cmp     EAX,SCR700SIZE                                                      ;EAX > Buffer Size?
-    JG      .CRITICALERROR                                                      ;   Yes
+    Mov     EAX,[scr700dat]
+    Test    EAX,EAX                                                             ;No data area (no script, a failure, or TimerTrick)?
+    JZ      .CRITICALERROR                                                      ;   Yes, writing would reach the program
+    Add     EAX,[addr]                                                          ;End of the range, with addr and size unsigned
+    JC      .CRITICALERROR                                                      ;   Past 4 GB, an error
+    Add     EAX,[size]
+    JC      .CRITICALERROR                                                      ;   Past 4 GB, an error
+    Cmp     EAX,SCR700SIZE                                                      ;Past the Script700 area?
+    JA      .CRITICALERROR                                                      ;   Yes, an error
 
     Push    PDI,PSI,PCX
 
-    Mov     PDI,[pSCRRAM]                                                       ;PDI = Script RAM Pointer
-    Mov     EAX,[scr700dat]                                                     ;PDI += Data Offset
+    Mov     PDI,[pSCRRAM]                                                       ;Destination: the data area + addr
+    Mov     EAX,[scr700dat]
     Add     PDI,PAX
-    Mov     EAX,[addr]                                                          ;PDI += addr
+    Mov     EAX,[addr]
     Add     PDI,PAX
-    Mov     PSI,[pData]                                                         ;PSI = Data Pointer
+    Mov     PSI,[pData]
 
-    Mov     ECX,[size]                                                          ;ECX = size
-    ShR     ECX,2                                                               ;ECX >> 2
-    Rep     MovSD                                                               ;memcpy(EDI, ESI, ECX*4)
+    Mov     ECX,[size]                                                          ;Copy by dwords, then the rest by bytes
+    ShR     ECX,2
+    Rep     MovSD
 
-    Mov     ECX,[size]                                                          ;ECX = size
-    And     ECX,3                                                               ;ECX &= 3
-    Rep     MovSB                                                               ;memcpy(EDI, ESI, ECX)
+    Mov     ECX,[size]
+    And     ECX,3
+    Rep     MovSB
 
-    Mov     PAX,PDI                                                             ;PAX = PDI (RAM Pointer + DataOffset + addr + size)
-    Sub     PAX,[pSCRRAM]                                                       ;PAX -= Script RAM Pointer
+    Mov     PAX,PDI                                                             ;Result: the end of the data written
+    Sub     PAX,[pSCRRAM]
 
     Pop     PCX,PSI,PDI
     Jmp     .FINALIZE
 
     .CRITICALERROR:
-    XOr     EAX,EAX                                                             ;EAX = 0x00
-    Dec     EAX                                                                 ;EAX--
+    XOr     EAX,EAX
+    Dec     EAX                                                                 ;-1 for an error
 
     .FINALIZE:
-    IdxSt   Mov,scr700inc,08h,EAX
+    IdxSt   Mov,scr700inc,08h,EAX                                               ;Also the result for an including script
 
 ENDP
 
@@ -2496,21 +2554,21 @@ USES ECX
     And     ECX,0FFFFFFFCh
     Add     ECX,4
 
-    Add     EAX,ECX                                                             ;EAX += ECX
+    Add     EAX,ECX
 
     LoadPtr PCX,dspVarEP                                                        ;PCX = Variable size of DSP.asm
     LblOp   Sub,PCX,mix
     And     ECX,0FFFFFFFCh
     Add     ECX,4
 
-    Add     EAX,ECX                                                             ;EAX += ECX
+    Add     EAX,ECX
 
     LoadPtr PCX,spcVarEP                                                        ;PCX = Variable size of SPC700.asm
     LblOp   Sub,PCX,extraRAM
     And     ECX,0FFFFFFFCh
     Add     ECX,4
 
-    Add     EAX,ECX                                                             ;EAX += ECX
+    Add     EAX,ECX
 
 ENDP
 

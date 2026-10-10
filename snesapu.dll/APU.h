@@ -22,7 +22,7 @@
 *                                                 Copyright (C) 2003-2026 degrade-factory          *
 *                                                                                                  *
 * List of users and dates who/when modified this file:                                             *
-*    - degrade-factory in 2026-08-21                                                               *
+*    - degrade-factory in 2026-10-09                                                               *
 ***************************************************************************************************/
 
 #ifndef __INC_APU
@@ -45,7 +45,7 @@
 #define SA_VMETERM  0x100                       //Volume metering on main output (for APR)
 #define SA_VMETERC  0x200                       //Volume metering on voices (for visualization)
 #define SA_SNESINT  0x400                       //Use pregenerated gaussian curve from SNES
-#define SA_STEREO   0x800                       //Stereo controls (seperation and EFBCT)
+#define SA_STEREO   0x800                       //Stereo controls (separation and EFBCT)
 
 //APU build options bits 23-16 -----------------
 #define SA_DEBUG    0x10000                     //Debugging ability
@@ -166,7 +166,10 @@ void SNESAPUInfo(u32 *pVer, u32 *pMin, u32 *pOpt);
 //               Callback function definition:
 //                   u32 Callback(u32 effect, u32 addr, u32 value, void *lpData)
 //               Usually, will return value of 'value' parameter.
-//    cbMask   = SNESAPU callback mask
+//    cbMask   = SNESAPU callback mask (added to the current mask, never cleared)
+//
+// Out:
+//    Previously installed callback function
 
 CBFUNC SNESAPUCallback(CBFUNC pCbFunc, u32 cbMask);
 
@@ -193,7 +196,7 @@ void GetAPUData(u8 **ppRAM, u8 **ppXRAM, u8 **ppOutPort, u32 **ppT64Cnt, DSPReg 
 // In:
 //    pDLLVer     -> SNESAPU version (32byte string)
 //    ppSPCReg    -> Pointer of SPC700 register
-//    ppScript700 -> Pointer of Script700 work memory
+//    ppScript700 -> Pointer to a structure that receives Script700 related information
 
 void GetScript700Data(char *pDLLVer, u32 **ppSPCReg, u8 **ppScript700);
 
@@ -239,7 +242,7 @@ void LoadSPCFile(void *pFile);
 //
 // Notes:
 //    -1 can be passed for any parameter you want to remain unchanged
-//     see SetDSPOpt() in DSP.h for a more detailed explantion of the options.
+//     see SetDSPOpt() in DSP.h for a more detailed explanation of the options.
 //
 // In:
 //    mixType = Mixing routine (default 1)
@@ -278,7 +281,7 @@ void SetAPUSmpClk(u32 speed);
 //    fade = Length of fade (in 1/64000ths second)
 //
 // Out:
-//    Total length
+//    Total length (song + fade as given, so -1 and 0 return -1)
 
 u32 SetAPULength(u32 song, u32 fade);
 
@@ -290,7 +293,8 @@ u32 SetAPULength(u32 song, u32 fade);
 // by the main program.
 //
 // In:
-//    pBuf-> Buffer to store output samples
+//    pBuf-> Buffer to store output samples.  If it is NULL, nothing is emulated and NULL is
+//           returned.
 //    len  = Length of time to emulate (must be > 0)
 //    type = Type of parameter passed in len
 //           0 - len is the number of APU clock cycles to emulate (APU_CLK = 1 second)
@@ -321,7 +325,7 @@ void SeekAPU(u32 time, b8 fast);
 // In:
 //    port = SPC700 port number (0 - 3 / 0xF4 - 0xF7).
 //    wait = Wait time (1 - 0xFFFFFFFF).  If this parameter is 0, TimerTrick and Script700 is
-//           disabled.
+//           disabled.  Values above 0x7FFFFF00 are taken as 0x7FFFFF00.
 
 void SetTimerTrick(u32 port, u32 wait);
 
@@ -351,12 +355,13 @@ s32 SetScript700(void *pSource);
 //    addr   = Data area address of the destination to copy
 //    pData -> Pointer to binary data buffer.  If this parameter is NULL, no operation.
 //    size   = Size of buffer
+//    addr and size are unsigned.  The data offset plus addr plus size must not exceed SCR700SIZE.
 //
 // Out:
 //    = Return value is a binary-converting result of the Script700 command.
 //      >=1 : Last index of array of the program memory used.  Script700 is enabled.
 //      0   : NULL was set in the pData parameter.  Script700 status will be not changed.
-//      -1  : Error occurred by binary-converting Script700.  Script700 is disabled.
+//      -1  : No data area, or the range does not fit in it.  Nothing is written.
 
 s32 SetScript700Data(u32 addr, void *pData, u32 size);
 
@@ -370,7 +375,7 @@ s32 SetScript700Data(u32 addr, void *pData, u32 size);
 // Out:
 //    = Buffer size for copy of context data
 
-u32 GetSNESAPUContextSize();
+u32 GetSNESAPUContextSize(void);
 
 
 //**************************************************************************************************

@@ -22,7 +22,7 @@
 ;                                                   Copyright (C) 2003-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-08-21
+;   - degrade-factory in 2026-10-09
 ;===================================================================================================
 
 %define APU_INC
@@ -136,10 +136,10 @@ PUBLIC SNESAPUInfo, pVer:ptr, pMin:ptr, pOpt:ptr
 ;   pCbFunc -> SNESAPU callback function
 ;              function: u32 Callback(u32 effect, u32 addr, u32 value, void *lpData)
 ;              Usually, will return value of 'value' parameter.
-;   cbMask   = SNESAPU callback mask
+;   cbMask   = SNESAPU callback mask (added to the current mask, never cleared)
 ;
 ;Out:
-;   PAX -> before SNESAPU callback function
+;   PAX -> Previously installed callback function
 
 PUBLIC SNESAPUCallback, pCbFunc:ptr, cbMask:dword
 
@@ -166,7 +166,7 @@ PUBLIC GetAPUData, ppRAM:ptr, ppXRAM:ptr, ppOutPort:ptr, ppT64Cnt:ptr, ppDSP:ptr
 ;In:
 ;   pDLLVer     -> SNESAPU version (32byte string)
 ;   ppSPCReg    -> Pointer of SPC700 register
-;   ppScript700 -> Pointer of Script700 work memory
+;   ppScript700 -> Pointer to a structure that receives Script700 related information
 
 PUBLIC GetScript700Data, pDLLVer:ptr, ppSPCReg:ptr, ppScript700:ptr
 
@@ -251,7 +251,7 @@ PUBLIC SetAPUSmpClk, speed:dword
 ;   fade = Length of fade (in 1/64000ths second)
 ;
 ;Out:
-;   EAX = Total length
+;   EAX = Total length (song + fade as given, so -1 and 0 return -1)
 
 PUBLIC SetAPULength, song:dword, fade:dword
 
@@ -263,7 +263,8 @@ PUBLIC SetAPULength, song:dword, fade:dword
 ; by the main program.
 ;
 ;In:
-;   pBuf -> Buffer to store output samples
+;   pBuf -> Buffer to store output samples.  If it is NULL, nothing is emulated and NULL is
+;           returned.
 ;   len   = Length of time to emulate (must be > 0)
 ;   type  = Type of parameter passed in len
 ;           0 - len is the number of APU clock cycles to emulate (APU_CLK = 1 second)
@@ -294,7 +295,7 @@ PUBLIC SeekAPU, time:dword, fast:bool
 ;In:
 ;   port = SPC700 port number (0 - 3 / 0F4h - 0F7h).
 ;   wait = Wait time (1 - 0FFFFFFFFh).  If this parameter is 0, TimerTrick and Script700 is
-;          disabled.
+;          disabled.  Values above 7FFFFF00h are taken as 7FFFFF00h.
 
 PUBLIC SetTimerTrick, port:dword, wait:dword
 
@@ -324,12 +325,13 @@ PUBLIC SetScript700, pSource:ptr
 ;   addr   = Data area address of the destination to copy
 ;   pData -> Pointer to binary data buffer.  If this parameter is NULL, no operation.
 ;   size   = Size of buffer
+;   addr and size are unsigned.  The data offset plus addr plus size must not exceed SCR700SIZE.
 ;
 ;Out:
 ;   EAX = Return value is a binary-converting result of the Script700 command.
 ;         >=1 : Last index of array of the program memory used.  Script700 is enabled.
 ;         0   : NULL was set in the pData parameter.  Script700 status will be not changed.
-;         -1  : Error occurred by binary-converting Script700.  Script700 is disabled.
+;         -1  : No data area, or the range does not fit in it.  Nothing is written.
 
 PUBLIC SetScript700Data, addr:dword, pData:ptr, size:dword
 
@@ -343,7 +345,7 @@ PUBLIC SetScript700Data, addr:dword, pData:ptr, size:dword
 ;Out:
 ;   EAX = Buffer size for copy of context data
 
-PUBLIC GetSNESAPUContextSize
+PUBLIC GetSNESAPUContextSize, NULL
 
 
 ;===================================================================================================

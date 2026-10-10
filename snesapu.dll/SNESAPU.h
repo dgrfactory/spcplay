@@ -19,10 +19,10 @@
 * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                                        *
 *                                                                                                  *
 *                                                 Copyright (C) 2001-2004 Alpha-II Productions     *
-*                                                 Copyright (C) 2003-2024 degrade-factory          *
+*                                                 Copyright (C) 2003-2026 degrade-factory          *
 *                                                                                                  *
 * List of users and dates who/when modified this file:                                             *
-*    - degrade-factory in 2024-01-18                                                               *
+*    - degrade-factory in 2026-10-09                                                               *
 ***************************************************************************************************/
 
 #ifndef __INC_SNESAPU
@@ -56,9 +56,9 @@ typedef struct {
     void        (__stdcall *GetAPUData)(u8 **ppAPURAM, u8 **ppExtraRAM, u8 **ppSPCOut, u32 **ppT64Cnt, DSPReg **ppDSP, Voice **ppMix, u32 **ppVMMaxL, u32 **ppVMMaxR);
     void        (__stdcall *GetScript700Data)(char *pVer, u32 **ppSPCReg, u8 **ppScript700);
     u32         (__stdcall *GetSNESAPUContext)(void *pCtxOut);
-    u32         (__stdcall *GetSNESAPUContextSize)();
+    u32         (__stdcall *GetSNESAPUContextSize)(void);
     void        (__stdcall *GetSPCRegs)(u16 *pPC, u8 *pA, u8 *pY, u8 *pX, u8 *pPSW, u8 *pSP);
-    void        (__stdcall *InPort)(u32 port, u32 val);
+    void        (__stdcall *InPort)(u8 port, u8 val);
     u32         (__stdcall *InitAPU)(u32 reason);
     void        (__stdcall *InitDSP)();
     void        (__stdcall *InitSPC)();
@@ -79,8 +79,8 @@ typedef struct {
     b8          (__stdcall *SetDSPReg)(u8 reg, u8 val);
     void        (__stdcall *SetDSPStereo)(u32 sep);
     void        (__stdcall *SetDSPVol)(u32 vol);
-    u32         (__stdcall *SetScript700)(void *pSource);
-    u32         (__stdcall *SetScript700Data)(u32 addr, void *pData, u32 size);
+    s32         (__stdcall *SetScript700)(void *pSource);
+    s32         (__stdcall *SetScript700Data)(u32 addr, void *pData, u32 size);
     u32         (__stdcall *SetSNESAPUContext)(void *pCtxIn);
     SPCDebug*   (__stdcall *SetSPCDbg)(SPCDebug *pTrace, u32 opts);
     void        (__stdcall *SetTimerTrick)(u32 port, u32 wait);
@@ -108,12 +108,12 @@ import  void        __stdcall FixSeek(u8 reset);
 import  void        __stdcall GetAPUData(u8 **ppAPURAM, u8 **ppExtraRAM, u8 **ppSPCOut, u32 **ppT64Cnt, DSPReg **ppDSP, Voice **ppMix, u32 **ppVMMaxL, u32 **ppVMMaxR);
 import  void        __stdcall GetScript700Data(char *pVer, u32 **ppSPCReg, u8 **ppScript700);
 import  u32         __stdcall GetSNESAPUContext(void *pCtxOut);
-import  u32         __stdcall GetSNESAPUContextSize();
+import  u32         __stdcall GetSNESAPUContextSize(void);
 import  void        __stdcall GetSPCRegs(u16 *pPC, u8 *pA, u8 *pY, u8 *pX, u8 *pPSW, u8 *pSP);
 import  u32         __stdcall InitAPU(u32 reason);
 import  void        __stdcall InitDSP();
 import  void        __stdcall InitSPC();
-import  void        __stdcall InPort(u32 port, u8 val);
+import  void        __stdcall InPort(u8 port, u8 val);
 import  void        __stdcall LoadSPCFile(void *pSPC);
 import  void        __stdcall ResetAPU(u32 amp);
 import  void        __stdcall ResetDSP();
@@ -131,8 +131,8 @@ import  void        __stdcall SetDSPPitch(u32 base);
 import  b8          __stdcall SetDSPReg(u8 reg, u8 val);
 import  void        __stdcall SetDSPStereo(u32 sep);
 import  void        __stdcall SetDSPVol(u32 vol);
-import  u32         __stdcall SetScript700(void *pSource);
-import  u32         __stdcall SetScript700Data(u32 addr, void *pData, u32 size);
+import  s32         __stdcall SetScript700(void *pSource);
+import  s32         __stdcall SetScript700Data(u32 addr, void *pData, u32 size);
 import  u32         __stdcall SetSNESAPUContext(void *pCtxIn);
 import  SPCDebug*   __stdcall SetSPCDbg(SPCDebug *pTrace, u32 opts);
 import  void        __stdcall SetTimerTrick(u32 port, u32 wait);
