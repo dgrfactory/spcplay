@@ -22,7 +22,7 @@
 ;                                                   Copyright (C) 2003-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-10-09
+;   - degrade-factory in 2026-10-15
 ;===================================================================================================
 
 %ifdef WIN64
@@ -1106,8 +1106,7 @@ PROC GetScript700Next
     Cmp     AL,0Dh                                                              ;End of the line?
     JE      .ERROR                                                              ;   Yes, no next token on this line
     Cmp     AL,20h                                                              ;SPACE?
-    JE      .NEXT                                                               ;   Yes, skip it
-    Jmp     .EXIT                                                               ;PCX is on the next token, if a separator came first
+    JNE     .EXIT                                                               ;   No, PCX is on the next token, if a separator came first
 
     .NEXT:
     Inc     PCX
@@ -1210,9 +1209,17 @@ PROC GetScript700Number
     .RETURN:
     Mov     BL,[PCX]
     Sub     BL,30h                                                              ;Digit value, if '0' to '9'
-    Cmp     BL,10                                                               ;Not a decimal digit?
-    JAE     .HEXCHECK                                                           ;   Yes, maybe a hex digit or the end
-    Jmp     .RETURNNEXT
+    Cmp     BL,10                                                               ;A decimal digit?
+    JB      .RETURNNEXT                                                         ;   Yes
+
+    Test    DH,04h                                                              ;Hexadecimal?
+    JZ      .NEXT                                                               ;   No, the number ends here
+    Sub     BL,11h                                                              ;'A' to 'F' become 0 to 5
+    Cmp     BL,6                                                                ;'A' to 'F'?
+    JB      .HEXCHECKNEXT                                                       ;   Yes
+    Sub     BL,20h                                                              ;'a' to 'f' become 0 to 5
+    Cmp     BL,6                                                                ;'a' to 'f'?
+    JAE     .NEXT                                                               ;   No, the number ends here
 
     .HEXCHECKNEXT:
     Add     BL,10                                                               ;Value of the hex digit A to F
@@ -1255,16 +1262,6 @@ PROC GetScript700Number
     Inc     PCX                                                                 ;Skip the 'x' or '$'
     Jmp     .RETURN
 
-    .HEXCHECK:
-    Test    DH,04h                                                              ;Hexadecimal?
-    JZ      .NEXT                                                               ;   No, the number ends here
-    Sub     BL,11h                                                              ;'A' to 'F' become 0 to 5
-    Cmp     BL,6                                                                ;'A' to 'F'?
-    JB      .HEXCHECKNEXT                                                       ;   Yes
-    Sub     BL,20h                                                              ;'a' to 'f' become 0 to 5
-    Cmp     BL,6                                                                ;'a' to 'f'?
-    JB      .HEXCHECKNEXT                                                       ;   Yes
-
     .NEXT:
     Mov     BL,[PCX]
     Cmp     BL,00h                                                              ;End of the text?
@@ -1298,8 +1295,7 @@ ENDP
 
 PROC GetScript700Last
 
-    XOr     DH,DH
-    Or      DH,01h                                                              ;Success unless another character follows
+    Mov     DH,01h                                                              ;Success unless another character follows
     Inc     PCX                                                                 ;Look at the character after the token's last one
 
     Mov     AL,[PCX]
@@ -1777,16 +1773,14 @@ USES ECX,EDX,EBX,ESI,EDI
     .B:                                                                                                             ; bxx
     Inc     PCX
     Mov     AH,[PCX]                                                            ;2nd letter
-    And     AH,0DFh                                                             ;To upper case
-    Test    AH,AH                                                               ;End of the text or a SPACE?
+    And     AH,0DFh                                                             ;To upper case.  End of the text or a SPACE (both now 0)?
     JZ      .NORMALERROR                                                        ;   Yes, an error
 
     Cmp     AH,50h                                                              ;'bp'?
     JE      .BP                                                                 ;   Yes
     Inc     PCX
     Mov     AL,[PCX]                                                            ;3rd letter
-    And     AL,0DFh                                                             ;To upper case
-    Test    AL,AL                                                               ;End of the text or a SPACE?
+    And     AL,0DFh                                                             ;To upper case.  End of the text or a SPACE (both now 0)?
     JZ      .NORMALERROR                                                        ;   Yes, an error
 
     Mov     DL,05h                                                              ;Opcode, counted up as each branch is tried
@@ -1949,8 +1943,7 @@ USES ECX,EDX,EBX,ESI,EDI
     Mov     AL,[PCX]
     And     AL,0DFh                                                             ;To upper case
     Cmp     AL,49h                                                              ;'#i'?                              ; #i
-    JE      .ShpI                                                               ;   Yes
-    Jmp     .ShpERROR                                                           ;   No, an unknown directive
+    JNE     .ShpERROR                                                           ;   No, an unknown directive
 
     .ShpI:
     Inc     PCX
@@ -2409,7 +2402,6 @@ USES ECX,EDX,EBX,ESI,EDI
 
     .DATALABEL:
     Inc     PCX                                                                 ;Past the ':'
-    Mov     AL,[PCX]
     Call    GetScript700Number                                                  ;Label number                       ; :[LABEL]
     JZ      .DATAERROR                                                          ;   Not a number, an error
 
@@ -2532,8 +2524,7 @@ EXPROC SetScript700Data, addr, pData, size
     Jmp     .FINALIZE
 
     .CRITICALERROR:
-    XOr     EAX,EAX
-    Dec     EAX                                                                 ;-1 for an error
+    Mov     EAX,-1                                                              ;-1 for an error
 
     .FINALIZE:
     IdxSt   Mov,scr700inc,08h,EAX                                               ;Also the result for an including script

@@ -2127,6 +2127,16 @@ begin
   WriteChunkToFile(2 * 96000);                     // 2 seconds, song should be audible again
   Ok('SetAPULength revival: 2s captured');
 
+  // song=-1 with a nonzero fade: the fade never starts, so the total must be -1 too, not the
+  // wrapped -1 + fade.  Volume stays full, so the output stream is unchanged.
+  TotalLen := pSetAPULength(Cardinal(-1), 64000);
+  LogKV('FadeTest_SetAPULength_NoLengthFade_Result', IntToStr(TotalLen));
+  if TotalLen = Cardinal(-1) then
+    Ok('SetAPULength (song=-1, fade=64000): returned -1 (no length)')
+  else
+    Fail(Format('SetAPULength (song=-1, fade=64000): returned %d, expected -1 (no length)',
+      [TotalLen]));
+
   // fade=0: SetDSPLength's own guard ('Test EDX,EDX / SetZ AL / Or EDX,EAX', DSP.asm) converts
   // fade=0 to an internal fadeLen=1, avoiding a division by zero in SetFade's sin() curve, rather
   // than skipping the fade entirely, so a short song plus fade=0 should still reach full silence,

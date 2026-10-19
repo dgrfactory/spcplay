@@ -25,7 +25,7 @@
 ;                                                   Copyright (C) 2003-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-10-09
+;   - degrade-factory in 2026-10-15
 ;===================================================================================================
 
 %ifdef WIN64
@@ -247,6 +247,11 @@ SECTION .bss ALIGN=64
     ; functions do not save it.
     scr700hsp   resPTR  1
 
+    ;The part of the current 64 kHz tick that had passed when RunScript700 started, in 2.048 MHz
+    ; units, or 0 when it started on a tick.  The waits of 'wi', 'wo' and 'f' start from minus it,
+    ; as each tick adds a whole 32.  It sits past spcVarEP too, as it is used only during one call.
+    scr700ofs   resd    1
+
 
 ;===================================================================================================
 ;Code
@@ -403,19 +408,19 @@ ENDP
 ;Called internally by InitSPC/EmuAPUI (see x64.inc's EXPROC for why a DEF-exported name also called
 ; internally needs this split).
 
-EXPROC SetSPCDbg, pTrace, opts
+EXPROC SetSPCDbg, pSPCTrace, opts
 
-    Mov     PAX,[pTrace]
+    Mov     PAX,[pSPCTrace]
     Call    SetSPCDbgI,PAX,[opts]
 
 ENDP
 
-PROC SetSPCDbgI, pTraceI, optsI
+PROC SetSPCDbgI, pSPCTraceI, optsI
 USES ECX,EDX
 
     Mov     PDX,[pDebug]                                                        ;PDX = Previous vector, returned below
     Mov     PCX,PDX
-    Mov     PAX,[pTraceI]
+    Mov     PAX,[pSPCTraceI]
     Cmp     PAX,-1
     CMovX   NE,PCX,PAX                                                          ;If PAX = -1, leave pDebug unchanged
     Mov     [pDebug],PCX                                                        ;PCX = Vector now installed
@@ -729,13 +734,22 @@ ENDP
 
 ;===================================================================================================
 ;Run Script700 emulation
-;   EAX = Free / (AL) Calculate option of N command
-;   EBX = Index of Script700 binary area
-;   ECX = Free / (CH) Move/Calc mode of .700P2
-;   EDX = Free / Real value of Script700 parameter
-;   ESI = Index value of Script700 parameter
-;   EDI = Binary size of parameter
-;   EBP = Pointer base of Script700 binary area
+;
+;The subroutines below list their [in], [out] and [kept] registers.  Any other register except EBX
+;and EBP may change in them.
+;
+;   EAX = Free
+;       AL = Operator of the 'n' commands
+;       AH = Opcode or operand type
+;   EBX = Program cursor, an index into the Script700 area (-1 once the script has stopped)
+;   ECX = Free
+;       CL = Compare value that '?' reads (00h or 04h)
+;       CH = See .700P1 and .700P2
+;   EDX = Operand value
+;   ESI = Operand from the program, then the port, work register, address or label it names
+;   EDI = Size of the operand in the program
+;   EBP = Base of the Script700 area (pSCRRAM)
+;   ESP is kept in scr700hsp, so .700ERROR can drop the return addresses of any call depth.
 
 PROC RunScript700, interrupt
 
@@ -747,6 +761,7 @@ PROC RunScript700, interrupt
 
     ;NOTE: Since the argument cannot be obtained when EBP is changed, the argument is judged before
     ; assignment of EBP.
+    Mov     dword [scr700ofs],0                                                 ;Started on a 64 kHz tick, unless set below
     Test    byte [interrupt],-1                                                 ;Called right after an awaited port event?
     Mov     PBP,[pSCRRAM]                                                       ;The program base
     JZ      .700RETURN                                                          ;   No
@@ -758,10 +773,12 @@ PROC RunScript700, interrupt
     XOr     EDX,EDX
     Mov     ECX,12                                                              ;In 2.048 MHz units, as the waits count (see APU.inc)
     Div     ECX
+    Mov     [scr700ofs],EAX                                                     ;Where in the tick this run starts
     Add     [scr700cmp],EAX                                                     ;Add them to the time waited
-    Sub     [scr700cnt],EAX                                                     ;Count them against the next wait
 
     ;---------- Command Fetcher ----------
+    ;Each command is entered with EBX past its opcode and leaves with EBX past its operands,
+    ; going on at .700RETURN or stopping at .700END or .700EXIT to resume there later.
 
     .700RETURN:
     Test    byte [scr700stf],-1                                                 ;Aborted by the frontend (bit 7)?
@@ -821,6 +838,15 @@ PROC RunScript700, interrupt
     JZ      .700BP                                                              ;   Yes
     Jmp     .700ERROR                                                           ;   No, an unknown opcode
 
+    ;---------- Parameter Value and Size ----------
+    ;   AL  = [kept] Calculation operator of .700P2
+    ;   AH  = [in] Parameter type, [out] without the '?' bit (10h)
+    ;   CL  = [in] Address of compare parameter (Cmp1=00h, Cmp2=04h)
+    ;   CH  = [kept] Error flag of .700P1 or setter mode of .700P2
+    ;   EDX = [kept] Parameter value of .700P2
+    ;   ESI = [out] Parameter value as stored in the program, or the compare value for '?'
+    ;   EDI = [out] Binary size of parameter
+
     .700GETPVAL:
     MovZX   EDI,AH
     IdxLd   Mov,EDI,scrAsmSkip,PDI*4                                            ;Size of the operand value, by its type
@@ -836,9 +862,11 @@ PROC RunScript700, interrupt
     Ret
 
     ;---------- No.1 Parameter Fetcher (Getter) ----------
+    ;   AL  = [kept] Calculation operator of the 'n' commands, used by .700P2 next
     ;   AH  = [in] Parameter type
     ;   CL  = [in] Address of compare parameter (Cmp1=00h, Cmp2=04h)
-    ;   EDX = [out] Parameter value
+    ;   CH  = [in] 00h, [out] 0FFh if the operand is out of range, so the caller ignores the command
+    ;   EDX = [out] Parameter value (not set when CH = 0FFh)
     ;   EDI = [out] Binary size of parameter
 
     .700P1:
@@ -950,17 +978,15 @@ PROC RunScript700, interrupt
 
     .700P1DOUT:
     Mov     CH,-1                                                               ;0FFh tells the caller to ignore this command (callers clear
-    XOr     EDX,EDX                                                             ; CH before calling, and no getter changes it)
-    Ret
+    Ret                                                                         ; CH before calling, and no getter changes it)
 
     .700P1L:                                                                                                        ; l[LABEL]
-    MovZX   ESI,SI
     And     ESI,1023                                                            ;Labels wrap at 1024
     IdxLd   Mov,EDX,scr700lbl,PSI*4
     Ret
 
     ;---------- No.2 Parameter Fetcher (Setter) ----------
-    ;   AL  = [in] Calcuration operator (N command only) / Free
+    ;   AL  = [in] Calculation operator ('n' commands only)
     ;   AH  = [in] Parameter type
     ;   CL  = [in] Address of compare parameter (Cmp1=00h, Cmp2=04h)
     ;   CH  = [in] Setter mode (Move=00h, Calc=01h)
@@ -1027,7 +1053,6 @@ PROC RunScript700, interrupt
     IdxSt   Mov,inPortCp,PSI,DL                                                 ;The input port
     Add     PSI,[pAPURAM]
     Mov     [PSI+0F4h],DL                                                       ;And what the SPC700 reads at $F4-$F7
-
 %ifdef SHVC
     Call    WritePort
 %endif
@@ -1154,7 +1179,6 @@ PROC RunScript700, interrupt
     Ret                                                                         ;Outside the data area, so the write is ignored
 
     .700P2L:                                                                                                        ; l[LABEL]
-    MovZX   ESI,SI
     And     ESI,1023                                                            ;Labels wrap at 1024
     Test    CH,CH                                                               ;A plain move ('m')?
     JZ      .700P2L2                                                            ;   Yes
@@ -1240,6 +1264,13 @@ PROC RunScript700, interrupt
     Add     EBX,EDI
     Jmp     .700RETURN
 
+    ;---------- Calculator of the 'n' Commands ----------
+    ;   AL  = [in] Calculation operator (00h-0Dh, any other value is an error)
+    ;   ECX = [in] Current value
+    ;   EDX = [in] Parameter value, [out] Result (the current value if the division fails)
+    ;   ESI = [kept] Where .700P2 stores the result
+    ;   EDI = [kept] Binary size of parameter, returned by .700P2
+
     .700NCAL:
     Test    AL,AL                                                               ;'+' (00h)?
     JZ      .700NCALADD                                                         ;   Yes
@@ -1281,9 +1312,7 @@ PROC RunScript700, interrupt
     Ret
 
     .700NCALMUL:                                                                                                    ; * (MUL)
-    Mov     EAX,EDX
-    IMul    ECX
-    Mov     EDX,EAX                                                             ;Low 32 bits of the product
+    IMul    EDX,ECX                                                             ;Low 32 bits of the product
     Ret
 
     .700NCALIDIV:                                                                                                   ; / (IDIV)
@@ -1341,18 +1370,15 @@ PROC RunScript700, interrupt
     Ret
 
     .700NCALAND:                                                                                                    ; & (AND)
-    And     ECX,EDX
-    Mov     EDX,ECX
+    And     EDX,ECX
     Ret
 
     .700NCALOR:                                                                                                     ; | (OR)
-    Or      ECX,EDX
-    Mov     EDX,ECX
+    Or      EDX,ECX
     Ret
 
     .700NCALXOR:                                                                                                    ; ^ (XOR)
-    XOr     ECX,EDX
-    Mov     EDX,ECX
+    XOr     EDX,ECX
     Ret
 
     .700NCALSHL:                                                                                                    ; < (SHL)
@@ -1372,7 +1398,7 @@ PROC RunScript700, interrupt
     .700NCALSAR:                                                                                                    ; _ (SAR)
     Mov     EAX,ECX
     Mov     CL,DL
-    SaR     EAX,CL                                                              ;Arithmetic shift, keeping the sign
+    SAR     EAX,CL                                                              ;Arithmetic shift, keeping the sign
     Mov     EDX,EAX
     Ret
 
@@ -1393,11 +1419,7 @@ PROC RunScript700, interrupt
     .700BRAN:
     And     ESI,1023                                                            ;Labels wrap at 1024
     IdxLd   Mov,ESI,scr700lbl,PSI*4                                             ;Where the label points
-    Inc     ESI                                                                 ;Undefined label (-1)?
-    JZ      .700RETURN                                                          ;   Yes, do not branch
-    Dec     ESI                                                                 ;A data label (bit 31)?
-    JS      .700RETURN                                                          ;   Yes, do not branch
-    Cmp     ESI,SCR700SIZE                                                      ;Past the Script700 area?
+    Cmp     ESI,SCR700SIZE                                                      ;Undefined (-1), a data label (bit 31) or past the area?
     JAE     .700RETURN                                                          ;   Yes, do not branch
 
     Mov     EDX,EBX                                                             ;Return address
@@ -1409,88 +1431,76 @@ PROC RunScript700, interrupt
     Sub     CL,4                                                                ;The stack wraps within its 256 bytes
     Mov     [scr700stp],PCX
     Mov     [PCX],EDX                                                           ;Push the return address
-    XOr     EDX,EDX
-    Dec     EDX
     Sub     CL,4
-    Mov     [PCX],EDX                                                           ;Mark the slot below as empty (-1)
+    Mov     dword [PCX],-1                                                      ;Mark the slot below as empty (-1)
     Jmp     .700RETURN
 
     .700BEQ:                                                                                                        ; beq (CmpParam2 == CmpParam1)
     Mov     ECX,[scr700cmp+4]
-    Mov     EDX,[scr700cmp]
-    Cmp     ECX,EDX                                                             ;Equal?
+    Cmp     ECX,[scr700cmp]                                                     ;Equal?
     JE      .700BRA                                                             ;   Yes
     Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BNE:                                                                                                        ; bne (CmpParam2 != CmpParam1)
     Mov     ECX,[scr700cmp+4]
-    Mov     EDX,[scr700cmp]
-    Cmp     ECX,EDX                                                             ;Not equal?
+    Cmp     ECX,[scr700cmp]                                                     ;Not equal?
     JNE     .700BRA                                                             ;   Yes
     Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BGE:                                                                                                        ; bge ((signed)CmpParam2 >= CmpParam1)
     Mov     ECX,[scr700cmp+4]
-    Mov     EDX,[scr700cmp]
-    Cmp     ECX,EDX                                                             ;2nd >= 1st, signed?
+    Cmp     ECX,[scr700cmp]                                                     ;2nd >= 1st, signed?
     JGE     .700BRA                                                             ;   Yes
     Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BLE:                                                                                                        ; ble ((signed)CmpParam2 <= CmpParam1)
     Mov     ECX,[scr700cmp+4]
-    Mov     EDX,[scr700cmp]
-    Cmp     ECX,EDX                                                             ;2nd <= 1st, signed?
+    Cmp     ECX,[scr700cmp]                                                     ;2nd <= 1st, signed?
     JLE     .700BRA                                                             ;   Yes
     Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BGT:                                                                                                        ; bgt ((signed)CmpParam2 > CmpParam1)
     Mov     ECX,[scr700cmp+4]
-    Mov     EDX,[scr700cmp]
-    Cmp     ECX,EDX                                                             ;2nd > 1st, signed?
+    Cmp     ECX,[scr700cmp]                                                     ;2nd > 1st, signed?
     JG      .700BRA                                                             ;   Yes
     Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BLT:                                                                                                        ; blt ((signed)CmpParam2 < CmpParam1)
     Mov     ECX,[scr700cmp+4]
-    Mov     EDX,[scr700cmp]
-    Cmp     ECX,EDX                                                             ;2nd < 1st, signed?
+    Cmp     ECX,[scr700cmp]                                                     ;2nd < 1st, signed?
     JL      .700BRA                                                             ;   Yes
     Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BCC:                                                                                                        ; bcc ((unsigned)CmpParam2 >= CmpParam1)
     Mov     ECX,[scr700cmp+4]
-    Mov     EDX,[scr700cmp]
-    Cmp     ECX,EDX                                                             ;2nd >= 1st, unsigned?
+    Cmp     ECX,[scr700cmp]                                                     ;2nd >= 1st, unsigned?
     JAE     .700BRA                                                             ;   Yes
     Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BLO:                                                                                                        ; blo ((unsigned)CmpParam2 <= CmpParam1)
     Mov     ECX,[scr700cmp+4]
-    Mov     EDX,[scr700cmp]
-    Cmp     ECX,EDX                                                             ;2nd <= 1st, unsigned?
+    Cmp     ECX,[scr700cmp]                                                     ;2nd <= 1st, unsigned?
     JBE     .700BRA                                                             ;   Yes
     Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BHI:                                                                                                        ; bhi ((unsigned)CmpParam2 > CmpParam1)
     Mov     ECX,[scr700cmp+4]
-    Mov     EDX,[scr700cmp]
-    Cmp     ECX,EDX                                                             ;2nd > 1st, unsigned?
+    Cmp     ECX,[scr700cmp]                                                     ;2nd > 1st, unsigned?
     JA      .700BRA                                                             ;   Yes
     Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
 
     .700BCS:                                                                                                        ; bcs ((unsigned)CmpParam2 < CmpParam1)
     Mov     ECX,[scr700cmp+4]
-    Mov     EDX,[scr700cmp]
-    Cmp     ECX,EDX                                                             ;2nd < 1st, unsigned?
+    Cmp     ECX,[scr700cmp]                                                     ;2nd < 1st, unsigned?
     JB      .700BRA                                                             ;   Yes
     Add     EBX,2                                                               ;   No, past the label number
     Jmp     .700RETURN
@@ -1498,9 +1508,8 @@ PROC RunScript700, interrupt
     .700R:                                                                                                          ; r
     Mov     PCX,[scr700stp]
     Mov     EDX,[PCX]                                                           ;Return address on the top
-    Inc     EDX                                                                 ;Is the stack empty (-1)?
-    JZ      .700RETURN                                                          ;   Yes, go on
-    Dec     EDX
+    Cmp     EDX,-1                                                              ;Is the stack empty (-1)?
+    JE      .700RETURN                                                          ;   Yes, go on
     Add     CL,4                                                                ;Pop it, within the 256 bytes
     Mov     [scr700stp],PCX
     Mov     EBX,EDX                                                             ;Return, and push again from now on
@@ -1521,12 +1530,10 @@ PROC RunScript700, interrupt
     Mov     [inPortCp],EDX                                                      ;The input ports
     Mov     PSI,[pAPURAM]
     Mov     [PSI+0F4h],EDX                                                      ;And what the SPC700 reads at $F4-$F7
-
 %ifdef SHVC
     Mov     ESI,-1                                                              ;All four ports
     Call    WritePort
 %endif
-
     Mov     DL,08h
     And     byte [scr700stf],40h                                                ;Clear all flags but transfer mode (bit 6)
     SetZ    CL
@@ -1535,7 +1542,8 @@ PROC RunScript700, interrupt
 
     XOr     EDX,EDX
     Mov     [scr700cnt],EDX                                                     ;No timed wait
-    Mov     [scr700cmp],EDX                                                     ;Start counting the time waited
+    Sub     EDX,[scr700ofs]
+    Mov     [scr700cmp],EDX                                                     ;Start counting, less the part of this tick already gone
     Jmp     .700END                                                             ;Wait, then resume at the next command
 
     .700F1:                                                                                                         ; f1
@@ -1545,6 +1553,11 @@ PROC RunScript700, interrupt
     .700F0:                                                                                                         ; f0
     And     byte [scr700stf],~02h                                               ;Write ports only on 'f'
     Jmp     .700RETURN
+
+    ;---------- Port Number of 'wi' and 'wo' ----------
+    ;   EBX = [in] Points at the parameter, [out] past it
+    ;   CH  = [out] 0FFh if the parameter is out of range, as from .700P1
+    ;   DL  = [out] 80h + port number, the value scr700int waits for
 
     .700WX:
     Mov     AH,[PBP+PBX]                                                        ;Operand type
@@ -1556,7 +1569,9 @@ PROC RunScript700, interrupt
     JNZ     .700WXSKIP                                                          ;   Yes, the caller ignores this command
     And     DL,3                                                                ;Ports 0 to 3
     Or      DL,80h                                                              ;Bit 7 marks the wait as active
-    Mov     dword [scr700cmp],0                                                 ;Start counting the time waited
+    XOr     ESI,ESI
+    Sub     ESI,[scr700ofs]
+    Mov     [scr700cmp],ESI                                                     ;Start counting, less the part of this tick already gone
 
     .700WXSKIP:
     Ret
@@ -1588,10 +1603,10 @@ PROC RunScript700, interrupt
 
     Test    dword [apuCbMask],CBE_REQBP                                         ;Does the frontend take breakpoint requests?
     JZ      .700RETURN                                                          ;   No, ignore 'bp'
-    Test    PTRKW [apuCbFunc],-1                                                ;Is a callback installed?
+    Mov     PCX,[apuCbFunc]
+    Test    PCX,PCX                                                             ;Is a callback installed?
     JZ      .700RETURN                                                          ;   No, ignore 'bp'
 
-    Mov     PCX,[apuCbFunc]
     MovZX   EDX,DX                                                              ;Only the low 16 bits are passed
     ExCall  PCX,CBE_REQBP,EDX,FCH_PAUSE,0
     Jmp     .700RETURN
@@ -1600,8 +1615,7 @@ PROC RunScript700, interrupt
 
     .700ERROR:
     Mov     PSP,[scr700hsp]                                                     ;Drop any return addresses a failing subroutine left
-    XOr     EBX,EBX
-    Dec     EBX                                                                 ;Program pointer -1, as the script has stopped
+    Mov     EBX,-1                                                              ;Program pointer -1, as the script has stopped
 
     ;---------- Exit ----------
 
@@ -1641,7 +1655,7 @@ PROC EmuSPC, cyc
     ;clkLeft contains the number of clock cycles to emulate until timer 2 increases or it is time to quit
     Mov     [clkTotal],EAX
     Sub     EAX,[t64kHz]                                                        ;If clkTotal > t64kHz, clkExec = t64kHz
-    CDQ                                                                         ;else clkExec = clkTotal (EAX)
+    CDQ                                                                         ; else clkExec = clkTotal (EAX)
     And     EAX,EDX
     Add     EAX,[t64kHz]
 
@@ -1911,7 +1925,6 @@ SPCTimers:
         .CheckPort0:
         Add     dword [scr700cmp],32                                            ;CmpParam[0] += 32
         Mov     BL,[outPortCp]                                                  ;BL = OutPort[0]
-
 %ifdef SHVC
         Push    PSI,PDX
         Mov     ESI,-1
@@ -1920,7 +1933,6 @@ SPCTimers:
         Mov     BL,DL
         Pop     PDX,PSI
 %endif
-
         Cmp     [flushPort],BL                                                  ;FlushPort[0] = BL?
         JNE     .No700                                                          ;   No
         And     byte [scr700stf],~0Ch                                           ;Status Flags &= ~0Ch
@@ -1949,7 +1961,7 @@ SPCTimers:
     Mov     BX,AX                                                               ;Save SPC.A, SPC.Y
 
     Mov     EAX,[t64kHz]                                                        ;If clkTotal > t64kHz, clkExec = t64kHz
-    Sub     EAX,[clkTotal]                                                      ;else clkExec = clkTotal
+    Sub     EAX,[clkTotal]                                                      ; else clkExec = clkTotal
     CDQ
     And     EAX,EDX
     Add     EAX,[clkTotal]
@@ -2628,8 +2640,13 @@ Ret
 ;===================================================================================================
 ;Check Whether a Script700 Port-Wait Condition is Satisfied
 ;
-;Destroys:
-;   ECX
+;In:
+;   BX = SPC700 address just read
+;   CL = Port the script waits for (80h + port number), from scr700int
+;
+;Out:
+;   ZF = 1 when the wait is satisfied, 0 otherwise
+;   CL = 0 when the wait is satisfied, kept otherwise, so CatchPortW can pass it on to its 2nd call
 
 PROC CatchPort
 

@@ -120,19 +120,19 @@ PUBLIC ResetSPC, NULL
 ;              [3]   CPU cycles left until 64kHz clock pulse
 ;
 ;Notes:
-;   pTrace is always called when a STOP instruction is encountered, regardless of the options.
-;   DEBUG must be set to 1 in APU.inc for pTrace to be called under other circumstances.
+;   pSPCTrace is always called when a STOP instruction is encountered, regardless of the options.
+;   DEBUG must be set to 1 in APU.inc for pSPCTrace to be called under other circumstances.
 ;   The options are kept across ResetAPU, LoadSPCFile and SeekAPU until the frontend changes them.
 ;
 ;In:
-;   pTrace-> debug function (NULL turns off the debug call, -1 leaves the current vector)
-;   opts   = SPC700 debugging options (-1 leaves the current options)
+;   pSPCTrace-> debug function (NULL turns off the debug call, -1 leaves the current vector)
+;   opts      = SPC700 debugging options (-1 leaves the current options)
 ;
 ;Out:
 ;   Previously installed vector
 
-PUBLIC SetSPCDbg, pTrace:ptr, opts:dword
-PUBLIC SetSPCDbgI, pTraceI:ptr, optsI:dword                     ;for internal call
+PUBLIC SetSPCDbg, pSPCTrace:ptr, opts:dword
+PUBLIC SetSPCDbgI, pSPCTraceI:ptr, optsI:dword                  ;for internal call
 
 
 ;===================================================================================================

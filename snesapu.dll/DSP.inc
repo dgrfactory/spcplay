@@ -279,13 +279,13 @@ PUBLIC SetDSPOpt, mixType:dword, numChn:dword, bits:dword, rate:dword, inter:dwo
 ;   DEBUG must be set to 1 in APU.inc.
 ;
 ;In:
-;   pTrace-> debug function (a null pointer turns off the debug call, -1 leaves the current
-;            vector)
+;   pDSPTrace-> debug function (a null pointer turns off the debug call, -1 leaves the current
+;               vector)
 ;
 ;Out:
 ;   Previously installed vector
 
-PUBLIC SetDSPDbg, pTrace:ptr
+PUBLIC SetDSPDbg, pDSPTrace:ptr
 
 
 ;===================================================================================================

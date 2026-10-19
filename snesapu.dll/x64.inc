@@ -478,9 +478,9 @@ PTRSIZE EQU     8                                                               
 ;ExCall Procedure (Microsoft x64 calling convention)
 ;
 ;Use this only to call something that must honor the real Windows x64 ABI: a genuinely external
-; function pointer (e.g. the frontend's registered apuCbFunc/pDebug/pTraceFunc callbacks).  For
-; every other call within this codebase, use the plain (internal) Call below instead.  See its doc
-; for why a second convention exists at all.
+; function pointer (e.g. the frontend's registered apuCbFunc callback).  For every other call within
+; this codebase, use the plain (internal) Call below instead.  See its doc for why a second
+; convention exists at all.
 ;
 ;Params:
 ;   Function name followed by up to 8 arguments.  The first 4 are passed in RCX/RDX/R8/R9.  Any

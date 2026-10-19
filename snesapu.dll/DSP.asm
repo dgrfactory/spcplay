@@ -22,7 +22,7 @@
 ;                                                   Copyright (C) 2003-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2026-10-09
+;   - degrade-factory in 2026-10-15
 ;   - Zenith in 2024-06-19
 ;===================================================================================================
 
@@ -499,9 +499,10 @@ SECTION .bss ALIGN=64
 
     dspVarEP    resd    1                                                       ;Endpoint of DSP.asm variables
 
-    ;Scratch space for the mixer and register handlers, used instead of the memory below the stack
-    ; pointer, which neither the Win32 nor the Win64 ABI keeps safe.  It sits past dspVarEP, so the
-    ; context functions do not save it.  [dspScr+12-n] takes the place of the former [PSP-n].
+    ;Scratch space for the mixer (RunDSP, its macros and LinearInt) and the register handlers,
+    ; used instead of the memory below the stack pointer, which neither the Win32 nor the Win64 ABI
+    ; keeps safe.  Each user holds it only within itself, never across a call to another user.  It
+    ; sits past dspVarEP, so the context functions do not save it.
     ALIGNB      16
     dspScr      resb    12
 
@@ -1582,19 +1583,19 @@ ENDP
 ;Called internally by InitDSP (see x64.inc's EXPROC for why a DEF-exported name also called
 ; internally needs this split).
 
-EXPROC SetDSPDbg, pTraceFunc
+EXPROC SetDSPDbg, pDSPTrace
 
-    Mov     PAX,[pTraceFunc]
+    Mov     PAX,[pDSPTrace]
     Call    SetDSPDbgI,PAX
 
 ENDP
 
-PROC SetDSPDbgI, pTraceFuncI
+PROC SetDSPDbgI, pDSPTraceI
 USES EDX
 
     Mov     PDX,[pTrace]                                                        ;PDX = Previous vector, returned below
 
-    Mov     PAX,[pTraceFuncI]
+    Mov     PAX,[pDSPTraceI]
     Cmp     PAX,-1
     JE      .Keep                                                               ;If PAX = -1, leave pTrace unchanged
         Mov     [pTrace],PAX
@@ -1856,6 +1857,7 @@ USES ECX,EDX,EBX
     CDQ
     Not     EDX
     And     EAX,EDX
+
     Mov     [volAtten],EAX
     Mul     dword [volAmp]
     ShRD    EAX,EDX,16
@@ -1897,8 +1899,10 @@ USES EDX
     Mov     [fadeLen],EAX
 
     Mov     EAX,[song]
-    Add     EDX,EAX                                                             ;EDX = Total length, from the fade as given, so -1 and 0
-    Mov     [songLen],EAX                                                       ; give -1 (no length) as APU.h says
+    Add     EDX,EAX                                                             ;EDX = Total length, from the fade as given
+    Cmp     EAX,-1                                                              ;Is song -1 (no length)?
+    CMovX   Z,EDX,EAX                                                           ;   Yes, the total is -1 too, as the fade never starts
+    Mov     [songLen],EAX
 
     Cmp     EAX,[t64Cnt]                                                        ;If t64Cnt > songLen
     JB      .SetFade
@@ -1922,7 +1926,7 @@ ENDP
 ;   EDX
 
 PROC SetFade
-LOCALS fadeTmp
+LOCALS fadeTmp,fadeQ                                                            ;fadeQ alone is used as an 8-byte scratch
 
     Mov     EAX,[t64Cnt]                                                        ;EAX = T64Cnt - songLen;
     Sub     EAX,[songLen]                                                       ;If T64Cnt <= songLen, do nothing
@@ -1935,12 +1939,12 @@ LOCALS fadeTmp
     ;EDX = 65536 - 65536 * sin(EAX / fadeLen * pi / 2)
     ;Both are loaded as unsigned 64-bit integers, since 'FILd' and 'FIDiv' would take a dword of
     ; 80000000h or more as negative and turn the fade into a rising, oscillating volume.
-    Mov     [dspScr+0],EAX
-    Mov     dword [dspScr+4],0
-    FILd    qword [dspScr]                                                      ;                                   |EAX
+    Mov     [fadeQ+0],EAX
+    Mov     dword [fadeQ+4],0
+    FILd    qword [fadeQ]                                                       ;                                   |EAX
     Mov     EAX,[fadeLen]
-    Mov     [dspScr+0],EAX
-    FILd    qword [dspScr]                                                      ;                                   |EAX fadeLen
+    Mov     [fadeQ+0],EAX
+    FILd    qword [fadeQ]                                                       ;                                   |EAX fadeLen
     FDivP   ST1,ST                                                              ;                                   |EAX/fadeLen
     FLdPi                                                                       ;                                   |EAX/fadeLen pi
     FMulP   ST1,ST                                                              ;                                   |EAX/fadeLen*pi

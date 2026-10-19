@@ -244,14 +244,15 @@ PUBLIC SetAPUSmpClk, speed:dword
 ;
 ;Notes:
 ;   If a song is not yet playing, you must call ResetAPU or set T64Cnt to 0 before calling this.
-;   To set a song with no length, pass -1 and 0 for the song and fade.
+;   To set a song with no length, pass -1 and 0 for the song and fade.  With a song of -1, the
+;   fade never starts, whatever its length.
 ;
 ;In:
 ;   song = Length of song (in 1/64000ths second)
 ;   fade = Length of fade (in 1/64000ths second)
 ;
 ;Out:
-;   EAX = Total length (song + fade as given, so -1 and 0 return -1)
+;   EAX = Total length (song + fade as given, or -1 when song is -1)
 
 PUBLIC SetAPULength, song:dword, fade:dword
 

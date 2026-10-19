@@ -274,14 +274,15 @@ void SetAPUSmpClk(u32 speed);
 //
 // Notes:
 //    If a song is not playing, you must call ResetAPU or set T64Cnt to 0 before calling this.
-//    To set a song with no length, pass -1 and 0 for the song and fade.
+//    To set a song with no length, pass -1 and 0 for the song and fade.  With a song of -1, the
+//    fade never starts, whatever its length.
 //
 // In:
 //    song = Length of song (in 1/64000ths second)
 //    fade = Length of fade (in 1/64000ths second)
 //
 // Out:
-//    Total length (song + fade as given, so -1 and 0 return -1)
+//    Total length (song + fade as given, or -1 when song is -1)
 
 u32 SetAPULength(u32 song, u32 fade);
 
