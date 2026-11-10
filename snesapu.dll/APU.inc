@@ -19,10 +19,10 @@
 ;59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ;
 ;                                                   Copyright (C) 2003-2006 Alpha-II Productions
-;                                                   Copyright (C) 2003-2024 degrade-factory
+;                                                   Copyright (C) 2003-2026 degrade-factory
 ;
 ;List of users and dates who/when modified this file:
-;   - degrade-factory in 2024-01-18
+;   - degrade-factory in 2026-10-09
 ;===================================================================================================
 
 %define APU_INC
@@ -45,19 +45,21 @@ VMETERM     EQU 1                                               ;Monitor main ou
 VMETERV     EQU 1                                               ;Monitor levels of each voice (for visualization)
 
 ;Speed Hack ----------------------------
-;   Note: If speed hacks enabled, will stop Script700 when sleeping SPC700.
+;   NOTE: If speed hacks enabled, will stop Script700 when sleeping SPC700.
 ;    If unused Script700, set the flag to '1' in order to run faster emulation.
 SPEED       EQU 0                                               ;Enable speed hacks for counter reads and SLEEP
 
 ;Interrupt Timing to DSP ---------------
-;   Note: If all of CNTBK, DSPBK and INTBK are set to '0', sound will be not output.
+;   NOTE: If all of CNTBK, DSPBK and INTBK are set to '0', sound will be not output.
 ;    If you want the behavior closest to the actual device, set only INTBK to '1'.
+;   NOTE: With INTBK set to '1', CatchUp does not keep EBX, which some CNTBK and DSPBK call sites
+;    rely on.  Setting CNTBK or DSPBK to '1' together with INTBK is untested and may break.
 CNTBK       EQU 0                                               ;Break SPC700/Update DSP if a counter increases
 DSPBK       EQU 0                                               ;Break SPC700/Update DSP if register F3 is read
 INTBK       EQU 1                                               ;Break SPC700/Update DSP if emulated 1Ts with SPC700
 
 ;Echo Memory Writer --------------------
-;   Note: If set to '1' and the playing speed is set to anything other than 100%,
+;   NOTE: If set to '1' and the playing speed is set to anything other than 100%,
 ;    playing may stop.  See REDl in DSP.asm
 ECHOMEM     EQU 0                                               ;Processing echo memory is made closer to the actual device
 
@@ -136,10 +138,10 @@ PUBLIC SNESAPUInfo, pVer:ptr, pMin:ptr, pOpt:ptr
 ;   pCbFunc -> SNESAPU callback function
 ;              function: u32 Callback(u32 effect, u32 addr, u32 value, void *lpData)
 ;              Usually, will return value of 'value' parameter.
-;   cbMask   = SNESAPU callback mask
+;   cbMask   = SNESAPU callback mask (added to the current mask, never cleared)
 ;
 ;Out:
-;   EAX -> before SNESAPU callback function
+;   PAX -> Previously installed callback function
 
 PUBLIC SNESAPUCallback, pCbFunc:ptr, cbMask:dword
 
@@ -149,7 +151,7 @@ PUBLIC SNESAPUCallback, pCbFunc:ptr, cbMask:dword
 ;
 ;In:
 ;   ppRAM     -> 64KB Sound RAM
-;   ppXRAM    -> 128byte extra RAM
+;   ppXRAM    -> 64byte extra RAM
 ;   ppOutPort -> APU 4 ports of output
 ;   ppT64Cnt  -> 64kHz timer counter
 ;   ppDSP     -> 128byte DSPRAM structure (see DSP.inc)
@@ -166,7 +168,7 @@ PUBLIC GetAPUData, ppRAM:ptr, ppXRAM:ptr, ppOutPort:ptr, ppT64Cnt:ptr, ppDSP:ptr
 ;In:
 ;   pDLLVer     -> SNESAPU version (32byte string)
 ;   ppSPCReg    -> Pointer of SPC700 register
-;   ppScript700 -> Pointer of Script700 work memory
+;   ppScript700 -> Pointer to a structure that receives Script700 related information
 
 PUBLIC GetScript700Data, pDLLVer:ptr, ppSPCReg:ptr, ppScript700:ptr
 
@@ -197,7 +199,7 @@ PUBLIC FixAPU, pc:word, a:byte, y:byte, x:byte, psw:byte, s:byte
 ;Load SPC File
 ;
 ;Restores the APU state from an SPC file.  This eliminates the need to call ResetAPU, copy memory,
-;and call FixAPU.
+; and call FixAPU.
 ;
 ;In:
 ;   pFile -> 66048 byte SPC file
@@ -229,7 +231,7 @@ PUBLIC SetAPUOpt, mixType:dword, numChn:dword, bits:dword, rate:dword, inter:dwo
 ;Set Audio Processor Sample Clock
 ;
 ;Calculates the ratio of emulated clock cycles to sample output.  Used to speed up or slow down a
-;song without affecting the pitch.
+; song without affecting the pitch.
 ;
 ;In:
 ;   speed = Multiplier [16.16] (1/64x to 16x)
@@ -244,14 +246,15 @@ PUBLIC SetAPUSmpClk, speed:dword
 ;
 ;Notes:
 ;   If a song is not yet playing, you must call ResetAPU or set T64Cnt to 0 before calling this.
-;   To set a song with no length, pass -1 and 0 for the song and fade.
+;   To set a song with no length, pass -1 and 0 for the song and fade.  With a song of -1, the
+;   fade never starts, whatever its length.
 ;
 ;In:
 ;   song = Length of song (in 1/64000ths second)
 ;   fade = Length of fade (in 1/64000ths second)
 ;
 ;Out:
-;   EAX = Total length
+;   EAX = Total length (song + fade as given, or -1 when song is -1)
 
 PUBLIC SetAPULength, song:dword, fade:dword
 
@@ -260,16 +263,17 @@ PUBLIC SetAPULength, song:dword, fade:dword
 ;Emulate Audio Processing Unit
 ;
 ;Emulates the APU for a specified amount of time.  DSP output is placed in a buffer to be handled
-;by the main program.
+; by the main program.
 ;
 ;In:
-;   pBuf -> Buffer to store output samples
+;   pBuf -> Buffer to store output samples.  If it is NULL, nothing is emulated and NULL is
+;           returned.
 ;   len   = Length of time to emulate (must be > 0)
 ;   type  = Type of parameter passed in len
 ;           0 - len is the number of APU clock cycles to emulate (APU_CLK = 1 second)
 ;           1 - len is the number of samples to generate
 ;Out:
-;   EAX -> End of buffer
+;   PAX -> End of buffer
 
 PUBLIC EmuAPU, pBuf:ptr, len:dword, type:byte
 
@@ -294,7 +298,7 @@ PUBLIC SeekAPU, time:dword, fast:bool
 ;In:
 ;   port = SPC700 port number (0 - 3 / 0F4h - 0F7h).
 ;   wait = Wait time (1 - 0FFFFFFFFh).  If this parameter is 0, TimerTrick and Script700 is
-;          disabled.
+;          disabled.  Values above 7FFFFF00h are taken as 7FFFFF00h.
 
 PUBLIC SetTimerTrick, port:dword, wait:dword
 
@@ -324,12 +328,13 @@ PUBLIC SetScript700, pSource:ptr
 ;   addr   = Data area address of the destination to copy
 ;   pData -> Pointer to binary data buffer.  If this parameter is NULL, no operation.
 ;   size   = Size of buffer
+;   addr and size are unsigned.  The data offset plus addr plus size must not exceed SCR700SIZE.
 ;
 ;Out:
 ;   EAX = Return value is a binary-converting result of the Script700 command.
 ;         >=1 : Last index of array of the program memory used.  Script700 is enabled.
 ;         0   : NULL was set in the pData parameter.  Script700 status will be not changed.
-;         -1  : Error occurred by binary-converting Script700.  Script700 is disabled.
+;         -1  : No data area, or the range does not fit in it.  Nothing is written.
 
 PUBLIC SetScript700Data, addr:dword, pData:ptr, size:dword
 
@@ -343,7 +348,7 @@ PUBLIC SetScript700Data, addr:dword, pData:ptr, size:dword
 ;Out:
 ;   EAX = Buffer size for copy of context data
 
-PUBLIC GetSNESAPUContextSize
+PUBLIC GetSNESAPUContextSize, NULL
 
 
 ;===================================================================================================

@@ -67,6 +67,7 @@ program spcplay;
 //{$DEFINE DEBUGLOG}                                        // デバッグログ出力
 //{$DEFINE UACDROP}                                         // UAC を超えたドロップ操作 (実験中)
 //{$DEFINE ITASKBARLIST3}                                   // ITaskbarList3 対応 (実験中)
+//{$DEFINE COMNOEXCEPTION}                                  // COM アクセス保護違反例外テスト
 
 
 // *************************************************************************************************************************************************************
@@ -89,7 +90,6 @@ program spcplay;
 {$OPENSTRINGS OFF}                                          // オープン文字列パラメータ     : 無効
 {$OVERFLOWCHECKS OFF}                                       // オーバーフローチェック       : 無効
 {$RANGECHECKS OFF}                                          // 範囲チェック                 : 無効
-{$R 'spcplay.res' 'spcplay.rc'}                             // リソース                     : spcplay.res <- spcplay.rc
 {$STACKFRAMES OFF}                                          // 完全スタックフレーム生成     : 無効
 {$TYPEDADDRESS OFF}                                         // ポインタの型チェック         : 無効
 {$TYPEINFO OFF}                                             // 実行時型情報                 : 無効
@@ -137,6 +137,13 @@ program spcplay;
 {$SAFEDIVIDE OFF}                                           // 初期 Pentium FDIV バグ回避   : 無効
 {$WEAKPACKAGEUNIT OFF}                                      // 弱いパッケージ化             : 無効
 {$ENDIF}
+
+
+// *************************************************************************************************************************************************************
+// 外部リソース
+// *************************************************************************************************************************************************************
+
+{$R 'spcplay.res' 'spcplay.rc'}
 
 
 // *************************************************************************************************************************************************************
@@ -433,7 +440,7 @@ type
 
     // SCRIPT700DSP 構造体
     TSCRIPT700DSP = record
-        SrcFlags: array[0..127] of byte;                    // 音色操作フラグ
+        SrcFlags: array[0..255] of byte;                    // 音色操作フラグ
     end;
 
     // SCRIPT700DATA 構造体
@@ -770,9 +777,8 @@ type
 
     // DROPOBJECT 構造体
     TDROPOBJECT = record
-        FormatEtc: ^TFORMATETC;                             // FORMATETC 構造体
-        StgMedium: ^TSTGMEDIUM;                             // STGMEDIUM 構造体
-        fRelease: longbool;                                 // データ複製フラグ
+        FormatEtc: TFORMATETC;                              // FORMATETC 構造体
+        StgMedium: TSTGMEDIUM;                              // STGMEDIUM 構造体 (データの所有者は IDataObject)
     end;
 
     // IDROPSOURCEVTBL 構造体
@@ -812,6 +818,17 @@ type
         dwRefCnt: longword;                                 // 参照カウント
         dwObjectCnt: longword;                              // データオブジェクト数
         Objects: array[0..15] of TDROPOBJECT;               // データオブジェクト情報
+    end;
+
+    // MEMORY_BASIC_INFORMATION 構造体
+    TMEMORY_BASIC_INFORMATION = record
+        BaseAddress: longword;                              // 領域の開始アドレス
+        AllocationBase: longword;                           // 割り当ての開始アドレス
+        AllocationProtect: longword;                        // 割り当て時の保護属性
+        RegionSize: longword;                               // 領域のサイズ
+        State: longword;                                    // 状態
+        Protect: longword;                                  // 保護属性
+        dwType: longword;                                   // 種類
     end;
 
     // POWERBROADCAST_SETTING 構造体
@@ -962,6 +979,22 @@ type
     // ITASKBARLIST3 構造体
     TITASKBARLIST3 = record
         lpVtbl: pointer;                                    // インターフェイスのポインタ
+    end;
+{$ENDIF}
+
+{$IFDEF COMNOEXCEPTION}
+    // IGLOBALOPTIONSVTBL 構造体
+    TIGLOBALOPTIONSVTBL = record
+        COMIGlobalOptionsQueryInterface: function(lpGlobalOptions: pointer; priid: pointer; lplpGlobalOptions: pointer): longword; stdcall;
+        COMIGlobalOptionsAddRef: function(lpGlobalOptions: pointer): longword; stdcall;
+        COMIGlobalOptionsRelease: function(lpGlobalOptions: pointer): longword; stdcall;
+        COMIGlobalOptionsSet: function(lpGlobalOptions: pointer; dwProperty: longword; dwValue: longword): longword; stdcall;
+        COMIGlobalOptionsQuery: function(lpGlobalOptions: pointer; dwProperty: longword; pdwValue: pointer): longword; stdcall;
+    end;
+
+    // IGLOBALOPTIONS 構造体
+    TIGLOBALOPTIONS = record
+        lpVtbl: ^TIGLOBALOPTIONSVTBL;                       // インターフェイスのポインタ
     end;
 {$ENDIF}
 
@@ -1118,11 +1151,13 @@ type
         cwButtonListDown: CBUTTON;                          // ウィンドウクラス (下へボタン)
     public
         procedure AppendList();
+        procedure CloseIfNotDisk(var hFile: longword);
         function  CreateWindow(hThisInstance: longword; const sClassName: utf8string): longword;
         procedure DeleteWindow();
         procedure DragFile(msg: longword; wParam: longword; lParam: longword);
         procedure DrawInfo(pApuData: pointer; bWave: longbool);
         function  DropFile(dwParam: longword): longword;
+        procedure EnterThreadAbortScript700();
         procedure GetFileTitle(const sPath: utf8string; lpTarget: pointer);
         function  GetFileType(const sPath: utf8string; bShowMsg: longbool; bScript700: longbool): longword;
         procedure GetID666Format(var Hdr: TSPCHDR);
@@ -1142,6 +1177,7 @@ type
         procedure OpenFile();
         function  ReloadScript700(const sPath: utf8string): longbool;
         procedure ResetInfo(bRedraw: longbool);
+        procedure ResetSeekCache();
         procedure SaveFile();
         procedure SaveSeekCache(dwIndex: longword);
         procedure SetChangeFunction(bFlag: longbool);
@@ -2565,6 +2601,8 @@ const
     CP_UTF8 = 65001;
 
     DATA_S_SAMEFORMATETC = $00040130;
+    DATADIR_GET = 1;
+    DATADIR_SET = 2;
     DRAGDROP_S_DROP = $00040100;
     DRAGDROP_S_CANCEL = $00040101;
     DRAGDROP_S_USEDEFAULTCURSORS = $00040102;
@@ -2628,6 +2666,11 @@ const
     FILE_SHARE_DELETE = $4;
     FILE_SHARE_READ = $1;
     FILE_SHARE_WRITE = $2;
+    FILE_TYPE_CHAR = $2;
+    FILE_TYPE_DISK = $1;
+    FILE_TYPE_PIPE = $3;
+    FILE_TYPE_REMOTE = $8000;
+    FILE_TYPE_UNKNOWN = $0;
 
     GENERIC_READ = $80000000;
     GENERIC_WRITE = $40000000;
@@ -2660,6 +2703,26 @@ const
     TRUNCATE_EXISTING = $5;
 
     MAX_PATH = 260;
+
+    MEM_COMMIT = $1000;
+    MEM_FREE = $10000;
+    MEM_IMAGE = $1000000;
+    MEM_MAPPED = $40000;
+    MEM_PRIVATE = $20000;
+    MEM_RESERVE = $2000;
+
+    PAGE_EXECUTE = $10;
+    PAGE_EXECUTE_READ = $20;
+    PAGE_EXECUTE_READWRITE = $40;
+    PAGE_EXECUTE_WRITECOPY = $80;
+    PAGE_GUARD = $100;
+    PAGE_NOACCESS = $1;
+    PAGE_NOCACHE = $200;
+    PAGE_READABLE = $EE;                                    // PAGE_READONLY, PAGE_READWRITE, PAGE_WRITECOPY, PAGE_EXECUTE_READ 以降
+    PAGE_READONLY = $2;
+    PAGE_READWRITE = $4;
+    PAGE_WRITECOMBINE = $400;
+    PAGE_WRITECOPY = $8;
 
     NOSLEEP_AUTO = $0;
     NOSLEEP_SLEEP = $1;
@@ -2764,6 +2827,15 @@ const
     CLSCTX_PS_DLL = $80000000;
 {$ENDIF}
 
+{$IFDEF COMNOEXCEPTION}
+{$IFNDEF ITASKBARLIST3}
+    CLSCTX_INPROC_SERVER = $1;
+{$ENDIF}
+    COMGLB_EXCEPTION_HANDLING = $1;
+    COMGLB_EXCEPTION_DONOT_HANDLE_FATAL = $1;
+    COMGLB_EXCEPTION_DONOT_HANDLE_ANY = $2;
+{$ENDIF}
+
     // SNES SPC700 Player 本体の設定
     DEFAULT_TITLE: utf8string = 'SNES SPC700 Player';
     SPCPLAY_TITLE: utf8string = '[ SNES SPC700 Player   ]' + CRLF + ' SPCPLAY.EXE v';
@@ -2787,11 +2859,13 @@ const
     BUFFER_SIZE_LPARAM = 65536;
     BUFFER_SIZE_PATH = 4096;
     BUFFER_SIZE_TITLE = 33;
-    COPY_SIZE_FILES = BUFFER_SIZE_FILES - 2;
+    CHAR_SIZE_FILES = (BUFFER_SIZE_FILES shr 1) - 1;
+    CHAR_SIZE_PATH = (BUFFER_SIZE_PATH shr 1) - 1;
+    CHAR_SIZE_TITLE = (BUFFER_SIZE_TITLE shr 1) - 1;
     COPY_SIZE_PATH = BUFFER_SIZE_PATH - 1;
     COPY_SIZE_TITLE = BUFFER_SIZE_TITLE - 1;
 
-    CLASS_NAME: utf8string = 'SSDLabo_SPCPLAY';
+    CLASS_NAME: utf8string = 'SSDLabo_SPCPLAY';  // 互換性維持のため変更しない
     SNESAPU_FILE: utf8string = 'snesapu.dll';
 {$IFDEF TRANSMITSPCCBK}
     SNESAPU_FILE_3RD: utf8string = 'snesapu-3rd\snesapu.dll';
@@ -2886,7 +2960,7 @@ const
     SCRIPT7SETXT_FILETYPE: utf8string = '7SE.TXT';
 
 {$IFDEF SPCBPMTEST}
-    SPC_BPM_FILE: utf8string = 'spc_bpm.dll';
+    SPC_BPM_FILE: utf8string = 'spcbpm\spc_bpm.dll';
 {$ENDIF}
 
     DRAG_START_THRESHOLD = 5;
@@ -2942,10 +3016,13 @@ const
     WM_APP_HALT = $F1600000;                                // HALT スイッチ      ($F160????, lParam:1=SPC_RETURN, 2=SPC_HALT, 4=DSP_HALT, 8=SPC_NODSP)
     WM_APP_BP_SET = $F4000000;                              // BreakPoint 設定    ($F400XXXX, X=RAM Address, lParam:CBE Flags (0:UNSET))
     WM_APP_BP_CLEAR = $F4010000;                            // BreakPoint 全解除  ($F401????)
+    WM_APP_BP_NEXT = $F4020000;                             // BreakPoint 検索    ($F402XXXX, X=RAM Address, 戻り値:$80000000=なし, $81XXXXYY=XXXX:Address, YY:CBE Flags)
     WM_APP_NEXT_TICK = $F4100000;                           // 次の命令で止める   ($F410????, lParam:0=CBE Flags)
     WM_APP_DSP_CHEAT = $F5000000;                           // DSP チート設定     ($F500??XX, XX:DSP Address, lParam:Value (-1:UNSET))
     WM_APP_DSP_THRU = $F5010000;                            // DSP チート全解除   ($F501????)
     WM_APP_DSP_MUTE = $F5020000;                            // DSP 音色ミュート   ($F502??XX, XX:DSP Srouce, lParam:1=SOLO,2=MUTE,0=RESET)
+    WM_APP_DSP_GET = $F5030000;                             // DSP チート取得     ($F503??XX, XX:DSP Address, 戻り値:$80000000 or (0:UNSET, $100 or Value))
+    WM_APP_DSP_MUTE_GET = $F5040000;                        // DSP 音色ミュート取得 ($F504??XX, XX:DSP Source, 戻り値:$80000000 or (0:OFF, 1:MUTE))
     WM_APP_GET_AMP = $F8150000;                             // 音量取得           ($F81500??)
     WM_APP_SET_AMP = $F8150100;                             // 音量設定           ($F81501??, lParam:Value)
     WM_APP_GET_MUTE = $F8160000;                            // ミュート取得       ($F81600??)
@@ -2959,7 +3036,7 @@ const
 
     FILE_TYPE_NOTEXIST = $1;                                // 存在しない
     FILE_TYPE_NOTREAD = $2;                                 // 読み込み不可
-    FILE_TYPE_UNKNOWN = $3;                                 // 不明な形式
+    FILE_TYPE_NOTDEFINE = $3;                               // 不明な形式
     FILE_TYPE_SPC = $10;                                    // SPC ファイル
     FILE_TYPE_LIST_A = $11;                                 // プレイリストファイル TYPE-A
     FILE_TYPE_LIST_B = $12;                                 // プレイリストファイル TYPE-B
@@ -3744,7 +3821,6 @@ var
         OsVersionInfo: TRTLOSVERSIONINFOW;                      // システムバージョン情報
         dwLanguage: longword;                                   // 言語
         hDCWindow: longword;                                    // ウィンドウ全体のデバイスコンテキストのハンドル
-        hDCStatic: longword;                                    // 情報表示ウィンドウのデバイスコンテキストのハンドル
         hDCVolumeBuffer: longword;                              // インジケータのデバイスコンテキストのハンドル
         hBitmapVolume: longword;                                // インジケータのビットマップのハンドル
         hDCStringBuffer: longword;                              // 文字画像のデバイスコンテキストのハンドル
@@ -3786,6 +3862,7 @@ var
         bChangePlay: longbool;                                  // 演奏変更フラグ
         bChangeShift: longbool;                                 // Shift キー変更フラグ
         bOptionLock: longbool;                                  // オプションロック
+        bWindowDeleted: longbool;                               // 終了処理済み
         bWaveWrite: longbool;                                   // WAVE 転送準備フラグ
         bWaveSave: longbool;                                    // WAVE 出力中フラグ
         dwReady: longword;                                      // 準備完了フラグ
@@ -3808,6 +3885,7 @@ var
         DblClickPoint: TPOINT;                                  // ダブルクリック位置
         DragPoint: TPOINT;                                      // ドラッグ開始位置
         bDropCancel: longbool;                                  // ドロップ禁止フラグ
+        bOleInit: longbool;                                     // OLE 初期化済みフラグ
         dwScale: longint;                                       // 表示倍率
         BreakPoint: array[0..65535] of byte;                    // ブレイクポイントスイッチ
         dwNextTick: longword;                                   // 次の命令実行スイッチ
@@ -3902,6 +3980,10 @@ var
     CLSID_TaskbarList: TGUID;                               // CLSID_TaskbarList
     IID_ITaskbarList3: TGUID;                               // IID_ITaskbarList3
 {$ENDIF}
+{$IFDEF COMNOEXCEPTION}
+    CLSID_GlobalOptions: TGUID;                             // CLSID_GlobalOptions
+    IID_IGlobalOptions: TGUID;                              // IID_IGlobalOptions
+{$ENDIF}
     StrToPtrBuffer: record                                  // StrToPtr メモリ
         wsBuffer: array[0..31] of widestring;                   // 文字列ポインタ
         dwCurrent: longword;                                    // 現在のアドレス
@@ -3959,6 +4041,7 @@ function  API_GetDC(hWnd: longword): longword; stdcall; external 'user32.dll' na
 function  API_GetFileAttributes(lpFileName: pointer): longword; stdcall; external 'kernel32.dll' name 'GetFileAttributesW';
 function  API_GetFileSize(hFile: longword; pFileSizeHigh: pointer): longword; stdcall; external 'kernel32.dll' name 'GetFileSize';
 function  API_GetFileTitle(lpszFile: pointer; lpszTitle: pointer; cbBuf: word): shortint; stdcall; external 'comdlg32.dll' name 'GetFileTitleW';
+function  API_GetFileType(hFile: longword): longword; stdcall; external 'kernel32.dll' name 'GetFileType';
 function  API_GetFocus(): longword; stdcall; external 'user32.dll' name 'GetFocus';
 function  API_GetForegroundWindow(): longword; stdcall; external 'user32.dll' name 'GetForegroundWindow';
 function  API_GetFullPathName(lpFileName: pointer; nBufferLength: longword; lpBuffer: pointer; lpFilePart: pointer): longword; stdcall; external 'kernel32.dll' name 'GetFullPathNameW';
@@ -3983,7 +4066,7 @@ function  API_GetSysColorBrush(nIndex: longint): longword; stdcall; external 'us
 function  API_GetSystemMenu(hWnd: longword; bRevert: longbool): longword; stdcall; external 'user32.dll' name 'GetSystemMenu';
 function  API_GetSystemMetrics(nIndex: longint): longint; stdcall; external 'user32.dll' name 'GetSystemMetrics';
 function  API_GetWindowDC(hWnd: longword): longword; stdcall; external 'user32.dll' name 'GetWindowDC';
-function  API_GetWindowLong(hWnd: longword; nIndex: longint): longword; stdcall; external 'user32.dll' name 'GetWindowLongA';
+function  API_GetWindowLong(hWnd: longword; nIndex: longint): longword; stdcall; external 'user32.dll' name 'GetWindowLongW';
 function  API_GetWindowPlacement(hWnd: longword; lpwndpl: pointer): longbool; stdcall; external 'user32.dll' name 'GetWindowPlacement';
 function  API_GetWindowRect(hWnd: longword; lpRect: pointer): longbool; stdcall; external 'user32.dll' name 'GetWindowRect';
 function  API_GetWindowText(hWnd: longword; lpString: pointer; nMaxCount: longint): longint; stdcall; external 'user32.dll' name 'GetWindowTextW';
@@ -4002,6 +4085,7 @@ function  API_LoadBitmap(hThisInstance: longword; lpBitmapName: pointer): longwo
 function  API_LoadCursor(hThisInstance: longword; lpCursorName: pointer): longword; stdcall; external 'user32.dll' name 'LoadCursorA';
 function  API_LoadIcon(hThisInstance: longword; lpIconName: pointer): longword; stdcall; external 'user32.dll' name 'LoadIconA';
 function  API_LoadLibraryEx(lpLibFileName: pointer; hFile: longword; dwFlags: longword): longword; stdcall; external 'kernel32.dll' name 'LoadLibraryExW';
+function  API_lstrcmpi(lpString1: pointer; lpString2: pointer): longint; stdcall; external 'kernel32.dll' name 'lstrcmpiW';
 function  API_MapFileAndCheckSum(Filename: pointer; HeaderSum: pointer; CheckSum: pointer): longword; stdcall; external 'imagehlp.dll' name 'MapFileAndCheckSumW';
 function  API_MessageBox(hWnd: longword; lpText: pointer; lpCaption: pointer; uType: longword): longint; stdcall; external 'user32.dll' name 'MessageBoxW';
 function  API_MonitorFromRect(lprc: pointer; dwFlags: longword): longword; stdcall; external 'user32.dll' name 'MonitorFromRect';
@@ -4036,17 +4120,20 @@ function  API_SetPriorityClass(hProcess: longword; dwPriorityClass: longword): l
 function  API_SetTextColor(hDC: longword; crColor: longword): longword; stdcall; external 'gdi32.dll' name 'SetTextColor';
 function  API_SetThreadExecutionState(esFlags: longword): longword; stdcall; external 'kernel32.dll' name 'SetThreadExecutionState';
 function  API_SetTimer(hWnd: longword; uIDEvent: longword; uElapse: longword; lpTimerFunc: pointer): longword; stdcall; external 'user32.dll' name 'SetTimer';
-function  API_SetWindowLong(hWnd: longword; nIndex: longint; dwNewLong: longword): longword; stdcall; external 'user32.dll' name 'SetWindowLongA';
+function  API_SetWindowLong(hWnd: longword; nIndex: longint; dwNewLong: longword): longword; stdcall; external 'user32.dll' name 'SetWindowLongW';
 function  API_SetWindowPlacement(hWnd: longword; lpwndpl: pointer): longbool; stdcall; external 'user32.dll' name 'SetWindowPlacement';
 function  API_SetWindowPos(hWnd: longword; hWndInsertAfter: longword; x: longint; y: longint; cx: longint; cy: longint; uFlags: longword): longbool; stdcall; external 'user32.dll' name 'SetWindowPos';
 function  API_SetWindowText(hWnd: longword; lpString: pointer): longbool; stdcall; external 'user32.dll' name 'SetWindowTextW';
 function  API_SHCreateDirectoryEx(hWnd: longword; pszPath: pointer; psa: pointer): longbool; stdcall; external 'shell32.dll' name 'SHCreateDirectoryExW';
+function  API_SHCreateStdEnumFmtEtc(cfmt: longword; afmt: pointer; ppenumFormatEtc: pointer): longword; stdcall; external 'shell32.dll' name 'SHCreateStdEnumFmtEtc';
 procedure API_Sleep(dwMilliseconds: longword); stdcall; external 'kernel32.dll' name 'Sleep';
 function  API_StretchBlt(hdcDest: longword; nXDest: longint; nYDest: longint; nWidthDest: longint; nHeightDest: longint; hdcSrc: longword; nXSrc: longint; nYSrc: longint; nWidthSrc: longint; nHeightSrc: longint; dwRop: longword): longbool; stdcall; external 'gdi32.dll' name 'StretchBlt';
 function  API_SystemParametersInfo(uAction: longword; uParam: longword; pParam: pointer; fWinIni: longword): longbool; stdcall; external 'user32.dll' name 'SystemParametersInfoA';
 function  API_TranslateMessage(lpMsg: pointer): longbool; stdcall; external 'user32.dll' name 'TranslateMessage';
+function  API_TryEnterCriticalSection(lpCriticalSection: pointer): longbool; stdcall; external 'kernel32.dll' name 'TryEnterCriticalSection';
 function  API_UnregisterClass(lpClassName: pointer; hThisInstance: longword): longbool; stdcall; external 'user32.dll' name 'UnregisterClassW';
 function  API_UpdateWindow(hWnd: longword): longbool; stdcall; external 'user32.dll' name 'UpdateWindow';
+function  API_VirtualQuery(lpAddress: pointer; lpBuffer: pointer; dwLength: longword): longword; stdcall; external 'kernel32.dll' name 'VirtualQuery';
 function  API_waveOutClose(hwo: longword): longword; stdcall; external 'winmm.dll' name 'waveOutClose';
 function  API_waveOutGetDevCaps(uDeviceID: longword; pwoc: pointer; cbwoc: longword): longword; stdcall; external 'winmm.dll' name 'waveOutGetDevCapsW';
 function  API_waveOutGetNumDevs(): longword; stdcall; external 'winmm.dll' name 'waveOutGetNumDevs';
@@ -4064,6 +4151,11 @@ procedure API_ZeroMemory(Destination: pointer; Length: longword); stdcall; exter
 function  API_CoCreateInstance(rclsid: pointer; pUnkOuter: pointer; dwClsContext: longword; riid: pointer; ppv: pointer): longword; stdcall; external 'ole32.dll' name 'CoCreateInstance';
 function  API_CoInitialize(pvReserved: pointer): longword; stdcall; external 'ole32.dll' name 'CoInitialize';
 function  API_CoUninitialize(): longword; stdcall; external 'ole32.dll' name 'CoUninitialize';
+{$ENDIF}
+{$IFDEF COMNOEXCEPTION}
+{$IFNDEF ITASKBARLIST3}
+function  API_CoCreateInstance(rclsid: pointer; pUnkOuter: pointer; dwClsContext: longword; riid: pointer; ppv: pointer): longword; stdcall; external 'ole32.dll' name 'CoCreateInstance';
+{$ENDIF}
 {$ENDIF}
 
 
@@ -4167,10 +4259,17 @@ var
     WS: widestring;
     Size: longword;
 begin
+    if Max < 2 then begin
+        result := 0;
+        exit;
+    end;
+    // NOTE: Max はバッファ全体のバイト数で、終端の NULL 文字の分を差し引いた偶数バイトまでコピーする
+    Max := (Max - 2) and not longword(1);
     WS := widestring(S);
     Size := GetWideSize(pwidechar(WS), Length(WS) shl 1);
     if Size > Max then Size := Max;
     API_MoveMemory(P, pwidechar(WS), Size);
+    pwidechar(longword(P) + Size)^ := widechar(0);
     result := Size;
 end;
 
@@ -4591,8 +4690,10 @@ var
 begin
     // バッファを確保
     GetMem(lpBuffer, BUFFER_SIZE_PATH);
+    // バッファをクリア
+    API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
     // パスを Wide 文字列に変換
-    API_MultiByteToWideChar(CP_ACP, NULL, lpData, -1, lpBuffer, (BUFFER_SIZE_PATH shr 1) - 1);
+    API_MultiByteToWideChar(CP_ACP, NULL, lpData, dwValue, lpBuffer, CHAR_SIZE_PATH);
     // パスを取得
     sPath := Concat(Status.sSPCDir, PtrToStr(lpBuffer));
     // バッファを解放
@@ -4610,8 +4711,7 @@ begin
     // コールバックを追加設定
     Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_S700FCH);
     // BreakPoint 設定
-    if longbool(dwAddr and $10000) then API_ZeroMemory(@Status.BreakPoint, 65536)
-    else Status.BreakPoint[dwAddr and $FFFF] := dwValue and $FF or $80;
+    Status.BreakPoint[dwAddr and $FFFF] := dwValue and $FF or $80;
     // クリティカルセクションを終了
     API_LeaveCriticalSection(@CriticalSectionThread);
 end;
@@ -4773,6 +4873,9 @@ begin
             end;
         end;
     end;
+    // 解析基準範囲をカウンタの範囲内に制限
+    if dwCount1 < 60 then dwCount1 := 60;
+    if dwCount2 > 200 then dwCount2 := 200;
     // 解析基準範囲内で出現回数が最も多いテンポを取得
     dwScan1 := 0;
     dwScan2 := 0;
@@ -4878,21 +4981,24 @@ begin
         Tempo.cKOnCount := 0;
         Tempo.dwStartTime := T64Count;
         if Tempo.dwTripleTime > dwCount2 then Dec(Tempo.dwTripleTime, dwCount2) else Tempo.dwTripleTime := 0;
-        API_ZeroMemory(@Tempo.Count, SizeOf(Tempo.Count));
         // テンポの揺れを防止
-        if (dwBPM >= Tempo.cMinBPM) and (dwBPM <= Tempo.cMaxBPM) then begin
+        dwCount3 := 0;
+        if (dwBPM >= 60) and (dwBPM <= 200) and (dwBPM >= Tempo.cMinBPM) and (dwBPM <= Tempo.cMaxBPM) then begin
             dwCount3 := Tempo.Count[dwBPM] shr 2;
             if T64Count < 720000 {11.25sec} then dwCount3 := dwCount3 shr 1;
             if not ((dwCount1 >= 60) or (dwCount2 >= 240000 {3.75sec})) then dwCount3 := dwCount3 shr 1;
-            Tempo.Count[dwBPM] := dwCount3;
         end;
+        // カウンタをクリア
+        API_ZeroMemory(@Tempo.Count, SizeOf(Tempo.Count));
+        if longbool(dwCount3) then Tempo.Count[dwBPM] := dwCount3;
         exit;
     end;
     // 件数が基準値以上、または、規定時間経過後のテンポを推測値として記録
     if longbool(dwBPM) and ((dwCount1 >= 60) or (dwCount2 >= 240000 {3.75sec})) then begin
         Tempo.cBPM := dwBPM;
         // テンポの揺れを防止
-        if (dwBPM >= Tempo.cMinBPM) and (dwBPM <= Tempo.cMaxBPM) then Inc(Tempo.Count[dwBPM], 2);
+        if (dwBPM >= 60) and (dwBPM <= 200) and (dwBPM >= Tempo.cMinBPM) and (dwBPM <= Tempo.cMaxBPM) then
+            Inc(Tempo.Count[dwBPM], 2);
         exit;
     end;
 end;
@@ -4919,7 +5025,7 @@ begin
             else if longbool(Status.dwNextTick and BRKP_NEXT_STOP) then Status.dwNextTick := (Status.dwNextTick and $FF) or BRKP_STOPPED
             else if longbool(Status.dwNextTick and BRKP_STOPPED) then result := dwValue or (Status.dwNextTick and $FF)
             else if longbool(Status.dwNextTick and BRKP_RELEASE) then Status.dwNextTick := 0
-            else result := dwValue or Status.BreakPoint[longword(lpData) and $FFFF];
+            else result := dwValue or (Status.BreakPoint[longword(lpData) and $FFFF] and $7F);
 {$IFDEF DEBUGLOG}
             _WriteLog(Concat('SPC700: ', IntToStr(dwAddr), ' ', IntToStr(dwValue), ' ', IntToStr(longword(lpData))));
 {$ENDIF}
@@ -5401,25 +5507,15 @@ function _OLEIDataObjectRelease(lpDataObject: pointer): longword; stdcall;
 var
     I: longint;
     IDataObject: ^TIDATAOBJECT;
-    SelfObject: ^TDROPOBJECT;
 begin
     // 参照カウントをデクリメント
     IDataObject := lpDataObject;
     result := API_InterlockedDecrement(@IDataObject.dwRefCnt);
     // 参照カウントが 0 でない場合は終了
     if longbool(result) then exit;
+    // 保持しているデータをすべて解放
+    if longbool(IDataObject.dwObjectCnt) then for I := 0 to IDataObject.dwObjectCnt - 1 do API_ReleaseStgMedium(@IDataObject.Objects[I].StgMedium);
     // メモリを解放
-    for I := 0 to IDataObject.dwObjectCnt - 1 do begin
-        SelfObject := @IDataObject.Objects[I];
-        if not SelfObject.fRelease then continue;
-        if longbool(SelfObject.FormatEtc) then API_GlobalFree(longword(SelfObject.FormatEtc));
-        if longbool(SelfObject.StgMedium) then begin
-            // コピーされた追加のデータを解放
-            API_ReleaseStgMedium(SelfObject.StgMedium);
-            API_GlobalFree(longword(SelfObject.StgMedium));
-        end;
-        break;
-    end;
     API_GlobalFree(longword(IDataObject.lpVtbl));
     API_GlobalFree(longword(IDataObject));
 end;
@@ -5451,41 +5547,31 @@ end;
 // ================================================================================
 // _OLEIDataObjectCopyData - ドラッグ対象データコピー
 // ================================================================================
-function _OLEIDataObjectCopyData(lpDataObject: pointer; lpDestMedium: pointer; lpFormatEtc: pointer; lpSrcMedium: pointer): longword;
+function _OLEIDataObjectCopyData(lpDestMedium: pointer; cfFormat: word; lpSrcMedium: pointer): longword;
 var
     handle: longword;
-    FormatEtc: ^TFORMATETC;
     SrcStgMedium: ^TSTGMEDIUM;
     DestStgMedium: ^TSTGMEDIUM;
-    IDataObjectUnk: ^TIDATAOBJECTVTBL;
-    AddRef: function(lpDataObject: pointer): longword;
 begin
     // 初期化
-    FormatEtc := lpFormatEtc;
     DestStgMedium := lpDestMedium;
     SrcStgMedium := lpSrcMedium;
-    // フォーマットタイプが NULL の場合は終了
-    if not longbool(SrcStgMedium.tymed) then begin
-        result := E_INVALIDARG;
+    // HGLOBAL 以外のデータは未サポート
+    if SrcStgMedium.tymed <> TYMED_HGLOBAL then begin
+        result := DV_E_TYMED;
         exit;
     end;
     // データのインスタンスをコピー
-    handle := API_OleDuplicateData(SrcStgMedium.handle, FormatEtc.cfFormat, GMEM_FIXED);
+    handle := API_OleDuplicateData(SrcStgMedium.handle, cfFormat, GMEM_FIXED);
     // インスタンスのコピーに失敗した場合は終了
     if not longbool(handle) then begin
         result := E_OUTOFMEMORY;
         exit;
     end;
-    // インスタンスのハンドルを設定
+    // NOTE: コピーしたデータは受け取り側が解放するため、pUnkForRelease は設定しない
+    DestStgMedium.tymed := TYMED_HGLOBAL;
     DestStgMedium.handle := handle;
-    // フォーマットデータをコピー
-    DestStgMedium.tymed := SrcStgMedium.tymed;
-    DestStgMedium.pUnkForRelease := SrcStgMedium.pUnkForRelease;
-    if longbool(DestStgMedium.pUnkForRelease) then begin
-        IDataObjectUnk := DestStgMedium.pUnkForRelease;
-        AddRef := IDataObjectUnk.OLEIDataObjectAddRef;
-        AddRef(IDataObjectUnk);
-    end;
+    DestStgMedium.pUnkForRelease := NULLPOINTER;
     // 終了
     result := S_OK;
 end;
@@ -5515,7 +5601,7 @@ begin
     IDataObject := lpDataObject;
     SelfObject := NULLPOINTER;
     result := DV_E_FORMATETC;
-    for I := 0 to IDataObject.dwObjectCnt - 1 do begin
+    if longbool(IDataObject.dwObjectCnt) then for I := 0 to IDataObject.dwObjectCnt - 1 do begin
         SelfObject := @IDataObject.Objects[I];
         if (FormatEtc.cfFormat = SelfObject.FormatEtc.cfFormat)
         and (FormatEtc.lindex = SelfObject.FormatEtc.lindex)
@@ -5529,7 +5615,7 @@ begin
     // フォーマットが見つからなかった場合は終了
     if result <> S_OK then exit;
     // 要求されたデータのインスタンスをコピー
-    result := _OLEIDataObjectCopyData(lpDataObject, lpStgMedium, SelfObject.FormatEtc, SelfObject.StgMedium);
+    result := _OLEIDataObjectCopyData(lpStgMedium, SelfObject.FormatEtc.cfFormat, @SelfObject.StgMedium);
 end;
 
 // ================================================================================
@@ -5565,7 +5651,7 @@ begin
     // 要求されたフォーマットが想定しているフォーマットを検索
     IDataObject := lpDataObject;
     result := DV_E_FORMATETC;
-    for I := 0 to IDataObject.dwObjectCnt - 1 do begin
+    if longbool(IDataObject.dwObjectCnt) then for I := 0 to IDataObject.dwObjectCnt - 1 do begin
         SelfObject := @IDataObject.Objects[I];
         if (FormatEtc.cfFormat = SelfObject.FormatEtc.cfFormat)
         and (FormatEtc.lindex = SelfObject.FormatEtc.lindex)
@@ -5582,9 +5668,21 @@ end;
 // OLEIDataObjectGetCanonicalFormatEtc - 提供元と互換性のあるフォーマットの取得
 // ================================================================================
 function _OLEIDataObjectGetCanonicalFormatEtc(lpDataObject: pointer; lpFormatEtcIn: pointer; lpFormatEtcOut: pointer): longword; stdcall;
+var
+    FormatEtcIn: ^TFORMATETC;
+    FormatEtcOut: ^TFORMATETC;
 begin
-    // 未実装
-    result := E_NOTIMPL;
+    // フォーマット定義が NULL の場合は終了
+    if not longbool(lpFormatEtcIn) or not longbool(lpFormatEtcOut) then begin
+        result := E_INVALIDARG;
+        exit;
+    end;
+    // NOTE: 対象デバイスに依存するデータは提供しないため、ptd だけを NULL にした入力と同じフォーマットを返す
+    FormatEtcIn := lpFormatEtcIn;
+    FormatEtcOut := lpFormatEtcOut;
+    FormatEtcOut^ := FormatEtcIn^;
+    FormatEtcOut.ptd := NULLPOINTER;
+    result := DATA_S_SAMEFORMATETC;
 end;
 
 // ================================================================================
@@ -5592,42 +5690,104 @@ end;
 // ================================================================================
 function _OLEIDataObjectSetData(lpDataObject: pointer; lpFormatEtc: pointer; lpStgMedium: pointer; fRelease: longbool): longword; stdcall;
 var
+    I: longint;
+    dwIndex: longint;
+    bReplace: longbool;
     IDataObject: ^TIDATAOBJECT;
+    FormatEtc: ^TFORMATETC;
+    StgMedium: ^TSTGMEDIUM;
     SelfObject: ^TDROPOBJECT;
+    NewStgMedium: TSTGMEDIUM;
+    OldStgMedium: TSTGMEDIUM;
 begin
     // フォーマット定義が NULL の場合は終了
     if not longbool(lpFormatEtc) or not longbool(lpStgMedium) then begin
         result := E_INVALIDARG;
         exit;
     end;
-    // バッファサイズを確認
+    // 対象デバイスが指定されたフォーマットは未サポート
+    FormatEtc := lpFormatEtc;
+    StgMedium := lpStgMedium;
+    if longbool(FormatEtc.ptd) then begin
+        result := DV_E_FORMATETC;
+        exit;
+    end;
+    // HGLOBAL 以外のデータは未サポート
+    if not longbool(FormatEtc.tymed and TYMED_HGLOBAL) or (StgMedium.tymed <> TYMED_HGLOBAL) then begin
+        result := DV_E_TYMED;
+        exit;
+    end;
+    // 同じフォーマットのデータを検索
     IDataObject := lpDataObject;
-    if IDataObject.dwObjectCnt >= longword(Length(IDataObject.Objects)) then begin
+    dwIndex := -1;
+    if longbool(IDataObject.dwObjectCnt) then for I := 0 to IDataObject.dwObjectCnt - 1 do begin
+        SelfObject := @IDataObject.Objects[I];
+        if (FormatEtc.cfFormat = SelfObject.FormatEtc.cfFormat)
+        and (FormatEtc.dwAspect = SelfObject.FormatEtc.dwAspect)
+        and (FormatEtc.lindex = SelfObject.FormatEtc.lindex) then begin
+            dwIndex := I;
+            break;
+        end;
+    end;
+    // 新しいデータを追加できない場合は終了
+    if (dwIndex < 0) and (IDataObject.dwObjectCnt >= longword(Length(IDataObject.Objects))) then begin
         result := E_OUTOFMEMORY;
         exit;
     end;
-    // フォーマット定義を設定
-    SelfObject := @IDataObject.Objects[IDataObject.dwObjectCnt];
-    API_InterlockedIncrement(@IDataObject.dwObjectCnt);
-    SelfObject.FormatEtc := lpFormatEtc;
-    SelfObject.fRelease := fRelease;
+    // NOTE: FORMATETC と STGMEDIUM は呼び出し側のメモリに保持されているため、構造体の中身を複製して保持する
     if fRelease then begin
-        // データをコピーしない
-        SelfObject.StgMedium := lpStgMedium;
-        result := S_OK;
+        // データの所有権を引き継ぐ
+        NewStgMedium := StgMedium^;
     end else begin
         // 要求されたデータのインスタンスをコピー
-        result := _OLEIDataObjectCopyData(lpDataObject, SelfObject.StgMedium, lpFormatEtc, lpStgMedium);
+        result := _OLEIDataObjectCopyData(@NewStgMedium, FormatEtc.cfFormat, lpStgMedium);
+        if result <> S_OK then exit;
     end;
+    bReplace := dwIndex >= 0;
+    if bReplace then begin
+        // 同じフォーマットの古いデータを退避
+        OldStgMedium := IDataObject.Objects[dwIndex].StgMedium;
+    end else begin
+        // 新しいデータを追加
+        dwIndex := longint(IDataObject.dwObjectCnt);
+        Inc(IDataObject.dwObjectCnt);
+    end;
+    // フォーマット定義とデータを設定
+    SelfObject := @IDataObject.Objects[dwIndex];
+    SelfObject.FormatEtc := FormatEtc^;
+    SelfObject.FormatEtc.tymed := TYMED_HGLOBAL;
+    SelfObject.StgMedium := NewStgMedium;
+    // NOTE: pUnkForRelease の Release で他の COM 呼び出しが割り込む可能性があるため、
+    // 新しいデータを設定した後に古いデータを解放する
+    if bReplace then API_ReleaseStgMedium(@OldStgMedium);
+    result := S_OK;
 end;
 
 // ================================================================================
 // OLEIDataObjectEnumFormatEtc - 提供元がサポートするフォーマットの列挙
 // ================================================================================
 function _OLEIDataObjectEnumFormatEtc(lpDataObject: pointer; dwDirection: longword; lplpEnumFormatEtc: pointer): longword; stdcall;
+var
+    I: longint;
+    dwObjectCnt: longword;
+    IDataObject: ^TIDATAOBJECT;
+    Formats: array of TFORMATETC;
 begin
-    // 未実装
-    result := E_NOTIMPL;
+    // GET 以外の方向の列挙は未サポート
+    if dwDirection <> DATADIR_GET then begin
+        result := E_NOTIMPL;
+        exit;
+    end;
+    // フォーマット配列を初期化
+    IDataObject := lpDataObject;
+    dwObjectCnt := IDataObject.dwObjectCnt;
+    if not longbool(dwObjectCnt) then Inc(dwObjectCnt);
+    SetLength(Formats, dwObjectCnt);
+    // 対応フォーマットの一覧を作成
+    dwObjectCnt := IDataObject.dwObjectCnt;
+    if longbool(dwObjectCnt) then for I := 0 to dwObjectCnt - 1 do Formats[I] := IDataObject.Objects[I].FormatEtc;
+    // 標準の IEnumFORMATETC 実装を生成
+    result := API_SHCreateStdEnumFmtEtc(dwObjectCnt, @Formats[0], lplpEnumFormatEtc);
 end;
 
 // ================================================================================
@@ -5974,6 +6134,7 @@ var
     API_DrawThemeTextEx: function(hTheme: longword; hDC: longword; iPartId: longint; iStateId: longint; pszText: pointer; cchText: longint;
         dwTextFlags: longword; pRect: pointer; pOptions: pointer): longword; stdcall;
     API_OpenThemeData: function(hWnd: longword; pszClassList: pointer): longword; stdcall;
+    API_CloseThemeData: function(hTheme: longword): longword; stdcall;
 begin
     // 初期化
     result := 0;
@@ -5985,7 +6146,8 @@ begin
     // メニューバーを描画 (for Windows Vista 以降)
     @API_DrawThemeTextEx := API_GetProcAddress(hDLL, pchar('DrawThemeTextEx'));
     @API_OpenThemeData := API_GetProcAddress(hDLL, pchar('OpenThemeData'));
-    if longbool(@API_DrawThemeTextEx) and longbool(@API_OpenThemeData) then begin
+    @API_CloseThemeData := API_GetProcAddress(hDLL, pchar('CloseThemeData'));
+    if longbool(@API_DrawThemeTextEx) and longbool(@API_OpenThemeData) and longbool(@API_CloseThemeData) then begin
         // 初期化
         UahMenuItem := pointer(lParam);
         // バッファを確保
@@ -6029,6 +6191,7 @@ begin
             $8, // MENU_BARITEM
             $1, // MBI_NORMAL
             lpText, MenuItemInfo.cch, dwFlags, @UahMenuItem.Struct.rcItem, @Opts);
+        if longbool(hTheme) then API_CloseThemeData(hTheme);
         // バッファを解放
         FreeMem(lpText, 256);
         // 成功
@@ -6090,9 +6253,13 @@ function CWINDOW.GetCaption(dwSize: longint): utf8string;
 var
     lpBuffer: pointer;
 begin
+    if dwSize < 2 then begin
+        result := '';
+        exit;
+    end;
     GetMem(lpBuffer, dwSize);
     API_ZeroMemory(lpBuffer, dwSize);
-    API_GetWindowText(hWnd, lpBuffer, dwSize);
+    API_GetWindowText(hWnd, lpBuffer, (dwSize shr 1) - 1);
     result := PtrToStr(lpBuffer);
     FreeMem(lpBuffer, dwSize);
 end;
@@ -6391,7 +6558,7 @@ begin
     // バッファを確保
     GetMem(lpText, BUFFER_SIZE_TITLE);
     // テキストを取得
-    API_GetWindowText(hWnd, lpText, COPY_SIZE_TITLE);
+    API_GetWindowText(hWnd, lpText, CHAR_SIZE_TITLE);
     if bPushed then begin
         Inc(Rect.left);
         Inc(Rect.top);
@@ -6425,6 +6592,7 @@ var
     dwCount: longint;
     dwSelect1: longint;
     dwSelect2: longint;
+    dwInsert: longint;
     hFile: longword;
     dwReadSize: longword;
     bAdd: longbool;
@@ -6468,11 +6636,12 @@ begin
     GetMem(lpBuffer, BUFFER_SIZE_PATH);
     GetMem(lpTitle, BUFFER_SIZE_TITLE);
     // プレイリストに追加
+    dwInsert := dwIndex;
     for I := 0 to dwFileCount - 1 do begin
         // プレイリストのアイテム数が最大値以上の場合はループを抜ける
         if dwCount >= Option.dwListMax then break;
         // バッファサイズを超える場合はループを抜ける
-        if cwSortList.SendMessage(LB_GETTEXTLEN, I) >= BUFFER_SIZE_PATH then break;
+        if cwSortList.SendMessage(LB_GETTEXTLEN, I) >= CHAR_SIZE_PATH then break;
         // ファイル名を取得
         cwSortList.SendMessage(LB_GETTEXT, I, lpFile);
         sPath := PtrToStr(lpFile);
@@ -6480,24 +6649,26 @@ begin
         hFile := INVALID_HANDLE_VALUE;
         if IsSafePath(sPath) then hFile := API_CreateFile(lpFile, GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
             FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+        // ディスク上のファイルでない場合は閉じる
+        CloseIfNotDisk(hFile);
         // ファイルのオープンに失敗した場合はループを再開
         if hFile = INVALID_HANDLE_VALUE then continue;
-        // ファイルをロード
-        API_ReadFile(hFile, @SPCHdr, SizeOf(TSPCHDR), @dwReadSize, NULLPOINTER);
+        // ファイルをロード (SPC ファイルのサイズに満たない場合はロードしない)
+        if API_GetFileSize(hFile, NULLPOINTER) < $10200 then dwReadSize := 0
+        else API_ReadFile(hFile, @SPCHdr, SizeOf(TSPCHDR), @dwReadSize, NULLPOINTER);
+        // ファイルをクローズ
+        API_CloseHandle(hFile);
         // ファイルのロードに失敗した場合はループを再開
-        if not longbool(dwReadSize) then continue;
+        if dwReadSize < SizeOf(TSPCHDR) then continue;
         // ファイルを追加
         if bAdd then cwFileList.SendMessage(LB_ADDSTRING, NULL, lpFile)
-        else cwFileList.SendMessage(LB_INSERTSTRING, dwIndex + I, lpFile);
+        else cwFileList.SendMessage(LB_INSERTSTRING, dwInsert, lpFile);
         // ID666 フォーマット形式を取得
         GetID666Format(SPCHdr);
         // タイトルを取得
-        if not bytebool(SPCHdr.TagFormat) or not bytebool(SPCHdr.Title[0]) then begin
-            GetFileTitle(sPath, lpTitle);
-        end else begin
-            API_ZeroMemory(lpTitle, BUFFER_SIZE_TITLE);
-            API_MoveMemory(lpTitle, @SPCHdr.Title[0], COPY_SIZE_TITLE);
-        end;
+        API_ZeroMemory(lpTitle, BUFFER_SIZE_TITLE);
+        if not bytebool(SPCHdr.TagFormat) or not bytebool(SPCHdr.Title[0]) then GetFileTitle(sPath, lpTitle)
+        else API_MoveMemory(lpTitle, @SPCHdr.Title[0], COPY_SIZE_TITLE);
         // テキストの制御コードをスペースに変換
         pV := lpTitle;
         for J := 0 to 31 do begin
@@ -6509,16 +6680,15 @@ begin
             cwPlayList.SendMessageA(LB_ADDSTRING, NULL, lpTitle);
             cwPlayList.SendMessage(LB_SETITEMDATA, dwCount);
         end else begin
-            cwPlayList.SendMessageA(LB_INSERTSTRING, dwIndex + I, lpTitle);
-            cwPlayList.SendMessage(LB_SETITEMDATA, dwIndex + I);
+            cwPlayList.SendMessageA(LB_INSERTSTRING, dwInsert, lpTitle);
+            cwPlayList.SendMessage(LB_SETITEMDATA, dwInsert);
         end;
         // カーソル選択
         bSelect := true;
         // プレイリストのアイテム数を追加
         Inc(dwCount);
         Inc(dwSelect2);
-        // ファイルをクローズ
-        API_CloseHandle(hFile);
+        Inc(dwInsert);
     end;
     // バッファを解放
     FreeMem(lpFile, BUFFER_SIZE_PATH);
@@ -6564,6 +6734,7 @@ var
     dwTop: longint;
     hWndApp: longword;
     hFontApp: longword;
+    hDCStatic: longword;
     wsData: widestring;
     Box: TBOX;
     API_DwmSetWindowAttribute: function(hWnd: longword; dwAttribute: longword; pvAttribute: pointer; cbAttribute: longword): longword; stdcall;
@@ -6574,6 +6745,9 @@ var
     API_SetWindowTheme: function(hWnd: longword; pszSubAppName: pointer; pszSubIdList: pointer): longword; stdcall;
 {$IFDEF UACDROP}
     API_ChangeWindowMessageFilter: function(msg: longword; dwFlag: longword): longword; stdcall;
+{$ENDIF}
+{$IFDEF COMNOEXCEPTION}
+    IGlobalOptions: ^TIGLOBALOPTIONS;
 {$ENDIF}
 
 function GetParameter(var dwStart: longint; dwLength: longint; bLast: longbool): utf8string;
@@ -6649,6 +6823,21 @@ begin
     API_WriteFile(hError, pchar(S), Length(S), @I, NULLPOINTER);
 end;
 
+procedure StdOut(const S: utf8string);
+var
+    I: longword;
+begin
+    API_WriteFile(API_GetStdHandle(STD_OUTPUT_HANDLE), pchar(S), Length(S), @I, NULLPOINTER);
+end;
+
+function IntToHexStr(X: longword; Len: longword): utf8string;
+var
+    StrData: TSTRDATA;
+begin
+    IntToHex(StrData, X, Len);
+    SetString(result, pchar(@StrData.cData[0]), Len);
+end;
+
 procedure RequestWaveSave(bConsole: longbool; dwResult: longword);
 var
     I: longint;
@@ -6712,7 +6901,7 @@ begin
             bForce := true;
         end else if StartWithOrMatch(sBuffer, '-q ', '-q', K) or StartWithOrMatch(sBuffer, '-quiet ', '-quiet', K) then begin
             Inc(I, K);
-            // 上書き強制
+            // 出力を抑制
             bQuiet := true;
         end else begin
             // SPC パスが指定されていない場合は終了
@@ -6729,38 +6918,54 @@ begin
             break;
         end;
         // 次のパラメータを取得
-        sBuffer := Copy(sBuffer, I, J);
+        sBuffer := Trim(Copy(sBuffer, I, J));
     end;
     // 出力先パスが指定されていない場合、SPC ファイル名から作成
     if not longbool(Length(sWAVFile)) then begin
-        J := Length(sSPCFile);
-        K := J;
+        J := 0;
+        K := Length(sSPCFile);
         for I := 1 to K do begin
             if sSPCFile[I] = NULLCHAR then break;
+            if IsPathSeparator(sSPCFile, I) then J := 0;
             if IsSingleByte(sSPCFile, I, '.') then J := I;
         end;
-        sWAVFile := Concat(Copy(sSPCFile, 1, J), 'wav');
+        if longbool(J) then sWAVFile := Concat(Copy(sSPCFile, 1, J), 'wav')
+        else sWAVFile := Concat(sSPCFile, '.wav');
     end;
     // SPC をフルパスに変換
     API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
-    API_GetFullPathName(StrToPtr(sSPCFile), (BUFFER_SIZE_PATH shr 1) - 1, lpBuffer, NULLPOINTER);
+    API_GetFullPathName(StrToPtr(sSPCFile), CHAR_SIZE_PATH, lpBuffer, NULLPOINTER);
     sSPCFile := PtrToStr(lpBuffer);
+    // フォルダ名だけが指定されている場合は末尾に \. を付ける
+    if EndWith(sWAVFile, '\') or EndWith(sWAVFile, '/') then sWAVFile := Concat(sWAVFile, '.')
+    else if (sWAVFile = '.') or (sWAVFile = '..') or (not EndWith(sWAVFile, '\.') and not EndWith(sWAVFile, '/.')
+        and Exists(sWAVFile, 0)) then sWAVFile := Concat(sWAVFile, '\.');
     // フォルダ名まで指定されている場合、SPC ファイル名から作成
     if EndWith(sWAVFile, '\.') or EndWith(sWAVFile, '/.') then begin
-        J := Length(sSPCFile);
-        K := J;
-        L := J;
+        J := 0;
+        K := 0;
+        L := Length(sSPCFile);
         for I := 1 to L do begin
             if sSPCFile[I] = NULLCHAR then break;
-            if IsPathSeparator(sSPCFile, I) then J := I;
+            if IsPathSeparator(sSPCFile, I) then begin
+                J := I;
+                K := 0;
+            end;
             if IsSingleByte(sSPCFile, I, '.') then K := I;
         end;
-        sWAVFile := Concat(Copy(sWAVFile, 1, Length(sWAVFile) - 1), Copy(sSPCFile, J + 1, K - J), 'wav');
+        if not longbool(K) then K := L + 1;
+        sWAVFile := Concat(Copy(sWAVFile, 1, Length(sWAVFile) - 1), Copy(sSPCFile, J + 1, K - J - 1), '.wav');
     end;
     // WAVE をフルパスに変換
     API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
-    API_GetFullPathName(StrToPtr(sWAVFile), (BUFFER_SIZE_PATH shr 1) - 1, lpBuffer, NULLPOINTER);
+    API_GetFullPathName(StrToPtr(sWAVFile), CHAR_SIZE_PATH, lpBuffer, NULLPOINTER);
     sWAVFile := PtrToStr(lpBuffer);
+    // WAVE ファイルが SPC ファイルと同じ場合は終了
+    if API_lstrcmpi(StrToPtr(sWAVFile), StrToPtr(sSPCFile)) = 0 then begin
+        StdErr(Concat('[ERROR] Output path is the same as the SPC file.', CRLF,
+            '  Output path: ', sWAVFile, CRLF));
+        exit;
+    end;
     // WAVE ファイルが存在する場合は終了
     if not bForce and (GetFileType(sWAVFile, false, false) <> FILE_TYPE_NOTEXIST) then begin
         StdErr(Concat('[ERROR] Output path already exists.', CRLF,
@@ -6775,7 +6980,9 @@ begin
             C := sMute[I];
             if (byte(C) >= $31) and (byte(C) <= $38) then dwMute := dwMute or (1 shl (byte(C) - $31));
         end;
-        dwMute := dwMute xor dwReverse;
+        // ソロに有効なチャンネルがない場合は指定を無視
+        if not longbool(dwMute) and longbool(dwReverse) then sMute := ''
+        else dwMute := dwMute xor dwReverse;
     end;
     // WAVE ファイルを出力
     if bConsole then begin
@@ -6843,6 +7050,75 @@ var
     dwCount: longword;
     dwAddr: array[0..255] of longword;
 
+procedure ListBreakPoint();
+var
+    dwNext: longword;
+    dwResult: longword;
+    sMode: utf8string;
+    sType: utf8string;
+    sCommand: utf8string;
+    sGroup: utf8string;
+    dwGroupMode: longword;
+    dwGroupCount: longword;
+
+procedure FlushGroup();
+begin
+    // アドレスがない場合は終了
+    if not longbool(dwGroupCount) then exit;
+    // 停止方法は、まとめたアドレスの後ろに指定する
+    case dwGroupMode of
+        $1: sCommand := Concat(sCommand, ' -s', sGroup, ' mixed');
+        $2: sCommand := Concat(sCommand, ' -s', sGroup, ' soft');
+        $3: sCommand := Concat(sCommand, ' -s', sGroup, ' hard');
+    end;
+    // 初期化
+    sGroup := '';
+    dwGroupCount := 0;
+end;
+
+begin
+    // 初期化
+    sCommand := '';
+    sGroup := '';
+    dwGroupMode := 0;
+    dwGroupCount := 0;
+    dwNext := 0;
+    // ループ
+    while dwNext <= $FFFF do begin
+        // 指定したアドレス以降で、最初に設定されているブレイクポイントを取得
+        dwResult := cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_BP_NEXT or dwNext);
+        // 応答がない場合は終了
+        if not longbool(dwResult and $80000000) then begin
+            StdErr(Concat('[ERROR] Breakpoints could not be listed.', CRLF));
+            exit;
+        end;
+        // 見つからない場合はループを抜ける
+        if not longbool(dwResult and $01000000) then break;
+        // ブレイクポイントの情報を出力
+        dwNext := (dwResult shr 8) and $FFFF;
+        case dwResult and $7F of
+            $1: sMode := 'mixed';
+            $2: sMode := 'soft ';
+            $3: sMode := 'hard ';
+            else sMode := Concat('$', IntToHexStr(dwResult and $7F, 2), '  ');
+        end;
+        if longbool(dwResult and $80) then sType := 'Script700' else sType := 'external';
+        StdOut(Concat('$', IntToHexStr(dwNext, 4), ' : ', sMode, ' ', sType, CRLF));
+        // コマンドオプションのサンプルを記録
+        if not longbool(dwResult and $80) and ((dwResult and $7F) >= $1) and ((dwResult and $7F) <= $3) then begin
+            if ((dwResult and $7F) <> dwGroupMode) or (dwGroupCount >= 256) then FlushGroup();
+            dwGroupMode := dwResult and $7F;
+            sGroup := Concat(sGroup, ' $', IntToHexStr(dwNext, 4));
+            Inc(dwGroupCount);
+        end;
+        // 次のアドレスから検索
+        Inc(dwNext);
+    end;
+    // 設定し直すためのコマンドラインを出力
+    FlushGroup();
+    if longbool(Length(sCommand)) then StdOut(Concat(CRLF, '-bp', sCommand, CRLF));
+end;
+
 procedure FlushBreakPoint();
 var
     I: longint;
@@ -6883,7 +7159,7 @@ begin
     while true do begin
         I := 1;
         J := Length(sBuffer);
-        if longword(I) >= J then begin
+        if longword(I) > J then begin
             // 最後まで到達した場合はループを抜ける
             break;
         end else if StartWithLength(sBuffer, '-s ', K) or StartWithLength(sBuffer, '-set ', K) then begin
@@ -6908,15 +7184,32 @@ begin
             dwMessage := WM_APP_NEXT_TICK;
             dwOption := $FFFFFFFF;
             dwCount := $FFFFFFFF;
-        end else if (sBuffer = '-r') or (sBuffer = '-resume') then begin
+        end else if StartWithOrMatch(sBuffer, '-r ', '-r', K) or StartWithOrMatch(sBuffer, '-resume ', '-resume', K) then begin
+            Inc(I, K);
+            // 実行
+            FlushBreakPoint();
             // 次のブレイクポイントまで処理を進める
             cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_NEXT_TICK);
-            exit;
-        end else if (sBuffer = '-c') or (sBuffer = '-clear') then begin
+            // 次に -s または -u が指定されるまでアドレスを無視
+            dwMessage := NULL;
+        end else if StartWithOrMatch(sBuffer, '-c ', '-c', K) or StartWithOrMatch(sBuffer, '-clear ', '-clear', K) then begin
+            Inc(I, K);
+            // 実行
+            FlushBreakPoint();
             // すべて解除
             cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_BP_CLEAR);
             cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_NEXT_TICK);
-            exit;
+            // 続くアドレスはブレイクポイントをセット
+            dwMessage := WM_APP_BP_SET;
+            dwOption := $FFFFFFFF;
+        end else if StartWithOrMatch(sBuffer, '-l ', '-l', K) or StartWithOrMatch(sBuffer, '-list ', '-list', K) then begin
+            Inc(I, K);
+            // 実行
+            FlushBreakPoint();
+            // 設定済みのブレイクポイントを一覧表示
+            ListBreakPoint();
+            // 次に -s または -u が指定されるまでアドレスを無視
+            dwMessage := NULL;
         end else if StartWithOrMatch(sBuffer, 'mixed ', 'mixed', K) then begin
             Inc(I, K);
             // SPC_HALT: SPC700・タイマーを停止、DSP 実行
@@ -6939,13 +7232,13 @@ begin
             // アドレス
             K := StrOrHexToInt(GetParameter(I, J, false), $FFFFFFFF);
             // アドレスを記録
-            if (dwCount < 256) and (K <= $FFFF) then begin
+            if longbool(dwMessage) and (dwCount < 256) and (K <= $FFFF) then begin
                 dwAddr[dwCount] := K;
                 Inc(dwCount);
             end;
         end;
         // 次のパラメータを取得
-        sBuffer := Copy(sBuffer, I, J);
+        sBuffer := Trim(Copy(sBuffer, I, J));
     end;
     // 実行
     FlushBreakPoint();
@@ -6960,6 +7253,35 @@ var
     sTemp: utf8string;
     dwAddr: longword;
     dwValue: longword;
+
+procedure ListDSPCheat();
+var
+    dwAddr: longword;
+    dwValue: longword;
+    sCommand: utf8string;
+begin
+    // 初期化
+    sCommand := '';
+    for dwAddr := 0 to $7F do begin
+        // DSP チートを取得
+        dwValue := cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_DSP_GET or dwAddr);
+        // 応答がない場合は終了
+        if not longbool(dwValue and $80000000) then begin
+            StdErr(Concat('[ERROR] DSP cheats could not be listed.', CRLF));
+            exit;
+        end;
+        // 設定されている場合
+        if longbool(dwValue and $100) then begin
+            // DSP チートの情報を出力
+            StdOut(Concat('$', IntToHexStr(dwAddr, 2), ' : forced to $', IntToHexStr(dwValue and $FF, 2), CRLF));
+            // コマンドオプションのサンプルを記録
+            sCommand := Concat(sCommand, ' $', IntToHexStr(dwAddr, 2), '=$', IntToHexStr(dwValue and $FF, 2));
+        end;
+    end;
+    // 設定し直すためのコマンドラインを出力
+    if longbool(Length(sCommand)) then StdOut(Concat(CRLF, '-dsp -s', sCommand, CRLF));
+end;
+
 begin
     // 最初のパラメータを除外
     sBuffer := sCmdLine;
@@ -6973,7 +7295,7 @@ begin
     while true do begin
         I := 1;
         J := Length(sBuffer);
-        if longword(I) >= J then begin
+        if longword(I) > J then begin
             // 最後まで到達した場合はループを抜ける
             break;
         end else if StartWithLength(sBuffer, '-s ', K) or StartWithLength(sBuffer, '-set ', K) then begin
@@ -6984,10 +7306,18 @@ begin
             Inc(I, K);
             // DSP チートを解除
             dwOption := $2;
-        end else if (sBuffer = '-c') or (sBuffer = '-clear') then begin
+        end else if StartWithOrMatch(sBuffer, '-c ', '-c', K) or StartWithOrMatch(sBuffer, '-clear ', '-clear', K) then begin
+            Inc(I, K);
             // DSP チートをすべて解除
             cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_DSP_THRU);
-            exit;
+            // 続く値は DSP チートを設定
+            dwOption := $1;
+        end else if StartWithOrMatch(sBuffer, '-l ', '-l', K) or StartWithOrMatch(sBuffer, '-list ', '-list', K) then begin
+            Inc(I, K);
+            // 設定済みの DSP チートを一覧表示
+            ListDSPCheat();
+            // 次に -s または -u が指定されるまで値を無視
+            dwOption := 0;
         end else begin
             // 値
             sTemp := GetParameter(I, J, false);
@@ -6995,12 +7325,16 @@ begin
                 $1: begin
                     // アドレス・設定値を取得
                     K := IndexOf(sTemp, '=');
-                    dwAddr := StrOrHexToInt(Copy(sTemp, 1, K - 1), $FFFFFFFF);
-                    dwValue := StrOrHexToInt(Copy(sTemp, K + 1, Length(sTemp)), $FFFFFFFF);
-                    // メッセージを送信
-                    if (dwAddr <= $7F) and (dwValue <= $FF) then begin
-                        cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_SET_DSP or dwAddr, dwValue);
-                        cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_DSP_CHEAT or dwAddr, dwValue);
+                    // '=' の前後に値がある場合
+                    if (K > 1) and (K < longword(Length(sTemp))) then begin
+                        // アドレスと設定値を取得
+                        dwAddr := StrOrHexToInt(Copy(sTemp, 1, K - 1), $FFFFFFFF);
+                        dwValue := StrOrHexToInt(Copy(sTemp, K + 1, Length(sTemp)), $FFFFFFFF);
+                        // メッセージを送信
+                        if (dwAddr <= $7F) and (dwValue <= $FF) then begin
+                            cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_SET_DSP or dwAddr, dwValue);
+                            cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_DSP_CHEAT or dwAddr, dwValue);
+                        end;
                     end;
                 end;
                 $2: begin
@@ -7014,7 +7348,7 @@ begin
             end;
         end;
         // 次のパラメータを取得
-        sBuffer := Copy(sBuffer, I, J);
+        sBuffer := Trim(Copy(sBuffer, I, J));
     end;
 end;
 
@@ -7048,7 +7382,7 @@ begin
     while true do begin
         I := 1;
         J := Length(sBuffer);
-        if longword(I) >= J then begin
+        if longword(I) > J then begin
             // 最後まで到達した場合はループを抜ける
             break;
         end else if StartWithLength(sBuffer, '-s ', K) or StartWithLength(sBuffer, '-set ', K) then begin
@@ -7059,10 +7393,10 @@ begin
             Inc(I, K);
             // 待機
             dwOption := $2;
-        end else if StartWithLength(sBuffer, '-t ', K) or StartWithLength(sBuffer, '-test ', K) then begin
+        end else if StartWithOrMatch(sBuffer, '-t ', '-t', K) or StartWithOrMatch(sBuffer, '-test ', '-test', K) then begin
             Inc(I, K);
-            // ポート値をバックアップ
-            for K := 0 to 3 do dwOldValue[K] := cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_GET_IN_PORT or K);
+            // ポート値をバックアップ (最初の -t のみ)
+            if not bTest then for K := 0 to 3 do dwOldValue[K] := cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_GET_IN_PORT or K);
             bTest := true;
         end else begin
             // 値
@@ -7071,18 +7405,22 @@ begin
                 $1: begin
                     // アドレス・設定値を取得
                     K := IndexOf(sTemp, '=');
-                    dwAddr := StrOrHexToInt(Copy(sTemp, 1, K - 1), $FFFFFFFF);
-                    dwValue := StrOrHexToInt(Copy(sTemp, K + 1, Length(sTemp)), $FFFFFFFF);
-                    // アドレスが 0xF4-0xF7 の場合は 0x00-0x03 に変換
-                    if (dwAddr >= $F4) and (dwAddr <= $F7) then dwAddr := dwAddr - $F4;
-                    // アドレス値と変更値が範囲内の場合
-                    if (dwAddr <= $3) and (dwValue <= $FF) then begin
-                        // 書き込み済みの場合は待機
-                        if bDuplicate[dwAddr] then API_Sleep(100);
-                        // メッセージを送信
-                        cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_SET_IN_PORT or dwAddr, dwValue);
-                        // 書き込み済みを記録
-                        bDuplicate[dwAddr] := true;
+                    // '=' の前後に値がある場合
+                    if (K > 1) and (K < longword(Length(sTemp))) then begin
+                        // アドレスと設定値を取得
+                        dwAddr := StrOrHexToInt(Copy(sTemp, 1, K - 1), $FFFFFFFF);
+                        dwValue := StrOrHexToInt(Copy(sTemp, K + 1, Length(sTemp)), $FFFFFFFF);
+                        // アドレスが 0xF4-0xF7 の場合は 0x00-0x03 に変換
+                        if (dwAddr >= $F4) and (dwAddr <= $F7) then dwAddr := dwAddr - $F4;
+                        // アドレス値と変更値が範囲内の場合
+                        if (dwAddr <= $3) and (dwValue <= $FF) then begin
+                            // 書き込み済みの場合は待機
+                            if bDuplicate[dwAddr] then API_Sleep(100);
+                            // メッセージを送信
+                            cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_SET_IN_PORT or dwAddr, dwValue);
+                            // 書き込み済みを記録
+                            bDuplicate[dwAddr] := true;
+                        end;
                     end;
                 end;
                 $2: begin
@@ -7098,7 +7436,7 @@ begin
             end;
         end;
         // 次のパラメータを取得
-        sBuffer := Copy(sBuffer, I, J);
+        sBuffer := Trim(Copy(sBuffer, I, J));
     end;
     // 変更値を元に戻す
     if bTest then begin
@@ -7114,6 +7452,50 @@ var
     K: longword;
     dwMute: longword;
     dwValue: longword;
+
+procedure ListDSPSource();
+var
+    dwSource: longword;
+    dwValue: longword;
+    dwCount: longword;
+    sMute: utf8string;
+    sSolo: utf8string;
+    sMuteList: utf8string;
+    sSoloList: utf8string;
+begin
+    // 初期化
+    dwCount := 0;
+    sMute := '';
+    sSolo := '';
+    sMuteList := '';
+    sSoloList := '';
+    for dwSource := 0 to 255 do begin
+        // 音色ミュートを取得
+        dwValue := cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_DSP_MUTE_GET or dwSource);
+        // 応答がない場合は終了
+        if not longbool(dwValue and $80000000) then begin
+            StdErr(Concat('[ERROR] Source mutes could not be listed.', CRLF));
+            exit;
+        end;
+        // ミュートされている場合
+        if longbool(dwValue and $1) then begin
+            // ミュートとして記録
+            sMuteList := Concat(sMuteList, '$', IntToHexStr(dwSource, 2), ' : muted', CRLF);
+            sMute := Concat(sMute, ' $', IntToHexStr(dwSource, 2));
+            Inc(dwCount);
+        end else begin
+            // ソロとして記録
+            sSoloList := Concat(sSoloList, '$', IntToHexStr(dwSource, 2), ' : solo', CRLF);
+            sSolo := Concat(sSolo, ' $', IntToHexStr(dwSource, 2));
+        end;
+    end;
+    // ミュートがない場合は終了
+    if not longbool(dwCount) then exit;
+    // 一覧と設定し直すためのコマンドラインを出力 (ミュートが半数を超える場合はソロで表示)
+    if (dwCount > 128) and (dwCount < 256) then StdOut(Concat(sSoloList, CRLF, '-src -s', sSolo, CRLF))
+    else StdOut(Concat(sMuteList, CRLF, '-src -c', sMute, CRLF));
+end;
+
 begin
     // 最初のパラメータを除外
     sBuffer := sCmdLine;
@@ -7127,7 +7509,7 @@ begin
     while true do begin
         I := 1;
         J := Length(sBuffer);
-        if longword(I) >= J then begin
+        if longword(I) > J then begin
             // 最後まで到達した場合はループを抜ける
             break;
         end else if StartWithLength(sBuffer, '-s ', K) or StartWithLength(sBuffer, '-solo ', K) then begin
@@ -7140,18 +7522,27 @@ begin
             dwMute := 2;
         end else if StartWithOrMatch(sBuffer, '-c ', '-c', K) or StartWithOrMatch(sBuffer, '-clear ', '-clear', K) then begin
             Inc(I, K);
-            // すべて解除
+            // デフォルトをミュートに切り替え
             dwMute := 2;
+            // すべて解除
             cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_DSP_MUTE, 0);
+        end else if StartWithOrMatch(sBuffer, '-l ', '-l', K) or StartWithOrMatch(sBuffer, '-list ', '-list', K) then begin
+            Inc(I, K);
+            // 設定済みの音色ミュートを一覧表示
+            ListDSPSource();
+            // 次に -s または -m が指定されるまで値を無視
+            dwMute := 0;
         end else begin
             // 値
             dwValue := StrOrHexToInt(GetParameter(I, J, false), $FFFFFFFF);
-            if dwValue < 256 then cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_DSP_MUTE or dwValue, dwMute);
-            // ソロの場合は次からミュートに切り替え
-            if dwMute = 1 then dwMute := 2;
+            if (dwValue < 256) and longbool(dwMute) then begin
+                cwWindowMain.SendMessage(WM_APP_MESSAGE, WM_APP_DSP_MUTE or dwValue, dwMute);
+                // ソロの場合は次からミュートに切り替え
+                if dwMute = 1 then dwMute := 2;
+            end;
         end;
         // 次のパラメータを取得
-        sBuffer := Copy(sBuffer, I, J);
+        sBuffer := Trim(Copy(sBuffer, I, J));
     end;
 end;
 
@@ -7159,7 +7550,7 @@ procedure GetFullPathCmdLine();
 begin
     // コマンドラインをフルパスに変換
     API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
-    API_GetFullPathName(StrToPtr(sCmdLine), (BUFFER_SIZE_PATH shr 1) - 1, lpBuffer, NULLPOINTER);
+    API_GetFullPathName(StrToPtr(sCmdLine), CHAR_SIZE_PATH, lpBuffer, NULLPOINTER);
     sCmdLine := PtrToStr(lpBuffer);
 end;
 
@@ -7375,6 +7766,7 @@ begin
     Status.bChangePlay := false;
     Status.bChangeShift := false;
     Status.bOptionLock := false;
+    Status.bWindowDeleted := false;
     Status.bWaveWrite := false;
     Status.bWaveSave := false;
     Status.dwReady := READY_INITIALIZE;
@@ -7389,6 +7781,7 @@ begin
     Status.DragPoint.x := -1;
     Status.DragPoint.y := -1;
     Status.bDropCancel := false;
+    Status.bOleInit := false;
     Status.dwScale := 2;
     API_ZeroMemory(@Status.BreakPoint, 65536);
     Status.dwNextTick := 0;
@@ -7635,9 +8028,13 @@ begin
 {$IFDEF SPCDEBUG}
             @Apu.SetDSPDbg := GetProcAddress(pchar('SetDSPDbg'));
 {$ENDIF}
-            if longbool(I) then result := 2;
-            Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_INCS700 or CBE_INCDATA or CBE_REQBP);
-            Apu.SNESAPUInfo(@K, NULLPOINTER, NULLPOINTER);
+            if longbool(I) then begin
+                K := SNESAPU_VERSION; // 後続のバージョンチェックでエラー番号を変えないためのダミー
+                result := 2;
+            end else begin
+                Apu.SNESAPUCallback(@_SNESAPUCallback, CBE_INCS700 or CBE_INCDATA or CBE_REQBP);
+                Apu.SNESAPUInfo(@K, NULLPOINTER, NULLPOINTER);
+            end;
 {$IFNDEF TRANSMITSPCLPT}{$IFDEF SIGNATURE}
             if K <> SNESAPU_VERSION then result := 3;
 {$ENDIF}{$ENDIF}
@@ -7698,6 +8095,18 @@ begin
     IID_ITaskbarList3.DataX[1] := $4B869A28;
     IID_ITaskbarList3.DataX[2] := $9F9EE990;
     IID_ITaskbarList3.DataX[3] := $AFEF5E8A;
+{$ENDIF}
+{$IFDEF COMNOEXCEPTION}
+    // CLSID_GlobalOptions : 0000034B-0000-0000-C000-000000000046
+    CLSID_GlobalOptions.DataX[0] := $0000034B;
+    CLSID_GlobalOptions.DataX[1] := $00000000;
+    CLSID_GlobalOptions.DataX[2] := $000000C0;
+    CLSID_GlobalOptions.DataX[3] := $46000000;
+    // IID_IGlobalOptions : 0000015B-0000-0000-C000-000000000046
+    IID_IGlobalOptions.DataX[0] := $0000015B;
+    IID_IGlobalOptions.DataX[1] := $00000000;
+    IID_IGlobalOptions.DataX[2] := $000000C0;
+    IID_IGlobalOptions.DataX[3] := $46000000;
 {$ENDIF}
 end;
 
@@ -7801,7 +8210,7 @@ begin
     GetMem(lpBuffer, BUFFER_SIZE_PATH);
     // カレントパスを取得
     API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
-    API_GetModuleFileName(hThisInstance, lpBuffer, BUFFER_SIZE_PATH);
+    API_GetModuleFileName(hThisInstance, lpBuffer, CHAR_SIZE_PATH);
     sChPath := PtrToStr(lpBuffer);
     sChPath := Copy(sChPath, 1, GetPosSeparator(sChPath));
     // バッファを解放
@@ -7968,6 +8377,19 @@ begin
     // システムのバージョン情報を取得
     Status.OsVersionInfo.dwOSVersionInfoSize := SizeOf(TRTLOSVERSIONINFOW);
     API_RtlGetVersion(@Status.OsVersionInfo);
+    // OLE を初期化
+    // NOTE: ドラッグ先がドロップ後も IDataObject を参照できるように、OLE は終了時まで解放しない
+    // S_FALSE が返された場合も、終了時に OleUninitialize を呼び出す必要がある
+    Status.bOleInit := not longbool(API_OleInitialize(NULLPOINTER) and $80000000);
+{$IFDEF COMNOEXCEPTION}
+    // NOTE: COM はスタブ経由で呼び出された関数の例外を既定で握りつぶすため、例外でプロセスが停止するように設定する
+    // Windows 7 より前は COMGLB_EXCEPTION_DONOT_HANDLE_ANY に未対応のため、COMGLB_EXCEPTION_DONOT_HANDLE_FATAL を設定する
+    if Status.bOleInit and (API_CoCreateInstance(@CLSID_GlobalOptions, NULLPOINTER, CLSCTX_INPROC_SERVER, @IID_IGlobalOptions, @IGlobalOptions) = S_OK) then begin
+        if IGlobalOptions.lpVtbl.COMIGlobalOptionsSet(IGlobalOptions, COMGLB_EXCEPTION_HANDLING, COMGLB_EXCEPTION_DONOT_HANDLE_ANY) <> S_OK then
+            IGlobalOptions.lpVtbl.COMIGlobalOptionsSet(IGlobalOptions, COMGLB_EXCEPTION_HANDLING, COMGLB_EXCEPTION_DONOT_HANDLE_FATAL);
+        IGlobalOptions.lpVtbl.COMIGlobalOptionsRelease(IGlobalOptions);
+    end;
+{$ENDIF}
 {$IFDEF ITASKBARLIST3}
     // COM インターフェイスを初期化
     API_CoInitialize(NULLPOINTER);
@@ -8025,6 +8447,18 @@ begin
 {$ENDIF}
 {$IFDEF EMUSAMPLES}
         ' EMUSAMPLES',
+{$ENDIF}
+{$IFDEF DEBUGLOG}
+        ' DEBUGLOG',
+{$ENDIF}
+{$IFDEF UACDROP}
+        ' UACDROP',
+{$ENDIF}
+{$IFDEF ITASKBARLIST3}
+        ' ITASKBARLIST3',
+{$ENDIF}
+{$IFDEF COMNOEXCEPTION}
+        ' COMNOEXCEPTION',
 {$ENDIF}
         '');
     if K <> SNESAPU_VERSION then sInfo := Concat(sInfo, #32#42); // バージョン不一致マーク
@@ -8294,13 +8728,15 @@ begin
     Status.lpStaticProc := pointer(API_SetWindowLong(cwStaticMain.hWnd, GWL_WNDPROC, longword(@_StaticProc)));
     // デバイスコンテキストを取得
     Status.hDCWindow := API_GetWindowDC(cwWindowMain.hWnd);
-    Status.hDCStatic := API_GetDC(cwStaticMain.hWnd);
+    hDCStatic := API_GetDC(cwStaticMain.hWnd);
     // インジケータ表示用のデバイスコンテキストを作成
-    Status.hDCVolumeBuffer := API_CreateCompatibleDC(Status.hDCStatic);
-    Status.hBitmapVolume := API_SelectObject(Status.hDCVolumeBuffer, API_CreateCompatibleBitmap(Status.hDCStatic, COLOR_BAR_NUM_X7, COLOR_BAR_HEIGHT));
+    Status.hDCVolumeBuffer := API_CreateCompatibleDC(hDCStatic);
+    Status.hBitmapVolume := API_SelectObject(Status.hDCVolumeBuffer, API_CreateCompatibleBitmap(hDCStatic, COLOR_BAR_NUM_X7, COLOR_BAR_HEIGHT));
     // 文字表示用のデバイスコンテキストを作成
-    Status.hDCStringBuffer := API_CreateCompatibleDC(Status.hDCStatic);
-    Status.hBitmapString := API_SelectObject(Status.hDCStringBuffer, API_CreateCompatibleBitmap(Status.hDCStatic, BITMAP_NUM_X6P6, BITMAP_NUM_HEIGHT));
+    Status.hDCStringBuffer := API_CreateCompatibleDC(hDCStatic);
+    Status.hBitmapString := API_SelectObject(Status.hDCStringBuffer, API_CreateCompatibleBitmap(hDCStatic, BITMAP_NUM_X6P6, BITMAP_NUM_HEIGHT));
+    // デバイスコンテキストを解放
+    API_ReleaseDC(cwStaticMain.hWnd, hDCStatic);
     // グラフィックリソースを設定
     SetGraphic();
     // デバイスを初期化
@@ -8381,6 +8817,10 @@ begin
 end;
 
 begin
+    // 終了処理済みの場合は終了
+    if Status.bWindowDeleted then exit;
+    // フラグを設定
+    Status.bWindowDeleted := true;
     // プロセス優先度を標準に変更
     API_SetPriorityClass(API_GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
     // デバイスを解放
@@ -8492,8 +8932,7 @@ begin
     API_DeleteDC(Status.hDCVolumeBuffer);
     API_DeleteObject(API_SelectObject(Status.hDCStringBuffer, Status.hBitmapString));
     API_DeleteDC(Status.hDCStringBuffer);
-    API_ReleaseDC(cwStaticMain.hWnd, Status.hDCWindow);
-    API_ReleaseDC(cwStaticMain.hWnd, Status.hDCStatic);
+    API_ReleaseDC(cwWindowMain.hWnd, Status.hDCWindow);
     // USER32.DLL をロード
     dwBuffer := API_LoadLibraryEx(StrToPtr('user32.dll'), NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if longbool(dwBuffer) then begin
@@ -8621,6 +9060,8 @@ begin
     if longbool(Status.hBackBrush) then API_DeleteObject(Status.hBackBrush);
     if longbool(Status.hTextBrush) then API_DeleteObject(Status.hTextBrush);
     if longbool(Status.hMenuBrush) then API_DeleteObject(Status.hMenuBrush);
+    // OLE を解放
+    if Status.bOleInit then API_OleUninitialize();
 {$IFDEF ITASKBARLIST3}
     // COM インターフェイスを解放
     API_CoUninitialize();
@@ -8646,8 +9087,8 @@ var
     IDataObjectVtbl: ^TIDATAOBJECTVTBL;
     IDataObject: ^TIDATAOBJECT;
     DropFiles: ^TDROPFILES;
-    FormatEtc: ^TFORMATETC;
-    StgMedium: ^TSTGMEDIUM;
+    FormatEtc: TFORMATETC;
+    StgMedium: TSTGMEDIUM;
 begin
     // マウス座標を取得
     x := lParam and $FFFF;
@@ -8694,7 +9135,7 @@ begin
     // 選択されているアイテムを取得
     dwIndex := cwPlayList.SendMessage(LB_GETCURSEL, NULL);
     // バッファサイズを超える場合は終了
-    if cwFileList.SendMessage(LB_GETTEXTLEN, dwIndex) >= BUFFER_SIZE_PATH then exit;
+    if cwFileList.SendMessage(LB_GETTEXTLEN, dwIndex) >= CHAR_SIZE_PATH then exit;
     // バッファを確保
     GetMem(lpFile, BUFFER_SIZE_PATH);
     // ファイルとタイトルを取得
@@ -8707,26 +9148,20 @@ begin
     IDataObjectVtbl := NULLPOINTER;
     IDataObject := NULLPOINTER;
     DropFiles := NULLPOINTER;
-    FormatEtc := NULLPOINTER;
-    StgMedium := NULLPOINTER;
-    // ファイルが存在する場合
-    if IsSafePath(sPath) and Exists(sPath, $FFFFFFFF) then repeat
+    // OLE が初期化済みで、ファイルが存在する場合
+    if Status.bOleInit and IsSafePath(sPath) and Exists(sPath, $FFFFFFFF) then repeat
         // グローバルメモリを確保
         IDropSourceVtbl := pointer(API_GlobalAlloc(GMEM_FIXED, SizeOf(TIDROPSOURCEVTBL)));
         IDropSource := pointer(API_GlobalAlloc(GMEM_FIXED, SizeOf(TIDROPSOURCE)));
         IDataObjectVtbl := pointer(API_GlobalAlloc(GMEM_FIXED, SizeOf(TIDATAOBJECTVTBL)));
         IDataObject := pointer(API_GlobalAlloc(GMEM_FIXED, SizeOf(TIDATAOBJECT)));
         DropFiles := pointer(API_GlobalAlloc(GMEM_FIXED, SizeOf(TDROPFILES) + BUFFER_SIZE_PATH));
-        FormatEtc := pointer(API_GlobalAlloc(GMEM_FIXED, SizeOf(TFORMATETC)));
-        StgMedium := pointer(API_GlobalAlloc(GMEM_FIXED, SizeOf(TSTGMEDIUM)));
         // メモリを確保できない場合はループを抜ける
         if not longbool(IDropSourceVtbl)
         or not longbool(IDropSource)
         or not longbool(IDataObjectVtbl)
         or not longbool(IDataObject)
-        or not longbool(DropFiles)
-        or not longbool(FormatEtc)
-        or not longbool(StgMedium) then break;
+        or not longbool(DropFiles) then break;
         // クリップボード情報を取得
         DropFiles.pFiles := SizeOf(TDROPFILES);
         DropFiles.pt.x := x;
@@ -8774,31 +9209,25 @@ begin
         IDataObject.lpVtbl := IDataObjectVtbl;
         IDataObject.dwRefCnt := 1;
         IDataObject.dwObjectCnt := 0;
-        _OLEIDataObjectSetData(IDataObject, FormatEtc, StgMedium, true);
-        // OLE を初期化
-        if API_OleInitialize(NULLPOINTER) = S_OK then begin
-            // プレイリストへのドロップを禁止
-            Status.bDropCancel := true;
-            // ドラッグアンドドロップイベントを開始
-            dwIndex := NULL;
-            dwIndex := API_DoDragDrop(IDataObject, IDropSource, DROPEFFECT_COPY or DROPEFFECT_SCROLL, @dwIndex);
-            // OLE を解放
-            API_OleUninitialize();
-            // ドロップ禁止の解除を予約
-            cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_DRAG_DONE, dwIndex);
-        end;
+        // ドラッグ対象データを設定 (成功した場合は DropFiles の所有権が IDataObject に移動)
+        if _OLEIDataObjectSetData(IDataObject, @FormatEtc, @StgMedium, true) <> S_OK then break;
+        DropFiles := NULLPOINTER;
+        // プレイリストへのドロップを禁止
+        Status.bDropCancel := true;
+        // ドラッグアンドドロップイベントを開始
+        dwIndex := NULL;
+        dwIndex := API_DoDragDrop(IDataObject, IDropSource, DROPEFFECT_COPY or DROPEFFECT_SCROLL, @dwIndex);
+        // ドロップ禁止の解除を予約
+        cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_DRAG_DONE, dwIndex);
         // バッファを解放
         _OLEIDropSourceRelease(IDropSource);
         _OLEIDataObjectRelease(IDataObject);
-        // IDropSource と IDataObject の Release で参照カウントが 0 になったときにメモリ解放するため、
-        // 後続では DropFiles, FormatEtc, StgMedium を含めて解放しない
+        // NOTE: IDropSource と IDataObject の Release で参照カウントが 0 になったときにメモリ解放するため、
+        // 後続処理では DropFiles を含めて解放しない
         IDropSourceVtbl := NULLPOINTER;
         IDropSource := NULLPOINTER;
         IDataObjectVtbl := NULLPOINTER;
         IDataObject := NULLPOINTER;
-        DropFiles := NULLPOINTER;
-        FormatEtc := NULLPOINTER;
-        StgMedium := NULLPOINTER;
     until true;
     // バッファを解放
     if longbool(IDropSourceVtbl) then API_GlobalFree(longword(IDropSourceVtbl));
@@ -8806,8 +9235,6 @@ begin
     if longbool(IDataObjectVtbl) then API_GlobalFree(longword(IDataObjectVtbl));
     if longbool(IDataObject) then API_GlobalFree(longword(IDataObject));
     if longbool(DropFiles) then API_GlobalFree(longword(DropFiles));
-    if longbool(FormatEtc) then API_GlobalFree(longword(FormatEtc));
-    if longbool(StgMedium) then API_GlobalFree(longword(StgMedium));
     FreeMem(lpFile, BUFFER_SIZE_PATH);
 end;
 
@@ -8822,6 +9249,7 @@ var
     X: longint;
     Y: longint;
     Z: longint;
+    hDCStatic: longword;
     bRedrawInfo: longbool;
     T64Count: longword;
     Rect: TRECT;
@@ -8839,9 +9267,9 @@ function DrawInfoBitBlt(nXDest: longint; nYDest: longint; nWidthDest: longint; n
     ): longbool;
 begin
     if Status.dwScale = 2 then begin
-        result := API_BitBlt(Status.hDCStatic, nXDest, nYDest, nWidthDest, nHeightDest, hdcSrc, nXSrc, nYSrc, SRCCOPY);
+        result := API_BitBlt(hDCStatic, nXDest, nYDest, nWidthDest, nHeightDest, hdcSrc, nXSrc, nYSrc, SRCCOPY);
     end else begin
-        result := API_StretchBlt(Status.hDCStatic, (nXDest * Status.dwScale) shr 1, (nYDest * Status.dwScale) shr 1,
+        result := API_StretchBlt(hDCStatic, (nXDest * Status.dwScale) shr 1, (nYDest * Status.dwScale) shr 1,
             (nWidthDest * Status.dwScale) shr 1, (nHeightDest * Status.dwScale) shr 1 + (Status.dwScale and 1),
             hdcSrc, nXSrc, nYSrc, nWidthDest, nHeightDest, SRCCOPY);
     end;
@@ -8850,14 +9278,14 @@ end;
 function DrawInfoFillRect(lprc: pointer; hbr: longword): longint;
 begin
     if Status.dwScale = 2 then begin
-        result := API_FillRect(Status.hDCStatic, lprc, hbr);
+        result := API_FillRect(hDCStatic, lprc, hbr);
     end else begin
         API_MoveMemory(@CopiedRect, lprc, SizeOf(TRECT));
         CopiedRect.left := (CopiedRect.left * Status.dwScale) shr 1;
         CopiedRect.top := (CopiedRect.top * Status.dwScale) shr 1;
         CopiedRect.right := (CopiedRect.right * Status.dwScale) shr 1;
         CopiedRect.bottom := (CopiedRect.bottom * Status.dwScale) shr 1;
-        result := API_FillRect(Status.hDCStatic, @CopiedRect, hbr);
+        result := API_FillRect(hDCStatic, @CopiedRect, hbr);
     end;
 end;
 
@@ -9130,6 +9558,8 @@ begin
 end;
 
 begin
+    // デバイスコンテキストを取得
+    hDCStatic := API_GetDC(cwStaticMain.hWnd);
     // バッファを設定
     ApuData := pApuData;
     DspReg := @ApuData.DspReg;
@@ -9149,12 +9579,12 @@ begin
     if Status.bTimeRepeat then begin
         // リピート開始位置を描画
         if Status.dwStartTime >= Status.dwDefaultTimeout then J := 280
-        else J := (Status.dwStartTime * 141 div Status.dwDefaultTimeout) + 139;
+        else J := longword(int64(Status.dwStartTime) * 141 div Status.dwDefaultTimeout) + 139;
         if bRedrawInfo or (J <> Status.dwLastStartTime) then UpdateMarkWrite(0, 24);
         Status.dwLastStartTime := J;
         // リピート終了位置を描画
         if Status.dwLimitTime >= Status.dwDefaultTimeout then J := 280
-        else J := (Status.dwLimitTime * 141 div Status.dwDefaultTimeout) + 139;
+        else J := longword(int64(Status.dwLimitTime) * 141 div Status.dwDefaultTimeout) + 139;
         if bRedrawInfo or (J <> Status.dwLastLimitTime) then UpdateMarkWrite(1, 32);
         Status.dwLastLimitTime := J;
     end else begin
@@ -9686,6 +10116,8 @@ begin
     end;
     // GDI 描画をフラッシュ
     API_GdiFlush();
+    // デバイスコンテキストを解放
+    API_ReleaseDC(cwStaticMain.hWnd, hDCStatic);
 end;
 
 // ================================================================================
@@ -9717,7 +10149,7 @@ begin
     cwWindowMain.SetCaption(Concat(TITLE_INFO_HEADER[dwLanguage], TITLE_INFO_FILE_APPEND[dwLanguage],
         TITLE_INFO_FOOTER[dwLanguage], TITLE_MAIN_HEADER[dwLanguage], DEFAULT_TITLE));
     // ファイルパスの最後に '\*' を追加
-    dwLast := Length(sPath) - 1;
+    dwLast := Length(sPath);
     if not IsPathSeparator(sPath, dwLast) then sPath := Concat(sPath, '\');
     sChDir := sPath;
     sPath := Concat(sPath, '*');
@@ -9769,7 +10201,7 @@ begin
     for I := 0 to dwCount - 1 do begin
         // ファイルを取得
         API_ZeroMemory(lpFile, BUFFER_SIZE_PATH);
-        API_DragQueryFile(dwParam, I, lpFile, BUFFER_SIZE_PATH);
+        API_DragQueryFile(dwParam, I, lpFile, CHAR_SIZE_PATH);
         sPath := PtrToStr(lpFile);
         // ファイルの種類を取得
         dwType := GetFileType(sPath, dwCount = 1, dwCount = 1);
@@ -9790,6 +10222,21 @@ begin
 end;
 
 // ================================================================================
+// EnterThreadAbortScript700 - Script700 を強制終了してクリティカルセクションを開始
+// ================================================================================
+procedure CWINDOWMAIN.EnterThreadAbortScript700();
+begin
+    // フラグを設定
+    Status.bWaveWrite := false;
+    Status.Script700.Data.cStatusFlag := Status.Script700.Data.cStatusFlag or $80;
+    // SNESAPU 側で書き換えられた強制終了フラグを再設定
+    while not API_TryEnterCriticalSection(@CriticalSectionThread) do begin
+        API_Sleep(1);
+        Status.Script700.Data.cStatusFlag := Status.Script700.Data.cStatusFlag or $80;
+    end;
+end;
+
+// ================================================================================
 // GetFileTitle - ファイルタイトル取得
 // ================================================================================
 procedure CWINDOWMAIN.GetFileTitle(const sPath: utf8string; lpTarget: pointer);
@@ -9802,7 +10249,7 @@ begin
     GetMem(lpTitle, BUFFER_SIZE_TITLE);
     // ファイルタイトルを取得
     API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
-    API_GetFileTitle(StrToPtr(sPath), lpBuffer, BUFFER_SIZE_PATH);
+    API_GetFileTitle(StrToPtr(sPath), lpBuffer, CHAR_SIZE_PATH);
     // Ansi 文字列に変換
     API_ZeroMemory(lpTitle, BUFFER_SIZE_TITLE);
     API_WideCharToMultiByte(CP_ACP, NULL, lpBuffer, -1, lpTitle, COPY_SIZE_TITLE, NULLPOINTER, NULLPOINTER);
@@ -9821,6 +10268,7 @@ var
     bSafe: longbool;
     hFile: longword;
     dwReadSize: longword;
+    dwFileSize: longword;
     cBuffer: array[0..63] of char;
     cSPCHeader: array[0..SPC_FILE_HEADER_LEN - 1] of char;
     cListHeaderA: array[0..LIST_FILE_HEADER_A_LEN - 1] of char;
@@ -9844,10 +10292,12 @@ begin
         hFile := INVALID_HANDLE_VALUE;
         if bSafe then hFile := API_CreateFile(StrToPtr(sPath), GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
             FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+        // ディスク上のファイルでない場合は閉じる
+        CloseIfNotDisk(hFile);
         // ファイルのオープンに失敗した場合はループを抜ける
         if hFile = INVALID_HANDLE_VALUE then break;
         // 初期化
-        result := FILE_TYPE_UNKNOWN;
+        result := FILE_TYPE_NOTDEFINE;
         // ファイルの拡張子を取得
         if bScript700 and (
                IsExt(sPath, Concat('.', SCRIPT700_FILETYPE))
@@ -9858,6 +10308,8 @@ begin
         // ファイルをロード
         API_ZeroMemory(@cBuffer[0], 64);
         API_ReadFile(hFile, @cBuffer[0], 64, @dwReadSize, NULLPOINTER);
+        // ファイルサイズを取得
+        dwFileSize := API_GetFileSize(hFile, NULLPOINTER);
         // ファイルをクローズ
         API_CloseHandle(hFile);
         // バッファをコピー
@@ -9865,13 +10317,13 @@ begin
         API_MoveMemory(@cListHeaderA[0], @cBuffer[0], LIST_FILE_HEADER_A_LEN);
         API_MoveMemory(@cListHeaderB[0], @cBuffer[0], LIST_FILE_HEADER_B_LEN);
         // ファイルの種類を取得
-        if ChrToStr(cSPCHeader) = SPC_FILE_HEADER then result := FILE_TYPE_SPC;
+        if (ChrToStr(cSPCHeader) = SPC_FILE_HEADER) and (dwFileSize >= $10200) then result := FILE_TYPE_SPC;
         if ChrToStr(cListHeaderA) = LIST_FILE_HEADER_A then result := FILE_TYPE_LIST_A;
         if ChrToStr(cListHeaderB) = LIST_FILE_HEADER_B then result := FILE_TYPE_LIST_B;
     until true;
     // ファイル形式が不明の場合はメッセージを表示
     if bShowMsg then case result of
-        FILE_TYPE_NOTEXIST, FILE_TYPE_NOTREAD, FILE_TYPE_UNKNOWN: ShowErrMsg(200 + result);
+        FILE_TYPE_NOTEXIST, FILE_TYPE_NOTREAD, FILE_TYPE_NOTDEFINE: ShowErrMsg(200 + result);
     end;
 end;
 
@@ -9945,15 +10397,32 @@ end;
 // IsSafePath - パスの安全性を確認
 // ================================================================================
 function CWINDOWMAIN.IsSafePath(const sPath: utf8string): longbool;
+var
+    I: longint;
+    sHead: utf8string;
 begin
     // 初期化
     result := false;
     // バッファサイズが 4 バイト未満の場合は失敗
     if Length(sPath) < 4 then exit;
-    // \\.\ から始まる場合は失敗
-    if Copy(sPath, 1, 4) = '\\.\' then exit;
+    // デバイスを直接指すパス (\\.\、\\?\、\??\、区切りが / のものを含む) の場合は失敗
+    sHead := Copy(sPath, 1, 4);
+    for I := 1 to 4 do if sHead[I] = '/' then sHead[I] := '\';
+    if (sHead = '\\.\') or (sHead = '\\?\') or (sHead = '\??\') then exit;
     // 成功
     result := true;
+end;
+
+// ================================================================================
+// CloseIfNotDisk - ディスク上のファイルでない場合はハンドルを閉じる
+// ================================================================================
+procedure CWINDOWMAIN.CloseIfNotDisk(var hFile: longword);
+begin
+    // COM ポート、コンソール、名前付きパイプなどは、読み込みで止まらないように閉じる
+    if (hFile <> INVALID_HANDLE_VALUE) and (API_GetFileType(hFile) <> FILE_TYPE_DISK) then begin
+        API_CloseHandle(hFile);
+        hFile := INVALID_HANDLE_VALUE;
+    end;
 end;
 
 // ================================================================================
@@ -10069,7 +10538,7 @@ begin
     // 一番下のアイテムが選択されている場合は終了
     if dwIndex >= dwCount - 1 then exit;
     // バッファサイズを超える場合は終了
-    if cwFileList.SendMessage(LB_GETTEXTLEN, dwIndex) >= BUFFER_SIZE_PATH then exit;
+    if cwFileList.SendMessage(LB_GETTEXTLEN, dwIndex) >= CHAR_SIZE_PATH then exit;
     if cwPlayList.SendMessage(LB_GETTEXTLEN, dwIndex) >= BUFFER_SIZE_LPARAM then exit;
     // バッファを確保
     GetMem(lpFile, BUFFER_SIZE_PATH);
@@ -10127,14 +10596,16 @@ var
 {$IFDEF FREEPASCAL}
     wcValue: array of widechar;
 {$ELSE}
-    wcValue: array[0..COPY_SIZE_PATH] of widechar;
+    wcValue: array[0..CHAR_SIZE_PATH] of widechar;
 {$ENDIF}
     sBuffer: utf8string;
 begin
     // バッファを確保
     GetMem(lpBuffer, BUFFER_SIZE_PATH);
+    // バッファをクリア
+    API_ZeroMemory(lpBuffer, BUFFER_SIZE_PATH);
     // パスを Wide 文字列に変換
-    API_MultiByteToWideChar(dwCodePage, NULL, lpListFile, -1, lpBuffer, (BUFFER_SIZE_PATH shr 1) - 1);
+    API_MultiByteToWideChar(dwCodePage, NULL, lpListFile, -1, lpBuffer, CHAR_SIZE_PATH);
     // バッファをコピー
     dwBufferSize := GetWideSize(lpBuffer, BUFFER_SIZE_PATH);
 {$IFDEF FREEPASCAL}
@@ -10156,11 +10627,15 @@ begin
 end;
 
 begin
+    // 初期化
+    result := false;
     repeat
         // ファイルをオープン
         hFile := INVALID_HANDLE_VALUE;
         if IsSafePath(sPath) then hFile := API_CreateFile(StrToPtr(sPath), GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
             FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+        // ディスク上のファイルでない場合は閉じる
+        CloseIfNotDisk(hFile);
         // ファイルのオープンに失敗した場合はループを抜ける
         if hFile = INVALID_HANDLE_VALUE then break;
         // プレイリストをクリア
@@ -10204,6 +10679,8 @@ begin
                 dwIndex := dwIndex and $FFFF;
             end;
         end;
+        // ファイルのロードに成功した場合は成功
+        result := longbool(dwReadSize);
         // プレイリストにアイテムが登録されていない場合はループを抜ける
         if not longbool(dwListNum) then break;
         // アイテム数の最大値を設定
@@ -10240,6 +10717,7 @@ begin
                         if dwSizeTitle = $3F then break;
                     end;
                     // 最大サイズを調整
+                    if dwSizeFile > COPY_SIZE_PATH then dwSizeFile := COPY_SIZE_PATH;
                     if dwSizeTitle > COPY_SIZE_TITLE then dwSizeTitle := COPY_SIZE_TITLE;
                 end;
             end;
@@ -10278,8 +10756,6 @@ begin
     if hFile <> INVALID_HANDLE_VALUE then API_CloseHandle(hFile);
     // メニューを更新
     UpdateMenu();
-    // 成功
-    result := true;
 end;
 
 // ================================================================================
@@ -10438,7 +10914,7 @@ begin
         else result := dwIndex;
     end;
     // バッファサイズを超える場合は終了
-    if cwFileList.SendMessage(LB_GETTEXTLEN, result) >= BUFFER_SIZE_PATH then exit;
+    if cwFileList.SendMessage(LB_GETTEXTLEN, result) >= CHAR_SIZE_PATH then exit;
     // バッファを確保
     GetMem(lpFile, BUFFER_SIZE_PATH);
     // ファイルを取得
@@ -10502,7 +10978,7 @@ var
 {$IFDEF FREEPASCAL}
     wcValue: array of widechar;
 {$ELSE}
-    wcValue: array[0..COPY_SIZE_PATH] of widechar;
+    wcValue: array[0..CHAR_SIZE_PATH] of widechar;
 {$ENDIF}
     sBuffer: utf8string;
 begin
@@ -10554,7 +11030,7 @@ begin
         // プレイリストを保存
         for I := 0 to dwListNum - 1 do begin
             // バッファサイズを超える場合はループを抜ける
-            if cwFileList.SendMessage(LB_GETTEXTLEN, I) >= BUFFER_SIZE_PATH then break;
+            if cwFileList.SendMessage(LB_GETTEXTLEN, I) >= CHAR_SIZE_PATH then break;
             if cwPlayList.SendMessage(LB_GETTEXTLEN, I) >= BUFFER_SIZE_LPARAM then break;
             // ファイルとタイトルを取得
             API_ZeroMemory(lpListFile, BUFFER_SIZE_PATH);
@@ -10603,7 +11079,7 @@ begin
     // 一番上のアイテムが選択されている場合は終了
     if dwIndex <= 0 then exit;
     // バッファサイズを超える場合は終了
-    if cwFileList.SendMessage(LB_GETTEXTLEN, dwIndex) >= BUFFER_SIZE_PATH then exit;
+    if cwFileList.SendMessage(LB_GETTEXTLEN, dwIndex) >= CHAR_SIZE_PATH then exit;
     if cwPlayList.SendMessage(LB_GETTEXTLEN, dwIndex) >= BUFFER_SIZE_LPARAM then exit;
     // バッファを確保
     GetMem(lpFile, BUFFER_SIZE_PATH);
@@ -10651,6 +11127,8 @@ begin
     hFile := INVALID_HANDLE_VALUE;
     if IsSafePath(sPath) then hFile := API_CreateFile(StrToPtr(sPath), GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    // ディスク上のファイルでない場合は閉じる
+    CloseIfNotDisk(hFile);
     // ファイルのオープンに失敗した場合は終了
     if hFile = INVALID_HANDLE_VALUE then exit;
     // ファイルサイズを取得
@@ -10763,13 +11241,15 @@ var
     lpFiles: pointer;
     lpFile: pointer;
     dwSize: longword;
-    lpPath: ^byte;
+    lpPath: ^word;
     bResult: longbool;
     bList: longbool;
     dwCount: longword;
     dwType: longword;
     sPath: utf8string;
     OpenFileName: TOPENFILENAME;
+    wsFilter: widestring;
+    wsInitialDir: widestring;
 begin
     // 初期化
     dwLanguage := Status.dwLanguage;
@@ -10783,11 +11263,14 @@ begin
     API_ZeroMemory(@OpenFileName, SizeOf(TOPENFILENAME));
     OpenFileName.hwndOwner := cwWindowMain.hWnd;
     OpenFileName.hThisInstance := Status.hInstance;
-    OpenFileName.lpstrFilter := StrToPtr(sFilter);
+    // NOTE: ダイアログの表示中に StrToPtr のバッファが再利用されないよう、文字列はローカル変数で保持する
+    wsFilter := widestring(sFilter);
+    wsInitialDir := widestring(Status.sOpenPath);
+    OpenFileName.lpstrFilter := pwidechar(wsFilter);
     OpenFileName.nFilterIndex := Status.dwOpenFilterIndex;
     OpenFileName.lpstrFile := lpFiles;
-    OpenFileName.nMaxFile := COPY_SIZE_FILES;
-    OpenFileName.lpstrInitialDir := StrToPtr(Status.sOpenPath);
+    OpenFileName.nMaxFile := CHAR_SIZE_FILES;
+    OpenFileName.lpstrInitialDir := pwidechar(wsInitialDir);
     OpenFileName.Flags := $81A04;
     OpenFileName.lStructSize := SizeOf(TOPENFILENAME);
     cwWindowMain.bMessageBox := true;
@@ -10811,7 +11294,7 @@ begin
             API_MoveMemory(lpFile, lpPath, dwSize);
             cwTempList.SendMessage(LB_ADDSTRING, NULL, lpPath);
             // 次のファイルパスのポインタを取得
-            Inc(lpPath, dwSize + 2);
+            Inc(lpPath, (dwSize shr 1) + 1);
         end;
         // テンポラリ用リストのアイテム数を取得
         dwCount := cwTempList.SendMessage(LB_GETCOUNT, NULL);
@@ -10820,7 +11303,7 @@ begin
         // ファイルを抽出
         if longbool(dwCount) then for I := 0 to dwCount - 1 do begin
             // バッファサイズを超える場合はループを抜ける
-            if cwTempList.SendMessage(LB_GETTEXTLEN, I) >= BUFFER_SIZE_PATH then break;
+            if cwTempList.SendMessage(LB_GETTEXTLEN, I) >= CHAR_SIZE_PATH then break;
             // ファイルを取得
             cwTempList.SendMessage(LB_GETTEXT, I, lpFile);
             sPath := PtrToStr(lpFile);
@@ -10879,6 +11362,15 @@ begin
     end;
     // カレントディレクトリをコピー
     Status.sSPCDir := Copy(sPath, 1, J);
+    // 演奏中の場合
+    if Status.bPlay then begin
+        // Script700 を強制終了
+        EnterThreadAbortScript700();
+        // クリティカルセクションを終了
+        API_LeaveCriticalSection(@CriticalSectionThread);
+        // 演奏を一時停止
+        WavePause();
+    end;
     // クリティカルセクションを開始
     API_EnterCriticalSection(@CriticalSectionStatic);
     // Script700 をロード
@@ -10889,6 +11381,8 @@ begin
     Status.sSPCDir := sSPCDir;
     // バッファを解放
     FreeMem(lpBuffer, BUFFER_SIZE_PATH);
+    // シークキャッシュを初期化
+    ResetSeekCache();
     // 最初から演奏
     if Status.bPlay then SPCStop(true)
     else SPCPlay(PLAY_TYPE_PLAY);
@@ -10923,6 +11417,31 @@ begin
 end;
 
 // ================================================================================
+// ResetSeekCache - シークキャッシュ初期化
+// ================================================================================
+procedure CWINDOWMAIN.ResetSeekCache();
+var
+    I: longint;
+    J: longword;
+    K: longword;
+    SPCHdr: ^TSPCHDR;
+begin
+    if longbool(Option.dwCacheNum) then begin
+        J := 0;
+        K := Option.dwCacheInt shl 6;
+        Status.dwNextCache := K;
+        for I := 0 to Option.dwCacheNum - 1 do begin
+            Inc(J, K);
+            SPCHdr := @Status.SPCCache[I].Spc.Hdr;
+            SPCHdr.dwSongLen := $FFFFFFFF;
+            SPCHdr.dwFadeLen := J;
+        end;
+    end else begin
+        Status.dwNextCache := 0;
+    end;
+end;
+
+// ================================================================================
 // SaveFile - ファイルの保存
 // ================================================================================
 procedure CWINDOWMAIN.SaveFile();
@@ -10938,6 +11457,9 @@ var
     bResult: longbool;
     dwIndex: longint;
     OpenFileName: TOPENFILENAME;
+    wsFilter: widestring;
+    wsInitialDir: widestring;
+    wsDefExt: widestring;
 begin
     // 初期化
     dwLanguage := Status.dwLanguage;
@@ -10952,11 +11474,16 @@ begin
     API_ZeroMemory(@OpenFileName, SizeOf(TOPENFILENAME));
     if Status.bOpen then begin
         sPath := Status.sSPCName;
-        J := Length(sPath);
-        K := J;
+        J := 0;
+        K := Length(sPath);
         for I := 1 to K do begin
             if sPath[I] = NULLCHAR then break;
             if IsSingleByte(sPath, I, '.') then J := I;
+        end;
+        // 拡張子がない場合は '.' を補う
+        if not longbool(J) then begin
+            sPath := Concat(sPath, '.');
+            J := Length(sPath);
         end;
         case Status.dwSaveFilterIndex of
             1: sPath := Concat(Copy(sPath, 1, J), 'lst');
@@ -10968,13 +11495,18 @@ begin
     end;
     OpenFileName.hwndOwner := cwWindowMain.hWnd;
     OpenFileName.hThisInstance := Status.hInstance;
-    OpenFileName.lpstrFilter := StrToPtr(sFilter);
+    // NOTE: ダイアログの表示中に StrToPtr のバッファが再利用されないよう、文字列はローカル変数で保持する
+    // (既定の拡張子は SAVE ボタンを押したときに読まれる)
+    wsFilter := widestring(sFilter);
+    wsInitialDir := widestring(Status.sSavePath);
+    OpenFileName.lpstrFilter := pwidechar(wsFilter);
     OpenFileName.nFilterIndex := Status.dwSaveFilterIndex;
     OpenFileName.lpstrFile := lpFile;
-    OpenFileName.nMaxFile := 1024;
-    OpenFileName.lpstrInitialDir := StrToPtr(Status.sSavePath);
+    OpenFileName.nMaxFile := CHAR_SIZE_PATH;
+    OpenFileName.lpstrInitialDir := pwidechar(wsInitialDir);
     OpenFileName.Flags := $80006;
-    OpenFileName.lpstrDefExt := StrToPtr(LIST_FILETYPE);
+    wsDefExt := widestring(LIST_FILETYPE);
+    OpenFileName.lpstrDefExt := pwidechar(wsDefExt);
     OpenFileName.lStructSize := SizeOf(TOPENFILENAME);
     cwWindowMain.bMessageBox := true;
     bResult := API_GetSaveFileName(@OpenFileName);
@@ -11010,8 +11542,8 @@ var
     SPCReg: ^TSPCREG;
     DspVoice: ^TDSPVOICE;
 begin
-    // キャッシュを使用しない場合は終了
-    if not longbool(Option.dwCacheNum) then exit;
+    // キャッシュを使用しない、または範囲外の場合は終了
+    if not longbool(Option.dwCacheNum) or (dwIndex >= Option.dwCacheNum) then exit;
     // 現在の状態をキャッシュ
     SPCCache := @Status.SPCCache[dwIndex];
     SPCBuf := @SPCCache.Spc;
@@ -11209,6 +11741,7 @@ var
     dwColDiffR: longint;
     dwColDiffG: longint;
     dwColDiffB: longint;
+    hDCStatic: longword;
     hDCBitmapBuffer: longword;
     hBitmap: longword;
     Rect: TRECT;
@@ -11251,7 +11784,8 @@ begin
     API_SetPixel(Status.hDCStringBuffer, 0, 0, $FF00FF);
     API_StretchBlt(Status.hDCStringBuffer, 0, 0, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT, Status.hDCStringBuffer, 0, 0, 1, 1, SRCCOPY);
     // ビットマップリソース用のデバイスコンテキストを作成
-    hDCBitmapBuffer := API_CreateCompatibleDC(Status.hDCStatic);
+    hDCStatic := API_GetDC(cwStaticMain.hWnd);
+    hDCBitmapBuffer := API_CreateCompatibleDC(hDCStatic);
     hBitmap := API_SelectObject(hDCBitmapBuffer, API_LoadBitmap(Status.hInstance, pchar('MAINBMP')));
     // ビットマップリソースから文字表示用のデバイスコンテキストへ画像を転送 (AND 処理)
     if longbool(Option.dwBmpFont) then begin
@@ -11264,7 +11798,7 @@ begin
     end;
     // ビットマップリソース用のデバイスコンテキストを作り直す
     API_DeleteObject(API_SelectObject(hDCBitmapBuffer, hBitmap));
-    hBitmap := API_SelectObject(hDCBitmapBuffer, API_CreateCompatibleBitmap(Status.hDCStatic, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT));
+    hBitmap := API_SelectObject(hDCBitmapBuffer, API_CreateCompatibleBitmap(hDCStatic, BITMAP_NUM_X6, BITMAP_NUM_HEIGHT));
     // ビットマップリソース用の描画領域を文字色で描画
     K := 0;
     for I := 0 to BITMAP_NUM - 1 do begin
@@ -11297,6 +11831,7 @@ begin
     // ビットマップリソース用のデバイスコンテキストを解放
     API_DeleteObject(API_SelectObject(hDCBitmapBuffer, hBitmap));
     API_DeleteDC(hDCBitmapBuffer);
+    API_ReleaseDC(cwStaticMain.hWnd, hDCStatic);
     // GDI 描画をフラッシュ
     API_GdiFlush();
     // メニューを描画
@@ -11354,6 +11889,7 @@ var
     hFile: longword;
     dwReadSize: longword;
     sData: utf8string;
+    sExt: utf8string;
     HdrBin: TSPCHDRBIN;
     StrData: TSTRDATA;
 
@@ -11371,13 +11907,20 @@ begin
     hFile := INVALID_HANDLE_VALUE;
     if IsSafePath(sPath) then hFile := API_CreateFile(StrToPtr(sPath), GENERIC_READ, FILE_SHARE_READ, NULLPOINTER, OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL or FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    // ディスク上のファイルでない場合は閉じる
+    CloseIfNotDisk(hFile);
     // ファイルのオープンに失敗した場合は終了
     if hFile = INVALID_HANDLE_VALUE then exit;
+    // SPC ファイルのサイズに満たない場合は終了
+    if API_GetFileSize(hFile, NULLPOINTER) < $10200 then begin
+        API_CloseHandle(hFile);
+        exit;
+    end;
     // 演奏中の場合
     if Status.bPlay then begin
         // Script700 を強制終了
-        Status.Script700.Data.cStatusFlag := Status.Script700.Data.cStatusFlag or $80;
-        Status.bWaveWrite := false;
+        EnterThreadAbortScript700();
+        API_LeaveCriticalSection(@CriticalSectionThread);
         // 演奏を一時停止
         WavePause();
     end;
@@ -11440,12 +11983,21 @@ begin
     Spc.Hdr.dwFadeLen := StrToInt(ChrToStr(Spc.Hdr.FadeLen), longword(0));
     // フォルダの位置を取得
     J := Length(sPath);
-    K := J;
+    K := 0;
     L := J;
     for I := 1 to L do begin
         if sPath[I] = NULLCHAR then break;
-        if IsPathSeparator(sPath, I) then J := I;
+        if IsPathSeparator(sPath, I) then begin
+            J := I;
+            K := 0;
+        end;
         if IsSingleByte(sPath, I, '.') then K := I;
+    end;
+    // 拡張子がない場合は '.' を補う
+    if longbool(K) then sExt := ''
+    else begin
+        K := L;
+        sExt := '.';
     end;
     // カレントディレクトリをコピー
     Status.sSPCDir := Copy(sPath, 1, J);
@@ -11453,10 +12005,10 @@ begin
     Status.sSPCName := Copy(sPath, J + 1, Length(sPath));
 {$IFNDEF TRY700A}{$IFNDEF TRY700W}
     // ファイルを取得
-    bScript700Exist := CheckPath(K, SCRIPT700_FILETYPE)
-                    or CheckPath(K, SCRIPT7SE_FILETYPE)
-                    or CheckPath(K, SCRIPT700TXT_FILETYPE)
-                    or CheckPath(K, SCRIPT7SETXT_FILETYPE)
+    bScript700Exist := CheckPath(K, Concat(sExt, SCRIPT700_FILETYPE))
+                    or CheckPath(K, Concat(sExt, SCRIPT7SE_FILETYPE))
+                    or CheckPath(K, Concat(sExt, SCRIPT700TXT_FILETYPE))
+                    or CheckPath(K, Concat(sExt, SCRIPT7SETXT_FILETYPE))
                     or CheckPath(J, SCRIPT700_FILENAME)
                     or CheckPath(J, SCRIPT7SE_FILENAME)
                     or CheckPath(J, SCRIPT700TXT_FILENAME)
@@ -11528,9 +12080,6 @@ end;
 procedure CWINDOWMAIN.SPCPlay(dwType: longword);
 var
     I: longint;
-    J: longword;
-    K: longword;
-    SPCHdr: ^TSPCHDR;
 {$IFDEF TRANSMITSPCLPT}
     TSPCEx: TTRANSMITSPCEXLPT;
 {$ENDIF}
@@ -11638,19 +12187,7 @@ begin
         // 新しい SPC が読み込まれた場合
         if Status.bSPCRefresh then begin
             // シークキャッシュを初期化
-            if longbool(Option.dwCacheNum) then begin
-                J := 0;
-                K := Option.dwCacheInt shl 6;
-                Status.dwNextCache := K;
-                for I := 0 to Option.dwCacheNum - 1 do begin
-                    Inc(J, K);
-                    SPCHdr := @Status.SPCCache[I].Spc.Hdr;
-                    SPCHdr.dwSongLen := $FFFFFFFF;
-                    SPCHdr.dwFadeLen := J;
-                end;
-            end else begin
-                Status.dwNextCache := 0;
-            end;
+            ResetSeekCache();
             // リピート開始位置、リピート終了位置を初期化
             if Status.bTimeRepeat then Option.dwPlayOrder := Status.dwPlayOrder;
             Status.dwStartTime := 0;
@@ -11737,6 +12274,7 @@ begin
     // クリティカルセクションを開始
     API_EnterCriticalSection(@CriticalSectionThread);
     // SPC を保存
+    API_ZeroMemory(@SPCBuf, SizeOf(TSPC));
     SPCReg := @SPCBuf.Hdr.Reg;
     API_MoveMemory(@SPCBuf, @Spc, SizeOf(TSPCHDR));
     Apu.GetSPCRegs(@SPCReg.pc, @SPCReg.a, @SPCReg.y, @SPCReg.x, @SPCReg.psw, @SPCReg.sp);
@@ -12402,13 +12940,13 @@ var
 begin
     // デバイスをリセット
     WaveReset(bForce);
+    // サウンドバッファを解放
+    for I := 0 to Option.dwBufferNum - 1 do API_waveOutUnprepareHeader(Wave.dwHandle, @Wave.Header[I], SizeOf(TWAVEHDR));
     // デバイスをクローズ
     if longbool(API_waveOutClose(Wave.dwHandle)) then API_Sleep(50)
     // デバイスが完全にクローズされるまで待機
     else while not longbool(Status.dwThreadStatus and WAVE_THREAD_DEVICE_CLOSED) do API_Sleep(16);
     Status.dwThreadStatus := Status.dwThreadStatus xor WAVE_THREAD_DEVICE_CLOSED;
-    // サウンドバッファを解放
-    for I := 0 to Option.dwBufferNum - 1 do API_waveOutUnprepareHeader(Wave.dwHandle, @Wave.Header[I], SizeOf(TWAVEHDR));
     // ハンドルを初期化
     Wave.dwHandle := 0;
 end;
@@ -12547,6 +13085,7 @@ var
     lpBuffer: pointer;
     T64Count: longword;
     T64Cache: longword;
+    dwSrcDir: longword;
     WaveHdr: ^TWAVEHDR;
     ApuData: ^TAPUDATA;
     DspReg: ^TDSPREG;
@@ -12596,7 +13135,12 @@ begin
         ApuData := @Wave.Apu[dwIndex];
         ApuData.SPCApuPort.dwPort := Apu.Ram.dwPort;
         ApuData.SPCOutPort.dwPort := Apu.SPCOutPort.dwPort;
-        ApuData.SPCSrcAddrs := TSPCSRCADDRS(pointer(longword(Apu.Ram) or (Apu.DspReg.SourceDirectory shl 8))^);
+        dwSrcDir := Apu.DspReg.SourceDirectory shl 8;
+        if dwSrcDir > $10000 - SizeOf(TSPCSRCADDRS) then begin
+            API_MoveMemory(@ApuData.SPCSrcAddrs, pointer(longword(Apu.Ram) or dwSrcDir), $10000 - dwSrcDir);
+            API_MoveMemory(pointer(longword(@ApuData.SPCSrcAddrs) + $10000 - dwSrcDir), pointer(Apu.Ram),
+                dwSrcDir + SizeOf(TSPCSRCADDRS) - $10000);
+        end else ApuData.SPCSrcAddrs := TSPCSRCADDRS(pointer(longword(Apu.Ram) or dwSrcDir)^);
         ApuData.SPC700Reg := Apu.SPC700Reg^;
         ApuData.T64Count := Apu.T64Count^;
         ApuData.DspReg := Apu.DspReg^;
@@ -12627,7 +13171,7 @@ begin
         API_LeaveCriticalSection(@CriticalSectionStatic);
     end;
     // キャッシュを保存する時間になった場合
-    if longbool(Status.dwNextCache) and (T64Cache >= Status.dwNextCache) then begin
+    if bWave and Status.bWaveWrite and longbool(Status.dwNextCache) and (T64Cache >= Status.dwNextCache) then begin
         // キャッシュするバッファの位置を取得
         J := 0;
         for I := 0 to Option.dwCacheNum - 1 do if T64Cache >= Status.SPCCache[I].Spc.Hdr.dwFadeLen then J := I;
@@ -12699,10 +13243,7 @@ var
     dwResult: longword;
 begin
     // Script700 を強制終了
-    Status.Script700.Data.cStatusFlag := Status.Script700.Data.cStatusFlag or $80;
-    Status.bWaveWrite := false;
-    // クリティカルセクションを開始
-    API_EnterCriticalSection(@CriticalSectionThread);
+    EnterThreadAbortScript700();
     // フラグを設定
     Status.dwWaveMessage := WAVE_MESSAGE_MAX_COUNT;
     Status.bPlay := false;
@@ -13051,6 +13592,8 @@ begin
     end;
     // 最終処理
     if bCancel then begin
+        // バッファを解放
+        FreeMem(lpData, dwSizeB);
         // キャンセルされた場合はファイルサイズを 0 に設定
         dwSizeB := NULL;
         API_SetFilePointer(hFile, NULL, @dwSizeB, FILE_BEGIN);
@@ -13265,8 +13808,7 @@ begin
     // メニュー境界を描画
     if Option.dwTheme = THEME_DARK then cmMain.DrawMenuBorder(cwWindowMain.hWnd);
     // ウィンドウにフォーカスを設定
-    if (API_GetForegroundWindow() = cwWindowMain.hWnd) and longbool(Status.dwFocusHandle) then
-        cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_ACTIVATE, NULL);
+    if (API_GetForegroundWindow() = cwWindowMain.hWnd) then cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_ACTIVATE, NULL);
 end;
 
 function TransmitFile(bAutoPlay: longbool): longbool;
@@ -13307,7 +13849,7 @@ procedure GetFocusWindowAfter();
 begin
     // フォーカスを設定
     if API_GetFocus() = cwWindowMain.hWnd then begin
-        API_SetFocus(Status.dwFocusHandle);
+        if longbool(Status.dwFocusHandle) then API_SetFocus(Status.dwFocusHandle) else API_SetFocus(cwButtonOpen.hWnd);
         Status.dwFocusHandle := NULL;
     end;
     // 基本優先度を取得
@@ -13362,8 +13904,8 @@ begin
     // クリック位置が範囲外の場合は終了
     if (X < 140) or (X > 280) or (Y < STATIC_SEEKBAR_TOP) or (Y >= STATIC_SEEKBAR_BOTTOM) then exit;
     // クリック位置の割合を取得
-    Y := ((X - 139) * Status.dwDefaultTimeout div 141) + 1;
-    if X = 140 then X := 0 else X := ((X - 140) * Status.dwDefaultTimeout div 141) + 1;
+    Y := longword(int64(X - 139) * Status.dwDefaultTimeout div 141) + 1;
+    if X = 140 then X := 0 else X := longword(int64(X - 140) * Status.dwDefaultTimeout div 141) + 1;
     if X > Status.dwDefaultTimeout then X := Status.dwDefaultTimeout;
     if Y > Status.dwDefaultTimeout then Y := Status.dwDefaultTimeout;
     // メッセージ処理
@@ -13481,6 +14023,22 @@ begin
     end;
 end;
 
+function FindBreakPoint(dwAddr: longword): longword;
+var
+    I: longint;
+begin
+    // クリティカルセクションを開始
+    API_EnterCriticalSection(@CriticalSectionThread);
+    // 指定されたアドレス以降で、最初に設定されているブレイクポイントを検索
+    result := $80000000;
+    for I := dwAddr and $FFFF to $FFFF do if bytebool(Status.BreakPoint[I]) then begin
+        result := $81000000 or (longword(I) shl 8) or Status.BreakPoint[I];
+        break;
+    end;
+    // クリティカルセクションを終了
+    API_LeaveCriticalSection(@CriticalSectionThread);
+end;
+
 function WaveOutput(bShift: longbool; bQuiet: longbool): longbool;
 var
     sPath: utf8string;
@@ -13509,6 +14067,31 @@ begin
     result := WaveSave(sPath, bShift, bQuiet, NULL);
 end;
 
+// ================================================================================
+// IsReadable - メモリの読み取り可否を取得
+// ================================================================================
+function IsReadable(dwAddr: longword; dwSize: longword): longbool;
+var
+    dwLast: longword;
+    MemoryInfo: TMEMORY_BASIC_INFORMATION;
+begin
+    // 初期化
+    result := false;
+    // NULL またはアドレスが一周する場合は失敗
+    if not longbool(dwAddr) or (dwAddr + dwSize < dwAddr) then exit;
+    dwLast := dwAddr + dwSize;
+    // 範囲内のすべての領域が読み取り可能か確認
+    while dwAddr < dwLast do begin
+        if API_VirtualQuery(pointer(dwAddr), @MemoryInfo, SizeOf(TMEMORY_BASIC_INFORMATION)) <> SizeOf(TMEMORY_BASIC_INFORMATION) then exit;
+        if MemoryInfo.State <> MEM_COMMIT then exit;
+        if longbool(MemoryInfo.Protect and PAGE_GUARD) or not longbool(MemoryInfo.Protect and PAGE_READABLE) then exit;
+        if MemoryInfo.BaseAddress + MemoryInfo.RegionSize <= dwAddr then exit;
+        dwAddr := MemoryInfo.BaseAddress + MemoryInfo.RegionSize;
+    end;
+    // 成功
+    result := true;
+end;
+
 procedure RedrawResume(lParam: longword);
 var
     dwBuffer: longword;
@@ -13518,6 +14101,8 @@ begin
     if not longbool(Status.dwReady) or not longbool(Option.dwTimerRedrawResume) then exit;
     // ディスプレイの電源状態を確認
     if longbool(lParam) then begin
+        // 読み取れない場合は終了 (他のプロセスから送られた場合など)
+        if not IsReadable(lParam, SizeOf(TPOWERBROADCAST_SETTING)) then exit;
         // ディスプレイの電源状態イベントでない場合は終了
         Setting := pointer(lParam);
         if not IsEqualsGUID(Setting.PowerSetting, GUID_CONSOLE_DISPLAY_STATE) then exit;
@@ -13593,28 +14178,36 @@ begin
                     MENU_LIST_CLEAR: ListClear(false);
                     MENU_LIST_UP: ListUp();
                     MENU_LIST_DOWN: ListDown();
-                    else case wParam div 10 * 10 of
-                        MENU_SETUP_DEVICE_BASE..MENU_SETUP_DEVICE_BASE + 90:
+                    else case wParam of
+                        MENU_SETUP_DEVICE_BASE..MENU_SETUP_DEVICE_BASE + 99:
                             UpdateDevice(wParam - MENU_SETUP_DEVICE_BASE - 1, WAVE_DEVICE_UPDATE_SELECT);
-                        MENU_SETUP_CHANNEL_BASE: Option.dwChannel := MENU_SETUP_CHANNEL_VALUE[wParam - MENU_SETUP_CHANNEL_BASE];
-                        MENU_SETUP_BIT_BASE: Option.dwBit := MENU_SETUP_BIT_VALUE[wParam - MENU_SETUP_BIT_BASE];
-                        MENU_SETUP_RATE_BASE..MENU_SETUP_RATE_BASE + 10:
+                        MENU_SETUP_CHANNEL_BASE..MENU_SETUP_CHANNEL_BASE + MENU_SETUP_CHANNEL_SIZE - 1:
+                            Option.dwChannel := MENU_SETUP_CHANNEL_VALUE[wParam - MENU_SETUP_CHANNEL_BASE];
+                        MENU_SETUP_BIT_BASE..MENU_SETUP_BIT_BASE + MENU_SETUP_BIT_SIZE - 1:
+                            Option.dwBit := MENU_SETUP_BIT_VALUE[wParam - MENU_SETUP_BIT_BASE];
+                        MENU_SETUP_RATE_BASE..MENU_SETUP_RATE_BASE + MENU_SETUP_RATE_SIZE - 1:
                             Option.dwRate := MENU_SETUP_RATE_VALUE[wParam - MENU_SETUP_RATE_BASE];
-                        MENU_SETUP_INTER_BASE: Option.dwInter := MENU_SETUP_INTER_VALUE[wParam - MENU_SETUP_INTER_BASE];
-                        MENU_SETUP_PITCH_BASE..MENU_SETUP_PITCH_BASE + 20:
+                        MENU_SETUP_INTER_BASE..MENU_SETUP_INTER_BASE + MENU_SETUP_INTER_SIZE - 1:
+                            Option.dwInter := MENU_SETUP_INTER_VALUE[wParam - MENU_SETUP_INTER_BASE];
+                        MENU_SETUP_PITCH_BASE..MENU_SETUP_PITCH_BASE + MENU_SETUP_PITCH_SIZE + MENU_SETUP_PITCH_KEY_SIZE * 2:
                             Option.dwPitch := MENU_SETUP_PITCH_VALUE[wParam - MENU_SETUP_PITCH_BASE];
-                        MENU_SETUP_SEPARATE_BASE..MENU_SETUP_SEPARATE_BASE + 10:
+                        MENU_SETUP_SEPARATE_BASE..MENU_SETUP_SEPARATE_BASE + MENU_SETUP_SEPARATE_SIZE - 1:
                             Option.dwSeparate := MENU_SETUP_SEPARATE_VALUE[wParam - MENU_SETUP_SEPARATE_BASE];
-                        MENU_SETUP_FEEDBACK_BASE..MENU_SETUP_FEEDBACK_BASE + 10:
+                        MENU_SETUP_FEEDBACK_BASE..MENU_SETUP_FEEDBACK_BASE + MENU_SETUP_FEEDBACK_SIZE - 1:
                             Option.dwFeedback := MENU_SETUP_FEEDBACK_VALUE[wParam - MENU_SETUP_FEEDBACK_BASE];
-                        MENU_SETUP_SPEED_BASE..MENU_SETUP_SPEED_BASE + 20:
-                            Option.dwSpeedBas := MENU_SETUP_SPEED_VALUE[wParam - MENU_SETUP_SPEED_BASE];
-                        MENU_SETUP_AMP_BASE..MENU_SETUP_AMP_BASE + 20: Option.dwAmp := MENU_SETUP_AMP_VALUE[wParam - MENU_SETUP_AMP_BASE];
-                        MENU_SETUP_MUTE_BASE: Option.dwMute := Option.dwMute xor (1 shl (wParam - MENU_SETUP_MUTE_BASE));
-                        MENU_SETUP_NOISE_BASE: Option.dwNoise := Option.dwNoise xor (1 shl (wParam - MENU_SETUP_NOISE_BASE));
-                        MENU_SETUP_OPTION_BASE..MENU_SETUP_OPTION_BASE + 10:
+                        MENU_SETUP_SPEED_BASE..MENU_SETUP_SPEED_BASE + MENU_SETUP_SPEED_SIZE - 1:
+                            if MENU_SETUP_SPEED_VALUE[wParam - MENU_SETUP_SPEED_BASE] <> $FFFFFFFF then // 区切り線の ID は無視
+                                Option.dwSpeedBas := MENU_SETUP_SPEED_VALUE[wParam - MENU_SETUP_SPEED_BASE];
+                        MENU_SETUP_AMP_BASE..MENU_SETUP_AMP_BASE + MENU_SETUP_AMP_SIZE - 1:
+                            if MENU_SETUP_AMP_VALUE[wParam - MENU_SETUP_AMP_BASE] <> $FFFFFFFF then // 区切り線の ID は無視
+                                Option.dwAmp := MENU_SETUP_AMP_VALUE[wParam - MENU_SETUP_AMP_BASE];
+                        MENU_SETUP_MUTE_BASE..MENU_SETUP_MUTE_BASE + 7:
+                            Option.dwMute := Option.dwMute xor (1 shl (wParam - MENU_SETUP_MUTE_BASE));
+                        MENU_SETUP_NOISE_BASE..MENU_SETUP_NOISE_BASE + 7:
+                            Option.dwNoise := Option.dwNoise xor (1 shl (wParam - MENU_SETUP_NOISE_BASE));
+                        MENU_SETUP_OPTION_BASE..MENU_SETUP_OPTION_BASE + MENU_SETUP_OPTION_SIZE - 1:
                             Option.dwOption := Option.dwOption xor MENU_SETUP_OPTION_VALUE[wParam - MENU_SETUP_OPTION_BASE];
-                        MENU_SETUP_ORDER_BASE: begin
+                        MENU_SETUP_ORDER_BASE..MENU_SETUP_ORDER_BASE + MENU_SETUP_ORDER_SIZE - 1: begin
                             // フラグを設定
                             Option.dwPlayOrder := wParam - MENU_SETUP_ORDER_BASE;
                             Status.dwPlayOrder := Option.dwPlayOrder;
@@ -13623,12 +14216,13 @@ begin
                             // インジケータを再描画
                             cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW {bWindow=false}, NULL);
                         end;
-                        MENU_SETUP_SEEK_BASE: Option.dwSeekTime := MENU_SETUP_SEEK_VALUE[wParam - MENU_SETUP_SEEK_BASE];
-                        MENU_SETUP_INFO_BASE: begin
+                        MENU_SETUP_SEEK_BASE..MENU_SETUP_SEEK_BASE + MENU_SETUP_SEEK_SIZE - 1:
+                            Option.dwSeekTime := MENU_SETUP_SEEK_VALUE[wParam - MENU_SETUP_SEEK_BASE];
+                        MENU_SETUP_INFO_BASE..MENU_SETUP_INFO_BASE + MENU_SETUP_INFO_SIZE - 1: begin
                             SetChangeInfo(true, wParam - MENU_SETUP_INFO_BASE);
                             exit; // UpdateMenu を実行しない
                         end;
-                        MENU_SETUP_PRIORITY_BASE: begin
+                        MENU_SETUP_PRIORITY_BASE..MENU_SETUP_PRIORITY_BASE + MENU_SETUP_PRIORITY_SIZE - 1: begin
                             // 設定する優先度を取得
                             Option.dwPriority := MENU_SETUP_PRIORITY_VALUE[wParam - MENU_SETUP_PRIORITY_BASE];
                             // プロセス優先度を設定
@@ -13687,7 +14281,7 @@ begin
         end;
         WM_DROPFILES: dwDef := DropFile(wParam); // ファイルがドロップされた
         WM_CAPTURECHANGED: dwDef := LostFocusWindow(); // マウスのキャプチャが変化した
-        WM_ACTIVATE: case wParam and $FFFF of // ウィンドウのアクティブが変化した
+        WM_ACTIVATE: if not Status.bWindowDeleted then case wParam and $FFFF of // ウィンドウのアクティブが変化した (終了処理済みの場合は無視)
             0: dwDef := LostFocusWindow(); // ウィンドウからフォーカスが離れた
             1, 2: dwDef := GetFocusWindow(); // ウィンドウにフォーカスが移った
         end;
@@ -13784,6 +14378,7 @@ begin
                     // クリティカルセクションを終了
                     API_LeaveCriticalSection(@CriticalSectionThread);
                 end;
+                WM_APP_BP_NEXT: result := FindBreakPoint(wParam); // BreakPoint 検索
                 WM_APP_NEXT_TICK: begin // 次の命令で止める
                     // クリティカルセクションを開始
                     API_EnterCriticalSection(@CriticalSectionThread);
@@ -13807,6 +14402,14 @@ begin
                     // クリティカルセクションを終了
                     API_LeaveCriticalSection(@CriticalSectionThread);
                 end;
+                WM_APP_DSP_GET: begin // DSP チート取得
+                    // クリティカルセクションを開始
+                    API_EnterCriticalSection(@CriticalSectionThread);
+                    // DSP チート
+                    result := $80000000 or Status.DSPCheat[wParam and $7F];
+                    // クリティカルセクションを終了
+                    API_LeaveCriticalSection(@CriticalSectionThread);
+                end;
                 WM_APP_DSP_MUTE: begin // DSP 音色ミュート
                     // クリティカルセクションを開始
                     API_EnterCriticalSection(@CriticalSectionThread);
@@ -13815,10 +14418,18 @@ begin
                     // クリティカルセクションを終了
                     API_LeaveCriticalSection(@CriticalSectionThread);
                 end;
+                WM_APP_DSP_MUTE_GET: begin // DSP 音色ミュート取得
+                    // クリティカルセクションを開始
+                    API_EnterCriticalSection(@CriticalSectionThread);
+                    // DSP 音色ミュート
+                    result := $80000000 or (Status.Script700.DSP.SrcFlags[wParam and $FF] and $1);
+                    // クリティカルセクションを終了
+                    API_LeaveCriticalSection(@CriticalSectionThread);
+                end;
                 WM_APP_GET_AMP: begin // 音量設定
                     // 音量
                     result := Option.dwAmp;
-                    if longbool(wParam and $100) then begin
+                    if longbool(wParam and $100) and (lParam <= AMP_400) then begin
                         // 音量を設定
                         Option.dwAmp := lParam;
                         // 設定をリセット
@@ -13909,6 +14520,12 @@ begin
             TIMER_ID_REDRAW_RESUME: begin // サスペンド復帰後のウィンドウ再描画
                 // タイマーを解除
                 API_KillTimer(cwWindowMain.hWnd, TIMER_ID_REDRAW_RESUME);
+                // クリティカルセクションを開始
+                API_EnterCriticalSection(@CriticalSectionStatic);
+                // グラフィックリソースを設定
+                SetGraphic();
+                // クリティカルセクションを終了
+                API_LeaveCriticalSection(@CriticalSectionStatic);
                 // ウィンドウ全体を再描画
                 cwWindowMain.PostMessage(WM_APP_MESSAGE, WM_APP_REDRAW or $1 {bWindow=true}, NULL);
             end;
@@ -13942,7 +14559,7 @@ begin
             dwDef := 1;
             result := Status.hBackBrush;
         end;
-        WM_DRAWITEM: if Option.dwTheme = THEME_DARK then begin // メニューのアイテムが描画された
+        WM_DRAWITEM: if (Option.dwTheme = THEME_DARK) and IsReadable(lParam, SizeOf(TDRAWITEMSTRUCT)) then begin // メニューのアイテムが描画された
             result := 0;
             case wParam of
                 ID_BUTTON_OPEN: result := cwButtonOpen.DrawItem(lParam, false);
@@ -13966,11 +14583,11 @@ begin
             end;
             dwDef := result;
         end;
-        WM_UAHDRAWMENU: if Option.dwTheme = THEME_DARK then begin // メニューバーの描画が要求された (非公開)
+        WM_UAHDRAWMENU: if (Option.dwTheme = THEME_DARK) and IsReadable(lParam, SizeOf(TUAHMENU)) then begin // メニューバーの描画が要求された (非公開)
             result := cmMain.DrawMenuBar(hWnd, lParam);
             dwDef := result;
         end;
-        WM_UAHDRAWMENUITEM: if Option.dwTheme = THEME_DARK then begin // メニューアイテムの描画が要求された (非公開)
+        WM_UAHDRAWMENUITEM: if (Option.dwTheme = THEME_DARK) and IsReadable(lParam, SizeOf(TUAHDRAWMENUITEM)) then begin // メニューアイテムの描画が要求された (非公開)
             result := cmMain.DrawMenuItem(hWnd, lParam);
             dwDef := result;
         end;
