@@ -22,10 +22,10 @@
 * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                                        *
 *                                                                                                  *
 *                                                 Copyright (C) 1999-2008 Alpha-II Productions     *
-*                                                 Copyright (C) 2003-2024 degrade-factory          *
+*                                                 Copyright (C) 2003-2026 degrade-factory          *
 *                                                                                                  *
 * List of users and dates who/when modified this file:                                             *
-*    - degrade-factory in 2024-01-18                                                               *
+*    - degrade-factory in 2026-10-25                                                               *
 ***************************************************************************************************/
 
 #ifndef __INC_SPC700
@@ -67,18 +67,26 @@
 //
 //Subsequent calls to EmuSPC will return that cycles were emulated, but nothing will have happened.
 //
-//Once this flag has been set, the next call to EmuSPC will also disable the DSP emulator.
-// Subsequent calls to EmuDSP will generate silence.  This way emulation can be halted in the
-// middle of EmuAPU without affecting the size of the output buffer.
+//The DSP keeps running with the registers as they are.  Add DSP_HALT to make EmuDSP generate
+// silence as well.  Either way EmuAPU still fills the whole output buffer.
 
 #define SPC_HALT    0x2
+
+//Halt DSP:
+//
+//Subsequent calls to EmuDSP will generate silence, without running the DSP emulator at all.
+//
+//SPC_HALT's own effect above is limited to EmuSPC.  Specify this flag as well to also halt DSP
+// emulation, matching what a caller pausing both SPC700 and DSP for debugging needs.
+
+#define DSP_HALT    0x4
 
 //Pause DSP Emulation:
 //
 //Writes to the DSP envelope will have no update.
 //
-//When debugging a program of SPC700 which influences a DSP, it's necessary to stop both of SPC700
-// and DSP.  Therefore it's appropriate to use this flag with SPC_HALT.
+//When debugging a program of SPC700 which influences a DSP, it is necessary to stop both of SPC700
+// and DSP.  Therefore it is appropriate to use this flag with SPC_HALT.
 
 #define DSP_PAUSE   0x20
 
@@ -109,8 +117,12 @@ typedef struct SPCFlags {
 // Notes:
 //    When modifying PC or SP, only the lower word needs to be modified; the upper word will be
 //     ignored.
+//    On x64 each parameter is a pointer to the value instead, since Win64 passes arguments in
+//     registers, where a change would not reach the caller.
+//    The routine must leave the x87 FPU registers and control word as they were, since the
+//     emulator can have values on the FPU stack when it is called.
 //
-// In:
+// In (x86):
 //    pc -> Current opcode (LOWORD = PC)
 //    ya  = YA
 //    x   = X
@@ -120,8 +132,20 @@ typedef struct SPCFlags {
 //          [0-1] 8kHz cycles left until counters 0 and 1 increase
 //          [2]   64kHz cycles left until counter 2 increases
 //          [3]   CPU cycles left until next 64kHz clock pulse
+//
+// In (x64):
+//    pc  -> PC
+//    ya  -> YA
+//    x   -> X
+//    psw -> PSW
+//    sp  -> SP
+//    cnt -> Clock cycle counters (as on x86)
 
-typedef void SPCDebug(volatile u8 *pc, volatile u16 ya, volatile u8 x, volatile SPCFlags psw, volatile u8 *sp, volatile u32 cnt);
+#ifdef  _WIN64
+typedef void SPCDebug(volatile u16 *pc, volatile u16 *ya, volatile u8 *x, volatile SPCFlags *psw, volatile u16 *sp, volatile u32 *cnt);
+#else
+typedef void __cdecl SPCDebug(volatile u8 * volatile pc, volatile u16 ya, volatile u8 x, volatile SPCFlags psw, volatile u8 * volatile sp, volatile u32 cnt);
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Private Declarations
@@ -166,8 +190,8 @@ void InitSPC();
 //**************************************************************************************************
 // Reset SPC700
 //
-// Clears all memory, resets the function registers, T64Cnt, and halt flag, and copies ROM into the
-// IPL region.
+// Clears all memory, resets the function registers and T64Cnt, and copies ROM into the IPL region.
+// The debugging options set with SetSPCDbg are kept.
 //
 // Notes:
 //    Callers should use ResetAPU instead.
@@ -184,8 +208,10 @@ void ResetSPC();
 // Installs a vector that gets called before instruction execution for debugging purposes.
 //
 // Notes:
-//    pTrace is always called when a STOP instruction is encountered, regardless of the options.
-//    The build option SA_DEBUG must be enabled for pTrace to be called under other circumstances.
+//    With DEBUG set to 1 in APU.inc (the default), pTrace is always called when a STOP instruction
+//    is encountered, regardless of the options, and also when the options ask for it.  With DEBUG
+//    set to 0, it is never called.
+//    The options are kept across ResetAPU, LoadSPCFile and SeekAPU until the frontend changes them.
 //
 // In:
 //    pTrace-> Debugging vector (NULL can be passed to disable the debug vector, -1 leaves the

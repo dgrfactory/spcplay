@@ -19,10 +19,10 @@
 * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                                        *
 *                                                                                                  *
 *                                                 Copyright (C) 1999-2006 Alpha-II Productions     *
-*                                                 Copyright (C) 2003-2024 degrade-factory          *
+*                                                 Copyright (C) 2003-2026 degrade-factory          *
 *                                                                                                  *
 * List of users and dates who/when modified this file:                                             *
-*    - degrade-factory in 2024-01-18                                                               *
+*    - degrade-factory in 2026-10-25                                                               *
 *    - Zenith in 2024-06-19                                                                        *
 ***************************************************************************************************/
 
@@ -208,9 +208,17 @@ typedef struct Voice
     u16     vAdsr;                              //ADSR parameters when KON was written
     u8      vGain;                              //Gain parameters when KON was written
     u8      vRsv;                               //Changed ADSR/Gain parameters flag
-    s16     *sIdx;                              //-> current sample in sBuf
+#ifdef _WIN64
+    u32     sIdx;                               //x64: current sample in sBuf, as an offset from this Voice's own address
+#else
+    s16     *sIdx;                              //x86: -> current sample in sBuf
+#endif
     //Waveform --------06
-    void    *bCur;                              //-> current block
+#ifdef _WIN64
+    u32     bCur;                               //x64: current block, as an offset from pAPURAM
+#else
+    void    *bCur;                              //x86: -> current block
+#endif
     u8      bHdr;                               //Block Header for current block
     u8      mFlg;                               //Mixing flags (see MixF)
     //Envelope --------22
@@ -253,13 +261,27 @@ typedef struct Voice
 // The parameters passed in can be modified, and on return will be used to update the internal
 // registers.  Set bit-7 of 'reg' to prevent the DSP from handling the write.
 //
-// For calling a pointer to another debugging routine, use the following macro.
+// On x64 each parameter is a pointer to the value instead, since Win64 passes arguments in
+// registers, where a change would not reach the caller.
 //
-// In:
+// The routine must leave the x87 FPU registers and control word as they were, since the emulator
+// can have values on the FPU stack when it is called.
+//
+// For calling a pointer to another debugging routine on x86, use the following macro.  On x64, call
+// it as a normal function.
+//
+// In (x86):
 //    reg -> Current register (LOBYTE = register index)
 //    val  = Value being written to register
+//
+// In (x64):
+//    reg -> Register index
+//    val -> Value being written to register
 
-typedef void DSPDebug(volatile u8 *reg, volatile u8 val);
+#ifdef  _WIN64
+typedef void DSPDebug(volatile u8 *reg, volatile u8 *val);
+#else
+typedef void __cdecl DSPDebug(volatile u8 * volatile reg, volatile u8 val);
 
 #ifdef  __GNUC__
 #define _CallDSPDebug(proc, reg, val) \
@@ -280,6 +302,7 @@ typedef void DSPDebug(volatile u8 *reg, volatile u8 val);
                 pop     dword ptr [reg]; \
                 pop     dword ptr [val]; \
             }
+#endif
 #endif
 
 
@@ -303,7 +326,7 @@ extern  u32     vMMaxL,vMMaxR;
 // External Functions
 //
 // NOTE:  Unless otherwise stated, no range checking is performed.  It is the caller's
-//        responsibilty to ensure parameters passed are within a valid range.
+//        responsibility to ensure parameters passed are within a valid range.
 
 #ifdef  __cplusplus
 extern  "C" {
@@ -353,7 +376,7 @@ void ResetDSP();
 //    Range checking is performed on all parameters.  If a parameter does not match the required
 //     range of values, the default value will be assumed.
 //
-//    -1 can be used for any paramater that should remain unchanged.
+//    -1 can be used for any parameter that should remain unchanged.
 //
 //    Callers should use SetAPUOpt instead.
 //
@@ -380,7 +403,8 @@ void SetDSPOpt(u32 mix, u32 chn, u32 bits, u32 rate, u32 inter, u32 opts);
 //    The build option SA_DEBUG must be enabled.
 //
 // In:
-//    pTrace-> debug function (a null pointer turns off the debug call)
+//    pTrace-> debug function (a null pointer turns off the debug call, -1 leaves the current
+//             vector)
 //
 // Out:
 //    Previously installed vector
@@ -438,6 +462,7 @@ void SetDSPPitch(u32 base);
 //
 // In:
 //    amp = Amplification level [-15.16] (1.0 = SNES, negative values act as 0)
+//          1-256 are taken in the old scale, where 16 = 1.0 (shifted left by 12)
 //
 // Destroys:
 //    EAX
@@ -474,6 +499,7 @@ void SetDSPVol(u32 vol);
 //         1.0 - full separation (output is either left, center, or right)
 //         0.5 - normal separation (output is unchanged)
 //           0 - no separation (output is completely monaural)
+//         Values above 1.0 are taken as 0.5.
 //
 // Destroys:
 //    EAX,ST(0-7)
@@ -491,6 +517,7 @@ void SetDSPStereo(u32 sep);
 //           1.0 - no crosstalk (SNES)
 //             0 - full crosstalk (mono/center)
 //          -1.0 - inverse crosstalk (L/R swapped)
+//          Values outside -1.0 to 1.0 are taken as 1.0.
 //
 // Destroys:
 //    EAX
@@ -505,7 +532,7 @@ void SetDSPEFBCT(s32 leak);
 // affects the output generated by the DSP, this function returns true.
 //
 // Notes:
-//    SetDSPReg does not call the debugging vector.
+//    SetDSPReg does not call the debugging vector or the CBE_DSPREG callback.
 //
 // In:
 //    reg = DSP Address

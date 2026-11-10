@@ -19,10 +19,10 @@
 * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                                        *
 *                                                                                                  *
 *                                                 Copyright (C) 2003-2006 Alpha-II Productions     *
-*                                                 Copyright (C) 2003-2024 degrade-factory          *
+*                                                 Copyright (C) 2003-2026 degrade-factory          *
 *                                                                                                  *
 * List of users and dates who/when modified this file:                                             *
-*    - degrade-factory in 2024-01-18                                                               *
+*    - degrade-factory in 2026-10-25                                                               *
 ***************************************************************************************************/
 
 #ifndef __INC_APU
@@ -45,7 +45,7 @@
 #define SA_VMETERM  0x100                       //Volume metering on main output (for APR)
 #define SA_VMETERC  0x200                       //Volume metering on voices (for visualization)
 #define SA_SNESINT  0x400                       //Use pregenerated gaussian curve from SNES
-#define SA_STEREO   0x800                       //Stereo controls (seperation and EFBCT)
+#define SA_STEREO   0x800                       //Stereo controls (separation and EFBCT)
 
 //APU build options bits 23-16 -----------------
 #define SA_DEBUG    0x10000                     //Debugging ability
@@ -63,26 +63,60 @@
 #define CBE_INCDATA 0x20000000                  //Include Script700 binary file
 #define CBE_REQBP   0x10000000                  //Request break point
 
+//SNESAPU fetch callback result ----------------
+#define FCH_HALT    0x01                        //Stop EmuAPU at the next timer update
+#define FCH_NOP     0x02                        //Skip the opcode
+#define FCH_PAUSE   0x03                        //Stop, and suspend envelopes until the next fetch
+
 
 //**************************************************************************************************
-// Pointer of SNESAPU callback function
+// SNESAPU Callback Function
 //
-// A prototype for a function that gets called for adding external methods.
+// A prototype for the function that SNESAPUCallback installs.  It is called for each event enabled
+// in 'cbMask', from inside EmuAPU, or from inside SetScript700 for the include events.  The other
+// parameters depend on the event, and every event returns 'value', changed only where the event
+// allows it.  The callback must not call GetSNESAPUContext or SetSNESAPUContext.
 //
-// The role of parameters depends on the effect code.
-// This callback function will be used in support of Script700, and SPC700/DSP debugging
-// purposes.
+// CBE_DSPREG (a DSP register $00-$7F is written, before the DSP handles it):
+//    addr   = Register index
+//    value  = Byte being written
+//    pData -> NULL (unused)
+//    Return 'value', or the byte to write in its place.
+//
+// CBE_S700FCH (the SPC700 is about to fetch an opcode):
+//    addr   = The 4 bytes at PC (opcode and operands)
+//    value  = What is planned for the opcode (low 8 bits: 0 to go on, or an FCH_??? value)
+//    pData -> The opcode in APU RAM (the low word of the pointer is PC)
+//    Return 'value' with only the low 8 bits changed, to 0, FCH_HALT, FCH_NOP or FCH_PAUSE.  The
+//     upper 24 bits must stay as they are in 'value'.
+//
+// CBE_INCS700, CBE_INCDATA (SetScript700 meets '#i' or '#ib'):
+//    addr   = Where the included data goes, as an offset into the data area
+//    value  = Length of the file name in bytes
+//    pData -> File name, not guaranteed to be NULL terminated
+//    Copy the name into a buffer of 'value' + 1 bytes and end it with NULL, then load the file and
+//     call SetScript700 (CBE_INCS700) or SetScript700Data with 'addr' (CBE_INCDATA) from inside
+//     the callback.  Return 'value'.
+//    Text includes do not nest: inside an included text, '#i' is an error, while '#ib' is allowed.
+//
+// CBE_REQBP (Script700 runs 'bp'):
+//    addr   = Address given to 'bp' (16 bits)
+//    value  = FCH_PAUSE
+//    pData -> NULL (unused)
+//    Set a breakpoint at 'addr', usually by giving this 'value' as the low 8 bits of the result of
+//     CBE_S700FCH when PC reaches it.  Return 'value'.
 //
 // In:
-//    effect = Effect code (see CBE_???)
-//    addr   = Any address information
-//    value  = Any value
-//    pData -> Any pointer of values
+//    effect = Event code (see CBE_???)
+//    addr   = See each event
+//    value  = See each event
+//    pData -> See each event
 //
 // Out:
-//    EAX = Usually, same value as 'value' argument
+//    'value', changed only as each event allows
 
-typedef u32 (__stdcall *CBFUNC)(u32 effect, u32 addr, u32 value, void *pData);
+typedef u32 (__stdcall *SNESAPUCALLBACKPROC)(u32 effect, u32 addr, u32 value, void *pData);
+typedef SNESAPUCALLBACKPROC CBFUNC;             //Old name, kept for existing frontends
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,9 +200,12 @@ void SNESAPUInfo(u32 *pVer, u32 *pMin, u32 *pOpt);
 //               Callback function definition:
 //                   u32 Callback(u32 effect, u32 addr, u32 value, void *lpData)
 //               Usually, will return value of 'value' parameter.
-//    cbMask   = SNESAPU callback mask
+//    cbMask   = SNESAPU callback mask (added to the current mask, never cleared)
+//
+// Out:
+//    Previously installed callback function
 
-CBFUNC SNESAPUCallback(CBFUNC pCbFunc, u32 cbMask);
+SNESAPUCALLBACKPROC SNESAPUCallback(SNESAPUCALLBACKPROC pCbFunc, u32 cbMask);
 
 
 //**************************************************************************************************
@@ -176,7 +213,7 @@ CBFUNC SNESAPUCallback(CBFUNC pCbFunc, u32 cbMask);
 //
 // In:
 //    ppRAM     -> 64KB Sound RAM
-//    ppXRAM    -> 128byte extra RAM
+//    ppXRAM    -> 64byte extra RAM
 //    ppOutPort -> APU 4 ports of output
 //    ppT64Cnt  -> 64kHz timer counter
 //    ppDSP     -> 128byte DSPRAM structure (see DSP.inc)
@@ -193,7 +230,7 @@ void GetAPUData(u8 **ppRAM, u8 **ppXRAM, u8 **ppOutPort, u32 **ppT64Cnt, DSPReg 
 // In:
 //    pDLLVer     -> SNESAPU version (32byte string)
 //    ppSPCReg    -> Pointer of SPC700 register
-//    ppScript700 -> Pointer of Script700 work memory
+//    ppScript700 -> Pointer to a structure that receives Script700 related information
 
 void GetScript700Data(char *pDLLVer, u32 **ppSPCReg, u8 **ppScript700);
 
@@ -239,7 +276,7 @@ void LoadSPCFile(void *pFile);
 //
 // Notes:
 //    -1 can be passed for any parameter you want to remain unchanged
-//     see SetDSPOpt() in DSP.h for a more detailed explantion of the options.
+//     see SetDSPOpt() in DSP.h for a more detailed explanation of the options.
 //
 // In:
 //    mixType = Mixing routine (default 1)
@@ -271,14 +308,15 @@ void SetAPUSmpClk(u32 speed);
 //
 // Notes:
 //    If a song is not playing, you must call ResetAPU or set T64Cnt to 0 before calling this.
-//    To set a song with no length, pass -1 and 0 for the song and fade.
+//    To set a song with no length, pass -1 and 0 for the song and fade.  With a song of -1, the
+//    fade never starts, whatever its length.
 //
 // In:
 //    song = Length of song (in 1/64000ths second)
 //    fade = Length of fade (in 1/64000ths second)
 //
 // Out:
-//    Total length
+//    Total length (song + fade as given, or -1 when song is -1)
 
 u32 SetAPULength(u32 song, u32 fade);
 
@@ -290,7 +328,8 @@ u32 SetAPULength(u32 song, u32 fade);
 // by the main program.
 //
 // In:
-//    pBuf-> Buffer to store output samples
+//    pBuf-> Buffer to store output samples.  If it is NULL, nothing is emulated and NULL is
+//           returned.
 //    len  = Length of time to emulate (must be > 0)
 //    type = Type of parameter passed in len
 //           0 - len is the number of APU clock cycles to emulate (APU_CLK = 1 second)
@@ -321,7 +360,7 @@ void SeekAPU(u32 time, b8 fast);
 // In:
 //    port = SPC700 port number (0 - 3 / 0xF4 - 0xF7).
 //    wait = Wait time (1 - 0xFFFFFFFF).  If this parameter is 0, TimerTrick and Script700 is
-//           disabled.
+//           disabled.  Values above 0x7FFFFF00 are taken as 0x7FFFFF00.
 
 void SetTimerTrick(u32 port, u32 wait);
 
@@ -351,12 +390,13 @@ s32 SetScript700(void *pSource);
 //    addr   = Data area address of the destination to copy
 //    pData -> Pointer to binary data buffer.  If this parameter is NULL, no operation.
 //    size   = Size of buffer
+//    addr and size are unsigned.  The data offset plus addr plus size must not exceed SCR700SIZE.
 //
 // Out:
 //    = Return value is a binary-converting result of the Script700 command.
 //      >=1 : Last index of array of the program memory used.  Script700 is enabled.
 //      0   : NULL was set in the pData parameter.  Script700 status will be not changed.
-//      -1  : Error occurred by binary-converting Script700.  Script700 is disabled.
+//      -1  : No data area, or the range does not fit in it.  Nothing is written.
 
 s32 SetScript700Data(u32 addr, void *pData, u32 size);
 
@@ -370,7 +410,7 @@ s32 SetScript700Data(u32 addr, void *pData, u32 size);
 // Out:
 //    = Buffer size for copy of context data
 
-u32 GetSNESAPUContextSize();
+u32 GetSNESAPUContextSize(void);
 
 
 //**************************************************************************************************
